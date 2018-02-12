@@ -1,0 +1,72 @@
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\bin\Debug\DRC.exe.config
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Properties.Resources.resources
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\obj\Debug\DRC.csproj.GenerateResource.Cache
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\bin\Debug\DRC.exe
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\bin\Debug\DRC.pdb
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\obj\Debug\DRC.exe
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\obj\Debug\DRC.pdb
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\bin\Debug\alglibnet2.dll
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\bin\Debug\LumenWorks.Framework.IO.dll
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\bin\Debug\LumenWorks.Framework.IO.pdb
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\bin\Debug\LumenWorks.Framework.IO.xml
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form2.resources
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\obj\Debug\DRC.csprojResolveAssemblyReference.cache
+c:\users\lcousin\documents\visual studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form3.resources
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form1.resources
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form4.resources
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.csproj.ResolveComReference.cache
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form5.resources
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.dll.config
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.dll
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.MachineLearning.dll
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.MachineLearning.GPL.dll
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.Math.Core.dll
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.Math.dll
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.Statistics.dll
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.xml
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.MachineLearning.xml
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.MachineLearning.GPL.xml
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.Math.xml
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.Math.Core.xml
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\bin\Debug\Accord.Statistics.xml
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form6.resources
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form7.resources
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form8.resources
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form9.resources
+C:\Users\lcousin\Documents\Visual Studio 2015\Projects\DRC\DRC\obj\Debug\DRC.Form10.resources
+P:\DRC_Tool\DRC\bin\Debug\DRC.exe.config
+P:\DRC_Tool\DRC\obj\Debug\DRC.csproj.ResolveComReference.cache
+P:\DRC_Tool\DRC\obj\Debug\DRC.exe
+P:\DRC_Tool\DRC\obj\Debug\DRC.pdb
+P:\DRC_Tool\DRC\bin\Debug\Accord.dll.config
+P:\DRC_Tool\DRC\bin\Debug\DRC.exe
+P:\DRC_Tool\DRC\bin\Debug\DRC.pdb
+P:\DRC_Tool\DRC\bin\Debug\Accord.dll
+P:\DRC_Tool\DRC\bin\Debug\Accord.MachineLearning.dll
+P:\DRC_Tool\DRC\bin\Debug\Accord.MachineLearning.GPL.dll
+P:\DRC_Tool\DRC\bin\Debug\Accord.Math.Core.dll
+P:\DRC_Tool\DRC\bin\Debug\Accord.Math.dll
+P:\DRC_Tool\DRC\bin\Debug\Accord.Statistics.dll
+P:\DRC_Tool\DRC\bin\Debug\alglibnet2.dll
+P:\DRC_Tool\DRC\bin\Debug\LumenWorks.Framework.IO.dll
+P:\DRC_Tool\DRC\bin\Debug\Accord.xml
+P:\DRC_Tool\DRC\bin\Debug\Accord.MachineLearning.xml
+P:\DRC_Tool\DRC\bin\Debug\Accord.MachineLearning.GPL.xml
+P:\DRC_Tool\DRC\bin\Debug\Accord.Math.xml
+P:\DRC_Tool\DRC\bin\Debug\Accord.Math.Core.xml
+P:\DRC_Tool\DRC\bin\Debug\Accord.Statistics.xml
+P:\DRC_Tool\DRC\bin\Debug\LumenWorks.Framework.IO.pdb
+P:\DRC_Tool\DRC\bin\Debug\LumenWorks.Framework.IO.xml
+P:\DRC_Tool\DRC\obj\Debug\DRC.csprojResolveAssemblyReference.cache
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form1.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form10.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form2.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form3.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form4.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form5.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form6.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form7.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form8.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Form9.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.Properties.Resources.resources
+P:\DRC_Tool\DRC\obj\Debug\DRC.csproj.GenerateResource.Cache
