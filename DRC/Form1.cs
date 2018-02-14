@@ -207,7 +207,7 @@ namespace DRC
             tableLayoutPanel1.Controls.Clear();
 
             //int test_modified = 0;
-
+           
             List<Chart_DRC> list_chart = descriptors_chart[current_cpd_id];
             foreach (Chart_DRC current_chart in list_chart)
             {
