@@ -125,7 +125,7 @@ namespace DRC
                     run_description_1 = row.Cells["Run"].Value.ToString();
 
                     double value = 0;
-                    if (!val_str.Contains("Not Fitted"))
+                    if (!val_str.Contains("Not Fitted") || !val_str.Contains("Inactive"))
                     {
                         value = double.Parse(row.Cells[item].Value.ToString());
                         dict_var_1.Add(cpd, value);
@@ -156,7 +156,7 @@ namespace DRC
                     run_description_2 = row.Cells["Run"].Value.ToString();
 
                     double value = 0;
-                    if (!val_str.Contains("Not Fitted"))
+                    if (!val_str.Contains("Not Fitted") || !val_str.Contains("Inactive"))
                     {
                         value = double.Parse(row.Cells[item].Value.ToString());
                         dict_var_2.Add(cpd, value);

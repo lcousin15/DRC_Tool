@@ -71,7 +71,7 @@ namespace DRC
         }
 
         CachedCsvReader csv;
-
+        int aplkwz = 0;
         private bool is_with_plate;
         //private bool is_with_exp;
 
@@ -346,6 +346,7 @@ namespace DRC
                     {
                         double[] fit_params = current_chart.get_Fit_Parameters();
                         bool not_fitted = current_chart.is_Fitted();
+                        bool inactive = current_chart.is_Inactive();
 
                         double current_ec_50 = fit_params[2];
 
@@ -358,10 +359,15 @@ namespace DRC
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = Math.Pow(10, current_ec_50);
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.LightGreen;
                         }
-                        else
+                        else if (not_fitted)
                         {
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = "Not Fitted";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.Salmon;
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.Tomato;
+                        }
+                        else if (inactive)
+                        {
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = "Inactive";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.Orange;
                         }
 
                         i_img++;
@@ -399,7 +405,7 @@ namespace DRC
             return;
         }
 
-        private void drawDRCToolStripMenuItem_Click(object sender, EventArgs e)
+        private void draw_drc()
         {
             descriptors_chart.Clear();
 
@@ -578,6 +584,12 @@ namespace DRC
                 }
 
             }
+
+        }
+
+        private void drawDRCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            draw_drc();
         }
 
         private void exportDataToolStripMenuItem_Click(object sender, EventArgs e)
@@ -665,6 +677,7 @@ namespace DRC
 
                         removed_raw_data_cpd = current_chart.get_Removed_Raw_Data().ToList();
                         bool not_fitted = current_chart.is_Fitted();
+                        bool inactive = current_chart.is_Inactive();
 
                         int k = 0;
 
@@ -672,8 +685,9 @@ namespace DRC
                         {
 
                             DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
-                            if (!not_fitted) newCell.Value = Convert.ToString(elem);
-                            else newCell.Value = "Not Fitted";
+                            if (!not_fitted || !inactive) newCell.Value = Convert.ToString(elem);
+                            if(not_fitted) newCell.Value = "Not Fitted";
+                            if(inactive) newCell.Value = "Inactive";
 
                             chart_row_data[k].Cells.Add(newCell);
 
@@ -789,7 +803,7 @@ namespace DRC
                 {
                     if (j != 0 && j < f2.dataGridView2.Columns.Count && i < f2.dataGridView2.Rows.Count - 1 && !(f2.dataGridView2.Columns[j].Name.Contains("R2")))
                     {
-                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted") current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
+                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted" || f2.dataGridView2.Rows[i].Cells[j].Value != "Inactive") current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
                         else current_row.Add(-1);
                     }
                 }
@@ -880,7 +894,7 @@ namespace DRC
                 {
                     if (j != 0 && j < f2.dataGridView2.Columns.Count && i < f2.dataGridView2.Rows.Count - 1 && !(f2.dataGridView2.Columns[j].Name.Contains("R2")))
                     {
-                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted") current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
+                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted" || f2.dataGridView2.Rows[i].Cells[j].Value != "Inactive") current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
                         else current_row.Add(-1);
                     }
                 }
@@ -1158,7 +1172,7 @@ namespace DRC
                             }
 
 
-                            if (row.Cells[col_deselected].Value.ToString() != "Not Fitted" && row.Cells[col_deselected].Value.ToString() != "True")
+                            //if (row.Cells[col_deselected].Value.ToString() != "Not Fitted" && row.Cells[col_deselected].Value.ToString() != "True")
                             {
                                 string descriptor_name = item.ToString();
                                 if (data_descriptor_1.ContainsKey(descriptor_name))
@@ -1214,7 +1228,7 @@ namespace DRC
                                 if (col.Contains(item)) col_deselected = col;
                             }
 
-                            if (row.Cells[col_deselected].Value.ToString() != "Not Fitted" && row.Cells[col_deselected].Value.ToString() != "True")
+                            //if (row.Cells[col_deselected].Value.ToString() != "Not Fitted" && row.Cells[col_deselected].Value.ToString() != "True")
                             {
                                 string descriptor_name = item.ToString();
                                 if (data_descriptor_2.ContainsKey(descriptor_name))
@@ -1363,6 +1377,57 @@ namespace DRC
 
                 f10.dataGridView1.Rows.Add(current_row);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // threshold R2
+            double r2_threshold = double.Parse(this.numericUpDown1.Value.ToString());
+
+            for (var idx = 0; idx < list_cpd.Count; idx++)
+            {
+                string cpd_id = list_cpd[idx].ToString();
+
+                if (cpd_id == "DMSO")
+                    continue;
+
+                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+
+                foreach (Chart_DRC current_chart in list_chart)
+                {
+                    current_chart.threshold_r2(r2_threshold);
+                    current_chart.Is_Modified();
+                }
+            }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            // threshold Inactive
+            double inactive_threshold = double.Parse(this.numericUpDown2.Value.ToString());
+
+            for (var idx = 0; idx < list_cpd.Count; idx++)
+            {
+                string cpd_id = list_cpd[idx].ToString();
+
+                if (cpd_id == "DMSO")
+                    continue;
+
+                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+
+                foreach (Chart_DRC current_chart in list_chart)
+                {
+                    current_chart.threshold_inactive(inactive_threshold);
+                    current_chart.Is_Modified();
+                }
+            }
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            draw_drc();
         }
     }
 
@@ -1841,6 +1906,10 @@ namespace DRC
         private int descriptor_index;
 
         private bool not_fitted;
+        private bool inactive;
+
+        private bool not_fitted_init;
+        private bool inactive_init;
 
         List<DataGridViewRow> raw_data;
         List<double> y_raw_data;
@@ -1850,6 +1919,11 @@ namespace DRC
         public bool is_Fitted()
         {
             return not_fitted;
+        }
+
+        public bool is_Inactive()
+        {
+            return inactive;
         }
 
         public bool is_data_modified()
@@ -1964,7 +2038,19 @@ namespace DRC
                     drc_points_x_enable.RemoveAt(remove_index); //Add(data_chart[i].XValue);
                     drc_points_y_enable.RemoveAt(remove_index); //Add(data_chart[i].YValues[0]);
                 }
-                if (deselected[0] == "Not Fitted") not_fitted = true;
+                if (deselected[0] == "Not Fitted")
+                {
+                    not_fitted = true;       // When first element is NOT FITTED all the columns are NOT FITTED (For the current descriptor)
+                    not_fitted_init = true;
+                }
+                else not_fitted_init = false;
+
+                if (deselected[0] == "Inactive")
+                {
+                    inactive = true;
+                    inactive_init = true;
+                }
+                else inactive_init = false;
             }
 
 
@@ -2026,6 +2112,7 @@ namespace DRC
             chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
             chart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDown);
             chart.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDoubleClick);
+            chart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseClick);
 
             //Create a rectangle annotation
 
@@ -2166,6 +2253,64 @@ namespace DRC
                 annotation_ec50.Text = "EC_50 = Not Fitted";
             }
 
+            if (inactive)
+            {
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+
+                annotation_ec50.Text = "EC_50 = Inactive";
+            }
+
+        }
+
+        public void threshold_r2(double thr)
+        {
+            //double r2_threshold = double.Parse(_form1.numericUpDown1.Value.ToString());
+
+            not_fitted = not_fitted_init;
+
+            if (r2 < thr)
+            {
+                not_fitted = true;
+                if (inactive_init == true) not_fitted = false;
+            }
+
+
+            //Is_Modified();
+        }
+
+        public void threshold_inactive(double thr)
+        {
+            inactive = inactive_init;
+
+            double GlobalMax = double.MinValue;
+            double MaxValues = MaxA(drc_points_y_enable.ToArray());
+            GlobalMax = MaxValues;
+
+            double GlobalMin = double.MaxValue;
+            double MinValues = MinA(drc_points_y_enable.ToArray());
+            GlobalMin = MinValues;
+
+            double min_max_activity = Math.Abs(GlobalMax-GlobalMin);
+
+            if (min_max_activity < thr)
+            {
+                inactive = true;
+                if (not_fitted_init == true) inactive = false;
+            }
+
+            //Is_Modified();
         }
 
         public void draw_DRC()
@@ -2281,6 +2426,25 @@ namespace DRC
                 annotation_ec50.Text = "EC_50 = Not Fitted";
             }
 
+            if (inactive)
+            {
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+
+                annotation_ec50.Text = "EC_50 = Inactive";
+            }
+
             //chart.Invalidate();
             //chart.Update();
             //chart.Show();
@@ -2393,6 +2557,7 @@ namespace DRC
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
 
                 not_fitted = false;
+                inactive = false;
 
                 if (drc_points_x_disable.Count() > 0)
                 {
@@ -2470,8 +2635,54 @@ namespace DRC
                 annotation_ec50.Text = "EC_50 = Not Fitted";
 
                 not_fitted = true;
+
+                not_fitted_init = true;
+                inactive_init = false;
+
+                inactive = false;
+
             }
         }
+
+        private void chart1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+
+                int k = 0;
+                foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                {
+                    string compound = row2.Cells[0].Value.ToString();
+                    if (compound_id == compound) break;
+                    k++;
+                }
+                int row_index = k;
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+
+                annotation_ec50.Text = "EC_50 = Inactive";
+
+                inactive = true;
+
+                inactive_init = true;
+                not_fitted_init = false;
+
+                not_fitted = false;
+
+            }
+        }
+
     }
 
 }
