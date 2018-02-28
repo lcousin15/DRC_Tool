@@ -80,7 +80,6 @@ E:\DRC_Tool_Git\DRC\bin\Release\Accord.MachineLearning.GPL.dll
 E:\DRC_Tool_Git\DRC\bin\Release\Accord.Math.Core.dll
 E:\DRC_Tool_Git\DRC\bin\Release\Accord.Math.dll
 E:\DRC_Tool_Git\DRC\bin\Release\Accord.Statistics.dll
-E:\DRC_Tool_Git\DRC\bin\Release\alglibnet2.dll
 E:\DRC_Tool_Git\DRC\bin\Release\LumenWorks.Framework.IO.dll
 E:\DRC_Tool_Git\DRC\bin\Release\Accord.xml
 E:\DRC_Tool_Git\DRC\bin\Release\Accord.MachineLearning.xml
