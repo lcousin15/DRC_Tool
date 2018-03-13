@@ -1430,6 +1430,11 @@ namespace DRC
         {
             draw_drc();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class Chart_DRC_Overlap
@@ -1889,7 +1894,8 @@ namespace DRC
         private List<double> x_fit;
         private List<double> x_fit_log;
 
-        private List<double> y_fit;
+        private List<double> y_fit_;
+        private List<double> y_fit_log;
 
         private int step_curve;
 
@@ -2012,7 +2018,7 @@ namespace DRC
 
             x_fit = new List<double>();
             x_fit_log = new List<double>();
-            y_fit = new List<double>();
+            y_fit_log = new List<double>();
 
             is_raw_data_removed = new List<bool>();
 
@@ -2057,8 +2063,9 @@ namespace DRC
 
             for (int j = 0; j < step_curve; j++)
             {
-                x_fit.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
+                //x_fit.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
                 x_fit_log.Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
+                x_fit.Add(Math.Pow(10, Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve));
             }
 
             chart = new Chart();
@@ -2196,11 +2203,11 @@ namespace DRC
             RelativeError = rep.avgrelerror;
             r2 = rep.r2;
 
-            y_fit.Clear();
+            y_fit_log.Clear();
 
             for (int IdxConc = 0; IdxConc < x_fit.Count; IdxConc++)
             {
-                y_fit.Add(Sigmoid(c, x_fit_log[IdxConc]));
+                y_fit_log.Add(Sigmoid(c, x_fit_log[IdxConc]));
             }
 
         }
@@ -2324,13 +2331,38 @@ namespace DRC
 
             // Draw the first graph
             chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            chart.Series["Series1"].Points.DataBindXY(x_concentrations_log, y_response);
+            chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
             chart.Series["Series1"].Color = chart_color;
 
             chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["Series2"].Points.DataBindXY(x_fit_log, y_fit);
+            chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
             chart.Series["Series2"].Color = chart_color;
 
+
+            //----------------------------- Axis Labels ---------------------------//
+
+            double min_x = 0.0;
+            double max_x = 0.0;
+
+            if (x_concentrations_log.Count > 0)
+            {
+                min_x = (int)Math.Floor(MinA<double>(x_concentrations_log.ToArray()));
+                max_x = (int)Math.Ceiling(MaxA<double>(x_concentrations_log.ToArray()));
+            }
+            else
+            {
+                max_x = -5.0;
+                min_x = -8.0;
+            }
+
+            chart.ChartAreas[0].AxisX.Minimum = Math.Pow(10, min_x);
+            chart.ChartAreas[0].AxisX.Maximum = Math.Pow(10, max_x);
+
+            chart.ChartAreas[0].AxisX.IsLogarithmic = true;
+            chart.ChartAreas[0].AxisX.LogarithmBase = 10;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
+
+            // End Axis Labels.
 
             foreach (DataPoint dp in chart.Series["Series1"].Points)
             {
@@ -2532,7 +2564,7 @@ namespace DRC
                 }
 
                 fit_DRC();
-                chart.Series["Series2"].Points.DataBindXY(x_fit_log, y_fit);
+                chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
 
                 int k = 0;
                 foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
