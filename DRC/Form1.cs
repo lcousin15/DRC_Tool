@@ -1656,7 +1656,7 @@ namespace DRC
             Axis xAxis = new Axis(chartArea, AxisName.X);
 
             chartArea.AxisX.LabelStyle.Format = "N2";
-            chartArea.AxisX.Title = "Concentatrion (Log10)";
+            chartArea.AxisX.Title = "Concentatrion";
             chartArea.AxisY.Title = "Response";
 
             //double max_y_1 = MaxA(drc_points_y_1.ToArray());
@@ -2095,7 +2095,7 @@ namespace DRC
             Axis xAxis = new Axis(chartArea, AxisName.X);
 
             chartArea.AxisX.LabelStyle.Format = "N2";
-            chartArea.AxisX.Title = "Concentatrion (Log10)";
+            chartArea.AxisX.Title = "Concentatrion";
             chartArea.AxisY.Title = "Response";
 
             double max_y = MaxA(y_response.ToArray());
@@ -2738,6 +2738,9 @@ namespace DRC
                 dlg.ShowDialog();
 
                 Color new_color = dlg.Color;
+
+                chart_color = new_color;
+
                 foreach (DataPoint dp in chart.Series["Series1"].Points)
                 {
                     dp.Color = new_color;
