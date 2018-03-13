@@ -18,7 +18,7 @@ using Accord.MachineLearning.Clustering;
 using Accord.Math;
 using Accord.Statistics.Analysis;
 using Accord.Statistics.Models.Regression.Linear;
-
+using System.Reflection;
 
 namespace DRC
 {
@@ -75,6 +75,8 @@ namespace DRC
         int aplkwz = 0;
         private bool is_with_plate;
         //private bool is_with_exp;
+
+        private Random rnd = new Random();
 
         List<List<string>> CPD_ID_List = new List<List<string>>();
         //List<List<int>> Exp_ID_List = new List<List<int>>();
@@ -532,7 +534,14 @@ namespace DRC
                     string descriptor_name = item.Key;
                     List<double> data = item.Value;
 
+                    //List<Color> myColors = typeof(Color).GetProperties(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
+                    //     .Select(c => (Color)c.GetValue(null, null))
+                    //     .ToList();
+
+                    //Color color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+                    //Color color = myColors[descriptor_index];
                     Color color = Color.Blue;
+
                     if (descriptor_name == "Nuclei") color = Color.Blue;
                     if (descriptor_name == "R/N" || descriptor_name == "R") color = Color.Red;
                     if (descriptor_name == "G/N" || descriptor_name == "G") color = Color.Green;
@@ -1284,7 +1293,14 @@ namespace DRC
 
                     if (data_1.Count > 0 && data_2.Count > 0)
                     {
+                        //List<Color> myColors = typeof(Color).GetProperties(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
+                        //                        .Select(c => (Color)c.GetValue(null, null))
+                        //                        .ToList();
+
+                        //Color color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+                        //Color color = myColors[descriptor_index];
                         Color color = Color.Blue;
+
                         if (descriptor_name == "Nuclei") color = Color.Blue;
                         if (descriptor_name == "R/N" || descriptor_name == "R") color = Color.Red;
                         if (descriptor_name == "G/N" || descriptor_name == "G") color = Color.Green;
@@ -2675,6 +2691,7 @@ namespace DRC
                 inactive = false;
 
             }
+
         }
 
         private void chart1_MouseClick(object sender, MouseEventArgs e)
@@ -2714,6 +2731,22 @@ namespace DRC
                 not_fitted = false;
 
             }
+
+            if (e.Button == MouseButtons.Middle)
+            {
+                ColorDialog dlg = new ColorDialog();
+                dlg.ShowDialog();
+
+                Color new_color = dlg.Color;
+                foreach (DataPoint dp in chart.Series["Series1"].Points)
+                {
+                    dp.Color = new_color;
+                }
+
+                chart.Series["Series2"].Color = new_color;
+
+            }
+
         }
 
     }
