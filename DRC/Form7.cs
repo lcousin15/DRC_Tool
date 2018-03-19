@@ -125,7 +125,7 @@ namespace DRC
                     run_description_1 = row.Cells["Run"].Value.ToString();
 
                     double value = 0;
-                    if (!val_str.Contains("Not Fitted"))
+                    if (!val_str.Contains("Not Fitted") && !val_str.Contains("Inactive"))
                     {
                         value = double.Parse(row.Cells[item].Value.ToString());
                         dict_var_1.Add(cpd, value);
@@ -156,7 +156,7 @@ namespace DRC
                     run_description_2 = row.Cells["Run"].Value.ToString();
 
                     double value = 0;
-                    if (!val_str.Contains("Not Fitted"))
+                    if (!val_str.Contains("Not Fitted") && !val_str.Contains("Inactive"))
                     {
                         value = double.Parse(row.Cells[item].Value.ToString());
                         dict_var_2.Add(cpd, value);
@@ -793,7 +793,7 @@ namespace DRC
                             double point_x = prop.XValue;
                             double point_y = prop.YValues[0];
 
-                            int index = y.FindIndex(a => a < point_y + 1E-12 && a > point_y - 1E-12);
+                            int index = y.FindIndex(a => a < point_y + 1E-15 && a > point_y - 1E-15);
                             string cpd = cpd_list[index];
 
                             tooltip.Show("CPD = " + cpd + ", X=" + prop.XValue + ", Y=" + prop.YValues[0], this.chart, pos.X, pos.Y - 15);
