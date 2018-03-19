@@ -79,9 +79,14 @@ namespace DRC
 
                 if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    worksheet = workbook.ActiveSheet;
 
+                    worksheet = workbook.ActiveSheet;
                     worksheet.Name = "ExportedFromDatGrid";
+
+                    // Get an Excel Range of the same dimensions
+                    Excel.Range range = (Excel.Range)worksheet.Cells[1, 1];
+                    range = range.get_Resize(dataGridViewExport.Rows.Count, dataGridViewExport.Columns.Count);
+                    // Assign the 2-d array to the Excel Range
 
                     int cellRowIndex = 1;
                     int cellColumnIndex = 1;
@@ -97,14 +102,15 @@ namespace DRC
                             // Excel index starts from 1,1. As first Row would have the Column headers, adding a condition check. 
                             if (cellRowIndex == 1)
                             {
-                                worksheet.Cells[cellRowIndex, cellColumnIndex] = dataGridViewExport.Columns[j].HeaderText;
-                                worksheet.Cells[cellRowIndex, cellColumnIndex].Interior.Color = Color.LightGray;
-                                worksheet.Cells[cellRowIndex, cellColumnIndex].Borders.Weight = 1d;
+                                Excel.Range cell = range.Cells[cellRowIndex, cellColumnIndex];
+                                cell.Value = dataGridViewExport.Columns[j].HeaderText;
+                                cell.Interior.Color = Color.LightGray;
+                                cell.Borders.Weight = 1d;
                             }
 
                             if (dataGridViewExport.Rows[i].Cells[j].Value.ToString() == "System.Drawing.Bitmap")
                             {
-                                Excel.Range oRange = (Excel.Range)worksheet.Cells[cellRowIndex + 1, cellColumnIndex];
+                                Excel.Range oRange = range.Cells[cellRowIndex + 1, cellColumnIndex];
                                 Image img = (Image)(dataGridViewExport.Rows[i].Cells[j].Value);
                                 //Image resizeImage = new Bitmap(img, new Size(280, 180));
                                 //Image resizeImage = ResizeImage(img, 280, 180);
@@ -121,18 +127,27 @@ namespace DRC
 
                                 if (j > 0)
                                 {
-                                    worksheet.Cells[cellRowIndex + 1, cellColumnIndex] = dataGridViewExport.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
-                                    worksheet.Cells[cellRowIndex + 1, cellColumnIndex].NumberFormat = "0.00E+00";
-                                    worksheet.Cells[cellRowIndex + 1, cellColumnIndex].Interior.Color = dataGridViewExport.Rows[i].Cells[j].Style.BackColor;
+
+                                    Excel.Range cell = range.Cells[cellRowIndex + 1, cellColumnIndex];
+
+                                    cell.Value = dataGridViewExport.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
+                                    cell.NumberFormat = "0.00E+00";
+                                    cell.Interior.Color = dataGridViewExport.Rows[i].Cells[j].Style.BackColor;
+                                    cell.Style.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+                                    cell.Style.VerticalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
                                 }
                                 if (j == 0)
                                 {
-                                    worksheet.Cells[cellRowIndex + 1, cellColumnIndex] = dataGridViewExport.Rows[i].Cells[j].Value;
-                                    worksheet.Cells[cellRowIndex + 1, cellColumnIndex].Interior.Color = Color.LightGray;
-                                    worksheet.Cells[cellRowIndex + 1, cellColumnIndex].Borders.Weight = 1d;
+                                    Excel.Range cell = range.Cells[cellRowIndex + 1, cellColumnIndex];
+
+                                    cell.Value = dataGridViewExport.Rows[i].Cells[j].Value;
+                                    cell.Interior.Color = Color.LightGray;
+                                    cell.Borders.Weight = 1d;
+                                    cell.Style.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+                                    cell.Style.VerticalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
                                 }
-                                worksheet.Cells[cellRowIndex + 1, cellColumnIndex].Style.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
-                                worksheet.Cells[cellRowIndex + 1, cellColumnIndex].Style.VerticalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+
+
                             }
 
                             cellColumnIndex++;
