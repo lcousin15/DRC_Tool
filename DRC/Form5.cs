@@ -110,7 +110,8 @@ namespace DRC
 
                             if (dataGridViewExport.Rows[i].Cells[j].Value.ToString() == "System.Drawing.Bitmap")
                             {
-                                Excel.Range oRange = range.Cells[cellRowIndex + 1, cellColumnIndex];
+                                //Excel.Range oRange = range.Cells[cellRowIndex + 1, cellColumnIndex];
+                                Excel.Range cell = range.Cells[cellRowIndex, cellColumnIndex];
                                 Image img = (Image)(dataGridViewExport.Rows[i].Cells[j].Value);
                                 //Image resizeImage = new Bitmap(img, new Size(280, 180));
                                 //Image resizeImage = ResizeImage(img, 280, 180);
@@ -119,7 +120,7 @@ namespace DRC
                                 //Image newImage = (Image)dataGridViewExport.Rows[i].Cells[j].Value;
                                 //Clipboard.Clear();
                                 Clipboard.SetImage(img);
-                                worksheet.Paste(oRange, false);
+                                worksheet.Paste(cell, false);
                                 //System.Windows.Forms.Clipboard.SetDataObject(img, true);
                             }
                             else
