@@ -755,10 +755,10 @@ namespace DRC
         public string save_image(string path)
         {
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "/Correlations_" + descriptor_name + "_run_" + exp_run_1 + "_vs_" + exp_run_2 + ".png";
+            string output_image = path + "/Correlations_" + descriptor_name + "_run_" + exp_run_1 + "_vs_" + exp_run_2 + ".bmp";
 
-            System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
-            chart.SaveImage(output_image, ChartImageFormat.Png);
+           // System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);me
+            chart.SaveImage(output_image, ChartImageFormat.Bmp);
 
             return output_image;
         }
