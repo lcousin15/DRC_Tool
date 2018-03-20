@@ -19,6 +19,7 @@ using Accord.Math;
 using Accord.Statistics.Analysis;
 using Accord.Statistics.Models.Regression.Linear;
 using System.Reflection;
+using System.Threading;
 
 namespace DRC
 {
@@ -279,7 +280,6 @@ namespace DRC
 
         }
 
-
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -357,17 +357,17 @@ namespace DRC
 
                         //f5.dataGridViewExport.Rows[index].Height = 
                         f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 1].Value = image;
-                        if (!not_fitted)
+                        if (!not_fitted || !inactive)
                         {
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = Math.Pow(10, current_ec_50);
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.LightGreen;
                         }
-                        else if (not_fitted)
+                        if (not_fitted)
                         {
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = "Not Fitted";
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.Tomato;
                         }
-                        else if (inactive)
+                        if (inactive)
                         {
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = "Inactive";
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.Orange;
@@ -1876,10 +1876,10 @@ namespace DRC
         {
             draw_DRC();
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".png";
+            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
 
             System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
-            chart.SaveImage(output_image, ChartImageFormat.Png);
+            chart.SaveImage(output_image, ChartImageFormat.Bmp);
 
             return output_image;
         }
@@ -2646,10 +2646,10 @@ namespace DRC
         {
             draw_DRC();
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".png";
+            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
 
-            System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
-            chart.SaveImage(output_image, ChartImageFormat.Png);
+            //System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
+            chart.SaveImage(output_image, ChartImageFormat.Bmp);
 
             return output_image;
         }
