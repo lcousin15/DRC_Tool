@@ -339,9 +339,9 @@ namespace DRC
                         if (dataGridViewExport.Rows[i].Cells[j].Value.ToString() == "System.Drawing.Bitmap")
                         {
 
-                            var watch = new System.Diagnostics.Stopwatch();
+                            //var watch = new System.Diagnostics.Stopwatch();
 
-                            watch.Start();
+                            //watch.Start();
 
                             Bitmap img = (Bitmap)(dataGridViewExport.Rows[i].Cells[j].Value);
 
@@ -364,8 +364,8 @@ namespace DRC
                             excelImage.From.Row = cellRowIndex;
                             excelImage.SetSize(485, 350);
 
-                            watch.Stop();
-                            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+                            //watch.Stop();
+                            //Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
 
 
                             //AddImage(ws, cellRowIndex, cellColumnIndex-1, img, name_idx);
