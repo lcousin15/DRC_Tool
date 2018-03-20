@@ -295,8 +295,24 @@ namespace DRC
 
                 Graphics g = this.CreateGraphics();
 
-                int image_width = 0;
-                int image_height = 0;
+                int image_width = 485;
+                int image_height = 350;
+
+                double height = (double)image_height / g.DpiY * 72.0f; //  g.DpiY
+                double width = (double)image_width / g.DpiX * 72.0f / 5.1f; // image_width; g.DpiX
+
+                for (int i = 1; i <= dataGridViewExport.Rows.Count; i++)
+                {
+                    if (i == 1) ws.Row(i).Height = 20;
+                    else ws.Row(i).Height = height;
+                }
+
+                for (int j = 1; j <= dataGridViewExport.Columns.Count; j++)
+                {
+                    if (j % 2 == 0) ws.Column(j).Width = width;
+                    else ws.Column(j).Width = 15;
+                    //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
+                }
 
                 //Loop through each row and read value from each column. 
                 for (int i = 0; i < dataGridViewExport.Rows.Count - 1; i++)
@@ -308,9 +324,9 @@ namespace DRC
                         {
                             ws.Cells[cellRowIndex, cellColumnIndex].Value = dataGridViewExport.Columns[j].HeaderText;
 
-                            ws.Row(1).Height = 20;
-                            if (cellColumnIndex % 2 == 0) ws.Column(cellColumnIndex).Width = 485 / g.DpiX * 72.0f / 5.1f;
-                            else ws.Column(cellColumnIndex).Width = 15;
+                            //ws.Row(1).Height = 20;
+                            //if (cellColumnIndex % 2 == 0) ws.Column(cellColumnIndex).Width = 485 / g.DpiX * 72.0f / 5.1f;
+                            //else ws.Column(cellColumnIndex).Width = 15;
 
                             ws.Cells[cellRowIndex, cellColumnIndex].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                             ws.Cells[cellRowIndex, cellColumnIndex].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
@@ -322,20 +338,25 @@ namespace DRC
 
                         if (dataGridViewExport.Rows[i].Cells[j].Value.ToString() == "System.Drawing.Bitmap")
                         {
+
                             var watch = new System.Diagnostics.Stopwatch();
 
                             watch.Start();
-  
+
                             Bitmap img = (Bitmap)(dataGridViewExport.Rows[i].Cells[j].Value);
 
-                            ws.Row(i+1).Height = 350.0 / g.DpiY * 72.0f; ;
+                            //ws.Row(i + 1).Height = 350.0 / 96.0 * 72.0f;
+                           
+                           
                             //if (j % 2 == 0) ws.Column(1).Width = 485;
                             //else ws.Column(1).Width = 15;
 
                             //image_width = img.Width;
-                            //image_height = img.Height;
+                            //image_height = img.Height; 
+
 
                             string name_idx = (cellRowIndex * dataGridViewExport.Columns.Count + cellColumnIndex).ToString();
+
                             ExcelPicture excelImage = null;
 
                             excelImage = ws.Drawings.AddPicture(name_idx, img);
@@ -344,8 +365,8 @@ namespace DRC
                             excelImage.SetSize(485, 350);
 
                             watch.Stop();
-
                             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+
 
                             //AddImage(ws, cellRowIndex, cellColumnIndex-1, img, name_idx);
                         }
@@ -357,8 +378,8 @@ namespace DRC
 
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
 
-                                if (cellRowIndex + 1 == 1) ws.Row(cellRowIndex + 1).Height = 20;
-                                else ws.Row(cellRowIndex + 1).Height = 350.0 / g.DpiY * 72.0f; ;
+                                //if (cellRowIndex + 1 == 1) ws.Row(cellRowIndex + 1).Height = 20;
+                                //else ws.Row(cellRowIndex + 1).Height = 350.0 / g.DpiY * 72.0f; ;
                                 //if (cellColumnIndex % 2 == 0) ws.Column(1).Width = 485;
                                 //else ws.Column(cellColumnIndex).Width = 15;
 
@@ -378,8 +399,8 @@ namespace DRC
                             {
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value;
 
-                                if (cellRowIndex + 1 == 1) ws.Row(cellRowIndex + 1).Height = 20;
-                                else ws.Row(cellRowIndex + 1).Height = 350.0/ g.DpiY * 72.0f;;
+                                //if (cellRowIndex + 1 == 1) ws.Row(cellRowIndex + 1).Height = 20;
+                                //else ws.Row(cellRowIndex + 1).Height = 350.0 / g.DpiY * 72.0f; ;
                                 //if (j % 2 == 0) ws.Column(1).Width = 485;
                                 //else ws.Column(1).Width = 15;
 
@@ -408,33 +429,33 @@ namespace DRC
                 }
 
                 //ws.Cells[ws.Dimension.Address].AutoFitColumns();
-/*
-                var watch2 = new System.Diagnostics.Stopwatch();
+                /*
+                                var watch2 = new System.Diagnostics.Stopwatch();
 
-                watch2.Start();
+                                watch2.Start();
 
-                Graphics g = this.CreateGraphics();
+                                Graphics g = this.CreateGraphics();
 
-                double height = (double)image_height / g.DpiY * 72.0f; //  g.DpiY
-                double width = (double)image_width / g.DpiX * 72.0f / 5.1f; // image_width; g.DpiX
+                                double height = (double)image_height / g.DpiY * 72.0f; //  g.DpiY
+                                double width = (double)image_width / g.DpiX * 72.0f / 5.1f; // image_width; g.DpiX
 
-                for (int i = 1; i <= dataGridViewExport.Rows.Count; i++)
-                {
-                    if (i == 1) ws.Row(i).Height = 20;
-                    else ws.Row(i).Height = height;
-                }
+                                for (int i = 1; i <= dataGridViewExport.Rows.Count; i++)
+                                {
+                                    if (i == 1) ws.Row(i).Height = 20;
+                                    else ws.Row(i).Height = height;
+                                }
 
-                for (int j = 1; j <= dataGridViewExport.Columns.Count; j++)
-                {
-                    if (j % 2 == 0) ws.Column(j).Width = width;
-                    else ws.Column(j).Width = 15;
-                    //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
-                }
+                                for (int j = 1; j <= dataGridViewExport.Columns.Count; j++)
+                                {
+                                    if (j % 2 == 0) ws.Column(j).Width = width;
+                                    else ws.Column(j).Width = 15;
+                                    //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
+                                }
 
-                watch2.Stop();
+                                watch2.Stop();
 
-                Console.WriteLine($"Execution Time2: {watch2.ElapsedMilliseconds} ms");
-*/
+                                Console.WriteLine($"Execution Time2: {watch2.ElapsedMilliseconds} ms");
+                */
                 pck.SaveAs(new FileInfo(@"" + sfd.FileName));
 
                 MessageBox.Show("Export Successful");
