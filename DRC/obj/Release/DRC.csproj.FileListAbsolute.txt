@@ -107,3 +107,7 @@ E:\DRC_Tool_Git\DRC\obj\Release\DRC.exe
 E:\DRC_Tool_Git\DRC\obj\Release\DRC.pdb
 E:\DRC_Tool_Git\DRC\bin\Release\EPPlus.dll
 E:\DRC_Tool_Git\DRC\bin\Release\EPPlus.xml
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC\bin\Release\DRC.exe.config
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC\obj\Release\DRC.csproj.ResolveComReference.cache
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC\obj\Release\DRC.exe
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC\obj\Release\DRC.pdb

@@ -24,7 +24,7 @@ namespace DRC
         {
             InitializeComponent();
         }
-
+        //public Progress progress;
         public static Bitmap ResizeImage(Image image, int width, int height)
         {
             var destRect = new Rectangle(0, 0, width, height);
@@ -313,10 +313,13 @@ namespace DRC
                     else ws.Column(j).Width = 15;
                     //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
                 }
-
+                toolStripProgressBar1.Visible = true;
                 //Loop through each row and read value from each column. 
                 for (int i = 0; i < dataGridViewExport.Rows.Count - 1; i++)
                 {
+                    toolStripProgressBar1.Value = i * 100 / (dataGridViewExport.Rows.Count - 1);
+
+
                     for (int j = 0; j < dataGridViewExport.Columns.Count; j++)
                     {
                         // Excel index starts from 1,1. As first Row would have the Column headers, adding a condition check. 
@@ -456,6 +459,7 @@ namespace DRC
 
                                 Console.WriteLine($"Execution Time2: {watch2.ElapsedMilliseconds} ms");
                 */
+                toolStripProgressBar1.Visible = false;
                 pck.SaveAs(new FileInfo(@"" + sfd.FileName));
 
                 MessageBox.Show("Export Successful");

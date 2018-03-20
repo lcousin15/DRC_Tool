@@ -317,9 +317,12 @@ namespace DRC
                     f5.dataGridViewExport.Columns[2 * i + 2].Name = "EC_50 " + elem;
                     i++;
                 }
-
+                toolStripProgressBar1.Visible = true;
                 for (var idx = 0; idx < list_cpd.Count; idx++)
                 {
+                    toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count-1);
+                    //toolStripStatusLabel1.Text = toolStripProgressBar1.Value.ToString();
+                    //toolStripStatusLabel1.Visible=true;
                     string cpd_id = list_cpd[idx].ToString();
 
                     if (cpd_id == "DMSO")
@@ -378,7 +381,7 @@ namespace DRC
                     }
 
                 }
-
+                toolStripProgressBar1.Visible = false;
                 f5.Show();
                 MessageBox.Show("Images generated.");
             }
@@ -463,6 +466,8 @@ namespace DRC
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
+
+                f2.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count);
                 string cpd_id = list_cpd[idx].ToString();
 
                 if (cpd_id.Contains("DMSO"))
@@ -594,6 +599,7 @@ namespace DRC
                 }
 
             }
+            f2.toolStripProgressBar1.Visible = false;
 
         }
 
@@ -729,7 +735,7 @@ namespace DRC
 
                     for (int j = 0; j < columnCount; j++)
                     {
-                        System.Diagnostics.Debug.WriteLine("Index, Write = " + i.ToString() + "-->" + dataGridView4.Rows[i - 1].Cells[j].Value.ToString() + ",");
+                        //System.Diagnostics.Debug.WriteLine("Index, Write = " + i.ToString() + "-->" + dataGridView4.Rows[i - 1].Cells[j].Value.ToString() + ",");
                         if (j < columnCount - 1) output[i] += dataGridView4.Rows[i - 1].Cells[j].Value.ToString() + ",";
                         if (j == columnCount - 1) output[i] += dataGridView4.Rows[i - 1].Cells[j].Value.ToString();
                     }
