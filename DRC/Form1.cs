@@ -1876,10 +1876,10 @@ namespace DRC
         {
             draw_DRC();
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".png";
+            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
 
             System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
-            chart.SaveImage(output_image, ChartImageFormat.Png);
+            chart.SaveImage(output_image, ChartImageFormat.Bmp);
 
             return output_image;
         }
@@ -2646,10 +2646,10 @@ namespace DRC
         {
             draw_DRC();
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".png";
+            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
 
-            System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
-            chart.SaveImage(output_image, ChartImageFormat.Png);
+            //System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
+            chart.SaveImage(output_image, ChartImageFormat.Bmp);
 
             return output_image;
         }

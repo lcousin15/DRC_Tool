@@ -105,3 +105,5 @@ E:\DRC_Tool_Git\DRC\obj\Debug\DRC.Properties.Resources.resources
 E:\DRC_Tool_Git\DRC\obj\Debug\DRC.csproj.GenerateResource.Cache
 E:\DRC_Tool_Git\DRC\obj\Debug\DRC.exe
 E:\DRC_Tool_Git\DRC\obj\Debug\DRC.pdb
+E:\DRC_Tool_Git\DRC\bin\Debug\EPPlus.dll
+E:\DRC_Tool_Git\DRC\bin\Debug\EPPlus.xml
