@@ -210,7 +210,9 @@ namespace DRC
             tableLayoutPanel1.Controls.Clear();
 
             //int test_modified = 0;
-           
+
+            if (descriptors_chart.Count == 0) return;
+
             List<Chart_DRC> list_chart = descriptors_chart[current_cpd_id];
             foreach (Chart_DRC current_chart in list_chart)
             {
@@ -2391,13 +2393,14 @@ namespace DRC
                 double point_x = dp.XValue;
                 double point_y = dp.YValues[0];
 
-                if (drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y))
+                if (drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y))
                 {
                     dp.Color = Color.LightGray;
                     //continue;
                 }
                 // Remove Points enabled
-                if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y)))
+                if (!(drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y)))
+
                 {
                     dp.Color = chart_color;
                 }
@@ -2545,7 +2548,7 @@ namespace DRC
                     int x = (int)ax.ValueToPixelPosition(dp.XValue);
                     int y = (int)ay.ValueToPixelPosition(dp.YValues[0]);
 
-                    double point_x = dp.XValue;
+                    double point_x = Math.Log10(dp.XValue);
                     double point_y = dp.YValues[0];
 
                     if (rect.Contains(new Point(x, y)))
