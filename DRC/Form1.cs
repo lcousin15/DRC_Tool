@@ -210,7 +210,9 @@ namespace DRC
             tableLayoutPanel1.Controls.Clear();
 
             //int test_modified = 0;
-           
+
+            if (descriptors_chart.Count == 0) return;
+
             List<Chart_DRC> list_chart = descriptors_chart[current_cpd_id];
             foreach (Chart_DRC current_chart in list_chart)
             {
@@ -317,9 +319,12 @@ namespace DRC
                     f5.dataGridViewExport.Columns[2 * i + 2].Name = "EC_50 " + elem;
                     i++;
                 }
-
+                toolStripProgressBar1.Visible = true;
                 for (var idx = 0; idx < list_cpd.Count; idx++)
                 {
+                    toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count-1);
+                    //toolStripStatusLabel1.Text = toolStripProgressBar1.Value.ToString();
+                    //toolStripStatusLabel1.Visible=true;
                     string cpd_id = list_cpd[idx].ToString();
 
                     if (cpd_id == "DMSO")
@@ -378,7 +383,7 @@ namespace DRC
                     }
 
                 }
-
+                toolStripProgressBar1.Visible = false;
                 f5.Show();
                 MessageBox.Show("Images generated.");
             }
@@ -463,6 +468,8 @@ namespace DRC
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
+
+                f2.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count);
                 string cpd_id = list_cpd[idx].ToString();
 
                 if (cpd_id.Contains("DMSO"))
@@ -594,6 +601,7 @@ namespace DRC
                 }
 
             }
+            f2.toolStripProgressBar1.Visible = false;
 
         }
 
@@ -729,7 +737,7 @@ namespace DRC
 
                     for (int j = 0; j < columnCount; j++)
                     {
-                        System.Diagnostics.Debug.WriteLine("Index, Write = " + i.ToString() + "-->" + dataGridView4.Rows[i - 1].Cells[j].Value.ToString() + ",");
+                        //System.Diagnostics.Debug.WriteLine("Index, Write = " + i.ToString() + "-->" + dataGridView4.Rows[i - 1].Cells[j].Value.ToString() + ",");
                         if (j < columnCount - 1) output[i] += dataGridView4.Rows[i - 1].Cells[j].Value.ToString() + ",";
                         if (j == columnCount - 1) output[i] += dataGridView4.Rows[i - 1].Cells[j].Value.ToString();
                     }
@@ -2385,13 +2393,14 @@ namespace DRC
                 double point_x = dp.XValue;
                 double point_y = dp.YValues[0];
 
-                if (drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y))
+                if (drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y))
                 {
                     dp.Color = Color.LightGray;
                     //continue;
                 }
                 // Remove Points enabled
-                if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y)))
+                if (!(drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y)))
+
                 {
                     dp.Color = chart_color;
                 }
@@ -2539,7 +2548,7 @@ namespace DRC
                     int x = (int)ax.ValueToPixelPosition(dp.XValue);
                     int y = (int)ay.ValueToPixelPosition(dp.YValues[0]);
 
-                    double point_x = dp.XValue;
+                    double point_x = Math.Log10(dp.XValue);
                     double point_y = dp.YValues[0];
 
                     if (rect.Contains(new Point(x, y)))

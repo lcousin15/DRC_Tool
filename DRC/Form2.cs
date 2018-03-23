@@ -65,7 +65,7 @@ namespace DRC
 
                         for (int j = 0; j < columnCount-1; j++)
                         {
-                            System.Diagnostics.Debug.WriteLine("Index, Write = " + i.ToString() + "-->" + dataGridView2.Rows[i - 1].Cells[j].Value.ToString() + ",");
+                            //System.Diagnostics.Debug.WriteLine("Index, Write = " + i.ToString() + "-->" + dataGridView2.Rows[i - 1].Cells[j].Value.ToString() + ",");
                             if (j < columnCount - 2) output[i] += dataGridView2.Rows[i - 1].Cells[j].Value.ToString() + ",";
                             else if (j == columnCount - 2) output[i] += dataGridView2.Rows[i - 1].Cells[j].Value.ToString();
                         }
