@@ -42,6 +42,7 @@
             this.exportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clusteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pCAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSNEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,6 +64,8 @@
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
+            this.button4 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -148,7 +151,8 @@
             this.drawDRCToolStripMenuItem,
             this.exportDataToolStripMenuItem,
             this.exportToolStripMenuItem,
-            this.rawDataToolStripMenuItem});
+            this.rawDataToolStripMenuItem,
+            this.showImagesToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -200,6 +204,13 @@
             this.rawDataToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.rawDataToolStripMenuItem.Text = "Show Raw Data";
             this.rawDataToolStripMenuItem.Click += new System.EventHandler(this.rawDataToolStripMenuItem_Click);
+            // 
+            // showImagesToolStripMenuItem
+            // 
+            this.showImagesToolStripMenuItem.Name = "showImagesToolStripMenuItem";
+            this.showImagesToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.showImagesToolStripMenuItem.Text = "Check Images";
+            this.showImagesToolStripMenuItem.Click += new System.EventHandler(this.checkImagesToolStripMenuItem_Click);
             // 
             // clusteringToolStripMenuItem
             // 
@@ -423,6 +434,16 @@
             this.label3.TabIndex = 24;
             this.label3.Text = "Max Top";
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(1052, 557);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(120, 35);
+            this.button4.TabIndex = 25;
+            this.button4.Text = "Check Images";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -431,6 +452,7 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1184, 961);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.numericUpDown3);
             this.Controls.Add(this.statusStrip1);
@@ -500,6 +522,9 @@
         public System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.Label label3;
         public System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog2;
+        private System.Windows.Forms.ToolStripMenuItem showImagesToolStripMenuItem;
+        private System.Windows.Forms.Button button4;
     }
 }
 
