@@ -111,3 +111,4 @@ D:\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.GenerateResource.Cache
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.CoreCompileInputs.cache
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.exe
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.pdb
+E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Form11.resources

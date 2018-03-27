@@ -42,6 +42,7 @@
             this.exportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clusteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pCAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSNEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,6 +62,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.button4 = new System.Windows.Forms.Button();
+            this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -133,7 +136,7 @@
             this.curvesSuperpositionToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1184, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1223, 24);
             this.menuStrip1.TabIndex = 14;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -145,7 +148,8 @@
             this.drawDRCToolStripMenuItem,
             this.exportDataToolStripMenuItem,
             this.exportToolStripMenuItem,
-            this.rawDataToolStripMenuItem});
+            this.rawDataToolStripMenuItem,
+            this.checkImagesToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -197,6 +201,14 @@
             this.rawDataToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.rawDataToolStripMenuItem.Text = "Show Raw Data";
             this.rawDataToolStripMenuItem.Click += new System.EventHandler(this.rawDataToolStripMenuItem_Click);
+            // 
+            // checkImagesToolStripMenuItem
+            // 
+            this.checkImagesToolStripMenuItem.Name = "checkImagesToolStripMenuItem";
+            this.checkImagesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.checkImagesToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.checkImagesToolStripMenuItem.Text = "Check Images";
+            this.checkImagesToolStripMenuItem.Click += new System.EventHandler(this.checkImagesToolStripMenuItem_Click);
             // 
             // clusteringToolStripMenuItem
             // 
@@ -263,7 +275,7 @@
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(1052, 3);
+            this.comboBox1.Location = new System.Drawing.Point(1091, 3);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(120, 21);
             this.comboBox1.TabIndex = 13;
@@ -276,9 +288,9 @@
             this.checkedListBox1.CheckOnClick = true;
             this.checkedListBox1.FormattingEnabled = true;
             this.checkedListBox1.HorizontalScrollbar = true;
-            this.checkedListBox1.Location = new System.Drawing.Point(1052, 49);
+            this.checkedListBox1.Location = new System.Drawing.Point(1031, 49);
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(120, 240);
+            this.checkedListBox1.Size = new System.Drawing.Size(180, 240);
             this.checkedListBox1.TabIndex = 14;
             // 
             // numericUpDown1
@@ -290,7 +302,7 @@
             0,
             0,
             65536});
-            this.numericUpDown1.Location = new System.Drawing.Point(1052, 365);
+            this.numericUpDown1.Location = new System.Drawing.Point(1071, 364);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             1,
             0,
@@ -309,7 +321,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1073, 346);
+            this.label1.Location = new System.Drawing.Point(1101, 346);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 13);
             this.label1.TabIndex = 16;
@@ -318,7 +330,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(1052, 390);
+            this.button1.Location = new System.Drawing.Point(1071, 390);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 23);
             this.button1.TabIndex = 17;
@@ -329,7 +341,7 @@
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(1052, 470);
+            this.button2.Location = new System.Drawing.Point(1071, 470);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 23);
             this.button2.TabIndex = 20;
@@ -341,7 +353,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1064, 425);
+            this.label2.Location = new System.Drawing.Point(1088, 428);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(88, 13);
             this.label2.TabIndex = 19;
@@ -356,7 +368,7 @@
             0,
             0,
             65536});
-            this.numericUpDown2.Location = new System.Drawing.Point(1052, 444);
+            this.numericUpDown2.Location = new System.Drawing.Point(1071, 444);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             1,
             0,
@@ -374,7 +386,7 @@
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(1052, 302);
+            this.button3.Location = new System.Drawing.Point(1071, 309);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(120, 34);
             this.button3.TabIndex = 21;
@@ -388,7 +400,7 @@
             this.toolStripProgressBar1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 939);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1184, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1223, 22);
             this.statusStrip1.TabIndex = 22;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -398,6 +410,16 @@
             this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
             this.toolStripProgressBar1.Visible = false;
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(1071, 510);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(120, 35);
+            this.button4.TabIndex = 23;
+            this.button4.Text = "Check Images";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -405,7 +427,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1184, 961);
+            this.ClientSize = new System.Drawing.Size(1223, 961);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -470,6 +493,9 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.StatusStrip statusStrip1;
         public System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ToolStripMenuItem checkImagesToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog2;
     }
 }
 

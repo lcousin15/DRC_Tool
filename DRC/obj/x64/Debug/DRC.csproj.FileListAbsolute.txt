@@ -73,3 +73,5 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csproj.GenerateResource.Cache
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csproj.CoreCompileInputs.cache
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.exe
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.pdb
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csprojResolveAssemblyReference.cache
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Form11.resources

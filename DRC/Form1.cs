@@ -35,11 +35,14 @@ namespace DRC
         public Form2 f2;
         public Form6 f6;
         public Form10 f10;
+        public Form11 f11;
+
         public void SetForm()
         {
             f2 = new Form2(this);
             f6 = new Form6(this);
             f10 = new DRC.Form10(this);
+            f11 = new DRC.Form11(this);
         }
 
         public Form3 f3 = new Form3();
@@ -204,7 +207,7 @@ namespace DRC
             string CPD = comboBox1.SelectedItem.ToString();
             current_cpd_id = CPD;
 
-            if (CPD == "DMSO")
+            if (CPD == "DMSO" || CPD == "Untreated")
                 return;
 
             tableLayoutPanel1.Controls.Clear();
@@ -245,7 +248,7 @@ namespace DRC
             string CPD = f2.dataGridView2.Rows[e.RowIndex].Cells[0].Value.ToString();
             comboBox1.Text = CPD;
 
-            if (CPD == "DMSO")
+            if (CPD == "DMSO" || CPD == "Untreated")
                 return;
 
             tableLayoutPanel1.Controls.Clear();
@@ -322,12 +325,12 @@ namespace DRC
                 toolStripProgressBar1.Visible = true;
                 for (var idx = 0; idx < list_cpd.Count; idx++)
                 {
-                    toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count-1);
+                    toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
                     //toolStripStatusLabel1.Text = toolStripProgressBar1.Value.ToString();
                     //toolStripStatusLabel1.Visible=true;
                     string cpd_id = list_cpd[idx].ToString();
 
-                    if (cpd_id == "DMSO")
+                    if (cpd_id == "DMSO" || cpd_id == "Untreated")
                         continue;
 
                     tableLayoutPanel1.Controls.Clear();
@@ -472,7 +475,7 @@ namespace DRC
                 f2.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count);
                 string cpd_id = list_cpd[idx].ToString();
 
-                if (cpd_id.Contains("DMSO"))
+                if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
                     continue;
 
                 // Add chart
@@ -659,7 +662,7 @@ namespace DRC
                 {
                     string cpd_id = list_cpd[idx].ToString();
 
-                    if (cpd_id == "DMSO")
+                    if (cpd_id == "DMSO" || cpd_id == "Untreated")
                         continue;
 
                     List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
@@ -704,8 +707,8 @@ namespace DRC
 
                             DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
                             if (!not_fitted || !inactive) newCell.Value = Convert.ToString(elem);
-                            if(not_fitted) newCell.Value = "Not Fitted";
-                            if(inactive) newCell.Value = "Inactive";
+                            if (not_fitted) newCell.Value = "Not Fitted";
+                            if (inactive) newCell.Value = "Inactive";
 
                             chart_row_data[k].Cells.Add(newCell);
 
@@ -786,7 +789,7 @@ namespace DRC
         {
             string CPD = f10.dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
 
-            if (CPD == "DMSO")
+            if (CPD == "DMSO" || CPD == "Untreated")
                 return;
 
             tableLayoutPanel1.Controls.Clear();
@@ -1153,7 +1156,7 @@ namespace DRC
             {
                 string cpd_id = list_cpd[idx].ToString();
 
-                if (cpd_id.Contains("DMSO"))
+                if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
                     continue;
 
                 // Add chart
@@ -1413,7 +1416,7 @@ namespace DRC
             {
                 string cpd_id = list_cpd[idx].ToString();
 
-                if (cpd_id == "DMSO")
+                if (cpd_id == "DMSO" || cpd_id == "Untreated")
                     continue;
 
                 List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
@@ -1436,7 +1439,7 @@ namespace DRC
             {
                 string cpd_id = list_cpd[idx].ToString();
 
-                if (cpd_id == "DMSO")
+                if (cpd_id == "DMSO" || cpd_id == "Untreated")
                     continue;
 
                 List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
@@ -1459,6 +1462,157 @@ namespace DRC
         {
 
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            check_images();
+        }
+
+        private void checkImagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            check_images();
+        }
+
+        static List<string> DirSearch(string sDir)
+        {
+            List<string> Files = new List<string>();
+
+            //Console.WriteLine(sDir);
+
+            foreach (string file in Directory.EnumerateFiles(sDir, "*.tif", SearchOption.AllDirectories))
+            {
+                //Console.WriteLine(file);
+                Files.Add(file);
+            }
+
+            return Files;
+        }
+
+        private void check_images()
+        {
+
+            string savePath = "";
+
+            if (folderBrowserDialog2.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                savePath = folderBrowserDialog2.SelectedPath;
+            }
+
+            Console.WriteLine(savePath);
+
+            List<string> list_img_path = DirSearch(savePath);
+
+            Dictionary<string, Dictionary<string, List<string>>> dict_plate_well_files = new Dictionary<string, Dictionary<string, List<string>>>();
+            // plate, well path
+
+            foreach (string file in list_img_path)
+            {
+                string[] splitted_file = file.Split('_');
+                string well = splitted_file[splitted_file.Count() - 2];
+
+                string[] splitted_file_plate = file.Split('\\');
+                string plate = splitted_file_plate[splitted_file_plate.Count() - 2];
+
+                //Console.WriteLine(plate);
+                //Console.WriteLine(well);
+
+                if (dict_plate_well_files.ContainsKey(plate))
+                {
+                    Dictionary<string, List<string>> dict_well_files = dict_plate_well_files[plate];
+
+                    if (dict_well_files.ContainsKey(well))
+                    {
+                        dict_well_files[well].Add(file);
+                    }
+                    else
+                    {
+                        List<string> list_files = new List<string>();
+                        list_files.Add(file);
+                        dict_well_files.Add(well, list_files);
+                    }
+                }
+                else
+                {
+                    Dictionary<string, List<string>> dict_well_files = new Dictionary<string, List<string>>();
+
+                    List<string> my_list = new List<string>();
+                    my_list.Add(file);
+
+                    dict_well_files.Add(well, my_list);
+
+                    dict_plate_well_files[plate] = dict_well_files;
+                }
+            }
+
+            //// Print
+            //foreach (var plate in dict_plate_well_files)
+            //{
+            //    Console.WriteLine("Plate = " + plate.Key);
+
+            //    Dictionary<string, List<string>> dict_well_files = plate.Value;
+            //    foreach (var well in dict_well_files)
+            //    {
+            //        Console.WriteLine("---- Well = " + well.Key);
+            //        List<string> files = well.Value;
+            //        foreach (var file in files)
+            //        {
+            //            Console.WriteLine("--------- File = " + file);
+            //        }
+            //    }
+            //}
+
+            f11.Visible = true;
+
+            f11.dataGridView1.ColumnCount = 1;
+            f11.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+            f11.dataGridView1.Columns[0].Name = "CPD_ID";
+
+            if (list_cpd != null && list_cpd.Count > 0)
+            {
+                for (var idx = 0; idx < list_cpd.Count; idx++)
+                {
+                    int index = f11.dataGridView1.Rows.Add();
+
+                    f11.dataGridView1.Rows[index].Cells[0].Value = list_cpd[idx];
+                    f11.dataGridView1.Rows[idx].Cells[0].Style.BackColor = Color.LightGray;
+                }
+            }
+            else return;
+        }
+
+        public void load_cpd_images(object sender, DataGridViewCellEventArgs e)
+        {
+            string cpd_id = f11.dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
+
+            List<string> plates = new List<string>();
+            List<string> wells = new List<string>();
+
+            foreach (DataGridViewRow row in f11.dataGridView1.Rows)
+            {
+                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
+                if (current_cpd == cpd_id)
+                {
+                    plates.Add(row.Cells["Plate"].Value.ToString());
+                    wells.Add(row.Cells["Well"].Value.ToString());
+                }
+            }
+
+            List<string> current_plates = plates.Distinct().ToList();
+            List<string> current_wells = wells.Distinct().ToList();
+
+            string my_plate = current_plates[0];
+
+            foreach (string plate in current_plates)
+            {
+                Console.WriteLine(" Plate = " + plate);
+            }
+
+            foreach (string well in current_wells)
+            {
+                Console.WriteLine("---- Well = " + well);
+            }
+        }
+
     }
 
     public class Chart_DRC_Overlap
@@ -2247,6 +2401,21 @@ namespace DRC
             }
             int row_index = k;
 
+            // Redraw value in table
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
+            if (fit_parameters[0] < fit_parameters[1])
+            {
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
+            }
+            else
+            {
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
+            }
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
+
             if (drc_points_x_disable.Count() > 0)
             {
                 data_modified = true;
@@ -2334,7 +2503,7 @@ namespace DRC
             double MinValues = MinA(drc_points_y_enable.ToArray());
             GlobalMin = MinValues;
 
-            double min_max_activity = Math.Abs(GlobalMax-GlobalMin);
+            double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
 
             if (min_max_activity < thr)
             {
