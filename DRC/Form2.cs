@@ -92,5 +92,12 @@ namespace DRC
                 e.Cancel = false;
             }
         }
+
+       
+
+        private void dataGridView2_Row_enter(object sender, DataGridViewCellEventArgs e)
+        {
+            _form1.dataGridView2_CellDoubleClick(sender, e);
+        }
     }
 }

@@ -2338,6 +2338,10 @@ namespace DRC
             double GlobalMin = double.MaxValue;
             double MinValues = MinA(drc_points_y_enable.ToArray());
             GlobalMin = MinValues;
+            if ((double)_form1.numericUpDown3.Value!=0)
+            {
+                GlobalMax = (double)_form1.numericUpDown3.Value;
+            }
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
             double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
