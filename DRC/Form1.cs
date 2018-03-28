@@ -1644,10 +1644,12 @@ namespace DRC
 
         private void draw_images(string cpd_id)
         {
+            //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
+
             List<string> plates = new List<string>();
             List<string> wells = new List<string>();
             //SortedDictionary<string, string> concentrations = new SortedDictionary<string, string>();
-            List<string> concentrations = new List<string>();
+            List<double> concentrations = new List<double>();
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -1656,13 +1658,13 @@ namespace DRC
                 {
                     plates.Add(row.Cells["Plate"].Value.ToString());
                     wells.Add(row.Cells["Well"].Value.ToString());
-                    concentrations.Add(row.Cells["Concentration"].Value.ToString());
+                    concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
                 }
             }
 
             //plates.Sort();
             wells.Sort();
-            concentrations.Sort();
+            concentrations.Sort((a, b) => b.CompareTo(a));
 
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
@@ -1681,7 +1683,7 @@ namespace DRC
 
             for(int i=0; i< cols; i++)
             {
-                f12.dataGridView1.Columns[i/cols].Name = concentrations[i/cols];
+                f12.dataGridView1.Columns[i].Name = concentrations[i*rows].ToString();
             }
 
             foreach (DataGridViewColumn col in f12.dataGridView1.Columns)
@@ -1768,6 +1770,10 @@ namespace DRC
 
                 Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
+                string color_format = comboBox2.SelectedItem.ToString();
+
+                if (color_format == "Bgr") my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
+
                 f12.dataGridView1.Rows[i %rows].Cells[i / rows].Value = (Image)my_bitmap;
 
                 mat.Dispose();
@@ -1796,6 +1802,10 @@ namespace DRC
 
         }
 
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class Chart_DRC_Overlap
