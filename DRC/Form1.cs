@@ -91,7 +91,7 @@ namespace DRC
         List<List<string>> CPD_ID_List = new List<List<string>>();
         //List<List<int>> Exp_ID_List = new List<List<int>>();
 
-        Dictionary<string, Dictionary<string, List<string>>> dict_plate_well_files = new Dictionary<string, Dictionary<string, List<string>>>();
+        SortedDictionary<string, SortedDictionary<string, List<string>>> dict_plate_well_files = new SortedDictionary<string, SortedDictionary<string, List<string>>>();
         // plate, well path
 
         public double get_descriptors_number()
@@ -1533,7 +1533,7 @@ namespace DRC
                 {
                     if (dict_plate_well_files.ContainsKey(plate))
                     {
-                        Dictionary<string, List<string>> dict_well_files = dict_plate_well_files[plate];
+                        SortedDictionary<string, List<string>> dict_well_files = dict_plate_well_files[plate];
 
                         if (dict_well_files.ContainsKey(well))
                         {
@@ -1548,7 +1548,7 @@ namespace DRC
                     }
                     else
                     {
-                        Dictionary<string, List<string>> dict_well_files = new Dictionary<string, List<string>>();
+                        SortedDictionary<string, List<string>> dict_well_files = new SortedDictionary<string, List<string>>();
 
                         List<string> my_list = new List<string>();
                         my_list.Add(file);
@@ -1610,6 +1610,7 @@ namespace DRC
 
         public void load_cpd_images(object sender, DataGridViewCellEventArgs e)
         {
+            //f11.Visible = false;
 
             f12.dataGridView1.Rows.Clear();
             f12.dataGridView1.Columns.Clear();
@@ -1645,6 +1646,7 @@ namespace DRC
         {
             List<string> plates = new List<string>();
             List<string> wells = new List<string>();
+            //SortedDictionary<string, string> concentrations = new SortedDictionary<string, string>();
             List<string> concentrations = new List<string>();
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
@@ -1657,6 +1659,10 @@ namespace DRC
                     concentrations.Add(row.Cells["Concentration"].Value.ToString());
                 }
             }
+
+            //plates.Sort();
+            wells.Sort();
+            concentrations.Sort();
 
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
@@ -1673,9 +1679,9 @@ namespace DRC
                 f12.dataGridView1.Columns.Insert(i, img);
             }
 
-            for (int i = 0; i < cols; i++)
+            for(int i=0; i< cols; i++)
             {
-                f12.dataGridView1.Columns[i].Name = concentrations[i * rows];
+                f12.dataGridView1.Columns[i/cols].Name = concentrations[i/cols];
             }
 
             foreach (DataGridViewColumn col in f12.dataGridView1.Columns)
@@ -1685,19 +1691,19 @@ namespace DRC
 
             f12.dataGridView1.RowCount = rows;
 
-
             //f12.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
-
-            List<string> list_plates = new List<string>(this.dict_plate_well_files.Keys);
+            //List<string> list_plates = new List<string>(this.dict_plate_well_files.Keys);
 
             int image_width = 0;
             int image_height = 0;
+
+            //List<string> concentration_ordered = new List<string>();
 
             for (int i = 0; i < wells.Count(); i++)
             {
 
                 List<string> files = dict_plate_well_files[plates[i]][wells[i]];
-
+                //concentration_ordered.Add(concentrations[i]);
                 Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
 
                 //if (files.Count == 2) files.Add(files[1]);
@@ -1709,6 +1715,7 @@ namespace DRC
                 //}
                 int size_channel = files.Count();
                 files.Sort();
+
                 foreach (string file in files)
                 {
                     Mat temp = CvInvoke.Imread(file, Emgu.CV.CvEnum.ImreadModes.AnyDepth);
@@ -1761,7 +1768,7 @@ namespace DRC
 
                 Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
-                f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
+                f12.dataGridView1.Rows[i %rows].Cells[i / rows].Value = (Image)my_bitmap;
 
                 mat.Dispose();
 
@@ -2001,7 +2008,7 @@ namespace DRC
             //double max_y_2 = MaxA(drc_points_y_2.ToArray());
             double max_y = Math.Max(max_y_1, max_y_2);
 
-            if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
+            //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
 
             chartArea.Name = descriptor;
 
@@ -2438,7 +2445,7 @@ namespace DRC
 
             double max_y = MaxA(y_response.ToArray());
 
-            if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
+            //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
 
             chartArea.Name = descriptor;
 
