@@ -66,11 +66,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
             this.button4 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -444,6 +447,32 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(1078, 603);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(66, 13);
+            this.label4.TabIndex = 27;
+            this.label4.Text = "Image Scale";
+            // 
+            // numericUpDown4
+            // 
+            this.numericUpDown4.Location = new System.Drawing.Point(1052, 619);
+            this.numericUpDown4.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUpDown4.Name = "numericUpDown4";
+            this.numericUpDown4.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown4.TabIndex = 26;
+            this.numericUpDown4.Value = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -452,6 +481,8 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1184, 961);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.numericUpDown4);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.numericUpDown3);
@@ -482,6 +513,7 @@
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -525,6 +557,8 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog2;
         private System.Windows.Forms.ToolStripMenuItem showImagesToolStripMenuItem;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label4;
+        public System.Windows.Forms.NumericUpDown numericUpDown4;
     }
 }
 
