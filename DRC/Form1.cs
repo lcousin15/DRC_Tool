@@ -106,6 +106,7 @@ namespace DRC
 
         private void read_Data()
         {
+            comboBox2.SelectedIndex = 0;
             //f3.Show();
             f3.Hide();
             f3.dataGridView1.DataSource = csv;
@@ -1669,8 +1670,8 @@ namespace DRC
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
 
-            int rows = current_plates.Count();
-            int cols = current_wells.Count();
+            int rows = current_plates.Count()*(int)numericUpDown5.Value;
+            int cols = (int)(current_wells.Count() / (double)numericUpDown5.Value);
 
             //f12.dataGridView1.Columns.Add("Concentration","Concentration");
 
