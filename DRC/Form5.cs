@@ -313,6 +313,7 @@ namespace DRC
                     else ws.Column(j).Width = 15;
                     //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
                 }
+
                 toolStripProgressBar1.Visible = true;
                 //Loop through each row and read value from each column. 
                 for (int i = 0; i < dataGridViewExport.Rows.Count - 1; i++)

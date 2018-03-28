@@ -16040,33 +16040,59 @@
             </returns>
         </member>
         <member name="T:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine`2">
-            <summary>
-              One-against-one Multi-class Kernel Support Vector Machine Classifier.
-            </summary>
+             <summary>
+               One-against-one Multi-class Kernel Support Vector Machine Classifier.
+             </summary>
+             
+             <remarks>
+             <para>
+               The Support Vector Machine is by nature a binary classifier. One of the ways
+               to extend the original SVM algorithm to multiple classes is to build a one-
+               against-one scheme where multiple SVMs specialize to recognize each of the
+               available classes. By using a competition scheme, the original multi-class
+               classification problem is then reduced to <c>n*(n/2)</c> smaller binary problems.</para>
+             <para>
+               Currently this class supports only Kernel machines as the underlying classifiers.
+               If a Linear Support Vector Machine is needed, specify a Linear kernel in the
+               constructor at the moment of creation. </para>
+               
+             <para>
+               References:
+               <list type="bullet">
+                 <item><description>
+                   <a href="http://courses.media.mit.edu/2006fall/mas622j/Projects/aisen-project/index.html">
+                    http://courses.media.mit.edu/2006fall/mas622j/Projects/aisen-project/index.html </a></description></item>
+                 <item><description>
+                   <a href="http://nlp.stanford.edu/IR-book/html/htmledition/multiclass-svms-1.html">
+                    http://nlp.stanford.edu/IR-book/html/htmledition/multiclass-svms-1.html </a></description></item>
+                 </list></para>
+             </remarks>
+             
+             <example>
+             <para>
+               The following example shows how to learn a linear, multi-class support vector 
+               machine using the <see cref="T:Accord.MachineLearning.VectorMachines.Learning.LinearDualCoordinateDescent"/> algorithm. </para>
+             <code source="Unit Tests\Accord.Tests.MachineLearning\VectorMachines\MulticlassSupportVectorLearningTest.cs" region="doc_learn_ldcd" />
+             
+             <para>
+               The following example shows how to learn a non-linear, multi-class support 
+               vector machine using the <see cref="T:Accord.Statistics.Kernels.Gaussian"/> kernel and the 
+               <see cref="T:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization`1"/> algorithm. </para>
+             <code source="Unit Tests\Accord.Tests.MachineLearning\VectorMachines\MulticlassSupportVectorLearningTest.cs" region="doc_learn_gaussian" />
+               
+             <para>
+               Support vector machines can have their weights calibrated in order to produce 
+               probability estimates (instead of simple class separation distances). The
+               following example shows how to use <see cref="T:Accord.MachineLearning.VectorMachines.Learning.ProbabilisticOutputCalibration"/>
+               within <see cref="T:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning`1"/> to generate a probabilistic
+               SVM:</para>
+             <code source="Unit Tests\Accord.Tests.MachineLearning\VectorMachines\MulticlassSupportVectorLearningTest.cs" region="doc_learn_calibration" />
+             </example>
             
-            <remarks>
-            <para>
-              The Support Vector Machine is by nature a binary classifier. One of the ways
-              to extend the original SVM algorithm to multiple classes is to build a one-
-              against-one scheme where multiple SVMs specialize to recognize each of the
-              available classes. By using a competition scheme, the original multi-class
-              classification problem is then reduced to <c>n*(n/2)</c> smaller binary problems.</para>
-            <para>
-              Currently this class supports only Kernel machines as the underlying classifiers.
-              If a Linear Support Vector Machine is needed, specify a Linear kernel in the
-              constructor at the moment of creation. </para>
-              
-            <para>
-              References:
-              <list type="bullet">
-                <item><description>
-                  <a href="http://courses.media.mit.edu/2006fall/mas622j/Projects/aisen-project/index.html">
-                   http://courses.media.mit.edu/2006fall/mas622j/Projects/aisen-project/index.html </a></description></item>
-                <item><description>
-                  <a href="http://nlp.stanford.edu/IR-book/html/htmledition/multiclass-svms-1.html">
-                   http://nlp.stanford.edu/IR-book/html/htmledition/multiclass-svms-1.html </a></description></item>
-                </list></para>
-            </remarks>
+             <seealso cref="T:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning`2"/>
+             
+             <seealso cref="T:Accord.MachineLearning.VectorMachines.SupportVectorMachine"/>
+             <seealso cref="T:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization`2"/>
             
         </member>
         <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine`2.#ctor(System.Int32,`0,System.Int32)">

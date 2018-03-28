@@ -20,6 +20,10 @@ using Accord.Statistics.Analysis;
 using Accord.Statistics.Models.Regression.Linear;
 using System.Reflection;
 using System.Threading;
+using Emgu.CV;
+using Emgu.Util;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace DRC
 {
@@ -49,6 +53,8 @@ namespace DRC
         public Form4 f4 = new Form4();
         public Form5 f5 = new Form5();
         public Form7 f7 = new Form7();
+
+        public Form12 f12 = new Form12();
 
         private string current_cpd_id;
         private Dictionary<string, int> cpd_row_index = new Dictionary<string, int>();
@@ -84,6 +90,9 @@ namespace DRC
 
         List<List<string>> CPD_ID_List = new List<List<string>>();
         //List<List<int>> Exp_ID_List = new List<List<int>>();
+
+        Dictionary<string, Dictionary<string, List<string>>> dict_plate_well_files = new Dictionary<string, Dictionary<string, List<string>>>();
+        // plate, well path
 
         public double get_descriptors_number()
         {
@@ -245,6 +254,8 @@ namespace DRC
 
         public void dataGridView2_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex >= f2.dataGridView2.Rows.Count-1) return;
+             
             string CPD = f2.dataGridView2.Rows[e.RowIndex].Cells[0].Value.ToString();
             comboBox1.Text = CPD;
 
@@ -1488,8 +1499,10 @@ namespace DRC
             return Files;
         }
 
-        private void check_images()
+        public void check_images()
         {
+
+            dict_plate_well_files.Clear();
 
             string savePath = "";
 
@@ -1502,9 +1515,6 @@ namespace DRC
 
             List<string> list_img_path = DirSearch(savePath);
 
-            Dictionary<string, Dictionary<string, List<string>>> dict_plate_well_files = new Dictionary<string, Dictionary<string, List<string>>>();
-            // plate, well path
-
             foreach (string file in list_img_path)
             {
                 string[] splitted_file = file.Split('_');
@@ -1515,32 +1525,34 @@ namespace DRC
 
                 //Console.WriteLine(plate);
                 //Console.WriteLine(well);
-
-                if (dict_plate_well_files.ContainsKey(plate))
+                if (file.Contains("F001"))
                 {
-                    Dictionary<string, List<string>> dict_well_files = dict_plate_well_files[plate];
-
-                    if (dict_well_files.ContainsKey(well))
+                    if (dict_plate_well_files.ContainsKey(plate))
                     {
-                        dict_well_files[well].Add(file);
+                        Dictionary<string, List<string>> dict_well_files = dict_plate_well_files[plate];
+
+                        if (dict_well_files.ContainsKey(well))
+                        {
+                            dict_well_files[well].Add(file);
+                        }
+                        else
+                        {
+                            List<string> list_files = new List<string>();
+                            list_files.Add(file);
+                            dict_well_files.Add(well, list_files);
+                        }
                     }
                     else
                     {
-                        List<string> list_files = new List<string>();
-                        list_files.Add(file);
-                        dict_well_files.Add(well, list_files);
+                        Dictionary<string, List<string>> dict_well_files = new Dictionary<string, List<string>>();
+
+                        List<string> my_list = new List<string>();
+                        my_list.Add(file);
+
+                        dict_well_files.Add(well, my_list);
+
+                        dict_plate_well_files[plate] = dict_well_files;
                     }
-                }
-                else
-                {
-                    Dictionary<string, List<string>> dict_well_files = new Dictionary<string, List<string>>();
-
-                    List<string> my_list = new List<string>();
-                    my_list.Add(file);
-
-                    dict_well_files.Add(well, my_list);
-
-                    dict_plate_well_files[plate] = dict_well_files;
                 }
             }
 
@@ -1580,37 +1592,323 @@ namespace DRC
             else return;
         }
 
+        //public static Bitmap MatToBitmap(Mat image)
+        //{
+        //    return OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image);
+        //} 
+
+        public byte[] imageToByteArray(System.Drawing.Image imageIn)
+        {
+            MemoryStream ms = new MemoryStream();
+            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+            return ms.ToArray();
+        }
+
         public void load_cpd_images(object sender, DataGridViewCellEventArgs e)
         {
+
+            f12.dataGridView1.Rows.Clear();
+            f12.dataGridView1.Columns.Clear();
+            f12.dataGridView1.Refresh();
+
+            f12.Visible = true;
+
             string cpd_id = f11.dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
+
+            f12.Text = cpd_id;
 
             List<string> plates = new List<string>();
             List<string> wells = new List<string>();
+            List<string> concentrations = new List<string>();
 
-            foreach (DataGridViewRow row in f11.dataGridView1.Rows)
+            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
                 string current_cpd = row.Cells["CPD_ID"].Value.ToString();
                 if (current_cpd == cpd_id)
                 {
                     plates.Add(row.Cells["Plate"].Value.ToString());
                     wells.Add(row.Cells["Well"].Value.ToString());
+                    concentrations.Add(row.Cells["Concentration"].Value.ToString());
                 }
             }
 
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
 
-            string my_plate = current_plates[0];
+            int rows = current_plates.Count();
+            int cols = current_wells.Count();
 
-            foreach (string plate in current_plates)
+            //f12.dataGridView1.Columns.Add("Concentration","Concentration");
+
+            for (int i = 0; i < cols; i++)
             {
-                Console.WriteLine(" Plate = " + plate);
+
+                DataGridViewImageColumn img = new DataGridViewImageColumn();
+                f12.dataGridView1.Columns.Insert(i, img);
             }
 
-            foreach (string well in current_wells)
+            for (int i = 0; i < cols; i++)
             {
-                Console.WriteLine("---- Well = " + well);
+                f12.dataGridView1.Columns[i].Name = concentrations[i*rows];
+                f12.dataGridView1.Columns[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
+
+            f12.dataGridView1.RowCount = rows;
+
+
+            //f12.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+
+            List<string> list_plates = new List<string>(this.dict_plate_well_files.Keys);
+
+            int image_width = 0;
+            int image_height = 0;
+
+            for (int i = 0; i < wells.Count(); i++)
+            {
+
+                List<string> files = dict_plate_well_files[plates[i]][wells[i]];
+
+                Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
+
+                //if (files.Count == 2) files.Add(files[1]);
+
+                //if (files.Count == 1)
+                //{
+                //    files.Add(files[0]);
+                //    files.Add(files[0]);
+                //}
+                int size_channel = files.Count();
+
+                foreach (string file in files)
+                {
+                    Mat temp = CvInvoke.Imread(file, Emgu.CV.CvEnum.ImreadModes.AnyDepth);
+
+                    Mat mat_8u = new Mat();
+                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U);
+
+                    temp.Dispose();
+
+                    Mat dst_thr = new Mat();
+                    CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu);
+
+                    mat_8u.Dispose();
+
+                    Mat dst_resize = new Mat();
+                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), 0.125, 0.125, Emgu.CV.CvEnum.Inter.Linear);
+
+                    dst_thr.Dispose();
+
+                    image_width = dst_resize.Cols;
+                    image_height = dst_resize.Rows;
+
+                    channels.Push(dst_resize);
+                }
+
+                if (size_channel == 1)
+                {
+                    Matrix<byte> My_Matrix_Image = new Matrix<byte>(channels[0].Rows, channels[0].Cols);
+                    My_Matrix_Image.SetZero();
+                    Mat my_new_mat = My_Matrix_Image.Mat;
+
+                    channels.Push(my_new_mat);
+                    channels.Push(my_new_mat.Clone());
+                }
+
+                if (size_channel == 2)
+                {
+                    Matrix<byte> My_Matrix_Image = new Matrix<byte>(channels[0].Rows, channels[0].Cols);
+                    My_Matrix_Image.SetZero();
+                    Mat my_new_mat = My_Matrix_Image.Mat;
+
+                    channels.Push(my_new_mat);
+                }
+
+                Mat mat = new Mat();
+                CvInvoke.Merge(channels, mat);
+
+                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
+
+                f12.dataGridView1.Rows[i % rows].Cells[i/rows].Value = (Image)my_bitmap;
+
+                mat.Dispose();
+
+                //Console.WriteLine("i = " + i + " cols/rows = " + cols.ToString() + "  " + rows.ToString());
+            }
+
+            Graphics g = this.CreateGraphics();
+
+            int height = (int)(image_height / g.DpiY * 72.0f); //  g.DpiY
+            int width = (int)(image_width / g.DpiX * 72.0f); // image_width; g.DpiX
+
+            for (int i = 0; i < f12.dataGridView1.Rows.Count; i++)
+            {
+                //if (i == 0) f12.dataGridView1.Rows[i].Height = 25;
+                /*else*/ f12.dataGridView1.Rows[i].Height = height+50;
+            }
+
+            for (int j = 0; j < f12.dataGridView1.Columns.Count; j++)
+            {
+                //if (j == 0) f12.dataGridView1.Columns[j].Width = 50;
+                /*else*/ f12.dataGridView1.Columns[j].Width = width+50;
+            }
+
+        }
+
+
+        public void load_cpd_images(string cpd_id)
+        {
+            f11.Visible = false;
+
+            f12 = new Form12();
+
+            f12.Text = cpd_id;
+
+            f12.dataGridView1.Rows.Clear();
+            f12.dataGridView1.Columns.Clear();
+            f12.dataGridView1.Refresh();
+
+            f12.Visible = true;
+
+            List<string> plates = new List<string>();
+            List<string> wells = new List<string>();
+            List<string> concentrations = new List<string>();
+
+            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            {
+                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
+                if (current_cpd == cpd_id)
+                {
+                    plates.Add(row.Cells["Plate"].Value.ToString());
+                    wells.Add(row.Cells["Well"].Value.ToString());
+                    concentrations.Add(row.Cells["Concentration"].Value.ToString());
+                }
+            }
+
+            List<string> current_plates = plates.Distinct().ToList();
+            List<string> current_wells = wells.Distinct().ToList();
+
+            int rows = current_plates.Count();
+            int cols = current_wells.Count();
+
+            //f12.dataGridView1.Columns.Add("Concentration","Concentration");
+
+            for (int i = 0; i < cols; i++)
+            {
+
+                DataGridViewImageColumn img = new DataGridViewImageColumn();
+                f12.dataGridView1.Columns.Insert(i, img);
+            }
+
+            for (int i = 0; i < cols; i++)
+            {
+                f12.dataGridView1.Columns[i].Name = concentrations[i * rows];
+            }
+
+            foreach (DataGridViewColumn col in f12.dataGridView1.Columns)
+            {
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            f12.dataGridView1.RowCount = rows;
+
+            //f12.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+
+            List<string> list_plates = new List<string>(this.dict_plate_well_files.Keys);
+
+            int image_width = 0;
+            int image_height = 0;
+
+            for (int i = 0; i < wells.Count(); i++)
+            {
+
+                List<string> files = dict_plate_well_files[plates[i]][wells[i]];
+
+                Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
+
+                //if (files.Count == 2) files.Add(files[1]);
+
+                //if (files.Count == 1)
+                //{
+                //    files.Add(files[0]);
+                //    files.Add(files[0]);
+                //}
+                int size_channel = files.Count();
+
+                foreach (string file in files)
+                {
+                    Mat temp = CvInvoke.Imread(file, Emgu.CV.CvEnum.ImreadModes.AnyDepth);
+
+                    Mat mat_8u = new Mat();
+                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U);
+
+                    temp.Dispose();
+
+                    Mat dst_thr = new Mat();
+                    CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu);
+
+                    mat_8u.Dispose();
+
+                    Mat dst_resize = new Mat();
+                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), 0.125, 0.125, Emgu.CV.CvEnum.Inter.Linear);
+
+                    dst_thr.Dispose();
+
+                    image_width = dst_resize.Cols;
+                    image_height = dst_resize.Rows;
+
+                    channels.Push(dst_resize);
+                }
+
+                if (size_channel == 1)
+                {
+                    Matrix<byte> My_Matrix_Image = new Matrix<byte>(channels[0].Rows, channels[0].Cols);
+                    My_Matrix_Image.SetZero();
+                    Mat my_new_mat = My_Matrix_Image.Mat;
+
+                    channels.Push(my_new_mat);
+                    channels.Push(my_new_mat.Clone());
+                }
+
+                if (size_channel == 2)
+                {
+                    Matrix<byte> My_Matrix_Image = new Matrix<byte>(channels[0].Rows, channels[0].Cols);
+                    My_Matrix_Image.SetZero();
+                    Mat my_new_mat = My_Matrix_Image.Mat;
+
+                    channels.Push(my_new_mat);
+                }
+
+                Mat mat = new Mat();
+                CvInvoke.Merge(channels, mat);
+
+                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
+
+                f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
+
+                mat.Dispose();
+
+                //Console.WriteLine("i = " + i + " cols/rows = " + cols.ToString() + "  " + rows.ToString());
+            }
+
+            Graphics g = this.CreateGraphics();
+
+            int height = image_height; // (int)(image_height / g.DpiY * 96.0f); //  g.DpiY
+            int width = image_width; //(int)(image_width / g.DpiX * 96.0f); // image_width; g.DpiX
+
+            for (int i = 0; i < f12.dataGridView1.Rows.Count; i++)
+            {
+                //if (i == 0) f12.dataGridView1.Rows[i].Height = 25;
+                /*else*/
+                f12.dataGridView1.Rows[i].Height = height+5;
+            }
+
+            for (int j = 0; j < f12.dataGridView1.Columns.Count; j++)
+            {
+                //if (j == 0) f12.dataGridView1.Columns[j].Width = 50;
+                /*else*/
+                f12.dataGridView1.Columns[j].Width = width+5;
+            }
+
         }
 
     }

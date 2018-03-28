@@ -99,5 +99,15 @@ namespace DRC
         {
             _form1.dataGridView2_CellDoubleClick(sender, e);
         }
+
+        private void dataGridView2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                string cpd_id = dataGridView2.Rows[dataGridView2.CurrentCell.OwningRow.Index].Cells[0].Value.ToString();
+                _form1.check_images();
+                _form1.load_cpd_images(cpd_id);
+            }
+        }
     }
 }
