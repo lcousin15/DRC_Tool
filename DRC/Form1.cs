@@ -1505,7 +1505,11 @@ namespace DRC
             dict_plate_well_files.Clear();
 
             string savePath = "";
-
+            if (folderBrowserDialog2.SelectedPath=="")
+            {
+                folderBrowserDialog2.SelectedPath = "Z:\\BTSData\\MeasurementData\\";
+            }
+            
             if (folderBrowserDialog2.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 savePath = folderBrowserDialog2.SelectedPath;
@@ -1682,7 +1686,7 @@ namespace DRC
                 //    files.Add(files[0]);
                 //}
                 int size_channel = files.Count();
-
+                files.Sort();
                 foreach (string file in files)
                 {
                     Mat temp = CvInvoke.Imread(file, Emgu.CV.CvEnum.ImreadModes.AnyDepth);
@@ -1698,7 +1702,7 @@ namespace DRC
                     mat_8u.Dispose();
 
                     Mat dst_resize = new Mat();
-                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), 0.125, 0.125, Emgu.CV.CvEnum.Inter.Linear);
+                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), 0.125, 0.125, Emgu.CV.CvEnum.Inter.Cubic);
 
                     dst_thr.Dispose();
 
@@ -1836,6 +1840,7 @@ namespace DRC
                 //    files.Add(files[0]);
                 //    files.Add(files[0]);
                 //}
+                files.Sort();
                 int size_channel = files.Count();
 
                 foreach (string file in files)
@@ -1853,7 +1858,7 @@ namespace DRC
                     mat_8u.Dispose();
 
                     Mat dst_resize = new Mat();
-                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), 0.125, 0.125, Emgu.CV.CvEnum.Inter.Linear);
+                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), 0.125, 0.125, Emgu.CV.CvEnum.Inter.Cubic);
 
                     dst_thr.Dispose();
 
@@ -1888,7 +1893,7 @@ namespace DRC
                 Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
                 f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
-
+                
                 mat.Dispose();
 
                 //Console.WriteLine("i = " + i + " cols/rows = " + cols.ToString() + "  " + rows.ToString());

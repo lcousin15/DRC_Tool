@@ -104,9 +104,16 @@ namespace DRC
         {
             if (e.KeyCode == Keys.Enter)
             {
-                string cpd_id = dataGridView2.Rows[dataGridView2.CurrentCell.OwningRow.Index].Cells[0].Value.ToString();
+                //List<string> cpds_id = new List<string>();
                 _form1.check_images();
-                _form1.load_cpd_images(cpd_id);
+                foreach (DataGridViewRow item in dataGridView2.SelectedRows)
+                {
+                    string cpd_id = dataGridView2.Rows[item.Index].Cells[0].Value.ToString();
+                    _form1.load_cpd_images(cpd_id);
+                }
+                //string cpd_id = dataGridView2.Rows[dataGridView2.CurrentCell.OwningRow.Index].Cells[0].Value.ToString();
+               
+               
             }
         }
     }
