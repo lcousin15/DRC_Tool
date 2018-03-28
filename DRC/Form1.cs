@@ -254,8 +254,8 @@ namespace DRC
 
         public void dataGridView2_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= f2.dataGridView2.Rows.Count-1) return;
-             
+            if (e.RowIndex >= f2.dataGridView2.Rows.Count - 1) return;
+
             string CPD = f2.dataGridView2.Rows[e.RowIndex].Cells[0].Value.ToString();
             comboBox1.Text = CPD;
 
@@ -1505,11 +1505,11 @@ namespace DRC
             dict_plate_well_files.Clear();
 
             string savePath = "";
-            if (folderBrowserDialog2.SelectedPath=="")
+            if (folderBrowserDialog2.SelectedPath == "")
             {
                 folderBrowserDialog2.SelectedPath = "Z:\\BTSData\\MeasurementData\\";
             }
-            
+
             if (folderBrowserDialog2.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 savePath = folderBrowserDialog2.SelectedPath;
@@ -1621,147 +1621,8 @@ namespace DRC
 
             f12.Text = cpd_id;
 
-            List<string> plates = new List<string>();
-            List<string> wells = new List<string>();
-            List<string> concentrations = new List<string>();
-
-            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
-            {
-                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
-                if (current_cpd == cpd_id)
-                {
-                    plates.Add(row.Cells["Plate"].Value.ToString());
-                    wells.Add(row.Cells["Well"].Value.ToString());
-                    concentrations.Add(row.Cells["Concentration"].Value.ToString());
-                }
-            }
-
-            List<string> current_plates = plates.Distinct().ToList();
-            List<string> current_wells = wells.Distinct().ToList();
-
-            int rows = current_plates.Count();
-            int cols = current_wells.Count();
-
-            //f12.dataGridView1.Columns.Add("Concentration","Concentration");
-
-            for (int i = 0; i < cols; i++)
-            {
-
-                DataGridViewImageColumn img = new DataGridViewImageColumn();
-                f12.dataGridView1.Columns.Insert(i, img);
-            }
-
-            for (int i = 0; i < cols; i++)
-            {
-                f12.dataGridView1.Columns[i].Name = concentrations[i*rows];
-            }
-
-            foreach (DataGridViewColumn col in f12.dataGridView1.Columns)
-            {
-                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-
-            f12.dataGridView1.RowCount = rows;
-
-
-            //f12.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
-
-            List<string> list_plates = new List<string>(this.dict_plate_well_files.Keys);
-
-            int image_width = 0;
-            int image_height = 0;
-
-            for (int i = 0; i < wells.Count(); i++)
-            {
-
-                List<string> files = dict_plate_well_files[plates[i]][wells[i]];
-
-                Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
-
-                //if (files.Count == 2) files.Add(files[1]);
-
-                //if (files.Count == 1)
-                //{
-                //    files.Add(files[0]);
-                //    files.Add(files[0]);
-                //}
-                int size_channel = files.Count();
-                files.Sort();
-                foreach (string file in files)
-                {
-                    Mat temp = CvInvoke.Imread(file, Emgu.CV.CvEnum.ImreadModes.AnyDepth);
-
-                    Mat mat_8u = new Mat();
-                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U);
-
-                    temp.Dispose();
-
-                    Mat dst_thr = new Mat();
-                    CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu);
-
-                    mat_8u.Dispose();
-
-                    Mat dst_resize = new Mat();
-                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), 0.125, 0.125, Emgu.CV.CvEnum.Inter.Cubic);
-
-                    dst_thr.Dispose();
-
-                    image_width = dst_resize.Cols;
-                    image_height = dst_resize.Rows;
-
-                    channels.Push(dst_resize);
-                }
-
-                if (size_channel == 1)
-                {
-                    Matrix<byte> My_Matrix_Image = new Matrix<byte>(channels[0].Rows, channels[0].Cols);
-                    My_Matrix_Image.SetZero();
-                    Mat my_new_mat = My_Matrix_Image.Mat;
-
-                    channels.Push(my_new_mat);
-                    channels.Push(my_new_mat.Clone());
-                }
-
-                if (size_channel == 2)
-                {
-                    Matrix<byte> My_Matrix_Image = new Matrix<byte>(channels[0].Rows, channels[0].Cols);
-                    My_Matrix_Image.SetZero();
-                    Mat my_new_mat = My_Matrix_Image.Mat;
-
-                    channels.Push(my_new_mat);
-                }
-
-                Mat mat = new Mat();
-                CvInvoke.Merge(channels, mat);
-
-                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
-
-                f12.dataGridView1.Rows[i % rows].Cells[i/rows].Value = (Image)my_bitmap;
-
-                mat.Dispose();
-
-                //Console.WriteLine("i = " + i + " cols/rows = " + cols.ToString() + "  " + rows.ToString());
-            }
-
-            Graphics g = this.CreateGraphics();
-
-            int height = image_height; // (int)(image_height / g.DpiY * 72.0f); //  g.DpiY
-            int width = image_width; // (int)(image_width / g.DpiX * 72.0f); // image_width; g.DpiX
-
-            for (int i = 0; i < f12.dataGridView1.Rows.Count; i++)
-            {
-                //if (i == 0) f12.dataGridView1.Rows[i].Height = 25;
-                /*else*/ f12.dataGridView1.Rows[i].Height = height+50;
-            }
-
-            for (int j = 0; j < f12.dataGridView1.Columns.Count; j++)
-            {
-                //if (j == 0) f12.dataGridView1.Columns[j].Width = 50;
-                /*else*/ f12.dataGridView1.Columns[j].Width = width+50;
-            }
-
+            draw_images(cpd_id);
         }
-
 
         public void load_cpd_images(string cpd_id)
         {
@@ -1777,6 +1638,11 @@ namespace DRC
 
             f12.Visible = true;
 
+            draw_images(cpd_id);
+        }
+
+        private void draw_images(string cpd_id)
+        {
             List<string> plates = new List<string>();
             List<string> wells = new List<string>();
             List<string> concentrations = new List<string>();
@@ -1819,6 +1685,7 @@ namespace DRC
 
             f12.dataGridView1.RowCount = rows;
 
+
             //f12.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
 
             List<string> list_plates = new List<string>(this.dict_plate_well_files.Keys);
@@ -1840,9 +1707,8 @@ namespace DRC
                 //    files.Add(files[0]);
                 //    files.Add(files[0]);
                 //}
-                files.Sort();
                 int size_channel = files.Count();
-
+                files.Sort();
                 foreach (string file in files)
                 {
                     Mat temp = CvInvoke.Imread(file, Emgu.CV.CvEnum.ImreadModes.AnyDepth);
@@ -1858,7 +1724,10 @@ namespace DRC
                     mat_8u.Dispose();
 
                     Mat dst_resize = new Mat();
-                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), 0.125, 0.125, Emgu.CV.CvEnum.Inter.Cubic);
+
+                    double scale_factor = 1.0 / (double)numericUpDown4.Value;
+
+                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), scale_factor, scale_factor, Emgu.CV.CvEnum.Inter.Cubic);
 
                     dst_thr.Dispose();
 
@@ -1893,7 +1762,7 @@ namespace DRC
                 Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
                 f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
-                
+
                 mat.Dispose();
 
                 //Console.WriteLine("i = " + i + " cols/rows = " + cols.ToString() + "  " + rows.ToString());
@@ -1901,21 +1770,21 @@ namespace DRC
 
             Graphics g = this.CreateGraphics();
 
-            int height = image_height; // (int)(image_height / g.DpiY * 96.0f); //  g.DpiY
-            int width = image_width; //(int)(image_width / g.DpiX * 96.0f); // image_width; g.DpiX
+            int height = image_height; // (int)(image_height / g.DpiY * 72.0f); //  g.DpiY
+            int width = image_width; // (int)(image_width / g.DpiX * 72.0f); // image_width; g.DpiX
 
             for (int i = 0; i < f12.dataGridView1.Rows.Count; i++)
             {
                 //if (i == 0) f12.dataGridView1.Rows[i].Height = 25;
                 /*else*/
-                f12.dataGridView1.Rows[i].Height = height+5;
+                f12.dataGridView1.Rows[i].Height = height + 5;
             }
 
             for (int j = 0; j < f12.dataGridView1.Columns.Count; j++)
             {
                 //if (j == 0) f12.dataGridView1.Columns[j].Width = 50;
                 /*else*/
-                f12.dataGridView1.Columns[j].Width = width+5;
+                f12.dataGridView1.Columns[j].Width = width + 5;
             }
 
         }
