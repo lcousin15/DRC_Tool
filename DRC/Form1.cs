@@ -1650,7 +1650,11 @@ namespace DRC
             for (int i = 0; i < cols; i++)
             {
                 f12.dataGridView1.Columns[i].Name = concentrations[i*rows];
-                f12.dataGridView1.Columns[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            foreach (DataGridViewColumn col in f12.dataGridView1.Columns)
+            {
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
 
             f12.dataGridView1.RowCount = rows;
@@ -1737,8 +1741,8 @@ namespace DRC
 
             Graphics g = this.CreateGraphics();
 
-            int height = (int)(image_height / g.DpiY * 72.0f); //  g.DpiY
-            int width = (int)(image_width / g.DpiX * 72.0f); // image_width; g.DpiX
+            int height = image_height; // (int)(image_height / g.DpiY * 72.0f); //  g.DpiY
+            int width = image_width; // (int)(image_width / g.DpiX * 72.0f); // image_width; g.DpiX
 
             for (int i = 0; i < f12.dataGridView1.Rows.Count; i++)
             {
