@@ -1780,7 +1780,7 @@ namespace DRC
             List<string> plates = new List<string>();
             List<string> wells = new List<string>();
             List<string> concentrations = new List<string>();
-
+            f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
                 string current_cpd = row.Cells["CPD_ID"].Value.ToString();
