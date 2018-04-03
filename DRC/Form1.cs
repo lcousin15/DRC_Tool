@@ -1490,6 +1490,7 @@ namespace DRC
             List<string> Files = new List<string>();
 
             //Console.WriteLine(sDir);
+            if (sDir == "") return null;
 
             foreach (string file in Directory.EnumerateFiles(sDir, "*.tif", SearchOption.AllDirectories))
             {
@@ -1519,6 +1520,8 @@ namespace DRC
             Console.WriteLine(savePath);
 
             List<string> list_img_path = DirSearch(savePath);
+
+            if (list_img_path == null) return;
 
             foreach (string file in list_img_path)
             {
@@ -1806,6 +1809,11 @@ namespace DRC
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button3_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) return;
         }
     }
 

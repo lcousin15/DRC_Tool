@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -409,6 +410,7 @@
             this.button3.Text = "Draw DRC";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.KeyDown += new System.Windows.Forms.KeyEventHandler(this.button3_KeyDown);
             // 
             // statusStrip1
             // 
@@ -561,6 +563,7 @@
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximumSize = new System.Drawing.Size(2400, 10000);
             this.MinimumSize = new System.Drawing.Size(1200, 1000);
