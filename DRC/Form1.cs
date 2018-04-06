@@ -107,6 +107,8 @@ namespace DRC
         private void read_Data()
         {
             comboBox2.SelectedIndex = 0;
+            comboBox3.SelectedIndex = 0;
+
             //f3.Show();
             f3.Hide();
             f3.dataGridView1.DataSource = csv;
@@ -1732,7 +1734,18 @@ namespace DRC
                     temp.Dispose();
 
                     Mat dst_thr = new Mat();
-                    CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu);
+
+                    string method_norm = comboBox3.SelectedItem.ToString();
+
+                    if (method_norm == "Otsu")
+                    {
+                        CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu);
+                    }
+
+                    if (method_norm=="Equal")
+                    {
+                        CvInvoke.EqualizeHist(mat_8u, dst_thr);
+                    }
 
                     mat_8u.Dispose();
 
@@ -1769,14 +1782,27 @@ namespace DRC
                     channels.Push(my_new_mat);
                 }
 
-                Mat mat = new Mat();
-                CvInvoke.Merge(channels, mat);
-
-                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
                 string color_format = comboBox2.SelectedItem.ToString();
 
-                if (color_format == "Bgr") my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
+                if (color_format == "Bgr")
+                {
+                    if(size_channel == 3)
+                    {
+                        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                        channels_bgr.Push(channels[2]);
+                        channels_bgr.Push(channels[1]);
+                        channels_bgr.Push(channels[0]);
+
+                        channels = channels_bgr;
+                    }
+                }
+
+                Mat mat = new Mat();
+                CvInvoke.Merge(channels, mat);
+
+
+                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
                 f12.dataGridView1.Rows[i %rows].Cells[i / rows].Value = (Image)my_bitmap;
 
@@ -1803,11 +1829,6 @@ namespace DRC
                 /*else*/
                 f12.dataGridView1.Columns[j].Width = width + 5;
             }
-
-        }
-
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
 
         }
 
