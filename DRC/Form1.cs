@@ -1616,7 +1616,7 @@ namespace DRC
 
         public void load_cpd_images(object sender, DataGridViewCellEventArgs e)
         {
-            f11.Visible = false;
+            //f11.Visible = false;
 
             f12.dataGridView1.Rows.Clear();
             f12.dataGridView1.Columns.Clear();
@@ -1709,15 +1709,8 @@ namespace DRC
 
             for (int i = 0; i < wells.Count(); i++)
             {
-                List<string> files = new List<string>();
 
-                if (dict_plate_well_files.ContainsKey(plates[i])) files = dict_plate_well_files[plates[i]][wells[i]];
-                else
-                {
-                    System.Windows.Forms.MessageBox.Show("Wrong Location or Plate name.");
-                    return;
-                }
-
+                List<string> files = dict_plate_well_files[plates[i]][wells[i]];
                 //concentration_ordered.Add(concentrations[i]);
                 Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
 
