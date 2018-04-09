@@ -529,7 +529,7 @@
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
             "Rgb",
-            "Bgr"});
+            "EMT"});
             this.comboBox2.Location = new System.Drawing.Point(1051, 714);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
