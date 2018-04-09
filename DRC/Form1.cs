@@ -1,29 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Collections;
-using System.Windows.Forms.DataVisualization.Charting;
-using LumenWorks.Framework.IO.Csv;
-using System.IO;
-using Accord.IO;
-//using Accord.MachineLearning.DecisionTrees;
+﻿//using Accord.MachineLearning.DecisionTrees;
 //using Accord.MachineLearning.DecisionTrees.Learning;
 using Accord.MachineLearning.Clustering;
 using Accord.Math;
 using Accord.Statistics.Analysis;
 using Accord.Statistics.Models.Regression.Linear;
-using System.Reflection;
-using System.Threading;
 using Emgu.CV;
-using Emgu.Util;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using LumenWorks.Framework.IO.Csv;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace DRC
 {
@@ -1792,15 +1781,27 @@ namespace DRC
 
                 string color_format = comboBox2.SelectedItem.ToString();
 
-                if (color_format == "Bgr")
+                if (color_format == "EMT")
                 {
-                    if(size_channel == 3)
+                    if (size_channel ==3)
                     {
                         Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
-                        channels_bgr.Push(channels[2]);
-                        channels_bgr.Push(channels[1]);
-                        channels_bgr.Push(channels[0]);
+                        channels_bgr.Push(channels[0].Clone());
+                        channels_bgr.Push(channels[1].Clone());
+                        channels_bgr.Push(channels[2].Clone());
 
+                        channels.Clear();
+                        channels = channels_bgr;
+                    }
+                    if (size_channel == 4)
+                    {
+                        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                        channels_bgr.Push(channels[1].Clone());
+                        channels_bgr.Push(channels[3].Clone());
+                        channels_bgr.Push(channels[0].Clone());
+                        //channels_bgr.Push(channels[3].Clone());
+
+                        channels.Clear();
                         channels = channels_bgr;
                     }
                 }
@@ -1808,8 +1809,7 @@ namespace DRC
                 Mat mat = new Mat();
                 CvInvoke.Merge(channels, mat);
 
-
-                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
+                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
                 f12.dataGridView1.Rows[i %rows].Cells[i / rows].Value = (Image)my_bitmap;
 
