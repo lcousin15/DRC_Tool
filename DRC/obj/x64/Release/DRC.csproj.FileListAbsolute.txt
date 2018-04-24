@@ -312,3 +312,4 @@ F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.GenerateResource.Cache
 F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.CoreCompileInputs.cache
 F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.exe
 F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.pdb
+E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Form13.resources
