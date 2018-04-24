@@ -5,6 +5,7 @@ using Accord.Math;
 using Accord.Statistics.Analysis;
 using Accord.Statistics.Models.Regression.Linear;
 using Emgu.CV;
+using Emgu.CV.Structure;
 using LumenWorks.Framework.IO.Csv;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,14 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Threading.Tasks;
 
 namespace DRC
 {
 
     public partial class Form1 : Form
     {
+        public bool imgCpdsViewOption = false;
 
         public Form1()
         {
@@ -29,13 +32,14 @@ namespace DRC
         public Form6 f6;
         public Form10 f10;
         public Form11 f11;
+        public Form13 f13;
 
         public void SetForm()
         {
             f2 = new Form2(this);
             f6 = new Form6(this);
-            f10 = new DRC.Form10(this);
-            f11 = new DRC.Form11(this);
+            f10 = new Form10(this);
+            f11 = new Form11(this);
         }
 
         public Form3 f3 = new Form3();
@@ -44,7 +48,6 @@ namespace DRC
         public Form7 f7 = new Form7();
 
         public Form12 f12 = new Form12();
-        public Form13 f13 = new Form13();
 
         private string current_cpd_id;
         private Dictionary<string, int> cpd_row_index = new Dictionary<string, int>();
@@ -96,8 +99,6 @@ namespace DRC
 
         private void read_Data()
         {
-            comboBox2.SelectedIndex = 0;
-            comboBox3.SelectedIndex = 0;
 
             //f3.Show();
             f3.Hide();
@@ -1618,7 +1619,14 @@ namespace DRC
 
             f12.Text = cpd_id;
 
-            draw_images(cpd_id);
+            f13 = new Form13(this, cpd_id);
+
+            f13.Visible = false;
+            f13.comboBox2.SelectedIndex = 1;
+            f13.comboBox3.SelectedIndex = 0;
+
+            f13.Visible = true;
+
         }
 
         public void load_cpd_images(string cpd_id)
@@ -1635,11 +1643,25 @@ namespace DRC
 
             f12.Visible = true;
 
-            draw_images(cpd_id);
+            f13 = new Form13(this, cpd_id);
+
+            f13.Visible = false;
+            f13.comboBox2.SelectedIndex = 1;
+            f13.comboBox3.SelectedIndex = 0;
+
+            f13.Visible = true;
         }
 
-        private void draw_images(string cpd_id)
+        public void draw_images(string cpd_id)
         {
+
+
+            //while (imgCpdsViewOption == false)
+            //{
+            //}
+
+            imgCpdsViewOption = true;
+
             //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
 
             List<string> plates = new List<string>();
@@ -1665,8 +1687,8 @@ namespace DRC
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
 
-            int rows = current_plates.Count() * (int)numericUpDown5.Value;
-            int cols = (int)(current_wells.Count() / (double)numericUpDown5.Value);
+            int rows = current_plates.Count() * (int)f13.numericUpDown6.Value;
+            int cols = (int)(current_wells.Count() / (double)f13.numericUpDown6.Value);
 
             //f12.dataGridView1.Columns.Add("Concentration","Concentration");
 
@@ -1723,23 +1745,12 @@ namespace DRC
 
                 foreach (string file in files)
                 {
-                    string method_norm = comboBox3.SelectedItem.ToString();
+                    string method_norm = f13.comboBox3.SelectedItem.ToString();
 
                     Mat temp = CvInvoke.Imread(file, Emgu.CV.CvEnum.ImreadModes.AnyDepth);
 
                     if (method_norm == "Saturate")
                     {
-                        bool ButtonOkWasClicked = false;
-
-                        f13 = new Form13();
-                        f13.Visible = true;
-
-                        while (ButtonOkWasClicked == false)
-                        {
-                            ButtonOkWasClicked = f13.isButtonClicked();
-                        }
-
-                        f13.Close();
 
                         ushort low_thr = (ushort)f13.numericUpDown1.Value;
                         ushort thr_ch1 = (ushort)f13.numericUpDown2.Value;
@@ -1752,71 +1763,57 @@ namespace DRC
                         else if (file.Contains("Z01C02")) chan = 2;
                         else if (file.Contains("Z01C03")) chan = 3;
                         else if (file.Contains("Z01C04")) chan = 4;
-
-                        Matrix<UInt16> matrix = new Matrix<UInt16>(temp.Rows, temp.Cols, 1);
-                        temp.CopyTo(matrix);
-
-                        //Image<Emgu.CV.Structure.Gray, ushort> matrix = temp.ToImage<Emgu.CV.Structure.Gray, ushort>();
-
-                        if (chan == 1)
+                        
+                        unsafe
                         {
-                            for (int row = 0; row < matrix.Rows; row++)
+                            ushort* data = (ushort*) temp.DataPointer;
+
+                            if (chan == 1)
                             {
-                                for (int col = 0; col < matrix.Cols; col++)
+                                for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
                                 {
-                                    UInt16 px_value = matrix[row, col];
-                                    if (px_value < low_thr) matrix[row, col] = 0;
-                                    else if (px_value >= thr_ch1) matrix[row, col] = thr_ch1;
-                                    matrix[row, col] = (ushort)((255*matrix[row, col])/thr_ch1);
+                                    ushort px_value = data[idx];
+                                    if (px_value < low_thr) data[idx] = 0;
+                                    else if (px_value >= thr_ch1) data[idx] = thr_ch1;
+                                    data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch1);
+                                }
+                            }
+                            else if (chan == 2)
+                            {
+                                for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
+                                {
+                                    ushort px_value = data[idx];
+                                    if (px_value < low_thr) data[idx] = 0;
+                                    else if (px_value >= thr_ch2) data[idx] = thr_ch2;
+                                    data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch2);
+                                }
+                            }
+                            else if (chan == 3)
+                            {
+                                for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
+                                {
+                                    ushort px_value = data[idx];
+                                    if (px_value < low_thr) data[idx] = 0;
+                                    else if (px_value >= thr_ch3) data[idx] = thr_ch3;
+                                    data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch3);
+                                }
+                            }
+                            else if (chan == 4)
+                            {
+                                for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
+                                {
+                                    ushort px_value = data[idx];
+                                    if (px_value < low_thr) data[idx] = 0;
+                                    else if (px_value >= thr_ch4) data[idx] = thr_ch4;
+                                    data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch4);
                                 }
                             }
                         }
-                        else if(chan == 2)
-                        {
-                            for (int row = 0; row < matrix.Rows; row++)
-                            {
-                                for (int col = 0; col < matrix.Cols; col++)
-                                {
-                                    UInt16 px_value = matrix[row, col];
-                                    if (px_value < low_thr) matrix[row, col] = 0;
-                                    else if (px_value >= thr_ch2) matrix[row, col] = thr_ch2;
-                                    matrix[row, col] = (ushort)((255 * matrix[row, col]) / thr_ch2);
-                                }
-                            }
-                        }
-                        else if(chan == 3)
-                        {
-                            for (int row = 0; row < matrix.Rows; row++)
-                            {
-                                for (int col = 0; col < matrix.Cols; col++)
-                                {
-                                    UInt16 px_value = matrix[row, col];
-                                    if (px_value < low_thr) matrix[row, col] = 0;
-                                    else if (px_value >= thr_ch3) matrix[row, col] = thr_ch3;
-                                    matrix[row, col] = (ushort)((255 * matrix[row, col]) / thr_ch3);
-                                }
-                            }
-                        }
-                        else if(chan == 4)
-                        {
-                            for (int row = 0; row < matrix.Rows; row++)
-                            {
-                                for (int col = 0; col < matrix.Cols; col++)
-                                {
-                                    UInt16 px_value = matrix[row, col];
-                                    if (px_value < low_thr) matrix[row, col] = 0;
-                                    else if (px_value >= thr_ch4) matrix[row, col] = thr_ch4;
-                                    matrix[row, col] = (ushort)((255 * matrix[row, col]) / thr_ch4);
-                                }
-                            }
-                        }
-
-                        temp = matrix.Mat;
 
                     }
 
                     Mat mat_8u = new Mat();
-                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U);
+                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 1.0/255.0);
 
                     temp.Dispose();
 
@@ -1832,11 +1829,16 @@ namespace DRC
                         CvInvoke.EqualizeHist(mat_8u, dst_thr);
                     }
 
+                    if(method_norm =="Saturate")
+                    {
+                        dst_thr = mat_8u.Clone();
+                    }
+
                     mat_8u.Dispose();
 
                     Mat dst_resize = new Mat();
 
-                    double scale_factor = 1.0 / (double)numericUpDown4.Value;
+                    double scale_factor = 1.0 / (double)f13.numericUpDown7.Value;
 
                     CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), scale_factor, scale_factor, Emgu.CV.CvEnum.Inter.Cubic);
 
@@ -1868,7 +1870,7 @@ namespace DRC
                 }
 
 
-                string color_format = comboBox2.SelectedItem.ToString();
+                string color_format = f13.comboBox2.SelectedItem.ToString();
 
                 if (color_format == "EMT")
                 {
@@ -1886,7 +1888,7 @@ namespace DRC
                     {
                         Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
                         channels_bgr.Push(channels[1].Clone());
-                        channels_bgr.Push(channels[3].Clone());
+                        channels_bgr.Push(channels[2].Clone());
                         channels_bgr.Push(channels[0].Clone());
                         //channels_bgr.Push(channels[3].Clone());
 
