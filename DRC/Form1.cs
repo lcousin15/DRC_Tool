@@ -21,7 +21,7 @@ namespace DRC
 
     public partial class Form1 : Form
     {
-        public bool imgCpdsViewOption = false;
+        //public bool imgCpdsViewOption = false;
 
         public Form1()
         {
@@ -108,11 +108,27 @@ namespace DRC
             List<string> CPD_ID = new List<string>();
             deslected_data_descriptor = new List<string>();
 
-            if (!f3.dataGridView1.Columns.Contains("CPD_ID"))
+            if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
+                || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
             {
-                System.Windows.Forms.MessageBox.Show("CPD_ID column doesn't exist.");
+                System.Windows.Forms.MessageBox.Show("The file must contain at least these 5 columns : \n {[Plate, Well, Concentration, CPD_ID], Descr_0,...}", "Error",
+                    System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 return;
             }
+
+            //if (!f3.dataGridView1.Columns.Contains("CPD_ID"))
+            //{
+            //    System.Windows.Forms.MessageBox.Show("CPD_ID column doesn't exist.""Error",
+            //        System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            //    return;
+            //}
+
+            //if (!f3.dataGridView1.Columns.Contains("Concentration"))
+            //{
+            //    System.Windows.Forms.MessageBox.Show("Concentration column doesn't exist.""Error",
+            //        System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            //    return;
+            //}
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -1033,9 +1049,21 @@ namespace DRC
 
                 List<List<string>> deslected_data_descriptor_list = new List<List<string>>();
 
+                if (f3.dataGridView1.ColumnCount<5)
+                {
+                    System.Windows.Forms.MessageBox.Show("The file should contain at least 5 columns\n Plate,Well,Concentration,CPD_ID,Descr_0,...");
+                    return;
+                }
+
                 if (!f3.dataGridView1.Columns.Contains("CPD_ID"))
                 {
                     System.Windows.Forms.MessageBox.Show("CPD_ID column doesn't exist.");
+                    return;
+                }
+
+                if (!f3.dataGridView1.Columns.Contains("Concentration"))
+                {
+                    System.Windows.Forms.MessageBox.Show("Concentration column doesn't exist.");
                     return;
                 }
 
@@ -1607,7 +1635,9 @@ namespace DRC
 
         public void load_cpd_images(object sender, DataGridViewCellEventArgs e)
         {
-            f11.Visible = false;
+            f11.Visible = true;
+
+            f12 = new Form12();
 
             f12.dataGridView1.Rows.Clear();
             f12.dataGridView1.Columns.Clear();
@@ -1660,7 +1690,7 @@ namespace DRC
             //{
             //}
 
-            imgCpdsViewOption = true;
+            //imgCpdsViewOption = true;
 
             //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
 
@@ -1668,6 +1698,11 @@ namespace DRC
             List<string> wells = new List<string>();
             //SortedDictionary<string, string> concentrations = new SortedDictionary<string, string>();
             List<double> concentrations = new List<double>();
+
+            //SortedDictionary<string, string> plates_wells_concentrations = new SortedDictionary<string, string>();
+
+            f3.dataGridView1.Sort(f3.dataGridView1.Columns["Plate"], System.ComponentModel.ListSortDirection.Ascending);
+            f3.dataGridView1.Sort(f3.dataGridView1.Columns["Well"], System.ComponentModel.ListSortDirection.Ascending);
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -1681,8 +1716,8 @@ namespace DRC
             }
 
             //plates.Sort();
-            wells.Sort();
-            concentrations.Sort((a, b) => b.CompareTo(a));
+            //wells.Sort();
+            //concentrations.Sort((a, b) => b.CompareTo(a));
 
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
@@ -1730,16 +1765,8 @@ namespace DRC
                     return;
                 }
 
-                //concentration_ordered.Add(concentrations[i]);
                 Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
 
-                //if (files.Count == 2) files.Add(files[1]);
-
-                //if (files.Count == 1)
-                //{
-                //    files.Add(files[0]);
-                //    files.Add(files[0]);
-                //}
                 int size_channel = files.Count();
                 files.Sort();
 
@@ -1899,6 +1926,8 @@ namespace DRC
 
                 Mat mat = new Mat();
                 CvInvoke.Merge(channels, mat);
+
+                channels.Clear();
 
                 Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
