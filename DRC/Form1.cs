@@ -108,11 +108,27 @@ namespace DRC
             List<string> CPD_ID = new List<string>();
             deslected_data_descriptor = new List<string>();
 
-            if (!f3.dataGridView1.Columns.Contains("CPD_ID"))
+            if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
+                || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
             {
-                System.Windows.Forms.MessageBox.Show("CPD_ID column doesn't exist.");
+                System.Windows.Forms.MessageBox.Show("The file must contain at least these 5 columns : \n {[Plate, Well, Concentration, CPD_ID], Descr_0,...}", "Error",
+                    System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 return;
             }
+
+            //if (!f3.dataGridView1.Columns.Contains("CPD_ID"))
+            //{
+            //    System.Windows.Forms.MessageBox.Show("CPD_ID column doesn't exist.""Error",
+            //        System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            //    return;
+            //}
+
+            //if (!f3.dataGridView1.Columns.Contains("Concentration"))
+            //{
+            //    System.Windows.Forms.MessageBox.Show("Concentration column doesn't exist.""Error",
+            //        System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            //    return;
+            //}
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -1033,9 +1049,21 @@ namespace DRC
 
                 List<List<string>> deslected_data_descriptor_list = new List<List<string>>();
 
+                if (f3.dataGridView1.ColumnCount<5)
+                {
+                    System.Windows.Forms.MessageBox.Show("The file should contain at least 5 columns\n Plate,Well,Concentration,CPD_ID,Descr_0,...");
+                    return;
+                }
+
                 if (!f3.dataGridView1.Columns.Contains("CPD_ID"))
                 {
                     System.Windows.Forms.MessageBox.Show("CPD_ID column doesn't exist.");
+                    return;
+                }
+
+                if (!f3.dataGridView1.Columns.Contains("Concentration"))
+                {
+                    System.Windows.Forms.MessageBox.Show("Concentration column doesn't exist.");
                     return;
                 }
 

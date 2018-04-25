@@ -239,3 +239,4 @@ F:\DRC_Tool\DRC_Tool\DRC\bin\x64\Debug\zh-cn\ZedGraph.resources.dll
 F:\DRC_Tool\DRC_Tool\DRC\bin\x64\Debug\zh-tw\ZedGraph.resources.dll
 F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Debug\DRC.exe
 F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Debug\DRC.pdb
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Form13.resources
