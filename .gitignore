@@ -10,5 +10,5 @@
 *.ide-shm
 *.ide-wal
 *.exe
-*.dll
 *.pdb
+*.dll
