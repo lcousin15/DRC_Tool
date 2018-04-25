@@ -1,6 +1,6 @@
 ﻿namespace DRC
 {
-    partial class Form10
+    partial class ViewList_CPD_Tab
     {
         /// <summary>
         /// Required designer variable.
@@ -34,25 +34,21 @@
             // 
             // dataGridView1
             // 
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 12);
+            this.dataGridView1.Location = new System.Drawing.Point(13, 13);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(965, 711);
+            this.dataGridView1.Size = new System.Drawing.Size(282, 540);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellContentClick);
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
-            // Form10
+            // Form11
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(989, 735);
+            this.ClientSize = new System.Drawing.Size(307, 565);
             this.Controls.Add(this.dataGridView1);
-            this.Name = "Form10";
-            this.Text = "Form10";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form10_FormClosing);
+            this.Name = "Form11";
+            this.Text = "Form11";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 

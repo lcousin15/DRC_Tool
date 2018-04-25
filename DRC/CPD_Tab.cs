@@ -11,12 +11,12 @@ using System.IO;
 
 namespace DRC
 {
-    public partial class Form2 : Form
+    public partial class CPD_Tab : Form
     {
 
-        Form1 _form1 = new Form1();
+        MainTab _form1 = new MainTab();
 
-        public Form2(Form1 form)
+        public CPD_Tab(MainTab form)
         {
             InitializeComponent();
             _form1 = form;

@@ -10,20 +10,20 @@ using System.Windows.Forms;
 
 namespace DRC
 {
-    public partial class Form4 : Form
+    public partial class ViewList_CPD_Tab : Form
     {
-        public Form4()
+
+        MainTab _form1 = new MainTab();
+
+        public ViewList_CPD_Tab(MainTab form)
         {
             InitializeComponent();
+            _form1 = form;
         }
 
-        private void Form4_FormClosing(object sender, FormClosingEventArgs e)
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
-            {
-                e.Cancel = true;
-                Hide();
-            }
+            _form1.load_cpd_images(sender, e);
         }
     }
 }

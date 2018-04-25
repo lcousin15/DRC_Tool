@@ -1,6 +1,6 @@
 ﻿namespace DRC
 {
-    partial class Form6
+    partial class Clustering_Tab
     {
         /// <summary>
         /// Required designer variable.

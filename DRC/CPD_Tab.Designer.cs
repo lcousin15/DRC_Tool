@@ -1,6 +1,6 @@
 ﻿namespace DRC
 {
-    partial class Form2
+    partial class CPD_Tab
     {
         /// <summary>
         /// Required designer variable.

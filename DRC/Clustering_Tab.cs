@@ -12,12 +12,12 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace DRC
 {
-    public partial class Form6 : Form
+    public partial class Clustering_Tab : Form
     {
 
-        Form1 _form1 = new Form1();
+        MainTab _form1 = new MainTab();
 
-        public Form6(Form1 form)
+        public Clustering_Tab(MainTab form)
         {
             InitializeComponent();
             _form1 = form;

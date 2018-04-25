@@ -10,20 +10,11 @@ using System.Windows.Forms;
 
 namespace DRC
 {
-    public partial class Form11 : Form
+    public partial class Export_Excel_Tab : Form
     {
-
-        Form1 _form1 = new Form1();
-
-        public Form11(Form1 form)
+        public Export_Excel_Tab()
         {
             InitializeComponent();
-            _form1 = form;
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            _form1.load_cpd_images(sender, e);
         }
     }
 }

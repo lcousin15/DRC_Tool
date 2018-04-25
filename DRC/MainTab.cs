@@ -19,35 +19,35 @@ using System.Threading.Tasks;
 namespace DRC
 {
 
-    public partial class Form1 : Form
+    public partial class MainTab : Form
     {
         public bool imgCpdsViewOption = false;
 
-        public Form1()
+        public MainTab()
         {
             InitializeComponent();
         }
 
-        public Form2 f2;
-        public Form6 f6;
-        public Form10 f10;
-        public Form11 f11;
-        public Form13 f13;
+        public CPD_Tab f2;
+        public Clustering_Tab f6;
+        public DRC_Overlap_Tab f10;
+        public ViewList_CPD_Tab f11;
+        public ViewImages_Options_Tab f13;
 
         public void SetForm()
         {
-            f2 = new Form2(this);
-            f6 = new Form6(this);
-            f10 = new Form10(this);
-            f11 = new Form11(this);
+            f2 = new CPD_Tab(this);
+            f6 = new Clustering_Tab(this);
+            f10 = new DRC_Overlap_Tab(this);
+            f11 = new ViewList_CPD_Tab(this);
         }
 
-        public Form3 f3 = new Form3();
-        public Form4 f4 = new Form4();
-        public Form5 f5 = new Form5();
-        public Form7 f7 = new Form7();
+        public RawData_Tab f3 = new RawData_Tab();
+        public RawDataDRC_Tab f4 = new RawDataDRC_Tab();
+        public Export_Tab f5 = new Export_Tab();
+        public Correlations_Tab f7 = new Correlations_Tab();
 
-        public Form12 f12 = new Form12();
+        public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
 
         private string current_cpd_id;
         private Dictionary<string, int> cpd_row_index = new Dictionary<string, int>();
@@ -1647,7 +1647,7 @@ namespace DRC
 
             f12.Text = cpd_id;
 
-            f13 = new Form13(this, cpd_id);
+            f13 = new ViewImages_Options_Tab(this, cpd_id);
 
             f13.Visible = false;
             f13.comboBox2.SelectedIndex = 1;
@@ -1661,7 +1661,7 @@ namespace DRC
         {
             f11.Visible = false;
 
-            f12 = new Form12();
+            f12 = new ViewCPD_Images_Tab();
 
             f12.Text = cpd_id;
 
@@ -1671,7 +1671,7 @@ namespace DRC
 
             f12.Visible = true;
 
-            f13 = new Form13(this, cpd_id);
+            f13 = new ViewImages_Options_Tab(this, cpd_id);
 
             f13.Visible = false;
             f13.comboBox2.SelectedIndex = 1;
@@ -1966,7 +1966,7 @@ namespace DRC
 
     public class Chart_DRC_Overlap
     {
-        Form1 _form1 = new Form1();
+        MainTab _form1 = new MainTab();
 
         private Chart chart;
 
@@ -2103,7 +2103,7 @@ namespace DRC
         {
         }
 
-        public Chart_DRC_Overlap(string cpd, string descript, int step, ref List<double> x_1, ref List<double> x_log_1, ref List<double> x_2, ref List<double> x_log_2, ref List<double> y_1, ref List<double> y_2, Color color, int index, Form1 form)
+        public Chart_DRC_Overlap(string cpd, string descript, int step, ref List<double> x_1, ref List<double> x_log_1, ref List<double> x_2, ref List<double> x_log_2, ref List<double> y_1, ref List<double> y_2, Color color, int index, MainTab form)
         {
             _form1 = form;
 
@@ -2399,7 +2399,7 @@ namespace DRC
 
     public class Chart_DRC
     {
-        Form1 _form1 = new Form1();
+        MainTab _form1 = new MainTab();
 
         private Chart chart;
 
@@ -2519,7 +2519,7 @@ namespace DRC
         {
         }
 
-        public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color, int index, List<string> deselected, Form1 form)
+        public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color, int index, List<string> deselected, MainTab form)
         {
             _form1 = form;
 
