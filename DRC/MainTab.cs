@@ -1637,7 +1637,7 @@ namespace DRC
         {
             f11.Visible = true;
 
-            f12 = new Form12();
+            f12 = new ViewCPD_Images_Tab();
 
             f12.dataGridView1.Rows.Clear();
             f12.dataGridView1.Columns.Clear();
