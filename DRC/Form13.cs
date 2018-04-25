@@ -32,7 +32,7 @@ namespace DRC
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _f1.imgCpdsViewOption = true;
+            //_f1.imgCpdsViewOption = true;
             _f1.draw_images(selected_cpd);
             this.Visible = false;
             //_cts.Cancel();
