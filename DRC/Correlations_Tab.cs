@@ -15,15 +15,15 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DRC
 {
-    public partial class Form7 : Form
+    public partial class Correlations_Tab : Form
     {
-        public Form7()
+        public Correlations_Tab()
         {
             InitializeComponent();
         }
 
-        public Form8 f8 = new Form8();
-        public Form9 f9 = new Form9();
+        public RawData_Correlations_Tab f8 = new RawData_Correlations_Tab();
+        public Export_Excel_Tab f9 = new Export_Excel_Tab();
 
         CachedCsvReader csv;
 
@@ -454,7 +454,7 @@ namespace DRC
 
     public class Chart_Correlations
     {
-        Form7 _form7 = new Form7();
+        Correlations_Tab _form7 = new Correlations_Tab();
 
         private Chart chart;
 
@@ -516,7 +516,7 @@ namespace DRC
         {
         }
 
-        public Chart_Correlations(Dictionary<string, double> ec_50_1, Dictionary<string, double> ec_50_2, string descrip, string run_1, string run_2, Color color, Form7 form, double folds)
+        public Chart_Correlations(Dictionary<string, double> ec_50_1, Dictionary<string, double> ec_50_2, string descrip, string run_1, string run_2, Color color, Correlations_Tab form, double folds)
         {
             _form7 = form;
 

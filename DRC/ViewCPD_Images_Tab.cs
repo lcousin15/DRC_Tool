@@ -10,11 +10,17 @@ using System.Windows.Forms;
 
 namespace DRC
 {
-    public partial class Form8 : Form
+    public partial class ViewCPD_Images_Tab : Form
     {
-        public Form8()
+        public ViewCPD_Images_Tab()
         {
             InitializeComponent();
+        }
+
+        private void Form12_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Visible = false;
+            e.Cancel = false;
         }
     }
 }

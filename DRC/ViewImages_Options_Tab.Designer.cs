@@ -1,6 +1,6 @@
 ﻿namespace DRC
 {
-    partial class Form13
+    partial class ViewImages_Options_Tab
     {
         /// <summary>
         /// Required designer variable.

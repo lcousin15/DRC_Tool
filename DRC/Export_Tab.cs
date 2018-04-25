@@ -18,9 +18,9 @@ using System.Diagnostics;
 
 namespace DRC
 {
-    public partial class Form5 : Form
+    public partial class Export_Tab : Form
     {
-        public Form5()
+        public Export_Tab()
         {
             InitializeComponent();
         }

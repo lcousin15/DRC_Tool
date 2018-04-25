@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace DRC
 {
-    public partial class Form13 : Form
+    public partial class ViewImages_Options_Tab : Form
     {
-        Form1 _f1 = new Form1();
+        MainTab _f1 = new MainTab();
         private string selected_cpd;
 
         //// CancellationTokenSource will hold the CancellationToken struct
@@ -21,7 +21,7 @@ namespace DRC
         //// Task will hold the logic
         //private readonly Task _task;
 
-        public Form13(Form1 form, string cpd_id)
+        public ViewImages_Options_Tab(MainTab form, string cpd_id)
         {
             InitializeComponent();
             _f1 = form;
