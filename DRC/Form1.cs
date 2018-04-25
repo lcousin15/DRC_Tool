@@ -1,35 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Collections;
-using System.Windows.Forms.DataVisualization.Charting;
-using LumenWorks.Framework.IO.Csv;
-using System.IO;
-using Accord.IO;
-//using Accord.MachineLearning.DecisionTrees;
+﻿//using Accord.MachineLearning.DecisionTrees;
 //using Accord.MachineLearning.DecisionTrees.Learning;
 using Accord.MachineLearning.Clustering;
 using Accord.Math;
 using Accord.Statistics.Analysis;
 using Accord.Statistics.Models.Regression.Linear;
-using System.Reflection;
-using System.Threading;
 using Emgu.CV;
-using Emgu.Util;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using Emgu.CV.Structure;
+using LumenWorks.Framework.IO.Csv;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+using System.Threading.Tasks;
 
 namespace DRC
 {
 
     public partial class Form1 : Form
     {
+        public bool imgCpdsViewOption = false;
 
         public Form1()
         {
@@ -40,13 +32,14 @@ namespace DRC
         public Form6 f6;
         public Form10 f10;
         public Form11 f11;
+        public Form13 f13;
 
         public void SetForm()
         {
             f2 = new Form2(this);
             f6 = new Form6(this);
-            f10 = new DRC.Form10(this);
-            f11 = new DRC.Form11(this);
+            f10 = new Form10(this);
+            f11 = new Form11(this);
         }
 
         public Form3 f3 = new Form3();
@@ -106,7 +99,7 @@ namespace DRC
 
         private void read_Data()
         {
-            comboBox2.SelectedIndex = 0;
+
             //f3.Show();
             f3.Hide();
             f3.dataGridView1.DataSource = csv;
@@ -1490,6 +1483,7 @@ namespace DRC
             List<string> Files = new List<string>();
 
             //Console.WriteLine(sDir);
+            if (sDir == "") return null;
 
             foreach (string file in Directory.EnumerateFiles(sDir, "*.tif", SearchOption.AllDirectories))
             {
@@ -1519,6 +1513,8 @@ namespace DRC
             Console.WriteLine(savePath);
 
             List<string> list_img_path = DirSearch(savePath);
+
+            if (list_img_path == null) return;
 
             foreach (string file in list_img_path)
             {
@@ -1611,7 +1607,7 @@ namespace DRC
 
         public void load_cpd_images(object sender, DataGridViewCellEventArgs e)
         {
-            //f11.Visible = false;
+            f11.Visible = false;
 
             f12.dataGridView1.Rows.Clear();
             f12.dataGridView1.Columns.Clear();
@@ -1623,7 +1619,14 @@ namespace DRC
 
             f12.Text = cpd_id;
 
-            draw_images(cpd_id);
+            f13 = new Form13(this, cpd_id);
+
+            f13.Visible = false;
+            f13.comboBox2.SelectedIndex = 1;
+            f13.comboBox3.SelectedIndex = 0;
+
+            f13.Visible = true;
+
         }
 
         public void load_cpd_images(string cpd_id)
@@ -1640,11 +1643,25 @@ namespace DRC
 
             f12.Visible = true;
 
-            draw_images(cpd_id);
+            f13 = new Form13(this, cpd_id);
+
+            f13.Visible = false;
+            f13.comboBox2.SelectedIndex = 1;
+            f13.comboBox3.SelectedIndex = 0;
+
+            f13.Visible = true;
         }
 
-        private void draw_images(string cpd_id)
+        public void draw_images(string cpd_id)
         {
+
+
+            //while (imgCpdsViewOption == false)
+            //{
+            //}
+
+            imgCpdsViewOption = true;
+
             //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
 
             List<string> plates = new List<string>();
@@ -1670,8 +1687,8 @@ namespace DRC
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
 
-            int rows = current_plates.Count()*(int)numericUpDown5.Value;
-            int cols = (int)(current_wells.Count() / (double)numericUpDown5.Value);
+            int rows = current_plates.Count() * (int)f13.numericUpDown6.Value;
+            int cols = (int)(current_wells.Count() / (double)f13.numericUpDown6.Value);
 
             //f12.dataGridView1.Columns.Add("Concentration","Concentration");
 
@@ -1682,9 +1699,9 @@ namespace DRC
                 f12.dataGridView1.Columns.Insert(i, img);
             }
 
-            for(int i=0; i< cols; i++)
+            for (int i = 0; i < cols; i++)
             {
-                f12.dataGridView1.Columns[i].Name = concentrations[i*rows].ToString();
+                f12.dataGridView1.Columns[i].Name = concentrations[i * rows].ToString();
             }
 
             foreach (DataGridViewColumn col in f12.dataGridView1.Columns)
@@ -1704,8 +1721,15 @@ namespace DRC
 
             for (int i = 0; i < wells.Count(); i++)
             {
+                List<string> files = new List<string>();
 
-                List<string> files = dict_plate_well_files[plates[i]][wells[i]];
+                if (dict_plate_well_files.ContainsKey(plates[i])) files = dict_plate_well_files[plates[i]][wells[i]];
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Wrong Location or Plate name.");
+                    return;
+                }
+
                 //concentration_ordered.Add(concentrations[i]);
                 Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
 
@@ -1721,21 +1745,100 @@ namespace DRC
 
                 foreach (string file in files)
                 {
+                    string method_norm = f13.comboBox3.SelectedItem.ToString();
+
                     Mat temp = CvInvoke.Imread(file, Emgu.CV.CvEnum.ImreadModes.AnyDepth);
 
+                    if (method_norm == "Saturate")
+                    {
+
+                        ushort low_thr = (ushort)f13.numericUpDown1.Value;
+                        ushort thr_ch1 = (ushort)f13.numericUpDown2.Value;
+                        ushort thr_ch2 = (ushort)f13.numericUpDown3.Value;
+                        ushort thr_ch3 = (ushort)f13.numericUpDown4.Value;
+                        ushort thr_ch4 = (ushort)f13.numericUpDown5.Value;
+
+                        int chan = 0;
+                        if (file.Contains("Z01C01")) chan = 1;
+                        else if (file.Contains("Z01C02")) chan = 2;
+                        else if (file.Contains("Z01C03")) chan = 3;
+                        else if (file.Contains("Z01C04")) chan = 4;
+                        
+                        unsafe
+                        {
+                            ushort* data = (ushort*) temp.DataPointer;
+
+                            if (chan == 1)
+                            {
+                                for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
+                                {
+                                    ushort px_value = data[idx];
+                                    if (px_value < low_thr) data[idx] = 0;
+                                    else if (px_value >= thr_ch1) data[idx] = thr_ch1;
+                                    data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch1);
+                                }
+                            }
+                            else if (chan == 2)
+                            {
+                                for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
+                                {
+                                    ushort px_value = data[idx];
+                                    if (px_value < low_thr) data[idx] = 0;
+                                    else if (px_value >= thr_ch2) data[idx] = thr_ch2;
+                                    data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch2);
+                                }
+                            }
+                            else if (chan == 3)
+                            {
+                                for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
+                                {
+                                    ushort px_value = data[idx];
+                                    if (px_value < low_thr) data[idx] = 0;
+                                    else if (px_value >= thr_ch3) data[idx] = thr_ch3;
+                                    data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch3);
+                                }
+                            }
+                            else if (chan == 4)
+                            {
+                                for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
+                                {
+                                    ushort px_value = data[idx];
+                                    if (px_value < low_thr) data[idx] = 0;
+                                    else if (px_value >= thr_ch4) data[idx] = thr_ch4;
+                                    data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch4);
+                                }
+                            }
+                        }
+
+                    }
+
                     Mat mat_8u = new Mat();
-                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U);
+                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 1.0/255.0);
 
                     temp.Dispose();
 
                     Mat dst_thr = new Mat();
-                    CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu);
+
+                    if (method_norm == "Otsu")
+                    {
+                        CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu);
+                    }
+
+                    if (method_norm == "Equal")
+                    {
+                        CvInvoke.EqualizeHist(mat_8u, dst_thr);
+                    }
+
+                    if(method_norm =="Saturate")
+                    {
+                        dst_thr = mat_8u.Clone();
+                    }
 
                     mat_8u.Dispose();
 
                     Mat dst_resize = new Mat();
 
-                    double scale_factor = 1.0 / (double)numericUpDown4.Value;
+                    double scale_factor = 1.0 / (double)f13.numericUpDown7.Value;
 
                     CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), scale_factor, scale_factor, Emgu.CV.CvEnum.Inter.Cubic);
 
@@ -1766,16 +1869,40 @@ namespace DRC
                     channels.Push(my_new_mat);
                 }
 
+
+                string color_format = f13.comboBox2.SelectedItem.ToString();
+
+                if (color_format == "EMT")
+                {
+                    if (size_channel == 3)
+                    {
+                        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                        channels_bgr.Push(channels[0].Clone());
+                        channels_bgr.Push(channels[1].Clone());
+                        channels_bgr.Push(channels[2].Clone());
+
+                        channels.Clear();
+                        channels = channels_bgr;
+                    }
+                    if (size_channel == 4)
+                    {
+                        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                        channels_bgr.Push(channels[1].Clone());
+                        channels_bgr.Push(channels[2].Clone());
+                        channels_bgr.Push(channels[0].Clone());
+                        //channels_bgr.Push(channels[3].Clone());
+
+                        channels.Clear();
+                        channels = channels_bgr;
+                    }
+                }
+
                 Mat mat = new Mat();
                 CvInvoke.Merge(channels, mat);
 
-                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
+                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
-                string color_format = comboBox2.SelectedItem.ToString();
-
-                if (color_format == "Bgr") my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
-
-                f12.dataGridView1.Rows[i %rows].Cells[i / rows].Value = (Image)my_bitmap;
+                f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
 
                 mat.Dispose();
 
@@ -1803,9 +1930,9 @@ namespace DRC
 
         }
 
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void button3_KeyDown(object sender, KeyEventArgs e)
         {
-
+            if (e.KeyCode == Keys.Enter) return;
         }
     }
 
@@ -2532,7 +2659,7 @@ namespace DRC
             double GlobalMin = double.MaxValue;
             double MinValues = MinA(drc_points_y_enable.ToArray());
             GlobalMin = MinValues;
-            if ((double)_form1.numericUpDown3.Value!=0)
+            if ((double)_form1.numericUpDown3.Value != 0)
             {
                 GlobalMax = (double)_form1.numericUpDown3.Value;
             }
