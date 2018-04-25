@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace DRC
 {
-    public partial class Form9 : Form
+    public partial class RawData_Correlations_Tab : Form
     {
-        public Form9()
+        public RawData_Correlations_Tab()
         {
             InitializeComponent();
         }

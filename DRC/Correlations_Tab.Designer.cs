@@ -1,6 +1,6 @@
 ﻿namespace DRC
 {
-    partial class Form7
+    partial class Correlations_Tab
     {
         /// <summary>
         /// Required designer variable.

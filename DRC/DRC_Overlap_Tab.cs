@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace DRC
 {
-    public partial class Form10 : Form
+    public partial class DRC_Overlap_Tab : Form
     {
 
-        Form1 _form1 = new Form1();
+        MainTab _form1 = new MainTab();
 
-        public Form10(Form1 form)
+        public DRC_Overlap_Tab(MainTab form)
         {
             InitializeComponent();
             _form1 = form;

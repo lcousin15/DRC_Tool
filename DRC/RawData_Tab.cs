@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace DRC
 {
-    public partial class Form3 : Form
+    public partial class RawData_Tab : Form
     {
-        public Form3()
+        public RawData_Tab()
         {
             InitializeComponent();
         }

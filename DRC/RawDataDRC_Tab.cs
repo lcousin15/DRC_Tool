@@ -10,17 +10,20 @@ using System.Windows.Forms;
 
 namespace DRC
 {
-    public partial class Form12 : Form
+    public partial class RawDataDRC_Tab : Form
     {
-        public Form12()
+        public RawDataDRC_Tab()
         {
             InitializeComponent();
         }
 
-        private void Form12_FormClosing(object sender, FormClosingEventArgs e)
+        private void Form4_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.Visible = false;
-            e.Cancel = false;
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                Hide();
+            }
         }
     }
 }

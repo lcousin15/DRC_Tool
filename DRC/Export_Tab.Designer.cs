@@ -1,6 +1,6 @@
 ﻿namespace DRC
 {
-    partial class Form5
+    partial class Export_Tab
     {
         /// <summary>
         /// Required designer variable.
