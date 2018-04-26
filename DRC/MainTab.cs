@@ -1899,6 +1899,29 @@ namespace DRC
 
                 string color_format = f13.comboBox2.SelectedItem.ToString();
 
+                //if (color_format == "Rgb")
+                //{
+                //    if (size_channel == 2)
+                //    {
+                //        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                //        channels_bgr.Push(channels[1].Clone());
+                //        channels_bgr.Push(channels[0].Clone());
+
+                //        channels.Clear();
+                //        channels = channels_bgr;
+                //    }
+                //    if (size_channel == 3)
+                //    {
+                //        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                //        channels_bgr.Push(channels[2].Clone());
+                //        channels_bgr.Push(channels[1].Clone());
+                //        channels_bgr.Push(channels[0].Clone());
+
+                //        channels.Clear();
+                //        channels = channels_bgr;
+                //    }
+                //}
+
                 if (color_format == "EMT")
                 {
                     if (size_channel == 3)
@@ -1929,7 +1952,13 @@ namespace DRC
 
                 channels.Clear();
 
-                Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
+                Bitmap my_bitmap = null;
+
+                if (color_format == "Rgb")
+                    my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
+
+                if (color_format == "Bgr")
+                    my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
                 f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
 

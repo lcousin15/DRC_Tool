@@ -84,7 +84,7 @@
             this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown1.TabIndex = 11;
             this.numericUpDown1.Value = new decimal(new int[] {
-            200,
+            350,
             0,
             0,
             0});
@@ -116,7 +116,7 @@
             this.numericUpDown2.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown2.TabIndex = 3;
             this.numericUpDown2.Value = new decimal(new int[] {
-            400,
+            25000,
             0,
             0,
             0});
@@ -192,7 +192,7 @@
             this.numericUpDown4.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown4.TabIndex = 7;
             this.numericUpDown4.Value = new decimal(new int[] {
-            10000,
+            1200,
             0,
             0,
             0});
@@ -264,7 +264,8 @@
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
             "Rgb",
-            "EMT"});
+            "EMT",
+            "Bgr"});
             this.comboBox2.Location = new System.Drawing.Point(115, 220);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
@@ -346,7 +347,7 @@
             0,
             0});
             // 
-            // Form13
+            // ViewImages_Options_Tab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -370,7 +371,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.button1);
-            this.Name = "Form13";
+            this.Name = "ViewImages_Options_Tab";
             this.Text = "Form13";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();

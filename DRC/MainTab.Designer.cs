@@ -52,6 +52,8 @@
             this.curvesSuperpositionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadCurvesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawCurvesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hItsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadHitsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -137,7 +139,8 @@
             this.fileToolStripMenuItem,
             this.clusteringToolStripMenuItem,
             this.correlationsToolStripMenuItem1,
-            this.curvesSuperpositionToolStripMenuItem});
+            this.curvesSuperpositionToolStripMenuItem,
+            this.hItsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1218, 24);
@@ -273,6 +276,20 @@
             this.drawCurvesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.drawCurvesToolStripMenuItem.Text = "Draw Curves";
             this.drawCurvesToolStripMenuItem.Click += new System.EventHandler(this.drawCurvesToolStripMenuItem_Click);
+            // 
+            // hItsToolStripMenuItem
+            // 
+            this.hItsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadHitsToolStripMenuItem});
+            this.hItsToolStripMenuItem.Name = "hItsToolStripMenuItem";
+            this.hItsToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+            this.hItsToolStripMenuItem.Text = "Hits";
+            // 
+            // loadHitsToolStripMenuItem
+            // 
+            this.loadHitsToolStripMenuItem.Name = "loadHitsToolStripMenuItem";
+            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadHitsToolStripMenuItem.Text = "Load Hits";
             // 
             // comboBox1
             // 
@@ -456,7 +473,7 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // Form1
+            // MainTab
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -483,7 +500,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MaximumSize = new System.Drawing.Size(2400, 10000);
             this.MinimumSize = new System.Drawing.Size(1200, 1000);
-            this.Name = "Form1";
+            this.Name = "MainTab";
             this.Text = "DRC Main Tab";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
@@ -538,6 +555,8 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog2;
         private System.Windows.Forms.ToolStripMenuItem showImagesToolStripMenuItem;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ToolStripMenuItem hItsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadHitsToolStripMenuItem;
     }
 }
 
