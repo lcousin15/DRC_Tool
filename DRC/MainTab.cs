@@ -21,7 +21,7 @@ namespace DRC
 
     public partial class MainTab : Form
     {
-        public bool imgCpdsViewOption = false;
+        //public bool imgCpdsViewOption = false;
 
         public MainTab()
         {
@@ -1635,7 +1635,9 @@ namespace DRC
 
         public void load_cpd_images(object sender, DataGridViewCellEventArgs e)
         {
-            f11.Visible = false;
+            f11.Visible = true;
+
+            f12 = new Form12();
 
             f12.dataGridView1.Rows.Clear();
             f12.dataGridView1.Columns.Clear();
@@ -1688,7 +1690,7 @@ namespace DRC
             //{
             //}
 
-            imgCpdsViewOption = true;
+            //imgCpdsViewOption = true;
 
             //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
 
@@ -1696,6 +1698,11 @@ namespace DRC
             List<string> wells = new List<string>();
             //SortedDictionary<string, string> concentrations = new SortedDictionary<string, string>();
             List<double> concentrations = new List<double>();
+
+            //SortedDictionary<string, string> plates_wells_concentrations = new SortedDictionary<string, string>();
+
+            f3.dataGridView1.Sort(f3.dataGridView1.Columns["Plate"], System.ComponentModel.ListSortDirection.Ascending);
+            f3.dataGridView1.Sort(f3.dataGridView1.Columns["Well"], System.ComponentModel.ListSortDirection.Ascending);
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -1709,8 +1716,8 @@ namespace DRC
             }
 
             //plates.Sort();
-            wells.Sort();
-            concentrations.Sort((a, b) => b.CompareTo(a));
+            //wells.Sort();
+            //concentrations.Sort((a, b) => b.CompareTo(a));
 
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
@@ -1758,16 +1765,8 @@ namespace DRC
                     return;
                 }
 
-                //concentration_ordered.Add(concentrations[i]);
                 Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
 
-                //if (files.Count == 2) files.Add(files[1]);
-
-                //if (files.Count == 1)
-                //{
-                //    files.Add(files[0]);
-                //    files.Add(files[0]);
-                //}
                 int size_channel = files.Count();
                 files.Sort();
 
@@ -1927,6 +1926,8 @@ namespace DRC
 
                 Mat mat = new Mat();
                 CvInvoke.Merge(channels, mat);
+
+                channels.Clear();
 
                 Bitmap my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
