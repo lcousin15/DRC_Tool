@@ -51,7 +51,7 @@ namespace DRC
 
         private string current_cpd_id;
         private Dictionary<string, int> cpd_row_index = new Dictionary<string, int>();
-        private List<string> list_cpd;
+        public List<string> list_cpd;
         private int output_parameter_number;
         private int descritpor_number;
         private List<string> descriptor_list;
@@ -75,7 +75,7 @@ namespace DRC
         }
 
         CachedCsvReader csv;
-        int aplkwz = 0;
+
         private bool is_with_plate;
         //private bool is_with_exp;
 
@@ -86,6 +86,19 @@ namespace DRC
 
         SortedDictionary<string, SortedDictionary<string, List<string>>> dict_plate_well_files = new SortedDictionary<string, SortedDictionary<string, List<string>>>();
         // plate, well path
+
+        public bool view_images_per_concentration;
+
+        public int cpd_low_th = -1;
+        public int cpd_high_thr_ch1 = -1;
+        public int cpd_high_thr_ch2 = -1;
+        public int cpd_high_thr_ch3 = -1;
+        public int cpd_high_thr_ch4 = -1;
+        public int cpd_img_scale = -1;
+        public int cpd_replicate = -1;
+        public int cpd_color_format = -1;
+        public int cpd_segm_method = -1;
+        public bool set_param_cpd = false;
 
         public double get_descriptors_number()
         {
@@ -1491,18 +1504,15 @@ namespace DRC
             draw_drc();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void button4_Click(object sender, EventArgs e)
         {
+            view_images_per_concentration = true;
             check_images();
         }
 
         private void checkImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            view_images_per_concentration = true;
             check_images();
         }
 
@@ -1601,7 +1611,7 @@ namespace DRC
             //        }
             //    }
             //}
-
+            f11 = new ViewList_CPD_Tab(this);
             f11.Visible = true;
 
             f11.dataGridView1.ColumnCount = 1;
@@ -1637,11 +1647,17 @@ namespace DRC
         {
             f11.Visible = true;
 
-            f12 = new ViewCPD_Images_Tab();
+            Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
 
-            f12.dataGridView1.Rows.Clear();
-            f12.dataGridView1.Columns.Clear();
-            f12.dataGridView1.Refresh();
+            if (fc == null)
+                f12 = new ViewCPD_Images_Tab();
+
+            if (view_images_per_concentration == true)
+            {
+                f12.dataGridView1.Rows.Clear();
+                f12.dataGridView1.Columns.Clear();
+                f12.dataGridView1.Refresh();
+            }
 
             f12.Visible = true;
 
@@ -1651,46 +1667,75 @@ namespace DRC
 
             f13 = new ViewImages_Options_Tab(this, cpd_id);
 
-            f13.Visible = false;
-            f13.comboBox2.SelectedIndex = 1;
-            f13.comboBox3.SelectedIndex = 0;
+            //f13.Visible = false;
+            //f13.comboBox2.SelectedIndex = 1;
+            //f13.comboBox3.SelectedIndex = 0;
 
             f13.Visible = true;
 
         }
 
-        public void load_cpd_images(string cpd_id)
+        public void load_cpd_images(string cpd_id, bool view_options)
         {
             f11.Visible = false;
 
-            f12 = new ViewCPD_Images_Tab();
+            Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
+
+            if (fc == null)
+                f12 = new ViewCPD_Images_Tab();
 
             f12.Text = cpd_id;
 
-            f12.dataGridView1.Rows.Clear();
-            f12.dataGridView1.Columns.Clear();
-            f12.dataGridView1.Refresh();
+            if (view_images_per_concentration == true)
+            {
+                f12.dataGridView1.Rows.Clear();
+                f12.dataGridView1.Columns.Clear();
+                f12.dataGridView1.Refresh();
+            }
 
             f12.Visible = true;
 
             f13 = new ViewImages_Options_Tab(this, cpd_id);
-
-            f13.Visible = false;
-            f13.comboBox2.SelectedIndex = 1;
-            f13.comboBox3.SelectedIndex = 0;
-
             f13.Visible = true;
+
+        }
+
+        public void load_cpd_images(List<string> list_cpd_id)
+        {
+            f11.Visible = true;
+
+            Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
+
+            if (fc == null)
+                f12 = new ViewCPD_Images_Tab();
+
+            f12.Text = "Compounds Hits";
+
+            if (view_images_per_concentration == true)
+            {
+                f12.dataGridView1.Rows.Clear();
+                f12.dataGridView1.Columns.Clear();
+                f12.dataGridView1.Refresh();
+            }
+
+            f12.Visible = true;
+
+            f13 = new ViewImages_Options_Tab(this, list_cpd_id);
+            f13.Visible = true;
+
+            //for(int k = 1; k <list_cpd_id.Count; ++k) draw_images(list_cpd_id[k]);
+
+        }
+
+        public void clear_data_grid_cpd()
+        {
+            f12.dataGridView1.Rows.Clear();
+            f12.dataGridView1.Columns.Clear();
+            f12.dataGridView1.Refresh();
         }
 
         public void draw_images(string cpd_id)
         {
-
-
-            //while (imgCpdsViewOption == false)
-            //{
-            //}
-
-            //imgCpdsViewOption = true;
 
             //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
 
@@ -1711,7 +1756,7 @@ namespace DRC
                 {
                     plates.Add(row.Cells["Plate"].Value.ToString());
                     wells.Add(row.Cells["Well"].Value.ToString());
-                    concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+                    if (view_images_per_concentration == true) concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
                 }
             }
 
@@ -1727,16 +1772,32 @@ namespace DRC
 
             //f12.dataGridView1.Columns.Add("Concentration","Concentration");
 
-            for (int i = 0; i < cols; i++)
+            if (view_images_per_concentration == true)
             {
+                for (int i = 0; i < cols; i++)
+                {
+                    DataGridViewImageColumn img = new DataGridViewImageColumn();
+                    f12.dataGridView1.Columns.Insert(i, img);
+                }
 
-                DataGridViewImageColumn img = new DataGridViewImageColumn();
-                f12.dataGridView1.Columns.Insert(i, img);
+                for (int i = 0; i < cols; i++)
+                {
+                    f12.dataGridView1.Columns[i].Name = concentrations[i * rows].ToString();
+                }
+
+                f12.dataGridView1.RowCount = rows;
             }
-
-            for (int i = 0; i < cols; i++)
+            else
             {
-                f12.dataGridView1.Columns[i].Name = concentrations[i * rows].ToString();
+                if (f12.dataGridView1.ColumnCount == 0)
+                {
+                    f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
+                    DataGridViewImageColumn img = new DataGridViewImageColumn();
+                    f12.dataGridView1.Columns.Insert(1, img);
+
+                    f12.dataGridView1.Columns[0].Name = "CPD_ID";
+                    f12.dataGridView1.Columns[1].Name = "Image";
+                }
             }
 
             foreach (DataGridViewColumn col in f12.dataGridView1.Columns)
@@ -1744,7 +1805,7 @@ namespace DRC
                 col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
 
-            f12.dataGridView1.RowCount = rows;
+            f12.dataGridView1.AllowUserToAddRows = false;
 
             //f12.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
             //List<string> list_plates = new List<string>(this.dict_plate_well_files.Keys);
@@ -1960,7 +2021,19 @@ namespace DRC
                 if (color_format == "Bgr")
                     my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
-                f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
+                if (view_images_per_concentration == true)
+                {
+                    f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
+                }
+                else
+                {
+                    int index = f12.dataGridView1.Rows.Add(new DataGridViewRow());
+
+                    f12.dataGridView1.Rows[index].Cells[0].Value = cpd_id;
+                    f12.dataGridView1.Rows[index].Cells[0].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                    f12.dataGridView1.Rows[index].Cells[1].Value = (Image)my_bitmap;
+                }
 
                 mat.Dispose();
 
@@ -1974,16 +2047,20 @@ namespace DRC
 
             for (int i = 0; i < f12.dataGridView1.Rows.Count; i++)
             {
-                //if (i == 0) f12.dataGridView1.Rows[i].Height = 25;
-                /*else*/
                 f12.dataGridView1.Rows[i].Height = height + 5;
             }
 
-            for (int j = 0; j < f12.dataGridView1.Columns.Count; j++)
+            if (view_images_per_concentration == true)
             {
-                //if (j == 0) f12.dataGridView1.Columns[j].Width = 50;
-                /*else*/
-                f12.dataGridView1.Columns[j].Width = width + 5;
+                for (int j = 0; j < f12.dataGridView1.Columns.Count; j++)
+                {
+                    f12.dataGridView1.Columns[j].Width = width + 5;
+                }
+            }
+            else
+            {
+                f12.dataGridView1.Columns[0].Width = 125;
+                f12.dataGridView1.Columns[1].Width = width + 5;
             }
 
         }
@@ -2018,7 +2095,7 @@ namespace DRC
                 if (f3.dataGridView1.ColumnCount < 3 || !f3.dataGridView1.Columns.Contains("CPD_ID")
                     || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
                 {
-                    System.Windows.Forms.MessageBox.Show("The file must contain at least these 5 columns : \n [Plate, Well, CPD_ID]", "Error",
+                    System.Windows.Forms.MessageBox.Show("The file must contain at least these 3 columns : \n [Plate, Well, CPD_ID]", "Error",
                         System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                     return;
                 }
@@ -2031,6 +2108,7 @@ namespace DRC
                 var unique_items = new HashSet<string>(CPD_ID);
                 list_cpd = unique_items.ToList<string>();
 
+                view_images_per_concentration = false;
                 check_images();
             }
 

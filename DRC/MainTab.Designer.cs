@@ -503,7 +503,6 @@
             this.MinimumSize = new System.Drawing.Size(1200, 1000);
             this.Name = "MainTab";
             this.Text = "DRC Main Tab";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form_DragEnter);
             this.menuStrip1.ResumeLayout(false);

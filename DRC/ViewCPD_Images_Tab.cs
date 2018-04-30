@@ -22,5 +22,17 @@ namespace DRC
             this.Visible = false;
             e.Cancel = false;
         }
+
+        private void dataGridView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                foreach (DataGridViewCell oneCell in dataGridView1.SelectedCells)
+                {
+                    if (oneCell.Selected)
+                        dataGridView1.Rows.RemoveAt(oneCell.RowIndex);
+                }
+            }
+        }
     }
 }

@@ -42,14 +42,15 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(1087, 884);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyDown);
             // 
-            // Form12
+            // ViewCPD_Images_Tab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1111, 908);
             this.Controls.Add(this.dataGridView1);
-            this.Name = "Form12";
+            this.Name = "ViewCPD_Images_Tab";
             this.Text = "Form12";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form12_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
