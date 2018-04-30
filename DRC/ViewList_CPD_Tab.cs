@@ -28,6 +28,7 @@ namespace DRC
 
         private void button1_Click(object sender, EventArgs e)
         {
+            _form1.clear_data_grid_cpd();
             _form1.load_cpd_images(_form1.list_cpd);
         }
 
