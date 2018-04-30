@@ -1734,6 +1734,17 @@ namespace DRC
             f12.dataGridView1.Refresh();
         }
 
+        public void draw_list_cpds(List<string> list_cpd)
+        {
+            int progress = 0;
+            foreach (string cpd in list_cpd)
+            {
+                draw_images(cpd);
+                progress++;
+                f12.toolStripProgressBar1.Value = progress * 100 / list_cpd.Count;
+            }
+        }
+
         public void draw_images(string cpd_id)
         {
 
@@ -1774,15 +1785,16 @@ namespace DRC
 
             if (view_images_per_concentration == true)
             {
-                for (int i = 0; i < cols; i++)
+
+                f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
+                f12.dataGridView1.Columns[0].Name = "Plate";
+
+                for (int i = 1; i < cols+1; i++)
                 {
                     DataGridViewImageColumn img = new DataGridViewImageColumn();
                     f12.dataGridView1.Columns.Insert(i, img);
-                }
 
-                for (int i = 0; i < cols; i++)
-                {
-                    f12.dataGridView1.Columns[i].Name = concentrations[i * rows].ToString();
+                    f12.dataGridView1.Columns[i].Name = concentrations[(i-1) * rows].ToString();
                 }
 
                 f12.dataGridView1.RowCount = rows;
@@ -1797,6 +1809,8 @@ namespace DRC
 
                     f12.dataGridView1.Columns[0].Name = "CPD_ID";
                     f12.dataGridView1.Columns[1].Name = "Image";
+
+                    f12.dataGridView1.AllowUserToAddRows = false;
                 }
             }
 
@@ -1804,8 +1818,6 @@ namespace DRC
             {
                 col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-
-            f12.dataGridView1.AllowUserToAddRows = false;
 
             //f12.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
             //List<string> list_plates = new List<string>(this.dict_plate_well_files.Keys);
@@ -1817,9 +1829,10 @@ namespace DRC
 
             for (int i = 0; i < wells.Count(); i++)
             {
-                List<string> files = new List<string>();
+                f12.toolStripProgressBar1.Value = (i+1) * 100 / wells.Count();
 
-                if (dict_plate_well_files.ContainsKey(plates[i])) files = dict_plate_well_files[plates[i]][wells[i]];
+                List<string> files = new List<string>();
+              if (dict_plate_well_files.ContainsKey(plates[i])) files = dict_plate_well_files[plates[i]][wells[i]];
                 else
                 {
                     System.Windows.Forms.MessageBox.Show("Wrong Location or Plate name.");
@@ -2023,7 +2036,8 @@ namespace DRC
 
                 if (view_images_per_concentration == true)
                 {
-                    f12.dataGridView1.Rows[i % rows].Cells[i / rows].Value = (Image)my_bitmap;
+                    f12.dataGridView1.Rows[i % rows].Cells[i / rows + 1].Value = (Image)my_bitmap;
+                    f12.dataGridView1.Rows[i % rows].Cells[0].Value = plates[i];
                 }
                 else
                 {
@@ -2040,7 +2054,7 @@ namespace DRC
                 //Console.WriteLine("i = " + i + " cols/rows = " + cols.ToString() + "  " + rows.ToString());
             }
 
-            Graphics g = this.CreateGraphics();
+            //Graphics g = this.CreateGraphics();
 
             int height = image_height; // (int)(image_height / g.DpiY * 72.0f); //  g.DpiY
             int width = image_width; // (int)(image_width / g.DpiX * 72.0f); // image_width; g.DpiX
@@ -2054,7 +2068,8 @@ namespace DRC
             {
                 for (int j = 0; j < f12.dataGridView1.Columns.Count; j++)
                 {
-                    f12.dataGridView1.Columns[j].Width = width + 5;
+                    if (j == 0) f12.dataGridView1.Columns[j].Width = 125;
+                    else f12.dataGridView1.Columns[j].Width = width + 5;
                 }
             }
             else

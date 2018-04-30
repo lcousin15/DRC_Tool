@@ -92,7 +92,7 @@ namespace DRC
             if(if_list==false) _form1.draw_images(selected_cpd);
             else
             {
-                foreach(string cpd in list_cpd) _form1.draw_images(cpd);
+                _form1.draw_list_cpds(list_cpd);
             }
 
             this.Visible = false;
