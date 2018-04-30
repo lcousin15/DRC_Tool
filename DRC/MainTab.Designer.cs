@@ -288,8 +288,9 @@
             // loadHitsToolStripMenuItem
             // 
             this.loadHitsToolStripMenuItem.Name = "loadHitsToolStripMenuItem";
-            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadHitsToolStripMenuItem.Text = "Load Hits";
+            this.loadHitsToolStripMenuItem.Click += new System.EventHandler(this.loadHitsToolStripMenuItem_Click);
             // 
             // comboBox1
             // 

@@ -1049,7 +1049,7 @@ namespace DRC
 
                 List<List<string>> deslected_data_descriptor_list = new List<List<string>>();
 
-                if (f3.dataGridView1.ColumnCount<5)
+                if (f3.dataGridView1.ColumnCount < 5)
                 {
                     System.Windows.Forms.MessageBox.Show("The file should contain at least 5 columns\n Plate,Well,Concentration,CPD_ID,Descr_0,...");
                     return;
@@ -1790,10 +1790,10 @@ namespace DRC
                         else if (file.Contains("Z01C02")) chan = 2;
                         else if (file.Contains("Z01C03")) chan = 3;
                         else if (file.Contains("Z01C04")) chan = 4;
-                        
+
                         unsafe
                         {
-                            ushort* data = (ushort*) temp.DataPointer;
+                            ushort* data = (ushort*)temp.DataPointer;
 
                             if (chan == 1)
                             {
@@ -1840,7 +1840,7 @@ namespace DRC
                     }
 
                     Mat mat_8u = new Mat();
-                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 1.0/255.0);
+                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 1.0 / 255.0);
 
                     temp.Dispose();
 
@@ -1856,7 +1856,7 @@ namespace DRC
                         CvInvoke.EqualizeHist(mat_8u, dst_thr);
                     }
 
-                    if(method_norm =="Saturate")
+                    if (method_norm == "Saturate")
                     {
                         dst_thr = mat_8u.Clone();
                     }
@@ -1992,6 +1992,50 @@ namespace DRC
         {
             if (e.KeyCode == Keys.Enter) return;
         }
+
+        private void loadHitsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                Reset();
+
+                this.Text = openFileDialog1.FileName;
+
+                System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
+                csv = new CachedCsvReader(sr, true);
+
+
+                //f3.Show();
+                f3.Hide();
+                f3.dataGridView1.DataSource = csv;
+                f4.dataGridView1.DataSource = csv;
+
+                List<string> CPD_ID = new List<string>();
+                deslected_data_descriptor = new List<string>();
+
+                if (f3.dataGridView1.ColumnCount < 3 || !f3.dataGridView1.Columns.Contains("CPD_ID")
+                    || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
+                {
+                    System.Windows.Forms.MessageBox.Show("The file must contain at least these 5 columns : \n [Plate, Well, CPD_ID]", "Error",
+                        System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                    return;
+                }
+
+                foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+                {
+                    CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString());
+                }
+
+                var unique_items = new HashSet<string>(CPD_ID);
+                list_cpd = unique_items.ToList<string>();
+
+                check_images();
+            }
+
+        }
+
     }
 
     public class Chart_DRC_Overlap
