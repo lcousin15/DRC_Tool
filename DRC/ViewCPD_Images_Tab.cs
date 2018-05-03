@@ -65,8 +65,8 @@ namespace DRC
                 int image_width = dataGridView1.Rows[0].Cells[1].Size.Width;
                 int image_height = dataGridView1.Rows[0].Cells[1].Size.Height;
 
-                int height = (int)((double)image_height / g.DpiY * 72.0f); //  g.DpiY
-                int width = (int)((double)image_width / g.DpiX * 72.0f / 5.1f); // image_width; g.DpiX
+                int height = (int)((double)image_height / g.DpiY * 72.0f + 10 / g.DpiY * 72.0f); //  g.DpiY
+                int width = (int)((double)image_width / g.DpiX * 72.0f / 5.6f + 10 / g.DpiY * 72.0f); // image_width; g.DpiX
 
                 for (int i = 1; i <= dataGridView1.Rows.Count+1; i++)
                 {

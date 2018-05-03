@@ -1729,9 +1729,15 @@ namespace DRC
 
         public void clear_data_grid_cpd()
         {
-            f12.dataGridView1.Rows.Clear();
-            f12.dataGridView1.Columns.Clear();
-            f12.dataGridView1.Refresh();
+            Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
+
+            if (fc != null)
+            {
+                f12.dataGridView1.Rows.Clear();
+                f12.dataGridView1.Columns.Clear();
+                f12.dataGridView1.Refresh();
+                f12.toolStripProgressBar1.Value = 0;
+            }
         }
 
         public void draw_list_cpds(List<string> list_cpd)
