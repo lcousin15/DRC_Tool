@@ -2113,7 +2113,7 @@ namespace DRC
                 csv = new CachedCsvReader(sr, true);
 
 
-                //f3.Show();
+                //f3.Show(); 
                 f3.Hide();
                 f3.dataGridView1.DataSource = csv;
                 f4.dataGridView1.DataSource = csv;
