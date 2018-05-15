@@ -364,7 +364,7 @@ namespace DRC
                     //toolStripStatusLabel1.Visible=true;
                     string cpd_id = list_cpd[idx].ToString();
 
-                    if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                    if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
                         continue;
 
                     tableLayoutPanel1.Controls.Clear();
