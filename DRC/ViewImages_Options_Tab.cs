@@ -28,7 +28,8 @@ namespace DRC
             InitializeComponent();
             _form1 = form;
             selected_cpd = cpd_id;
-
+            comboBox2.SelectedIndex = 0;
+            comboBox3.SelectedIndex = 0;
             if (_form1.cpd_low_th != -1)
             {
                 numericUpDown1.Value = _form1.cpd_low_th;
@@ -53,7 +54,8 @@ namespace DRC
             InitializeComponent();
             _form1 = form;
             list_cpd = cpd_id;
-
+            comboBox2.SelectedIndex = 0;
+            comboBox3.SelectedIndex = 0;
             if (_form1.cpd_low_th != -1)
             {
                 numericUpDown1.Value = _form1.cpd_low_th;
@@ -98,6 +100,26 @@ namespace DRC
             this.Visible = false;
             if_list = false;
             //_cts.Cancel();
+        }
+
+        private void comboBox3_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if ((string)comboBox3.SelectedItem == ("Otsu") || (string)comboBox3.SelectedItem =="Equal")
+            {
+                numericUpDown1.Enabled = false;
+                numericUpDown2.Enabled = false;
+                numericUpDown3.Enabled = false;
+                numericUpDown4.Enabled = false;
+                numericUpDown5.Enabled = false;
+            }
+            else
+            {
+                numericUpDown1.Enabled = true;
+                numericUpDown2.Enabled = true;
+                numericUpDown3.Enabled = true;
+                numericUpDown4.Enabled = true;
+                numericUpDown5.Enabled = true;
+            }
         }
 
 

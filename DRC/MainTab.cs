@@ -1931,7 +1931,7 @@ namespace DRC
 
                     if (method_norm == "Otsu")
                     {
-                        CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu);
+                        CvInvoke.Threshold(mat_8u, dst_thr, 0, 255, Emgu.CV.CvEnum.ThresholdType.Binary | Emgu.CV.CvEnum.ThresholdType.Otsu);
                     }
 
                     if (method_norm == "Equal")
@@ -1979,9 +1979,9 @@ namespace DRC
                     channels.Push(my_new_mat);
                 }
 
-
+                
                 string color_format = f13.comboBox2.SelectedItem.ToString();
-
+              
                 //if (color_format == "Rgb")
                 //{
                 //    if (size_channel == 2)
