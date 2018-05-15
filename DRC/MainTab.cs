@@ -1773,7 +1773,7 @@ namespace DRC
                 {
                     plates.Add(row.Cells["Plate"].Value.ToString());
                     wells.Add(row.Cells["Well"].Value.ToString());
-                    if (view_images_per_concentration == true) concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+                    concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
                 }
             }
 
@@ -1812,9 +1812,11 @@ namespace DRC
                     f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
                     DataGridViewImageColumn img = new DataGridViewImageColumn();
                     f12.dataGridView1.Columns.Insert(1, img);
+                    f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
 
                     f12.dataGridView1.Columns[0].Name = "CPD_ID";
                     f12.dataGridView1.Columns[1].Name = "Image";
+                    f12.dataGridView1.Columns[2].Name = "Concentration";
 
                     f12.dataGridView1.AllowUserToAddRows = false;
                 }
@@ -1838,7 +1840,8 @@ namespace DRC
                 f12.toolStripProgressBar1.Value = (i+1) * 100 / wells.Count();
 
                 List<string> files = new List<string>();
-              if (dict_plate_well_files.ContainsKey(plates[i])) files = dict_plate_well_files[plates[i]][wells[i]];
+
+                if (dict_plate_well_files.ContainsKey(plates[i])) files = dict_plate_well_files[plates[i]][wells[i]];
                 else
                 {
                     System.Windows.Forms.MessageBox.Show("Wrong Location or Plate name.");
@@ -2053,6 +2056,10 @@ namespace DRC
                     f12.dataGridView1.Rows[index].Cells[0].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                     f12.dataGridView1.Rows[index].Cells[1].Value = (Image)my_bitmap;
+                    f12.dataGridView1.Rows[index].Cells[2].Value = concentrations[i];
+                    f12.dataGridView1.Rows[index].Cells[2].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+
                 }
 
                 mat.Dispose();
@@ -2082,6 +2089,7 @@ namespace DRC
             {
                 f12.dataGridView1.Columns[0].Width = 125;
                 f12.dataGridView1.Columns[1].Width = width + 5;
+                f12.dataGridView1.Columns[2].Width = 125;
             }
 
         }
@@ -2105,7 +2113,7 @@ namespace DRC
                 csv = new CachedCsvReader(sr, true);
 
 
-                //f3.Show();
+                //f3.Show(); 
                 f3.Hide();
                 f3.dataGridView1.DataSource = csv;
                 f4.dataGridView1.DataSource = csv;
@@ -2113,10 +2121,11 @@ namespace DRC
                 List<string> CPD_ID = new List<string>();
                 deslected_data_descriptor = new List<string>();
 
-                if (f3.dataGridView1.ColumnCount < 3 || !f3.dataGridView1.Columns.Contains("CPD_ID")
-                    || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
+                if (f3.dataGridView1.ColumnCount < 4 || !f3.dataGridView1.Columns.Contains("CPD_ID")
+                    || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well")
+                    || !f3.dataGridView1.Columns.Contains("Concentration"))
                 {
-                    System.Windows.Forms.MessageBox.Show("The file must contain at least these 3 columns : \n [Plate, Well, CPD_ID]", "Error",
+                    System.Windows.Forms.MessageBox.Show("The file must contain at least these 4 columns : \n [Plate, Well, CPD_ID, Concentration]", "Error",
                         System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                     return;
                 }
