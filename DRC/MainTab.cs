@@ -696,7 +696,7 @@ namespace DRC
                 {
                     string cpd_id = list_cpd[idx].ToString();
 
-                    if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                    if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
                         continue;
 
                     List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
