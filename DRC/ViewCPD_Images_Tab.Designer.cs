@@ -102,7 +102,7 @@
             this.Controls.Add(this.dataGridView1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "ViewCPD_Images_Tab";
-            this.Text = "Form12";
+            this.Text = "Compound Images";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form12_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.statusStrip1.ResumeLayout(false);

@@ -25,6 +25,8 @@ namespace DRC
             InitializeComponent();
         }
 
+        public bool view_images_per_concentration;
+
         private void Form12_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.Visible = false;
@@ -66,7 +68,7 @@ namespace DRC
                 int image_height = dataGridView1.Rows[0].Cells[1].Size.Height;
 
                 int height = (int)((double)image_height / g.DpiY * 72.0f + 10 / g.DpiY * 72.0f); //  g.DpiY
-                int width = (int)((double)image_width / g.DpiX * 72.0f / 5.6f + 10 / g.DpiY * 72.0f); // image_width; g.DpiX
+                int width = (int)((double)image_width / g.DpiX * 72.0f / 5.41f + 10 / g.DpiY * 72.0f); // image_width; g.DpiX
 
                 for (int i = 1; i <= dataGridView1.Rows.Count+1; i++)
                 {
@@ -78,6 +80,8 @@ namespace DRC
                 {
                     if (j == 1) ws.Column(j).Width = 15;
                     else ws.Column(j).Width = width;
+                    if (j == 3 && !view_images_per_concentration) ws.Column(j).Width = 15;
+                    
                     //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
                 }
 
@@ -94,7 +98,6 @@ namespace DRC
                         if (cellRowIndex == 1)
                         {
                             ws.Cells[cellRowIndex, cellColumnIndex].Value = dataGridView1.Columns[j].HeaderText;
-
 
                             ws.Cells[cellRowIndex, cellColumnIndex].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                             ws.Cells[cellRowIndex, cellColumnIndex].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
@@ -122,19 +125,6 @@ namespace DRC
                         else
                         {
 
-                            if (j > 0)
-                            {
-
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridView1.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridView1.Rows[i].Cells[j].Value);
-
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Numberformat.Format = "0.00E+00";
-
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Fill.BackgroundColor.SetColor(dataGridView1.Rows[i].Cells[j].Style.BackColor);
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-
-                            }
                             if (j == 0)
                             {
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridView1.Rows[i].Cells[j].Value;
@@ -144,6 +134,19 @@ namespace DRC
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Dotted);
+
+                            }
+                            else if (j > 0)
+                            {
+
+                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridView1.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridView1.Rows[i].Cells[j].Value);
+
+                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Numberformat.Format = "0.00E+00";
+
+                                //ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                                //ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Fill.BackgroundColor.SetColor(dataGridView1.Rows[i].Cells[j].Style.BackColor);
+                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
 
                             }
 

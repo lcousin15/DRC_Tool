@@ -72,7 +72,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridView1);
             this.Name = "ViewList_CPD_Tab";
-            this.Text = "Form11";
+            this.Text = "Compound List";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 

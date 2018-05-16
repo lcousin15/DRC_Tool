@@ -371,7 +371,7 @@
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.button1);
             this.Name = "ViewImages_Options_Tab";
-            this.Text = "Form13";
+            this.Text = "Options";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();

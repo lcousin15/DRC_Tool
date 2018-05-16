@@ -1507,12 +1507,16 @@ namespace DRC
         private void button4_Click(object sender, EventArgs e)
         {
             view_images_per_concentration = true;
+            f12.view_images_per_concentration = true;
+
             check_images();
         }
 
         private void checkImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             view_images_per_concentration = true;
+            f12.view_images_per_concentration = true;
+
             check_images();
         }
 
@@ -1659,6 +1663,8 @@ namespace DRC
                 f12.dataGridView1.Refresh();
             }
 
+            f12.view_images_per_concentration = view_images_per_concentration;
+
             f12.Visible = true;
 
             string cpd_id = f11.dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
@@ -1686,6 +1692,8 @@ namespace DRC
 
             f12.Text = cpd_id;
 
+            f12.view_images_per_concentration = view_options; // true in cpd main tab
+
             if (view_images_per_concentration == true)
             {
                 f12.dataGridView1.Rows.Clear();
@@ -1710,6 +1718,8 @@ namespace DRC
                 f12 = new ViewCPD_Images_Tab();
 
             f12.Text = "Compounds Hits";
+
+            f12.view_images_per_concentration = view_images_per_concentration;
 
             if (view_images_per_concentration == true)
             {
@@ -2099,6 +2109,7 @@ namespace DRC
             if (e.KeyCode == Keys.Enter) return;
         }
 
+        // Hits Menu
         private void loadHitsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
