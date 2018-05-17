@@ -31,6 +31,15 @@ namespace DRC
 
         private double fold_number;
 
+        private List<string> list_items_1 = new List<string>();
+        private List<string> list_items_2 = new List<string>();
+
+        private string label_exp_1;
+        private string label_exp_2;
+
+        private string fileName1;
+        private string fileName2;
+
         private void Reset()
         {
             checkedListBox1.Items.Clear();
@@ -42,14 +51,22 @@ namespace DRC
             f8.dataGridView2.Rows.Clear();
 
             if (charts.Count > 0) charts.Clear();
+
+            list_items_1.Clear();
+            list_items_2.Clear();
+
+            label_exp_1 = "";
+            label_exp_2 = "";
+
+            fileName1 = "";
+            fileName2 = "";
         }
 
-        private void read_Data()
+        private void read_Data_1()
         {
             //f8.Show();
 
-            if (f8.dataGridView1.Rows.Count == 0) f8.dataGridView1.DataSource = csv;
-            else f8.dataGridView2.DataSource = csv;
+            f8.dataGridView1.DataSource = csv;
 
             foreach (DataGridViewColumn col in f8.dataGridView1.Columns)
             {
@@ -57,12 +74,33 @@ namespace DRC
 
                 if (col_name != "Run" && col_name != "CPD_ID")
                 {
-                    if (f8.dataGridView2.Rows.Count == 0)
-                    {
-                        if (col_name.Contains("EC_50")) checkedListBox1.Items.Add(col_name);
-                    }
+                    if (col_name.Contains("EC_50")) list_items_1.Add(col_name); //checkedListBox1.Items.Add(col_name);
                 }
             }
+        }
+
+        private void read_Data_2()
+        {
+            //f8.Show();
+
+            f8.dataGridView2.DataSource = csv;
+
+            foreach (DataGridViewColumn col in f8.dataGridView2.Columns)
+            {
+                string col_name = col.HeaderText;
+
+                if (col_name != "Run" && col_name != "CPD_ID")
+                {
+                    if (col_name.Contains("EC_50")) list_items_2.Add(col_name); //checkedListBox1.Items.Add(col_name);
+                }
+            }
+
+        }
+
+        public void set_Labels(string lbl_exp_1, string lbl_exp_2)
+        {
+            label_exp_1 = lbl_exp_1;
+            label_exp_2 = lbl_exp_2;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -76,21 +114,37 @@ namespace DRC
             {
                 this.Text = openFileDialog1.FileName;
 
+                fileName1 = openFileDialog1.FileName.Split('\\').Last();
+
                 System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
                 csv = new CachedCsvReader(sr, true);
 
-                read_Data();
+                read_Data_1();
             }
 
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 this.Text = openFileDialog1.FileName;
 
+                fileName2 = openFileDialog1.FileName.Split('\\').Last();
+
                 System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
                 csv = new CachedCsvReader(sr, true);
 
-                read_Data();
+                read_Data_2();
             }
+
+            foreach (string item in list_items_1)
+            {
+                if (list_items_2.Contains(item))
+                {
+                    checkedListBox1.Items.Add(item);
+                }
+            }
+
+            Correlations_Exp_Name form_label = new Correlations_Exp_Name(this, fileName1, fileName2);
+
+            form_label.Visible = true;
 
             return;
         }
@@ -260,7 +314,7 @@ namespace DRC
                 if (item.Contains("G/N") || item.Contains("G")) color = Color.Green;
                 if (item.Contains("LDA_1") || item.Contains("LDA")) color = Color.Black;
 
-                Chart_Correlations chart_correl = new Chart_Correlations(dict_var_1, dict_var_2, item, run_description_1, run_description_2, color, this, fold_number);
+                Chart_Correlations chart_correl = new Chart_Correlations(dict_var_1, dict_var_2, item, label_exp_1, label_exp_2, color, this, fold_number);
                 charts.Add(chart_correl);
 
                 item_row += 1;
@@ -399,6 +453,7 @@ namespace DRC
                             if (cellRowIndex == 1)
                             {
                                 worksheet.Cells[cellRowIndex, cellColumnIndex] = f9.dataGridView1.Columns[j].HeaderText;
+                                if(j==1) worksheet.Cells[cellRowIndex, cellColumnIndex] = f9.dataGridView1.Columns[j].HeaderText + " [Folds]";
                                 worksheet.Cells[cellRowIndex, cellColumnIndex].Interior.Color = Color.LightGray;
                                 worksheet.Cells[cellRowIndex, cellColumnIndex].Borders.Weight = 1d;
                             }
@@ -552,8 +607,8 @@ namespace DRC
             chartArea.AxisX.MajorGrid.LineWidth = 0;
             chartArea.AxisY.MajorGrid.LineWidth = 0;
 
-            chartArea.AxisX.Title = "EC_50 Exp " + run_1;
-            chartArea.AxisY.Title = "EC_50 Exp " + run_2;
+            chartArea.AxisX.Title = "EC_50 " + run_1;
+            chartArea.AxisY.Title = "EC_50 " + run_2;
 
             //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
 
@@ -585,7 +640,7 @@ namespace DRC
 
             chart.Size = new System.Drawing.Size(550, 350);
 
-            chart.Titles.Add("Title_1");
+            chart.Titles.Add("Correlations");
 
             process_data();
             draw_chart();
@@ -757,7 +812,7 @@ namespace DRC
             string descriptor_name = descriptor.Replace(@"/", @"_");
             string output_image = path + "/Correlations_" + descriptor_name + "_run_" + exp_run_1 + "_vs_" + exp_run_2 + ".bmp";
 
-           // System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);me
+            // System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);me
             chart.SaveImage(output_image, ChartImageFormat.Bmp);
 
             return output_image;

@@ -316,3 +316,4 @@ D:\DRC_Tool\DRC\obj\x64\Release\DRC.Correlations_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.RawData_Correlations_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Export_Excel_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.csprojResolveAssemblyReference.cache
+E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Correlations_Exp_Name.resources

@@ -158,6 +158,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Correlations_Exp_Name.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Correlations_Exp_Name.Designer.cs">
+      <DependentUpon>Correlations_Exp_Name.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainTab.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -238,6 +244,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Correlations_Exp_Name.resx">
+      <DependentUpon>Correlations_Exp_Name.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainTab.resx">
       <DependentUpon>MainTab.cs</DependentUpon>
     </EmbeddedResource>
