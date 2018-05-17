@@ -67,15 +67,17 @@ namespace DRC
                 int image_width = dataGridView1.Rows[0].Cells[1].Size.Width;
                 int image_height = dataGridView1.Rows[0].Cells[1].Size.Height;
 
-                int height = (int)((double)image_height / g.DpiY * 72.0f + 10 / g.DpiY * 72.0f); //  g.DpiY
-                int width = (int)((double)image_width / g.DpiX * 72.0f / 5.41f + 10 / g.DpiY * 72.0f); // image_width; g.DpiX
+                //double dpi_excel = 220.0;
+
+                double height = (double)((image_height+10) / g.DpiY * 72.0f); //  g.DpiY
+                double width = (double)(((image_width+10-7)/7.0+1.0)); // image_width; g.DpiX
 
                 for (int i = 1; i <= dataGridView1.Rows.Count+1; i++)
                 {
                     if (i == 1) ws.Row(i).Height = 20;
                     else ws.Row(i).Height = height;
                 }
-
+                
                 for (int j = 1; j <= dataGridView1.Columns.Count; j++)
                 {
                     if (j == 1) ws.Column(j).Width = 15;
@@ -112,6 +114,11 @@ namespace DRC
 
                             Bitmap img = (Bitmap)(dataGridView1.Rows[i].Cells[j].Value);
 
+                            //double resX = img.HorizontalResolution;
+                            //double resY = img.VerticalResolution;
+                            //double size_X = img.Width;
+                            //double size_Y = img.Height;
+
                             string name_idx = (cellRowIndex * dataGridView1.Columns.Count + cellColumnIndex).ToString();
 
                             ExcelPicture excelImage = null;
@@ -119,7 +126,8 @@ namespace DRC
                             excelImage = ws.Drawings.AddPicture(name_idx, img);
                             excelImage.From.Column = cellColumnIndex - 1;
                             excelImage.From.Row = cellRowIndex;
-                            excelImage.SetSize(image_width, image_height);
+                            excelImage.SetSize(img.Width, img.Height);
+                            //excelImage.AdjustPositionAndSize.SetBounds
 
                         }
                         else
