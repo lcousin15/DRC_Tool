@@ -1015,6 +1015,11 @@ namespace DRC
 
         private void correlationsToolStripMenuItem2_Click(object sender, EventArgs e)
         {
+            Form fc = Application.OpenForms["Correlations_Tab"];
+
+            if (fc == null)
+                f7 = new Correlations_Tab();
+
             f7.Show();
         }
 
