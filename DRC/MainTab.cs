@@ -1575,9 +1575,10 @@ namespace DRC
                 //Console.WriteLine(well);
                 if (file.Contains("F001"))
                 {
-                    if (dict_plate_well_files.ContainsKey(plate))
+                    if (dict_plate_well_files.Keys.Contains(plate)) // check if a part of plate name is in the path
                     {
-                        SortedDictionary<string, List<string>> dict_well_files = dict_plate_well_files[plate];
+                        SortedDictionary<string, List<string>> dict_well_files = dict_plate_well_files.FirstOrDefault(kvp => kvp.Key.Contains(plate)).Value;
+                        //SortedDictionary<string, List<string>> dict_well_files = dict_plate_well_files[plate];
 
                         if (dict_well_files.ContainsKey(well))
                         {
