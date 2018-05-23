@@ -376,7 +376,7 @@ namespace DRC
 
                 f5.dataGridViewExport.Rows.Clear();
 
-                f5.dataGridViewExport.ColumnCount = 1 + descriptor_list.Count;
+                f5.dataGridViewExport.ColumnCount = 1 + 2*descriptor_list.Count;
 
                 f5.dataGridViewExport.Columns[0].Name = "CPD_ID";
 
@@ -385,7 +385,7 @@ namespace DRC
                 {
 
                     DataGridViewImageColumn img = new DataGridViewImageColumn();
-                    f5.dataGridViewExport.Columns.Insert(2 * i + 1, img);
+                    f5.dataGridViewExport.Columns.Insert(3 * i + 1, img);
 
                     i++;
                 }
@@ -393,8 +393,10 @@ namespace DRC
                 i = 0;
                 foreach (string elem in descriptor_list)
                 {
-                    f5.dataGridViewExport.Columns[2 * i + 1].Name = elem;
-                    f5.dataGridViewExport.Columns[2 * i + 2].Name = "EC_50 " + elem;
+                    f5.dataGridViewExport.Columns[3 * i + 1].Name = elem;
+                    f5.dataGridViewExport.Columns[3 * i + 2].Name = "EC_50 " + elem;
+                    f5.dataGridViewExport.Columns[3 * i + 3].Name = "Top " + elem;
+
                     i++;
                 }
                 toolStripProgressBar1.Visible = true;
@@ -434,26 +436,44 @@ namespace DRC
                         bool not_fitted = current_chart.is_Fitted();
                         bool inactive = current_chart.is_Inactive();
 
+                        double current_top = fit_params[1];
                         double current_ec_50 = fit_params[2];
 
                         Image image = Image.FromFile(list_images[i_img]);
 
                         //f5.dataGridViewExport.Rows[index].Height = 
-                        f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 1].Value = image;
+                        f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 1].Value = image;
                         if (!not_fitted || !inactive)
                         {
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = Math.Pow(10, current_ec_50);
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.LightGreen;
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Value = Math.Pow(10, current_ec_50);
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Style.BackColor = Color.LightGreen;
+
+                            if (current_ec_50 <= 30*1E-6)
+                            {
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = current_top;
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.LightGreen;
+                            }
+                            else if(current_ec_50>30.0*1E-6)
+                            {
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "EC_50 > 30nM";
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.Tomato;
+                            }
                         }
                         if (not_fitted)
                         {
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = "Not Fitted";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.Tomato;
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Value = "Not Fitted";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Style.BackColor = Color.Tomato;
+
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "Not Fitted";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.Tomato;
                         }
                         if (inactive)
                         {
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Value = "Inactive";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 2 + 2].Style.BackColor = Color.Orange;
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Value = "Inactive";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Style.BackColor = Color.Orange;
+
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "Inactive";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.Orange;
                         }
 
                         i_img++;
