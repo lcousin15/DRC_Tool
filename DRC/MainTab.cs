@@ -15,13 +15,54 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Threading.Tasks;
+using System.Globalization;
+using System.Collections;
+using System.Data;
 
 namespace DRC
 {
 
+
     public partial class MainTab : Form
     {
         //public bool imgCpdsViewOption = false;
+
+        public class RowComparer : System.Collections.IComparer
+        {
+            private static int sortOrderModifier = 1;
+
+            public RowComparer(SortOrder sortOrder)
+            {
+                if (sortOrder == SortOrder.Descending)
+                {
+                    sortOrderModifier = -1;
+                }
+                else if (sortOrder == SortOrder.Ascending)
+                {
+                    sortOrderModifier = 1;
+                }
+            }
+
+            public int Compare(object x, object y)
+            {
+                DataGridViewRow DataGridViewRow1 = (DataGridViewRow)x;
+                DataGridViewRow DataGridViewRow2 = (DataGridViewRow)y;
+
+                // Try to sort based on the Last Name column.
+                int CompareResult = System.Decimal.Compare(
+                    Decimal.Parse(DataGridViewRow1.Cells["Concentration"].Value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture),
+                    Decimal.Parse(DataGridViewRow2.Cells["Concentration"].Value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture));
+
+                // If the Last Names are equal, sort based on the First Name.
+                if (CompareResult == 0)
+                {
+                    CompareResult = System.String.Compare(
+                        DataGridViewRow1.Cells["Plate"].Value.ToString(),
+                        DataGridViewRow2.Cells["Plate"].Value.ToString());
+                }
+                return CompareResult * sortOrderModifier;
+            }
+        }
 
         public MainTab()
         {
@@ -1767,6 +1808,42 @@ namespace DRC
             }
         }
 
+        private void copy_data_grid_view(ref DataGridView dataGridView1, ref DataGridView dataGridView2)
+        {
+            dataGridView2.DataSource = null;
+            dataGridView2.Rows.Clear();
+
+            if (dataGridView2.Columns.Count == 0)
+            {
+                foreach (DataGridViewColumn dgvc in dataGridView1.Columns)
+                {
+                    dataGridView2.Columns.Add(dgvc.Clone() as DataGridViewColumn);
+                }
+                int index_col = 0;
+                foreach (DataGridViewColumn dgvc in dataGridView1.Columns)
+                {
+                    dataGridView2.Columns[index_col].Name = dgvc.Name;
+                    dataGridView2.Columns[index_col].HeaderText = dgvc.HeaderText;
+                    index_col++;
+                }
+            }
+
+            DataGridViewRow row2 = new DataGridViewRow();
+
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                row2 = (DataGridViewRow)dataGridView1.Rows[i].Clone();
+                int intColIndex = 0;
+
+                foreach (DataGridViewCell cell in dataGridView1.Rows[i].Cells)
+                {
+                    row2.Cells[intColIndex].Value = cell.Value;
+                    intColIndex++;
+                }
+                dataGridView2.Rows.Add(row2);
+            }
+        }
+
         public void draw_images(string cpd_id)
         {
 
@@ -1776,11 +1853,28 @@ namespace DRC
             List<string> wells = new List<string>();
             //SortedDictionary<string, string> concentrations = new SortedDictionary<string, string>();
             List<double> concentrations = new List<double>();
+            List<double> row_concentrations = new List<double>();
 
-            //SortedDictionary<string, string> plates_wells_concentrations = new SortedDictionary<string, string>();
 
-            f3.dataGridView1.Sort(f3.dataGridView1.Columns["Plate"], System.ComponentModel.ListSortDirection.Ascending);
-            f3.dataGridView1.Sort(f3.dataGridView1.Columns["Well"], System.ComponentModel.ListSortDirection.Ascending);
+
+            //f3.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
+            //f3.dataGridView1.Columns[c.ColumnCount - 1].ValueType = typeof(double);
+            //f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 1].Name = "ConcNum";
+
+            //f3.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
+            //f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 1].Name = "Plates";
+            f3.dataGridView1.AllowUserToAddRows = false;
+            f3.dataGridView2.AllowUserToAddRows = false;
+
+            copy_data_grid_view(ref f3.dataGridView1, ref f3.dataGridView2);
+
+            f3.dataGridView2.Refresh();
+            f3.dataGridView2.Sort(new RowComparer(SortOrder.Descending));
+
+            copy_data_grid_view(ref f3.dataGridView2, ref f3.dataGridView1);
+            f3.dataGridView1.Refresh();
+
+            //f3.Show();
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -1800,8 +1894,13 @@ namespace DRC
             List<string> current_plates = plates.Distinct().ToList();
             List<string> current_wells = wells.Distinct().ToList();
 
-            int rows = current_plates.Count() * (int)f13.numericUpDown6.Value;
+            int rows = dict_plate_well_files.Keys.Distinct().ToList().Count() * (int)f13.numericUpDown6.Value;
+            int total_plate_nb = Math.Min(current_plates.Count() * (int)f13.numericUpDown6.Value, rows);
+            rows = total_plate_nb;
+
             int cols = (int)(current_wells.Count() / (double)f13.numericUpDown6.Value);
+
+            int concentrations_per_cpd = concentrations.Count() / total_plate_nb;
 
             //f12.dataGridView1.Columns.Add("Concentration","Concentration");
 
@@ -1811,12 +1910,10 @@ namespace DRC
                 f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
                 f12.dataGridView1.Columns[0].Name = "Plate";
 
-                for (int i = 1; i < cols+1; i++)
+                for (int i = 1; i < cols + 1; i++)
                 {
                     DataGridViewImageColumn img = new DataGridViewImageColumn();
                     f12.dataGridView1.Columns.Insert(i, img);
-
-                    f12.dataGridView1.Columns[i].Name = concentrations[(i-1) * rows].ToString();
                 }
 
                 f12.dataGridView1.RowCount = rows;
@@ -1850,18 +1947,37 @@ namespace DRC
             int image_height = 0;
 
             //List<string> concentration_ordered = new List<string>();
+            int counter = 0;
 
             for (int i = 0; i < wells.Count(); i++)
             {
-                f12.toolStripProgressBar1.Value = (i+1) * 100 / wells.Count();
+                f12.toolStripProgressBar1.Value = (i + 1) * 100 / wells.Count();
 
                 List<string> files = new List<string>();
 
-                if (dict_plate_well_files.ContainsKey(plates[i])) files = dict_plate_well_files[plates[i]][wells[i]];
+                string current_plate = plates[i];
+                List<string> list_plates = dict_plate_well_files.Keys.ToList();
+
+                bool test_plate = false;
+
+                foreach (string plate_name in list_plates)
+                {
+                    if (plate_name.Contains(current_plate)) test_plate = true;
+                }
+
+                if (test_plate)
+                {
+                    SortedDictionary<string, List<string>> dict_well = dict_plate_well_files.FirstOrDefault(kvp => kvp.Key.Contains(plates[i])).Value;
+
+                    files = dict_well[wells[i]];
+                    counter++;
+                    row_concentrations.Add(concentrations[i]);
+                }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Wrong Location or Plate name.");
-                    return;
+                    continue;
+                    //System.Windows.Forms.MessageBox.Show("Wrong Location or Plate name.");
+                    //return;
                 }
 
                 Emgu.CV.Util.VectorOfMat channels = new Emgu.CV.Util.VectorOfMat();
@@ -1995,9 +2111,9 @@ namespace DRC
                     channels.Push(my_new_mat);
                 }
 
-                
+
                 string color_format = f13.comboBox2.SelectedItem.ToString();
-              
+
                 //if (color_format == "Rgb")
                 //{
                 //    if (size_channel == 2)
@@ -2026,9 +2142,9 @@ namespace DRC
                     if (size_channel == 3)
                     {
                         Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
-                        channels_bgr.Push(channels[0].Clone());
                         channels_bgr.Push(channels[1].Clone());
                         channels_bgr.Push(channels[2].Clone());
+                        channels_bgr.Push(channels[0].Clone());
 
                         channels.Clear();
                         channels = channels_bgr;
@@ -2056,13 +2172,14 @@ namespace DRC
                 if (color_format == "Rgb")
                     my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
-                if (color_format == "Bgr")
+                if (color_format == "Bgr" || color_format == "EMT")
                     my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
                 if (view_images_per_concentration == true)
                 {
-                    f12.dataGridView1.Rows[i % rows].Cells[i / rows + 1].Value = (Image)my_bitmap;
-                    f12.dataGridView1.Rows[i % rows].Cells[0].Value = plates[i];
+                    f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
+                    f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[0].Value = plates[i];
+                    f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[(counter - 1) / total_plate_nb].ToString();
                 }
                 else
                 {
@@ -2128,7 +2245,6 @@ namespace DRC
 
                 System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
                 csv = new CachedCsvReader(sr, true);
-
 
                 //f3.Show(); 
                 f3.Hide();

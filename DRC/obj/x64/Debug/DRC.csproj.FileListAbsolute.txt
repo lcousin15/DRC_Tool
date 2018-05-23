@@ -242,3 +242,4 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csproj.CoreCompileInputs.cache
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.exe
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.pdb
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Correlations_Exp_Name.resources
+F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Debug\DRC.Correlations_Exp_Name.resources
