@@ -1874,7 +1874,7 @@ namespace DRC
             copy_data_grid_view(ref f3.dataGridView2, ref f3.dataGridView1);
             f3.dataGridView1.Refresh();
 
-            //f3.Show();
+            ////f3.Show();
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
