@@ -455,7 +455,7 @@ namespace DRC
                             }
                             else if(current_ec_50>30.0*1E-6)
                             {
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "EC_50 > 30nM";
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "EC_50 > 30uM";
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.Tomato;
                             }
                         }
