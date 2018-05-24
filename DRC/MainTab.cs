@@ -2195,11 +2195,13 @@ namespace DRC
                 if (color_format == "Bgr" || color_format == "EMT")
                     my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
+                int replicate = (int)f13.numericUpDown6.Value;
+
                 if (view_images_per_concentration == true)
                 {
                     f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[0].Value = plates[i];
-                    f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[(counter - 1) / total_plate_nb].ToString();
+                    f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1) / total_plate_nb)*replicate].ToString();
                 }
                 else
                 {
