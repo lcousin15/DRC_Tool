@@ -2213,8 +2213,6 @@ namespace DRC
                     f12.dataGridView1.Rows[index].Cells[1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[index].Cells[2].Value = concentrations[i];
                     f12.dataGridView1.Rows[index].Cells[2].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-
                 }
 
                 mat.Dispose();
