@@ -645,7 +645,18 @@ namespace DRC
 
                     //Color color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
                     //Color color = myColors[descriptor_index];
+
                     Color color = Color.Blue;
+                    if (descriptor_index == 0) color = Color.Blue;
+                    else if (descriptor_index == 1) color = Color.Red;
+                    else if (descriptor_index == 2) color = Color.Green;
+                    else if (descriptor_index == 3) color = Color.Black;
+                    else if (descriptor_index == 4) color = Color.DarkOrange;
+                    else if (descriptor_index == 5) color = Color.DarkViolet;
+                    else if (descriptor_index == 6) color = Color.DarkBlue;
+                    else if (descriptor_index == 7) color = Color.Brown;
+                    else if (descriptor_index == 8) color = Color.Salmon;
+                    else if (descriptor_index == 9) color = Color.DimGray;
 
                     if (descriptor_name == "Nuclei") color = Color.Blue;
                     if (descriptor_name == "R/N" || descriptor_name == "R") color = Color.Red;
@@ -1423,6 +1434,16 @@ namespace DRC
                         //Color color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
                         //Color color = myColors[descriptor_index];
                         Color color = Color.Blue;
+                        if (descriptor_index == 0) color = Color.Blue;
+                        else if (descriptor_index == 1) color = Color.Red;
+                        else if (descriptor_index == 2) color = Color.Green;
+                        else if (descriptor_index == 3) color = Color.Black;
+                        else if (descriptor_index == 4) color = Color.Orange;
+                        else if (descriptor_index == 5) color = Color.DarkViolet;
+                        else if (descriptor_index == 6) color = Color.SkyBlue;
+                        else if (descriptor_index == 7) color = Color.Brown;
+                        else if (descriptor_index == 8) color = Color.Indigo;
+                        else if (descriptor_index == 9) color = Color.DimGray;
 
                         if (descriptor_name == "Nuclei") color = Color.Blue;
                         if (descriptor_name == "R/N" || descriptor_name == "R") color = Color.Red;
