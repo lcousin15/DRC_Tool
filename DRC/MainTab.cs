@@ -67,6 +67,17 @@ namespace DRC
         public MainTab()
         {
             InitializeComponent();
+
+            curve_color.Add(Color.Blue);
+            curve_color.Add(Color.Red);
+            curve_color.Add(Color.Green);
+            curve_color.Add(Color.Black);
+            curve_color.Add(Color.DarkOrange);
+            curve_color.Add(Color.DarkViolet);
+            curve_color.Add(Color.DarkBlue);
+            curve_color.Add(Color.Brown);
+            curve_color.Add(Color.Salmon);
+            curve_color.Add(Color.DimGray);
         }
 
         public CPD_Tab f2;
@@ -140,6 +151,8 @@ namespace DRC
         public int cpd_color_format = -1;
         public int cpd_segm_method = -1;
         public bool set_param_cpd = false;
+
+        List<Color> curve_color = new List<Color>();
 
         public double get_descriptors_number()
         {
@@ -647,21 +660,41 @@ namespace DRC
                     //Color color = myColors[descriptor_index];
 
                     Color color = Color.Blue;
-                    if (descriptor_index == 0) color = Color.Blue;
-                    else if (descriptor_index == 1) color = Color.Red;
-                    else if (descriptor_index == 2) color = Color.Green;
-                    else if (descriptor_index == 3) color = Color.Black;
-                    else if (descriptor_index == 4) color = Color.DarkOrange;
-                    else if (descriptor_index == 5) color = Color.DarkViolet;
-                    else if (descriptor_index == 6) color = Color.DarkBlue;
-                    else if (descriptor_index == 7) color = Color.Brown;
-                    else if (descriptor_index == 8) color = Color.Salmon;
-                    else if (descriptor_index == 9) color = Color.DimGray;
 
-                    if (descriptor_name == "Nuclei") color = Color.Blue;
-                    if (descriptor_name == "R/N" || descriptor_name == "R") color = Color.Red;
-                    if (descriptor_name == "G/N" || descriptor_name == "G") color = Color.Green;
-                    if (descriptor_name == "LDA_1") color = Color.Black;
+                    if (descriptor_name == "Nuclei")
+                    {
+                        color = Color.Blue;
+                        curve_color.RemoveAt(curve_color.IndexOf(color));
+                    }
+                    if (descriptor_name == "R/N" || descriptor_name == "R")
+                    {
+                        color = Color.Red;
+                        curve_color.RemoveAt(curve_color.IndexOf(color));
+                    }
+                    if (descriptor_name == "G/N" || descriptor_name == "G")
+                    {
+                        color = Color.Green;
+                        curve_color.RemoveAt(curve_color.IndexOf(color));
+                    }
+                    if (descriptor_name == "LDA_1")
+                    {
+                        color = Color.Black;
+                        curve_color.RemoveAt(curve_color.IndexOf(color));
+                    }
+
+                    if (descriptor_index < curve_color.Count)
+                    {
+                        if (descriptor_index == 0) color = curve_color[0];
+                        else if (descriptor_index == 1) color = curve_color[1];
+                        else if (descriptor_index == 2) color = curve_color[2];
+                        else if (descriptor_index == 3) color = curve_color[3];
+                        else if (descriptor_index == 4) color = curve_color[4];
+                        else if (descriptor_index == 5) color = curve_color[5];
+                        else if (descriptor_index == 6) color = curve_color[6];
+                        else if (descriptor_index == 7) color = curve_color[7];
+                        else if (descriptor_index == 8) color = curve_color[8];
+                        else if (descriptor_index == 9) color = curve_color[9];
+                    }
 
                     List<string> deselected = new List<string>();
                     if (deselected_data_descriptor.ContainsKey(descriptor_name)) deselected = deselected_data_descriptor[descriptor_name];
@@ -1433,22 +1466,44 @@ namespace DRC
 
                         //Color color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
                         //Color color = myColors[descriptor_index];
-                        Color color = Color.Blue;
-                        if (descriptor_index == 0) color = Color.Blue;
-                        else if (descriptor_index == 1) color = Color.Red;
-                        else if (descriptor_index == 2) color = Color.Green;
-                        else if (descriptor_index == 3) color = Color.Black;
-                        else if (descriptor_index == 4) color = Color.Orange;
-                        else if (descriptor_index == 5) color = Color.DarkViolet;
-                        else if (descriptor_index == 6) color = Color.SkyBlue;
-                        else if (descriptor_index == 7) color = Color.Brown;
-                        else if (descriptor_index == 8) color = Color.Indigo;
-                        else if (descriptor_index == 9) color = Color.DimGray;
 
-                        if (descriptor_name == "Nuclei") color = Color.Blue;
-                        if (descriptor_name == "R/N" || descriptor_name == "R") color = Color.Red;
-                        if (descriptor_name == "G/N" || descriptor_name == "G") color = Color.Green;
-                        if (descriptor_name == "LDA_1") color = Color.Black;
+                        Color color = Color.Blue;
+
+                        if (descriptor_name == "Nuclei")
+                        {
+                            color = Color.Blue;
+                            curve_color.RemoveAt(curve_color.IndexOf(color));
+                        }
+                        if (descriptor_name == "R/N" || descriptor_name == "R")
+                        {
+                            color = Color.Red;
+                            curve_color.RemoveAt(curve_color.IndexOf(color));
+                        }
+                        if (descriptor_name == "G/N" || descriptor_name == "G")
+                        {
+                            color = Color.Green;
+                            curve_color.RemoveAt(curve_color.IndexOf(color));
+                        }
+                        if (descriptor_name == "LDA_1")
+                        {
+                            color = Color.Black;
+                            curve_color.RemoveAt(curve_color.IndexOf(color));
+                        }
+
+                        if (descriptor_index < curve_color.Count)
+                        {
+                            if (descriptor_index == 0) color = curve_color[0];
+                            else if (descriptor_index == 1) color = curve_color[1];
+                            else if (descriptor_index == 2) color = curve_color[2];
+                            else if (descriptor_index == 3) color = curve_color[3];
+                            else if (descriptor_index == 4) color = curve_color[4];
+                            else if (descriptor_index == 5) color = curve_color[5];
+                            else if (descriptor_index == 6) color = curve_color[6];
+                            else if (descriptor_index == 7) color = curve_color[7];
+                            else if (descriptor_index == 8) color = curve_color[8];
+                            else if (descriptor_index == 9) color = curve_color[9];
+                        }
+
 
                         //List<string> deselected = new List<string>();
                         //if (deselected_data_descriptor.ContainsKey(descriptor_name)) deselected = deselected_data_descriptor[descriptor_name];
