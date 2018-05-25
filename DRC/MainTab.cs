@@ -646,6 +646,32 @@ namespace DRC
                 List<Chart_DRC> list_DRC_cpd = new List<Chart_DRC>();
                 List<double> row_params = new List<double>();
 
+                Color my_color;
+                foreach (KeyValuePair<string, List<double>> item in data_descriptor)
+                {
+                    string descriptor_name = item.Key;
+                    if (descriptor_name == "Nuclei")
+                    {
+                        my_color = Color.Blue;
+                        curve_color.RemoveAll(x => x == my_color);
+                    }
+                    if (descriptor_name == "R/N" || descriptor_name == "R")
+                    {
+                        my_color = Color.Red;
+                        curve_color.RemoveAll(x => x == my_color);
+                    }
+                    if (descriptor_name == "G/N" || descriptor_name == "G")
+                    {
+                        my_color = Color.Green;
+                        curve_color.RemoveAll(x => x == my_color);
+                    }
+                    if (descriptor_name == "LDA_1")
+                    {
+                        my_color = Color.Black;
+                        curve_color.RemoveAll(x => x == my_color);
+                    }
+                }
+
                 int descriptor_index = 0;
                 foreach (KeyValuePair<string, List<double>> item in data_descriptor)
                 {
@@ -666,25 +692,21 @@ namespace DRC
                     if (descriptor_name == "Nuclei")
                     {
                         color = Color.Blue;
-                        curve_color.RemoveAll(x => x == color);
                         color_used = true;
                     }
                     if (descriptor_name == "R/N" || descriptor_name == "R")
                     {
                         color = Color.Red;
-                        curve_color.RemoveAll(x => x == color);
                         color_used = true;
                     }
                     if (descriptor_name == "G/N" || descriptor_name == "G")
                     {
                         color = Color.Green;
-                        curve_color.RemoveAll(x => x == color);
                         color_used = true;
                     }
                     if (descriptor_name == "LDA_1")
                     {
                         color = Color.Black;
-                        curve_color.RemoveAll(x => x == color);
                         color_used = true;
                     }
 
@@ -1454,6 +1476,32 @@ namespace DRC
                 List<Chart_DRC_Overlap> list_DRC_cpd = new List<Chart_DRC_Overlap>();
                 List<double> row_params = new List<double>();
 
+                Color my_color;
+                foreach (string item in checkedListBox1.CheckedItems)
+                {
+                    string descriptor_name = item;
+                    if (descriptor_name == "Nuclei")
+                    {
+                        my_color = Color.Blue;
+                        curve_color.RemoveAll(x => x == my_color);
+                    }
+                    if (descriptor_name == "R/N" || descriptor_name == "R")
+                    {
+                        my_color = Color.Red;
+                        curve_color.RemoveAll(x => x == my_color);
+                    }
+                    if (descriptor_name == "G/N" || descriptor_name == "G")
+                    {
+                        my_color = Color.Green;
+                        curve_color.RemoveAll(x => x == my_color);
+                    }
+                    if (descriptor_name == "LDA_1")
+                    {
+                        my_color = Color.Black;
+                        curve_color.RemoveAll(x => x == my_color);
+                    }
+                }
+
                 int descriptor_index = 0;
                 foreach (string item in checkedListBox1.CheckedItems)
                 {
@@ -1479,25 +1527,21 @@ namespace DRC
                         if (descriptor_name == "Nuclei")
                         {
                             color = Color.Blue;
-                            curve_color.RemoveAll(x => x == color);
                             color_used = true;
                         }
                         if (descriptor_name == "R/N" || descriptor_name == "R")
                         {
                             color = Color.Red;
-                            curve_color.RemoveAll(x => x == color);
                             color_used = true;
                         }
                         if (descriptor_name == "G/N" || descriptor_name == "G")
                         {
                             color = Color.Green;
-                            curve_color.RemoveAll(x => x == color);
                             color_used = true;
                         }
                         if (descriptor_name == "LDA_1")
                         {
                             color = Color.Black;
-                            curve_color.RemoveAll(x => x == color);
                             color_used = true;
                         }
 
