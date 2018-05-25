@@ -389,7 +389,7 @@ namespace DRC
 
                 f5.dataGridViewExport.Rows.Clear();
 
-                f5.dataGridViewExport.ColumnCount = 1 + 2*descriptor_list.Count;
+                f5.dataGridViewExport.ColumnCount = 1 + 2 * descriptor_list.Count;
 
                 f5.dataGridViewExport.Columns[0].Name = "CPD_ID";
 
@@ -461,12 +461,12 @@ namespace DRC
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Value = Math.Pow(10, current_ec_50);
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Style.BackColor = Color.LightGreen;
 
-                            if (current_ec_50 <= 30*1E-6)
+                            if (current_ec_50 <= 30 * 1E-6)
                             {
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = current_top;
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.LightGreen;
                             }
-                            else if(current_ec_50>30.0*1E-6)
+                            else if (current_ec_50 > 30.0 * 1E-6)
                             {
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "EC_50 > 30uM";
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.Tomato;
@@ -659,30 +659,36 @@ namespace DRC
                     //Color color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
                     //Color color = myColors[descriptor_index];
 
+                    bool color_used = false;
+
                     Color color = Color.Blue;
 
                     if (descriptor_name == "Nuclei")
                     {
                         color = Color.Blue;
-                        curve_color.RemoveAt(curve_color.IndexOf(color));
+                        curve_color.RemoveAll(x => x == color);
+                        color_used = true;
                     }
                     if (descriptor_name == "R/N" || descriptor_name == "R")
                     {
                         color = Color.Red;
-                        curve_color.RemoveAt(curve_color.IndexOf(color));
+                        curve_color.RemoveAll(x => x == color);
+                        color_used = true;
                     }
                     if (descriptor_name == "G/N" || descriptor_name == "G")
                     {
                         color = Color.Green;
-                        curve_color.RemoveAt(curve_color.IndexOf(color));
+                        curve_color.RemoveAll(x => x == color);
+                        color_used = true;
                     }
                     if (descriptor_name == "LDA_1")
                     {
                         color = Color.Black;
-                        curve_color.RemoveAt(curve_color.IndexOf(color));
+                        curve_color.RemoveAll(x => x == color);
+                        color_used = true;
                     }
 
-                    if (descriptor_index < curve_color.Count)
+                    if (descriptor_index < curve_color.Count && !color_used)
                     {
                         if (descriptor_index == 0) color = curve_color[0];
                         else if (descriptor_index == 1) color = curve_color[1];
@@ -1466,31 +1472,36 @@ namespace DRC
 
                         //Color color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
                         //Color color = myColors[descriptor_index];
+                        bool color_used = false;
 
                         Color color = Color.Blue;
 
                         if (descriptor_name == "Nuclei")
                         {
                             color = Color.Blue;
-                            curve_color.RemoveAt(curve_color.IndexOf(color));
+                            curve_color.RemoveAll(x => x == color);
+                            color_used = true;
                         }
                         if (descriptor_name == "R/N" || descriptor_name == "R")
                         {
                             color = Color.Red;
-                            curve_color.RemoveAt(curve_color.IndexOf(color));
+                            curve_color.RemoveAll(x => x == color);
+                            color_used = true;
                         }
                         if (descriptor_name == "G/N" || descriptor_name == "G")
                         {
                             color = Color.Green;
-                            curve_color.RemoveAt(curve_color.IndexOf(color));
+                            curve_color.RemoveAll(x => x == color);
+                            color_used = true;
                         }
                         if (descriptor_name == "LDA_1")
                         {
                             color = Color.Black;
-                            curve_color.RemoveAt(curve_color.IndexOf(color));
+                            curve_color.RemoveAll(x => x == color);
+                            color_used = true;
                         }
 
-                        if (descriptor_index < curve_color.Count)
+                        if (descriptor_index < curve_color.Count && !color_used)
                         {
                             if (descriptor_index == 0) color = curve_color[0];
                             else if (descriptor_index == 1) color = curve_color[1];
@@ -2277,7 +2288,7 @@ namespace DRC
                 {
                     f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[0].Value = plates[i];
-                    f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1))*replicate].ToString();
+                    f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)) * replicate].ToString();
                 }
                 else
                 {
