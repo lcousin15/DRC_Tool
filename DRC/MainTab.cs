@@ -2332,7 +2332,8 @@ namespace DRC
                 {
                     f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[0].Value = plates[i];
-                    f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)) * replicate].ToString();
+                    if(replicate!=1) f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)/ total_plate_nb) * replicate].ToString();
+                    else f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)) * replicate].ToString();
                 }
                 else
                 {
