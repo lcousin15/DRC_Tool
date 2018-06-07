@@ -72,11 +72,11 @@ namespace DRC
             curve_color.Add(Color.Red);
             curve_color.Add(Color.Green);
             curve_color.Add(Color.Black);
-            curve_color.Add(Color.DarkOrange);
-            curve_color.Add(Color.DarkViolet);
+            curve_color.Add(Color.SaddleBrown);
+            curve_color.Add(Color.OrangeRed);
             curve_color.Add(Color.DarkBlue);
-            curve_color.Add(Color.Brown);
-            curve_color.Add(Color.Salmon);
+            curve_color.Add(Color.DodgerBlue);
+            curve_color.Add(Color.Tan);
             curve_color.Add(Color.DimGray);
         }
 
@@ -2332,7 +2332,8 @@ namespace DRC
                 {
                     f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[0].Value = plates[i];
-                    f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)) * replicate].ToString();
+                    if(replicate!=1) f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)/ total_plate_nb) * replicate].ToString();
+                    else f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)) * replicate].ToString();
                 }
                 else
                 {
