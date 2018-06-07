@@ -69,6 +69,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
             this.button4 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -288,7 +289,7 @@
             // loadHitsToolStripMenuItem
             // 
             this.loadHitsToolStripMenuItem.Name = "loadHitsToolStripMenuItem";
-            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.loadHitsToolStripMenuItem.Text = "Load Hits";
             this.loadHitsToolStripMenuItem.Click += new System.EventHandler(this.loadHitsToolStripMenuItem_Click);
             // 
@@ -296,9 +297,9 @@
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(1086, 3);
+            this.comboBox1.Location = new System.Drawing.Point(1033, 624);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(120, 21);
+            this.comboBox1.Size = new System.Drawing.Size(173, 21);
             this.comboBox1.TabIndex = 13;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectionChangeCommited);
             // 
@@ -474,6 +475,15 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(1087, 608);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(72, 13);
+            this.label4.TabIndex = 26;
+            this.label4.Text = "Compound ID";
+            // 
             // MainTab
             // 
             this.AllowDrop = true;
@@ -482,6 +492,7 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1218, 961);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.numericUpDown3);
@@ -557,6 +568,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ToolStripMenuItem hItsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadHitsToolStripMenuItem;
+        private System.Windows.Forms.Label label4;
     }
 }
 
