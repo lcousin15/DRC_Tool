@@ -2037,7 +2037,7 @@ namespace DRC
                     foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                     {
                         string col_name = col.HeaderText;
-                        if(col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "concentrations")
+                        if(col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration")
                         {
                             if (descriptors_dict.Keys.Contains(col_name))
                             {
