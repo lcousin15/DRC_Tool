@@ -2004,10 +2004,8 @@ namespace DRC
             List<string> wells = new List<string>();
             //SortedDictionary<string, string> concentrations = new SortedDictionary<string, string>();
             List<double> concentrations = new List<double>();
-            List<double> row_concentrations = new List<double>();
-
-
-
+            //List<double> row_concentrations = new List<double>();
+            Dictionary<string, List<double>> descriptors_dict = new Dictionary<string, List<double>>(); 
             //f3.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
             //f3.dataGridView1.Columns[c.ColumnCount - 1].ValueType = typeof(double);
             //f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 1].Name = "ConcNum";
@@ -2035,6 +2033,24 @@ namespace DRC
                     plates.Add(row.Cells["Plate"].Value.ToString());
                     wells.Add(row.Cells["Well"].Value.ToString());
                     concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+
+                    foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
+                    {
+                        string col_name = col.HeaderText;
+                        if(col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "concentrations")
+                        {
+                            if (descriptors_dict.Keys.Contains(col_name))
+                            {
+                                descriptors_dict[col_name].Add(double.Parse(row.Cells[col_name].Value.ToString()));
+                            }
+                            else
+                            {
+                                List<double> my_list = new List<double>();
+                                my_list.Add(double.Parse(row.Cells[col_name].Value.ToString()));
+                                descriptors_dict[col_name] = my_list;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -2082,6 +2098,16 @@ namespace DRC
                     f12.dataGridView1.Columns[1].Name = "Image";
                     f12.dataGridView1.Columns[2].Name = "Concentration";
 
+                    foreach(var item in descriptors_dict)
+                    {
+                        string col_name = item.Key;
+
+                        DataGridViewTextBoxColumn new_col = new DataGridViewTextBoxColumn();
+                        new_col.Name = col_name;
+
+                        f12.dataGridView1.Columns.Add(new_col);                         
+                    }
+
                     f12.dataGridView1.AllowUserToAddRows = false;
                 }
             }
@@ -2122,7 +2148,7 @@ namespace DRC
 
                     files = dict_well[wells[i]];
                     counter++;
-                    row_concentrations.Add(concentrations[i]);
+                    //row_concentrations.Add(concentrations[i]);
                 }
                 else
                 {
@@ -2345,6 +2371,12 @@ namespace DRC
                     f12.dataGridView1.Rows[index].Cells[1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[index].Cells[2].Value = concentrations[i];
                     f12.dataGridView1.Rows[index].Cells[2].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                    foreach(var item in descriptors_dict)
+                    {
+                        string col_name = item.Key;
+                        f12.dataGridView1.Rows[index].Cells[col_name].Value = item.Value[i];
+                    }
                 }
 
                 mat.Dispose();
