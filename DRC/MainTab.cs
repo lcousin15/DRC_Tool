@@ -2376,6 +2376,7 @@ namespace DRC
                     {
                         string col_name = item.Key;
                         f12.dataGridView1.Rows[index].Cells[col_name].Value = item.Value[i];
+                        f12.dataGridView1.Rows[index].Cells[col_name].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
                 }
 
