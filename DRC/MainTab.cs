@@ -3447,10 +3447,10 @@ namespace DRC
             }
 
             if (minX < -0.5) minX = Math.Pow(10, min_x);
-            //else minX = Math.Pow(10, minX);
+            else minX = chart.ChartAreas[0].AxisX.Minimum;
 
             if (maxX < -0.5) maxX = Math.Pow(10, max_x);
-            //else maxX = Math.Pow(10, maxX);
+            else maxX = chart.ChartAreas[0].AxisX.Maximum;
 
             chart.ChartAreas[0].AxisX.Minimum = minX;
             chart.ChartAreas[0].AxisX.Maximum = maxX;
