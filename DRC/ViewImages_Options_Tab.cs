@@ -122,7 +122,6 @@ namespace DRC
             }
         }
 
-
         //private void EventLoop(System.Threading.CancellationToken token)
         //{
         //    while (!token.IsCancellationRequested)

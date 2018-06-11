@@ -43,7 +43,7 @@
             // 
             // btn_close
             // 
-            this.btn_close.Location = new System.Drawing.Point(44, 178);
+            this.btn_close.Location = new System.Drawing.Point(15, 178);
             this.btn_close.Name = "btn_close";
             this.btn_close.Size = new System.Drawing.Size(174, 23);
             this.btn_close.TabIndex = 0;
@@ -53,7 +53,7 @@
             // 
             // btn_apply
             // 
-            this.btn_apply.Location = new System.Drawing.Point(44, 143);
+            this.btn_apply.Location = new System.Drawing.Point(15, 143);
             this.btn_apply.Name = "btn_apply";
             this.btn_apply.Size = new System.Drawing.Size(84, 23);
             this.btn_apply.TabIndex = 1;
@@ -64,7 +64,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(41, 22);
+            this.label1.Location = new System.Drawing.Point(12, 22);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(34, 13);
             this.label1.TabIndex = 2;
@@ -72,14 +72,14 @@
             // 
             // tb_min_x
             // 
-            this.tb_min_x.Location = new System.Drawing.Point(87, 19);
+            this.tb_min_x.Location = new System.Drawing.Point(58, 19);
             this.tb_min_x.Name = "tb_min_x";
             this.tb_min_x.Size = new System.Drawing.Size(100, 20);
             this.tb_min_x.TabIndex = 3;
             // 
             // tb_max_x
             // 
-            this.tb_max_x.Location = new System.Drawing.Point(87, 45);
+            this.tb_max_x.Location = new System.Drawing.Point(58, 45);
             this.tb_max_x.Name = "tb_max_x";
             this.tb_max_x.Size = new System.Drawing.Size(100, 20);
             this.tb_max_x.TabIndex = 5;
@@ -87,7 +87,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(41, 48);
+            this.label2.Location = new System.Drawing.Point(12, 48);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(37, 13);
             this.label2.TabIndex = 4;
@@ -95,7 +95,7 @@
             // 
             // tb_min_y
             // 
-            this.tb_min_y.Location = new System.Drawing.Point(87, 82);
+            this.tb_min_y.Location = new System.Drawing.Point(58, 82);
             this.tb_min_y.Name = "tb_min_y";
             this.tb_min_y.Size = new System.Drawing.Size(100, 20);
             this.tb_min_y.TabIndex = 7;
@@ -103,7 +103,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(41, 85);
+            this.label3.Location = new System.Drawing.Point(12, 85);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(34, 13);
             this.label3.TabIndex = 6;
@@ -111,7 +111,7 @@
             // 
             // tb_max_y
             // 
-            this.tb_max_y.Location = new System.Drawing.Point(87, 108);
+            this.tb_max_y.Location = new System.Drawing.Point(58, 108);
             this.tb_max_y.Name = "tb_max_y";
             this.tb_max_y.Size = new System.Drawing.Size(100, 20);
             this.tb_max_y.TabIndex = 9;
@@ -119,7 +119,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(41, 111);
+            this.label4.Location = new System.Drawing.Point(12, 111);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 8;
@@ -127,7 +127,7 @@
             // 
             // btn_change_color
             // 
-            this.btn_change_color.Location = new System.Drawing.Point(140, 143);
+            this.btn_change_color.Location = new System.Drawing.Point(111, 143);
             this.btn_change_color.Name = "btn_change_color";
             this.btn_change_color.Size = new System.Drawing.Size(78, 23);
             this.btn_change_color.TabIndex = 10;
@@ -139,7 +139,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(257, 216);
+            this.ClientSize = new System.Drawing.Size(199, 210);
             this.Controls.Add(this.btn_change_color);
             this.Controls.Add(this.tb_max_y);
             this.Controls.Add(this.label4);
