@@ -3862,6 +3862,7 @@ namespace DRC
                 dp.Color = new_color;
             }
 
+            chart_color = new_color;
             chart.Series["Series2"].Color = new_color;
         }
 
