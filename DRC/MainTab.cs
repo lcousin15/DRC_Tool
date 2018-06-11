@@ -2973,6 +2973,11 @@ namespace DRC
 
         RectangleAnnotation menu_text = new RectangleAnnotation();
 
+        private Curves_Options options_form;
+
+        private double minX = -1;
+        private double maxX = -1;
+
         public bool is_Fitted()
         {
             return not_fitted;
@@ -3190,7 +3195,7 @@ namespace DRC
             fit_DRC();
         }
 
-       
+
         //protected void Chart1_PrePaint(object sender, ChartPaintEventArgs e)
         //{
         //    if (e.ChartElement is ChartArea)
@@ -3441,8 +3446,14 @@ namespace DRC
                 min_x = -8.0;
             }
 
-            chart.ChartAreas[0].AxisX.Minimum = Math.Pow(10, min_x);
-            chart.ChartAreas[0].AxisX.Maximum = Math.Pow(10, max_x);
+            if (minX < -0.5) minX = Math.Pow(10, min_x);
+            //else minX = Math.Pow(10, minX);
+
+            if (maxX < -0.5) maxX = Math.Pow(10, max_x);
+            //else maxX = Math.Pow(10, maxX);
+
+            chart.ChartAreas[0].AxisX.Minimum = minX;
+            chart.ChartAreas[0].AxisX.Maximum = maxX;
 
             chart.ChartAreas[0].AxisX.IsLogarithmic = true;
             chart.ChartAreas[0].AxisX.LogarithmBase = 10;
@@ -3593,7 +3604,6 @@ namespace DRC
             chart.Annotations.Add(mytext);
 
             //mytext = annotation_text;
-
 
         }
 
@@ -3832,13 +3842,7 @@ namespace DRC
 
                 chart_color = new_color;
 
-                foreach (DataPoint dp in chart.Series["Series1"].Points)
-                {
-                    dp.Color = new_color;
-                }
-
-                chart.Series["Series2"].Color = new_color;
-
+                re_fill_color(chart_color);
             }
 
         }
@@ -3851,6 +3855,16 @@ namespace DRC
         //    }
         //}
 
+        public void re_fill_color(Color new_color)
+        {
+            foreach (DataPoint dp in chart.Series["Series1"].Points)
+            {
+                dp.Color = new_color;
+            }
+
+            chart.Series["Series2"].Color = new_color;
+        }
+
         public void chart1_MouseClickMenu(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -3860,16 +3874,40 @@ namespace DRC
 
                 if (pointer_x >= 462 && pointer_y <= 18)
                 {
-                    MessageBox.Show("Coord = " + pointer_x.ToString() + ", " + pointer_y.ToString());
+                    Form fc = Application.OpenForms["Curves_Options"];
+
+                    if (fc == null)
+                        options_form = new Curves_Options(this);
+
+
+                    minX = chart.ChartAreas[0].AxisX.Minimum;
+                    double minY = chart.ChartAreas[0].AxisY.Minimum;
+                    maxX = chart.ChartAreas[0].AxisX.Maximum;
+                    double maxY = chart.ChartAreas[0].AxisY.Maximum;
+
+                    options_form.set_curve_params(minX, maxX, minY, maxY, chart_color);
+
+                    options_form.Visible = true;
+
                 }
             }
 
         }
 
+        public void change_params(double min_x, double max_x, double min_y, double max_y, Color my_color)
+        {
+            chart_color = my_color;
+
+            chart.ChartAreas[0].AxisX.Minimum = min_x;
+            chart.ChartAreas[0].AxisX.Maximum = max_x;
+            chart.ChartAreas[0].AxisY.Minimum = min_y;
+            chart.ChartAreas[0].AxisY.Maximum = max_y;
+        }
+
         public void remove_outlier_median(double thresold_median)
         {
 
-            Dictionary<double, List<double> > points_dict = new Dictionary<double, List<double> >();
+            Dictionary<double, List<double>> points_dict = new Dictionary<double, List<double>>();
 
             foreach (DataPoint dp in chart.Series["Series1"].Points)
             {
@@ -3901,7 +3939,7 @@ namespace DRC
                 double median_value = 0;
                 int count = y_points.Count;
 
-                if (count % 2 == 0 && count>0)
+                if (count % 2 == 0 && count > 0)
                 {
                     // count is even, need to get the middle two elements, add them together, then divide by 2
                     double middleElement1 = y_points[(count / 2) - 1];
@@ -3934,7 +3972,7 @@ namespace DRC
                 {
                     bool point_exclusion = false;
 
-                    if (current_y > (median_value + thresold_median * std_dev) || current_y < (median_value - thresold_median * std_dev) ) point_exclusion = true;
+                    if (current_y > (median_value + thresold_median * std_dev) || current_y < (median_value - thresold_median * std_dev)) point_exclusion = true;
 
                     // Remove Points enabled
                     if (!(drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && point_exclusion)
@@ -3952,7 +3990,7 @@ namespace DRC
                         int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
                         is_raw_data_removed[index_raw_data] = true;
                     }
-                    else if((drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && !point_exclusion)
+                    else if ((drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && !point_exclusion)
                     {
                         drc_points_x_enable.Add(x_points);
                         drc_points_y_enable.Add(current_y);

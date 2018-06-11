@@ -164,6 +164,12 @@
     <Compile Include="Correlations_Exp_Name.Designer.cs">
       <DependentUpon>Correlations_Exp_Name.cs</DependentUpon>
     </Compile>
+    <Compile Include="Curves_Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Curves_Options.Designer.cs">
+      <DependentUpon>Curves_Options.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainTab.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -246,6 +252,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Correlations_Exp_Name.resx">
       <DependentUpon>Correlations_Exp_Name.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Curves_Options.resx">
+      <DependentUpon>Curves_Options.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainTab.resx">
       <DependentUpon>MainTab.cs</DependentUpon>
