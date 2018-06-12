@@ -305,7 +305,7 @@ namespace DRC
             List<Chart_DRC> list_chart = descriptors_chart[current_cpd_id];
             foreach (Chart_DRC current_chart in list_chart)
             {
-                current_chart.draw_DRC();
+                current_chart.draw_DRC(false);
                 //test_modified += Convert.ToInt32(current_chart.is_data_modified());
             }
 
@@ -349,7 +349,7 @@ namespace DRC
 
             foreach (Chart_DRC current_chart in list_chart)
             {
-                current_chart.draw_DRC();
+                current_chart.draw_DRC(false);
                 //test_modified += Convert.ToInt32(current_chart.is_data_modified());
             }
 
@@ -3412,7 +3412,7 @@ namespace DRC
             //Is_Modified();
         }
 
-        public void draw_DRC()
+        public void draw_DRC(bool if_report)
         {
             string cpd = compound_id;
 
@@ -3590,19 +3590,21 @@ namespace DRC
             //RectangleAnnotation annotation_text = new RectangleAnnotation();
             //RectangleAnnotation mytext = new RectangleAnnotation();
 
-            RectangleAnnotation mytext = new RectangleAnnotation();
-            //mytext.Bottom = 10;
-            mytext.Name = "mytext";
-            mytext.Text = "+";
-            mytext.AnchorX = 97.5;
-            mytext.AnchorY = 5;
-            mytext.Height = 5;
-            mytext.Width = 4;
-            mytext.ForeColor = Color.Blue;
-            mytext.Font = new Font(mytext.Font.FontFamily, mytext.Font.Size + 5.0f, mytext.Font.Style);
-            mytext.Visible = true;
-            chart.Annotations.Add(mytext);
-
+            if (if_report == false)
+            {
+                RectangleAnnotation mytext = new RectangleAnnotation();
+                //mytext.Bottom = 10;
+                mytext.Name = "mytext";
+                mytext.Text = "+";
+                mytext.AnchorX = 97.5;
+                mytext.AnchorY = 5;
+                mytext.Height = 5;
+                mytext.Width = 4;
+                mytext.ForeColor = Color.Blue;
+                mytext.Font = new Font(mytext.Font.FontFamily, mytext.Font.Size + 5.0f, mytext.Font.Style);
+                mytext.Visible = true;
+                chart.Annotations.Add(mytext);
+            }
             //mytext = annotation_text;
 
         }
@@ -3745,7 +3747,7 @@ namespace DRC
 
         public string save_image(string path)
         {
-            draw_DRC();
+            draw_DRC(true);
             string descriptor_name = descriptor.Replace(@"/", @"_");
             string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
 
