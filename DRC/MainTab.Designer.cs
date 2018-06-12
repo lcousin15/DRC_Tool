@@ -314,7 +314,7 @@
             this.checkedListBox1.CheckOnClick = true;
             this.checkedListBox1.FormattingEnabled = true;
             this.checkedListBox1.HorizontalScrollbar = true;
-            this.checkedListBox1.Location = new System.Drawing.Point(1019, 49);
+            this.checkedListBox1.Location = new System.Drawing.Point(1022, 53);
             this.checkedListBox1.Name = "checkedListBox1";
             this.checkedListBox1.Size = new System.Drawing.Size(213, 240);
             this.checkedListBox1.TabIndex = 14;
