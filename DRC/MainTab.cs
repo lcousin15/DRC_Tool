@@ -141,7 +141,11 @@ namespace DRC
 
         public bool view_images_per_concentration;
 
-        public int cpd_low_th = -1;
+        public int cpd_low_thr_ch1 = -1;
+        public int cpd_low_thr_ch2 = -1;
+        public int cpd_low_thr_ch3 = -1;
+        public int cpd_low_thr_ch4 = -1;
+
         public int cpd_high_thr_ch1 = -1;
         public int cpd_high_thr_ch2 = -1;
         public int cpd_high_thr_ch3 = -1;
@@ -2200,7 +2204,11 @@ namespace DRC
                     if (method_norm == "Saturate")
                     {
 
-                        ushort low_thr = (ushort)f13.numericUpDown1.Value;
+                        ushort low_thr_ch1 = (ushort)f13.numericUpDown1.Value;
+                        ushort low_thr_ch2 = (ushort)f13.numericUpDown8.Value;
+                        ushort low_thr_ch3 = (ushort)f13.numericUpDown9.Value;
+                        ushort low_thr_ch4 = (ushort)f13.numericUpDown10.Value;
+
                         ushort thr_ch1 = (ushort)f13.numericUpDown2.Value;
                         ushort thr_ch2 = (ushort)f13.numericUpDown3.Value;
                         ushort thr_ch3 = (ushort)f13.numericUpDown4.Value;
@@ -2221,7 +2229,7 @@ namespace DRC
                                 for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
                                 {
                                     ushort px_value = data[idx];
-                                    if (px_value < low_thr) data[idx] = 0;
+                                    if (px_value < low_thr_ch1) data[idx] = 0;
                                     else if (px_value >= thr_ch1) data[idx] = thr_ch1;
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch1);
                                 }
@@ -2231,7 +2239,7 @@ namespace DRC
                                 for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
                                 {
                                     ushort px_value = data[idx];
-                                    if (px_value < low_thr) data[idx] = 0;
+                                    if (px_value < low_thr_ch2) data[idx] = 0;
                                     else if (px_value >= thr_ch2) data[idx] = thr_ch2;
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch2);
                                 }
@@ -2241,7 +2249,7 @@ namespace DRC
                                 for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
                                 {
                                     ushort px_value = data[idx];
-                                    if (px_value < low_thr) data[idx] = 0;
+                                    if (px_value < low_thr_ch3) data[idx] = 0;
                                     else if (px_value >= thr_ch3) data[idx] = thr_ch3;
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch3);
                                 }
@@ -2251,7 +2259,7 @@ namespace DRC
                                 for (int idx = 0; idx < temp.Cols * temp.Rows; idx++)
                                 {
                                     ushort px_value = data[idx];
-                                    if (px_value < low_thr) data[idx] = 0;
+                                    if (px_value < low_thr_ch4) data[idx] = 0;
                                     else if (px_value >= thr_ch4) data[idx] = thr_ch4;
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch4);
                                 }

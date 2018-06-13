@@ -30,9 +30,13 @@ namespace DRC
             selected_cpd = cpd_id;
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
-            if (_form1.cpd_low_th != -1)
+            if (_form1.cpd_low_thr_ch1 != -1)
             {
-                numericUpDown1.Value = _form1.cpd_low_th;
+                numericUpDown1.Value = _form1.cpd_low_thr_ch1;
+                numericUpDown8.Value = _form1.cpd_low_thr_ch2;
+                numericUpDown9.Value = _form1.cpd_low_thr_ch3;
+                numericUpDown10.Value = _form1.cpd_low_thr_ch4;
+
                 numericUpDown2.Value = _form1.cpd_high_thr_ch1;
                 numericUpDown3.Value = _form1.cpd_high_thr_ch2;
                 numericUpDown4.Value = _form1.cpd_high_thr_ch3;
@@ -56,9 +60,13 @@ namespace DRC
             list_cpd = cpd_id;
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
-            if (_form1.cpd_low_th != -1)
+            if (_form1.cpd_low_thr_ch1 != -1)
             {
-                numericUpDown1.Value = _form1.cpd_low_th;
+                numericUpDown1.Value = _form1.cpd_low_thr_ch1;
+                numericUpDown8.Value = _form1.cpd_low_thr_ch2;
+                numericUpDown9.Value = _form1.cpd_low_thr_ch3;
+                numericUpDown10.Value = _form1.cpd_low_thr_ch4;
+
                 numericUpDown2.Value = _form1.cpd_high_thr_ch1;
                 numericUpDown3.Value = _form1.cpd_high_thr_ch2;
                 numericUpDown4.Value = _form1.cpd_high_thr_ch3;
@@ -78,7 +86,10 @@ namespace DRC
         {
             //_f1.imgCpdsViewOption = true;
 
-            _form1.cpd_low_th = (int)numericUpDown1.Value;
+            _form1.cpd_low_thr_ch1 = (int)numericUpDown1.Value;
+            _form1.cpd_low_thr_ch2 = (int)numericUpDown8.Value;
+            _form1.cpd_low_thr_ch3 = (int)numericUpDown9.Value;
+            _form1.cpd_low_thr_ch4 = (int)numericUpDown10.Value;
 
             _form1.cpd_high_thr_ch1 = (int)numericUpDown2.Value;
             _form1.cpd_high_thr_ch2 = (int)numericUpDown3.Value;
@@ -111,6 +122,9 @@ namespace DRC
                 numericUpDown3.Enabled = false;
                 numericUpDown4.Enabled = false;
                 numericUpDown5.Enabled = false;
+                numericUpDown8.Enabled = false;
+                numericUpDown9.Enabled = false;
+                numericUpDown10.Enabled = false;
             }
             else
             {
@@ -119,7 +133,15 @@ namespace DRC
                 numericUpDown3.Enabled = true;
                 numericUpDown4.Enabled = true;
                 numericUpDown5.Enabled = true;
+                numericUpDown8.Enabled = true;
+                numericUpDown9.Enabled = true;
+                numericUpDown10.Enabled = true;
             }
+        }
+
+        private void ViewImages_Options_Tab_Load(object sender, EventArgs e)
+        {
+
         }
 
         //private void EventLoop(System.Threading.CancellationToken token)
