@@ -49,7 +49,7 @@
             this.dataGridViewExport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewExport.Location = new System.Drawing.Point(0, 27);
             this.dataGridViewExport.Name = "dataGridViewExport";
-            this.dataGridViewExport.Size = new System.Drawing.Size(1261, 675);
+            this.dataGridViewExport.Size = new System.Drawing.Size(1261, 645);
             this.dataGridViewExport.TabIndex = 0;
             // 
             // menuStrip1
@@ -73,7 +73,7 @@
             // saveToExcelToolStripMenuItem
             // 
             this.saveToExcelToolStripMenuItem.Name = "saveToExcelToolStripMenuItem";
-            this.saveToExcelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.saveToExcelToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.saveToExcelToolStripMenuItem.Text = "Save To Excel";
             this.saveToExcelToolStripMenuItem.Click += new System.EventHandler(this.saveToExcelToolStripMenuItem_Click);
             // 
@@ -93,7 +93,7 @@
             this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
             this.toolStripProgressBar1.Visible = false;
             // 
-            // Form5
+            // Export_Tab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -102,7 +102,7 @@
             this.Controls.Add(this.dataGridViewExport);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form5";
+            this.Name = "Export_Tab";
             this.Text = "Form5";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewExport)).EndInit();
             this.menuStrip1.ResumeLayout(false);

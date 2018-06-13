@@ -46,6 +46,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(580, 664);
             this.dataGridView1.TabIndex = 4;
+            this.dataGridView1.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridView1_SortCompare);
             // 
             // dataGridView2
             // 
@@ -55,14 +56,14 @@
             this.dataGridView2.Size = new System.Drawing.Size(555, 664);
             this.dataGridView2.TabIndex = 5;
             // 
-            // Form3
+            // RawData_Tab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1165, 678);
             this.Controls.Add(this.dataGridView2);
             this.Controls.Add(this.dataGridView1);
-            this.Name = "Form3";
+            this.Name = "RawData_Tab";
             this.Text = "Raw Data Tab";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form3_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -72,8 +73,7 @@
         }
 
         #endregion
-
-        public System.Windows.Forms.DataGridView dataGridView1;
         public System.Windows.Forms.DataGridView dataGridView2;
+        public System.Windows.Forms.DataGridView dataGridView1;
     }
 }
