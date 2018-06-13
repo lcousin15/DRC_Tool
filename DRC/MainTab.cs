@@ -1858,14 +1858,22 @@ namespace DRC
         //{
         //    return OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image);
         //} 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="imageIn"></param>
+        /// <returns></returns>
         public byte[] imageToByteArray(System.Drawing.Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
             return ms.ToArray();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void load_cpd_images(object sender, DataGridViewCellEventArgs e)
         {
             f11.Visible = true;
