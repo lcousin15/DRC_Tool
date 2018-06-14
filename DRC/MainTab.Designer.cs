@@ -73,6 +73,8 @@
             this.button5 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
+            this.dRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dRCTimeLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -145,7 +147,8 @@
             this.clusteringToolStripMenuItem,
             this.correlationsToolStripMenuItem1,
             this.curvesSuperpositionToolStripMenuItem,
-            this.hItsToolStripMenuItem});
+            this.hItsToolStripMenuItem,
+            this.dRCToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1244, 24);
@@ -535,6 +538,21 @@
             0,
             0});
             // 
+            // dRCToolStripMenuItem
+            // 
+            this.dRCToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dRCTimeLineToolStripMenuItem});
+            this.dRCToolStripMenuItem.Name = "dRCToolStripMenuItem";
+            this.dRCToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            this.dRCToolStripMenuItem.Text = "Time Line";
+            // 
+            // dRCTimeLineToolStripMenuItem
+            // 
+            this.dRCTimeLineToolStripMenuItem.Name = "dRCTimeLineToolStripMenuItem";
+            this.dRCTimeLineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dRCTimeLineToolStripMenuItem.Text = "DRC Time Line";
+            this.dRCTimeLineToolStripMenuItem.Click += new System.EventHandler(this.dRCTimeLineToolStripMenuItem_Click);
+            // 
             // MainTab
             // 
             this.AllowDrop = true;
@@ -627,6 +645,8 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label5;
         public System.Windows.Forms.NumericUpDown numericUpDown4;
+        private System.Windows.Forms.ToolStripMenuItem dRCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dRCTimeLineToolStripMenuItem;
     }
 }
 
