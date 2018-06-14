@@ -85,6 +85,8 @@ namespace DRC
         public DRC_Overlap_Tab f10;
         public ViewList_CPD_Tab f11;
         public ViewImages_Options_Tab f13;
+        public CPD_Time_Line TimeLine;
+
 
         public void SetForm()
         {
@@ -92,6 +94,7 @@ namespace DRC
             f6 = new Clustering_Tab(this);
             f10 = new DRC_Overlap_Tab(this);
             f11 = new ViewList_CPD_Tab(this);
+            TimeLine = new CPD_Time_Line(this);
         }
 
         public RawData_Tab f3 = new RawData_Tab();
@@ -100,8 +103,6 @@ namespace DRC
         public Correlations_Tab f7 = new Correlations_Tab();
 
         public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
-
-        public CPD_Time_Line TimeLine = new CPD_Time_Line();
 
         private string current_cpd_id;
         private Dictionary<string, int> cpd_row_index = new Dictionary<string, int>();
@@ -140,6 +141,9 @@ namespace DRC
 
         SortedDictionary<string, SortedDictionary<string, List<string>>> dict_plate_well_files = new SortedDictionary<string, SortedDictionary<string, List<string>>>();
         // plate, well path
+
+        Dictionary<string, DataTable> data_dict = new Dictionary<string, DataTable>(); // file --> DataTable
+        Dictionary<string, HashSet<string>> cpd_link = new Dictionary<string, HashSet<string>>(); // cpd id --> file
 
         public bool view_images_per_concentration;
 
@@ -2503,10 +2507,31 @@ namespace DRC
 
         private void dRCTimeLineToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.SetForm();
+
+            DataTable main_table = new DataTable();
+            HashSet<string> main_cpds = new HashSet<string>();
+
+            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Text = openFileDialog1.FileName;
+
+                System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
+                CachedCsvReader my_csv = new CachedCsvReader(sr, true);
+                main_table.Load(my_csv);
+
+                foreach (DataRow row in main_table.Rows)
+                {
+                    string cpd = row["compound_id"].ToString();
+                    main_cpds.Add(cpd);
+                }
+            }
 
             if (folderBrowserDialog1.SelectedPath == "")
             {
-                folderBrowserDialog1.SelectedPath = "P:\\EMT_DATA\\CSV_FOR_DRC_TOOL\\";
+                folderBrowserDialog1.SelectedPath = "P:\\EMT_DATA\\CSV_FOR_DRC_TOOL\\Data\\";
             }
 
             if (folderBrowserDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -2515,14 +2540,10 @@ namespace DRC
 
                 string[] files = Directory.GetFiles(path, "*.csv", SearchOption.AllDirectories);
 
-                Dictionary<string, DataTable> data_dict = new Dictionary<string, DataTable>();
-                Dictionary<string, HashSet<string>> cpd_link = new Dictionary<string, HashSet<string>>(); // cpd id --> file
-
                 //HashSet<string> global_cpd_set = new HashSet<string>();
 
                 foreach (string file in files)
                 {
-
                     TextReader tr = new StreamReader(file);
                     CachedCsvReader current_csv = new CachedCsvReader(tr, true);
 
@@ -2561,11 +2582,19 @@ namespace DRC
                 //    }
                 //}
 
+                foreach (var item in cpd_link.Where(dict => !main_cpds.Contains(dict.Key)).ToList())
+                {
+                    cpd_link.Remove(item.Key);
+                }
+
+                Console.WriteLine(" CPDS NB = " + cpd_link.Count());
+
                 TimeLine.dataGridView1.ColumnCount = 1;
                 TimeLine.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
                 TimeLine.dataGridView1.Columns[0].Name = "CPD_ID";
+                TimeLine.dataGridView1.AllowUserToAddRows = false;
 
-                foreach(KeyValuePair<string, HashSet<string>> elem in cpd_link)
+                foreach (KeyValuePair<string, HashSet<string>> elem in cpd_link)
                 {
                     int idx = TimeLine.dataGridView1.Rows.Add(new DataGridViewRow());
                     TimeLine.dataGridView1.Rows[idx].Cells[0].Value = elem.Key;
@@ -2573,56 +2602,93 @@ namespace DRC
                 }
 
                 TimeLine.Visible = true;
-
-                Console.WriteLine(" CPDS NB = " + cpd_link.Count());
-
-                foreach(KeyValuePair<string, HashSet<string>> elem in cpd_link)
-                {
-                    string current_cpd = elem.Key;
-                    HashSet<string> file_list = elem.Value;
-
-                    Dictionary<string, int> descriptor_occurence = new Dictionary<string, int>();
-
-                    foreach (string current_file in file_list)
-                    {
-                        DataTable my_table = data_dict[current_file];
-
-                        for (int i = 0; i < my_table.Columns.Count; i++)
-                        {
-                            string my_header = my_table.Rows[0][i].ToString();
-
-                            if (descriptor_occurence.ContainsKey(my_header))
-                            {
-                                descriptor_occurence.Add(my_header, 1);
-                            }
-                            else
-                            {
-                                descriptor_occurence[my_header] += 1;
-                            }
-                        }
-
-                        List<string> selected_descriptors = new List<string>();
-
-                        foreach (KeyValuePair<string, int> descr in descriptor_occurence)
-                        {
-                            string the_descriptor = descr.Key;
-                            int occ_number = descr.Value;
-
-                            if (occ_number >= file_list.Count())
-                            {
-                                selected_descriptors.Add(the_descriptor);
-                            }
-                        }
-
-                        //Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, this);
-                        //chart_drc.set_Raw_Data(raw_data_rows);
-
-                    }
-
-                }
-
             }
         }
+
+        public void draw_compound_data(string cpd_id)
+        {
+            string current_cpd = cpd_id;
+            HashSet<string> file_list = cpd_link[cpd_id];
+
+            Console.WriteLine(current_cpd);
+
+            Dictionary<string, int> descriptor_occurence = new Dictionary<string, int>();
+
+            foreach (string current_file in file_list)
+            {
+                Console.WriteLine(current_file);
+
+                DataTable my_table = data_dict[current_file]; // file --> DataTable
+
+                for (int i = 0; i < my_table.Columns.Count; i++)
+                {
+                    string my_header = my_table.Columns[i].ColumnName.ToString();
+
+                    if (descriptor_occurence.ContainsKey(my_header))
+                    {
+                        descriptor_occurence[my_header] += 1;
+                    }
+                    else
+                    {
+                        descriptor_occurence.Add(my_header, 1);
+                    }
+                }
+            }
+
+            List<string> selected_descriptors = new List<string>();
+
+            foreach (KeyValuePair<string, int> descr in descriptor_occurence)
+            {
+                string the_descriptor = descr.Key;
+                int occ_number = descr.Value;
+
+                if (occ_number >= file_list.Count())
+                {
+                    if (the_descriptor!="Plate" && the_descriptor!="Well" && the_descriptor!="compound_id" && the_descriptor!="Class")
+                    {
+                        selected_descriptors.Add(the_descriptor);
+                    }
+                }
+            }
+
+            Dictionary<string, List<double>> common_data = new Dictionary<string, List<double>>();
+            List<double> common_concentrations = new List<double>();
+
+            foreach (string current_file in file_list)
+            {
+                Console.WriteLine(current_file);
+
+                DataTable my_table = data_dict[current_file]; // file --> DataTable
+
+                foreach (DataRow row in my_table.Rows)
+                {
+                    foreach (string descriptor in selected_descriptors)
+                    {
+                        double val = Double.Parse(row[descriptor].ToString());
+
+                        if(common_data.ContainsKey(descriptor))
+                        {
+                            common_data[descriptor].Add(val);
+                        }
+                        else
+                        {
+                            List<double> descriptor_values = new List<double>();
+                            descriptor_values.Add(val);
+                            common_data[descriptor] = descriptor_values;
+                        }
+                      
+                    }
+
+                    double current_concentration = Double.Parse(row["dose"].ToString());
+                    common_concentrations.Add(current_concentration);
+                }
+            }
+
+            //Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, this);
+            //chart_drc.set_Raw_Data(raw_data_rows);
+
+        }
+
     }
 
     public class Chart_DRC_Overlap
