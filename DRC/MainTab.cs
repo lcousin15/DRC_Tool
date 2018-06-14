@@ -2616,8 +2616,6 @@ namespace DRC
 
             foreach (string current_file in file_list)
             {
-                Console.WriteLine(current_file);
-
                 DataTable my_table = data_dict[current_file]; // file --> DataTable
 
                 for (int i = 0; i < my_table.Columns.Count; i++)
@@ -2654,6 +2652,8 @@ namespace DRC
             Dictionary<string, List<double>> common_data = new Dictionary<string, List<double>>();
             List<double> common_concentrations = new List<double>();
 
+            // Here we can select the files. To be implemented.
+
             foreach (string current_file in file_list)
             {
                 Console.WriteLine(current_file);
@@ -2662,30 +2662,35 @@ namespace DRC
 
                 foreach (DataRow row in my_table.Rows)
                 {
-                    foreach (string descriptor in selected_descriptors)
+                    if (row["compound_id"].ToString() == cpd_id)
                     {
-                        double val = Double.Parse(row[descriptor].ToString());
+                        foreach (string descriptor in selected_descriptors)
+                        {
+                            double val = Double.Parse(row[descriptor].ToString());
 
-                        if(common_data.ContainsKey(descriptor))
-                        {
-                            common_data[descriptor].Add(val);
+                            if (common_data.ContainsKey(descriptor))
+                            {
+                                common_data[descriptor].Add(val);
+                            }
+                            else
+                            {
+                                List<double> descriptor_values = new List<double>();
+                                descriptor_values.Add(val);
+                                common_data[descriptor] = descriptor_values;
+                            }
+
                         }
-                        else
-                        {
-                            List<double> descriptor_values = new List<double>();
-                            descriptor_values.Add(val);
-                            common_data[descriptor] = descriptor_values;
-                        }
-                      
+
+                        double current_concentration = Double.Parse(row["dose"].ToString());
+                        common_concentrations.Add(current_concentration);
                     }
-
-                    double current_concentration = Double.Parse(row["dose"].ToString());
-                    common_concentrations.Add(current_concentration);
                 }
             }
 
             //Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, this);
             //chart_drc.set_Raw_Data(raw_data_rows);
+
+            Console.WriteLine(common_concentrations.Count());
 
         }
 
