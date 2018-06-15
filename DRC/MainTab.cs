@@ -2661,8 +2661,8 @@ namespace DRC
 
         public void draw_cpd_list(string current_file, string cpd_id)
         {
-            Dictionary<string, List<double>> common_data = new Dictionary<string, List<double>>();
-            List<double> common_concentrations = new List<double>();
+            Dictionary<string, List<double>> descriptor_data = new Dictionary<string, List<double>>();
+            List<double> descriptor_concentrations = new List<double>();
 
             DataTable my_table = data_dict[current_file]; // file --> DataTable
 
@@ -2674,29 +2674,41 @@ namespace DRC
                     {
                         double val = Double.Parse(row[descriptor].ToString());
 
-                        if (common_data.ContainsKey(descriptor))
+                        if (descriptor_data.ContainsKey(descriptor))
                         {
-                            common_data[descriptor].Add(val);
+                            descriptor_data[descriptor].Add(val);
                         }
                         else
                         {
                             List<double> descriptor_values = new List<double>();
                             descriptor_values.Add(val);
-                            common_data[descriptor] = descriptor_values;
+                            descriptor_data[descriptor] = descriptor_values;
                         }
 
                     }
 
                     double current_concentration = Double.Parse(row["dose"].ToString());
-                    common_concentrations.Add(current_concentration);
+                    descriptor_concentrations.Add(current_concentration);
                 }
             }
 
-            Console.WriteLine(common_concentrations.Count());
-        }
+            int index = 0;
+            foreach (KeyValuePair<string, List<double>> elem in descriptor_data)
+            {
+                Console.WriteLine(descriptor_concentrations.Count());
 
-        //Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, this);
-        //chart_drc.set_Raw_Data(raw_data_rows);
+                string descriptor = elem.Key;
+                List<double> y = elem.Value;
+
+                List<double> x_log = new List<double>();
+
+                foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
+
+                Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(cpd_id, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, index, this, current_file);
+                index++;
+            }
+
+        }
 
     }
 
@@ -4385,9 +4397,7 @@ namespace DRC
             return max;
         }
 
-        public Chart_DRC_Time_Line()
-        {
-        }
+        public Chart_DRC_Time_Line() { }
 
         public Chart_DRC_Time_Line(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color, int index, MainTab form, string filename)
         {
@@ -4422,7 +4432,7 @@ namespace DRC
 
             x_fit = new List<double>();
             x_fit_log = new List<double>();
-            y_fit= new List<double>();
+            y_fit = new List<double>();
 
             for (int j = 0; j < step_curve; j++)
             {
@@ -4485,6 +4495,8 @@ namespace DRC
             series_new_points.Name = file;
 
             chart.Series.Add(series_new_points);
+
+            draw_DRC();
         }
 
         public void remove_serie_points(string file)
@@ -4496,6 +4508,8 @@ namespace DRC
             chart_colors.Remove(file);
 
             chart.Series.Remove(chart.Series[file]);
+
+            draw_DRC();
         }
 
         private static void function_SigmoidInhibition(double[] c, double[] x, ref double func, object obj)
