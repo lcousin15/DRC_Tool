@@ -2615,6 +2615,8 @@ namespace DRC
 
         public void get_compound_data(string cpd_id)
         {
+            tableLayoutPanel1.Controls.Clear();
+
             HashSet<string> file_list = cpd_link[cpd_id];
 
             Console.WriteLine(cpd_id);
@@ -2679,7 +2681,9 @@ namespace DRC
                 {
                     foreach (string descriptor in time_line_selected_descriptors)
                     {
-                        double val = Double.Parse(row[descriptor].ToString());
+                        double val;
+                        bool test_double = Double.TryParse(row[descriptor].ToString(), out val);
+                        if (test_double == false) continue;
 
                         if (descriptor_data.ContainsKey(descriptor))
                         {
