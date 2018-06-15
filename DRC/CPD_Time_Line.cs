@@ -32,8 +32,12 @@ namespace DRC
         private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             string file = checkedListBox1.Items[e.Index].ToString();
+            bool checked_state = true;
+
+            if (!checkedListBox1.GetItemChecked(e.Index)) checked_state = false;
+
             Console.WriteLine(file);
-            _form1.draw_cpd_list(file, cpd_id);
+            _form1.draw_cpd_list(file, cpd_id, checked_state);
         }
     }
 }

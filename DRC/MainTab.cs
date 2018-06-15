@@ -146,6 +146,8 @@ namespace DRC
         Dictionary<string, HashSet<string>> cpd_link = new Dictionary<string, HashSet<string>>(); // cpd id --> file
         List<string> time_line_selected_descriptors = new List<string>();
 
+        Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // cpd_id, descriptor, chart
+
         public bool view_images_per_concentration;
 
         public int cpd_low_thr_ch1 = -1;
@@ -165,9 +167,14 @@ namespace DRC
 
         List<Color> curve_color = new List<Color>();
 
-        public double get_descriptors_number()
+        public int get_descriptors_number()
         {
-            return (double)descriptor_list.Count;
+            return descriptor_list.Count();
+        }
+
+        public int get_descriptors_number_time_line()
+        {
+            return time_line_selected_descriptors.Count();
         }
 
         public Dictionary<string, List<Chart_DRC>> get_descriptors_chart()
@@ -2642,7 +2649,7 @@ namespace DRC
 
                 if (occ_number >= file_list.Count())
                 {
-                    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "compound_id" && the_descriptor != "Class")
+                    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "compound_id" && the_descriptor != "Class" && the_descriptor != "dose")
                     {
                         time_line_selected_descriptors.Add(the_descriptor);
                     }
@@ -2659,7 +2666,7 @@ namespace DRC
             }
         }
 
-        public void draw_cpd_list(string current_file, string cpd_id)
+        public void draw_cpd_list(string current_file, string cpd_id, bool checked_state)
         {
             Dictionary<string, List<double>> descriptor_data = new Dictionary<string, List<double>>();
             List<double> descriptor_concentrations = new List<double>();
@@ -2692,22 +2699,78 @@ namespace DRC
                 }
             }
 
-            int index = 0;
-            foreach (KeyValuePair<string, List<double>> elem in descriptor_data)
+
+            //charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>>(); // cpd_id, descriptor, chart
+
+            if (!charts_time_line.ContainsKey(cpd_id))
             {
-                Console.WriteLine(descriptor_concentrations.Count());
 
-                string descriptor = elem.Key;
-                List<double> y = elem.Value;
+                Dictionary<string, Chart_DRC_Time_Line> list_chart_descriptors = new Dictionary<string, Chart_DRC_Time_Line>();
 
-                List<double> x_log = new List<double>();
+                foreach (KeyValuePair<string, List<double>> elem in descriptor_data)
+                {
+                    Console.WriteLine(descriptor_concentrations.Count());
 
-                foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
+                    string descriptor = elem.Key;
+                    List<double> y = elem.Value;
 
-                Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(cpd_id, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, index, this, current_file);
-                index++;
+                    List<double> x_log = new List<double>();
+
+                    foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
+
+                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(cpd_id, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                    current_chart.draw_DRC();
+
+                    list_chart_descriptors.Add(descriptor, current_chart);
+                }
+
+                charts_time_line[cpd_id] = list_chart_descriptors;
             }
+            else
+            {
+                Dictionary<string, Chart_DRC_Time_Line> list_chart_descriptors = charts_time_line[cpd_id];
 
+                foreach (KeyValuePair<string, Chart_DRC_Time_Line> elem in list_chart_descriptors)
+                {
+                    string descriptor = elem.Key;
+                    List<string> file_names = elem.Value.get_filenames();
+
+                    if (!file_names.Contains(current_file))
+                    {
+                        if (elem.Value.is_first_curve_drawn() == false)
+                        {
+                            List<double> y = descriptor_data[descriptor];
+
+                            List<double> x_log = new List<double>();
+
+                            foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
+
+                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(cpd_id, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                            current_chart.draw_DRC();
+
+                            charts_time_line[cpd_id][descriptor] = current_chart;
+                        }
+                        else
+                        {
+
+                            List<double> y = descriptor_data[descriptor];
+
+                            List<double> x_log = new List<double>();
+                            foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
+
+                            elem.Value.add_serie_points(current_file, ref descriptor_concentrations, ref x_log, ref y, Color.Blue);
+                        }
+
+                    }
+                    else
+                    {
+                        foreach (KeyValuePair<string, Chart_DRC_Time_Line> chart in list_chart_descriptors)
+                        {
+                            chart.Value.remove_serie_points(current_file);
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -3123,7 +3186,7 @@ namespace DRC
             chart.Series["Series4"].Points.DataBindXY(x_fit_log_1, y_fit_2);
             chart.Series["Series4"].Color = Color.DarkGray;
 
-            double ratio = 100.0 / (Math.Ceiling(_form1.get_descriptors_number() / 2.0));
+            double ratio = 100.0 / (Math.Ceiling((double)_form1.get_descriptors_number() / 2.0));
             _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
 
             _form1.tableLayoutPanel1.Controls.Add(chart);
@@ -3807,7 +3870,7 @@ namespace DRC
             //chart.Update();
             //chart.Show();
 
-            double ratio = 100.0 / (Math.Ceiling(_form1.get_descriptors_number() / 2.0));
+            double ratio = 100.0 / (Math.Ceiling((double)_form1.get_descriptors_number() / 2.0));
             _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
 
             _form1.tableLayoutPanel1.Controls.Add(chart);
@@ -4322,6 +4385,7 @@ namespace DRC
         private Dictionary<string, List<double>> drc_points_x_log = new Dictionary<string, List<double>>();
 
         private Dictionary<string, Color> chart_colors = new Dictionary<string, Color>();
+        private List<string> filenames = new List<string>();
 
         private double[] fit_parameters = new double[4];
 
@@ -4340,16 +4404,18 @@ namespace DRC
         private string compound_id;
         private string descriptor;
 
-        private bool data_modified;
-
-        private int descriptor_index;
+        private bool first_curve_drawn = false;
 
         private bool not_fitted;
 
         private string file_name;
 
+        private int series_number;
+
         private double min_y;
         private double max_y;
+
+        private List<Color> curve_color = new List<Color>();
 
         //List<DataGridViewRow> raw_data;
         //List<double> y_raw_data;
@@ -4359,9 +4425,9 @@ namespace DRC
             return not_fitted;
         }
 
-        public bool is_data_modified()
+        public bool is_first_curve_drawn()
         {
-            return data_modified;
+            return first_curve_drawn;
         }
 
         public string get_Descriptor_Name()
@@ -4377,6 +4443,11 @@ namespace DRC
         public double get_R2()
         {
             return r2;
+        }
+
+        public List<string> get_filenames()
+        {
+            return filenames;
         }
 
         //private bool chart_already_loaded;
@@ -4399,13 +4470,25 @@ namespace DRC
 
         public Chart_DRC_Time_Line() { }
 
-        public Chart_DRC_Time_Line(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color, int index, MainTab form, string filename)
+        public Chart_DRC_Time_Line(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color, MainTab form, string filename)
         {
+            curve_color.Add(Color.Blue);
+            curve_color.Add(Color.Red);
+            curve_color.Add(Color.Green);
+            curve_color.Add(Color.Black);
+            curve_color.Add(Color.SaddleBrown);
+            curve_color.Add(Color.OrangeRed);
+            curve_color.Add(Color.DarkBlue);
+            curve_color.Add(Color.DodgerBlue);
+            curve_color.Add(Color.Tan);
+            curve_color.Add(Color.DimGray);
+
+            series_number = 1;
+
             _form1 = form;
 
             file_name = filename;
-
-            descriptor_index = index;
+            filenames.Add(filename);
 
             compound_id = cpd;
             descriptor = descript;
@@ -4413,7 +4496,7 @@ namespace DRC
             chart_colors[file_name] = color;
 
             not_fitted = false;
-            data_modified = false;
+            first_curve_drawn = true;
 
             drc_points_y[file_name] = y.ToList();
 
@@ -4480,8 +4563,12 @@ namespace DRC
             fit_DRC();
         }
 
-        public void add_serie_points(string file, List<double> x, List<double> x_log, List<double> y, Color color)
+        public void add_serie_points(string file, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color)
         {
+            filenames.Add(file);
+
+            series_number += 1;
+
             drc_points_x[file] = x;
             drc_points_x_log[file] = x_log;
 
@@ -4501,13 +4588,20 @@ namespace DRC
 
         public void remove_serie_points(string file)
         {
-            drc_points_x.Remove(file);
-            drc_points_x_log.Remove(file);
+            if (file == file_name) return;
 
-            drc_points_y.Remove(file);
-            chart_colors.Remove(file);
+            if (drc_points_x.ContainsKey(file))
+            {
+                series_number -= 1;
 
-            chart.Series.Remove(chart.Series[file]);
+                drc_points_x.Remove(file);
+                drc_points_x_log.Remove(file);
+
+                drc_points_y.Remove(file);
+                chart_colors.Remove(file);
+
+                chart.Series.Remove(chart.Series[file]);
+            }
 
             draw_DRC();
         }
@@ -4593,23 +4687,29 @@ namespace DRC
             chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
 
             // Draw the first graph
-            chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            chart.Series["Series1"].Points.DataBindXY(drc_points_x_log[file_name], drc_points_y[file_name]);
-            chart.Series["Series1"].Color = chart_colors[file_name];
+            chart.Series["DRC_Points"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            chart.Series["DRC_Points"].Points.DataBindXY(drc_points_x_log[file_name], drc_points_y[file_name]);
+            chart.Series["DRC_Points"].Color = chart_colors[file_name];
 
-            chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["Series2"].Points.DataBindXY(x_fit_log, y_fit);
-            chart.Series["Series2"].Color = chart_colors[file_name];
+            chart.Series["DRC_Fit"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit_log, y_fit);
+            chart.Series["DRC_Fit"].Color = chart_colors[file_name];
 
             // Draw the other graph
+            int counter_color = 0;
+
             foreach (KeyValuePair<string, List<double>> elem in drc_points_x)
             {
-                chart.Series[elem.Key].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-                chart.Series[elem.Key].Points.DataBindXY(drc_points_x_log[elem.Key], drc_points_y[elem.Key]);
-                chart.Series[elem.Key].Color = chart_colors[elem.Key];
+                if (elem.Key != file_name)
+                {
+                    chart.Series[elem.Key].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+                    chart.Series[elem.Key].Points.DataBindXY(drc_points_x_log[elem.Key], drc_points_y[elem.Key]);
+                    chart.Series[elem.Key].Color = curve_color[counter_color+1];
+                    counter_color++;
+                }
             }
 
-            double ratio = 100.0 / (Math.Ceiling(_form1.get_descriptors_number() / 2.0));
+            double ratio = 100.0 / (Math.Ceiling((double)_form1.get_descriptors_number_time_line() / 2.0));
             _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
 
             _form1.tableLayoutPanel1.Controls.Add(chart);
