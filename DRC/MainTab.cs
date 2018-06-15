@@ -144,7 +144,7 @@ namespace DRC
 
         Dictionary<string, DataTable> data_dict = new Dictionary<string, DataTable>(); // file --> DataTable
         Dictionary<string, HashSet<string>> cpd_link = new Dictionary<string, HashSet<string>>(); // cpd id --> file
-        List<string>  time_line_selected_descriptors = new List<string>();
+        List<string> time_line_selected_descriptors = new List<string>();
 
         public bool view_images_per_concentration;
 
@@ -2698,1202 +2698,1550 @@ namespace DRC
         //Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, this);
         //chart_drc.set_Raw_Data(raw_data_rows);
 
-}
-
-public class Chart_DRC_Overlap
-{
-    MainTab _form1 = new MainTab();
-
-    private Chart chart;
-
-    private List<double> drc_points_x_1 = new List<double>();
-    private List<double> drc_points_y_1 = new List<double>();
-
-    private List<double> drc_points_x_2 = new List<double>();
-    private List<double> drc_points_y_2 = new List<double>();
-
-    private List<double> drc_points_x_1_log = new List<double>();
-    private List<double> drc_points_x_2_log = new List<double>();
-
-    private Color chart_color;
-
-    //private List<double> x_concentrations;
-    //private List<double> x_concentrations_log;
-    //private List<double> y_response;
-
-    private double[] fit_parameters_1 = new double[4];
-    private double[] fit_parameters_2 = new double[4];
-
-    private List<double> x_fit_1;
-    private List<double> x_fit_log_1;
-    private List<double> y_fit_1;
-
-    private List<double> y_fit_2;
-
-    private int step_curve;
-
-    private double MinConcentrationLin;
-    private double MaxConcentrationLin;
-
-    private double r2_1;
-    private double RelativeError_1;
-    private double r2_2;
-    private double RelativeError_2;
-
-    private string compound_id;
-    private string descriptor;
-
-    private bool data_modified;
-
-    private int descriptor_index;
-
-    private bool not_fitted;
-
-    private double min_y_1;
-    private double min_y_2;
-
-    private double max_y_1;
-    private double max_y_2;
-
-    List<DataGridViewRow> raw_data;
-    List<double> y_raw_data;
-
-    List<bool> is_raw_data_removed;
-
-    public bool is_Fitted()
-    {
-        return not_fitted;
     }
 
-    public bool is_data_modified()
+    public class Chart_DRC_Overlap
     {
-        return data_modified;
-    }
+        MainTab _form1 = new MainTab();
 
-    public void set_Raw_Data(List<DataGridViewRow> data)
-    {
-        raw_data = data.ToList();
+        private Chart chart;
 
-        y_raw_data = new List<double>();
+        private List<double> drc_points_x_1 = new List<double>();
+        private List<double> drc_points_y_1 = new List<double>();
 
-        foreach (DataGridViewRow item in raw_data)
+        private List<double> drc_points_x_2 = new List<double>();
+        private List<double> drc_points_y_2 = new List<double>();
+
+        private List<double> drc_points_x_1_log = new List<double>();
+        private List<double> drc_points_x_2_log = new List<double>();
+
+        private Color chart_color;
+
+        //private List<double> x_concentrations;
+        //private List<double> x_concentrations_log;
+        //private List<double> y_response;
+
+        private double[] fit_parameters_1 = new double[4];
+        private double[] fit_parameters_2 = new double[4];
+
+        private List<double> x_fit_1;
+        private List<double> x_fit_log_1;
+        private List<double> y_fit_1;
+
+        private List<double> y_fit_2;
+
+        private int step_curve;
+
+        private double MinConcentrationLin;
+        private double MaxConcentrationLin;
+
+        private double r2_1;
+        private double RelativeError_1;
+        private double r2_2;
+        private double RelativeError_2;
+
+        private string compound_id;
+        private string descriptor;
+
+        private bool data_modified;
+
+        private int descriptor_index;
+
+        private bool not_fitted;
+
+        private double min_y_1;
+        private double min_y_2;
+
+        private double max_y_1;
+        private double max_y_2;
+
+        List<DataGridViewRow> raw_data;
+        List<double> y_raw_data;
+
+        List<bool> is_raw_data_removed;
+
+        public bool is_Fitted()
         {
-            y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
+            return not_fitted;
+        }
+
+        public bool is_data_modified()
+        {
+            return data_modified;
+        }
+
+        public void set_Raw_Data(List<DataGridViewRow> data)
+        {
+            raw_data = data.ToList();
+
+            y_raw_data = new List<double>();
+
+            foreach (DataGridViewRow item in raw_data)
+            {
+                y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
+            }
+        }
+
+        public List<DataGridViewRow> get_Raw_Data()
+        {
+            return raw_data;
+        }
+
+        public List<bool> get_Removed_Raw_Data()
+        {
+            return is_raw_data_removed;
+        }
+
+        public string get_Descriptor_Name()
+        {
+            return descriptor;
+        }
+
+        public double[] get_Fit_Parameters_1()
+        {
+            return fit_parameters_1;
+        }
+
+        public double[] get_Fit_Parameters_2()
+        {
+            return fit_parameters_2;
+        }
+
+        public double get_R2_1()
+        {
+            return r2_1;
+        }
+
+        public double get_R2_2()
+        {
+            return r2_2;
+        }
+
+        //private bool chart_already_loaded;
+
+        private T MinA<T>(T[] rest) where T : IComparable
+        {
+            T min = rest[0];
+            foreach (T f in rest) if (f.CompareTo(min) < 0)
+                    min = f;
+            return min;
+        }
+
+        private T MaxA<T>(T[] rest) where T : IComparable
+        {
+            T max = rest[0];
+            foreach (T f in rest) if (f.CompareTo(max) > 0)
+                    max = f;
+            return max;
+        }
+
+        public Chart_DRC_Overlap()
+        {
+        }
+
+        public Chart_DRC_Overlap(string cpd, string descript, int step, ref List<double> x_1, ref List<double> x_log_1, ref List<double> x_2, ref List<double> x_log_2, ref List<double> y_1, ref List<double> y_2, Color color, int index, MainTab form)
+        {
+            _form1 = form;
+
+            descriptor_index = index;
+
+            compound_id = cpd;
+            descriptor = descript;
+            step_curve = step;
+            chart_color = color;
+
+            not_fitted = false;
+            data_modified = false;
+
+            drc_points_y_1 = y_1.ToList();
+            drc_points_y_2 = y_2.ToList();
+
+            drc_points_x_1_log = x_log_1.ToList();
+            drc_points_x_2_log = x_log_2.ToList();
+
+            drc_points_x_1 = x_1.ToList();
+            drc_points_x_2 = x_2.ToList();
+
+            double min_x_1 = MinA(x_1.ToArray());
+            double min_x_2 = MinA(x_2.ToArray());
+
+            double max_x_1 = MaxA(x_1.ToArray());
+            double max_x_2 = MaxA(x_2.ToArray());
+
+            min_y_1 = MinA(y_1.ToArray());
+            min_y_2 = MinA(y_2.ToArray());
+
+            max_y_1 = MaxA(y_1.ToArray());
+            max_y_2 = MaxA(y_2.ToArray());
+
+            MinConcentrationLin = Math.Min(min_x_1, min_x_2); //MinA(x_concentrations.ToArray());
+            MaxConcentrationLin = Math.Max(max_x_1, max_x_2); //MaxA(x_concentrations.ToArray());
+
+            x_fit_1 = new List<double>();
+            x_fit_log_1 = new List<double>();
+            y_fit_1 = new List<double>();
+            y_fit_2 = new List<double>();
+
+            is_raw_data_removed = new List<bool>();
+
+            for (int j = 0; j < step_curve; j++)
+            {
+                x_fit_1.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
+                x_fit_log_1.Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
+            }
+
+            chart = new Chart();
+
+            ChartArea chartArea = new ChartArea();
+            Series series1 = new Series();
+            Series series2 = new Series();
+            Series series3 = new Series();
+            Series series4 = new Series();
+
+            //chartArea.Position.Auto = false;
+            Axis yAxis = new Axis(chartArea, AxisName.Y);
+            Axis xAxis = new Axis(chartArea, AxisName.X);
+
+            chartArea.AxisX.LabelStyle.Format = "N2";
+            chartArea.AxisX.Title = "Concentatrion";
+            chartArea.AxisY.Title = "Response";
+
+            //double max_y_1 = MaxA(drc_points_y_1.ToArray());
+            //double max_y_2 = MaxA(drc_points_y_2.ToArray());
+            double max_y = Math.Max(max_y_1, max_y_2);
+
+            //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
+
+            chartArea.Name = descriptor;
+
+            chart.ChartAreas.Add(chartArea);
+            chart.Name = descriptor;
+
+            chart.Location = new System.Drawing.Point(250, 100);
+
+            series1.ChartType = SeriesChartType.Point;
+            series2.ChartType = SeriesChartType.Line;
+            series3.ChartType = SeriesChartType.Point;
+            series4.ChartType = SeriesChartType.Line;
+
+            series1.MarkerStyle = MarkerStyle.Circle;
+            series3.MarkerStyle = MarkerStyle.Circle;
+
+            series1.Name = "Series1";
+            series2.Name = "Series2";
+            series3.Name = "Series3";
+            series4.Name = "Series4";
+
+            chart.Series.Add(series1);
+            chart.Series.Add(series2);
+            chart.Series.Add(series3);
+            chart.Series.Add(series4);
+
+            chart.Size = new System.Drawing.Size(550, 350);
+
+            chart.Titles.Add("Title1");
+
+            fit_DRC_1();
+            fit_DRC_2();
+        }
+
+        private static void function_SigmoidInhibition(double[] c, double[] x, ref double func, object obj)
+        {
+            func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
+        }
+
+        private double Sigmoid(double[] c, double x)
+        {
+            double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
+            return y;
+        }
+
+        private void fit_DRC_1()
+        {
+            double GlobalMax = double.MinValue;
+            double MaxValues = max_y_1;
+            GlobalMax = MaxValues;
+
+            double GlobalMin = double.MaxValue;
+            double MinValues = min_y_1;
+            GlobalMin = MinValues;
+
+            double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
+            double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
+
+            double epsf = 0;
+            double epsx = 0;
+
+            int maxits = 0;
+            int info;
+
+            double[] bndl = null;
+            double[] bndu = null;
+
+            // boundaries
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
+
+            alglib.lsfitstate state;
+            alglib.lsfitreport rep;
+            double diffstep = 1e-12;
+
+            // Fitting without weights
+            //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
+
+            double[,] Concentration = new double[drc_points_x_1_log.Count(), 1];
+            for (var i = 0; i < drc_points_x_1_log.Count(); ++i)
+            {
+                Concentration[i, 0] = drc_points_x_1_log[i];
+            }
+
+            int NumDimension = 1;
+            alglib.lsfitcreatef(Concentration, drc_points_y_1.ToArray(), c, diffstep, out state);
+            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetbc(state, bndl, bndu);
+            // alglib.lsfitsetscale(state, s);
+
+            alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
+            alglib.lsfitresults(state, out info, out c, out rep);
+
+            fit_parameters_1 = c;
+            RelativeError_1 = rep.avgrelerror;
+            r2_1 = rep.r2;
+
+            y_fit_1.Clear();
+
+            for (int IdxConc = 0; IdxConc < x_fit_log_1.Count; IdxConc++)
+            {
+                y_fit_1.Add(Sigmoid(c, x_fit_log_1[IdxConc]));
+            }
+
+        }
+
+        private void fit_DRC_2()
+        {
+            double GlobalMax = double.MinValue;
+            double MaxValues = max_y_2;
+            GlobalMax = MaxValues;
+
+            double GlobalMin = double.MaxValue;
+            double MinValues = min_y_2;
+            GlobalMin = MinValues;
+
+            double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
+            double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
+
+            double epsf = 0;
+            double epsx = 0;
+
+            int maxits = 0;
+            int info;
+
+            double[] bndl = null;
+            double[] bndu = null;
+
+            // boundaries
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
+
+            alglib.lsfitstate state;
+            alglib.lsfitreport rep;
+            double diffstep = 1e-12;
+
+            // Fitting without weights
+            //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
+
+            double[,] Concentration = new double[drc_points_x_2_log.Count(), 1];
+            for (var i = 0; i < drc_points_x_2_log.Count(); ++i)
+            {
+                Concentration[i, 0] = drc_points_x_2_log[i];
+            }
+
+            int NumDimension = 1;
+            alglib.lsfitcreatef(Concentration, drc_points_y_2.ToArray(), c, diffstep, out state);
+            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetbc(state, bndl, bndu);
+            // alglib.lsfitsetscale(state, s);
+
+            alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
+            alglib.lsfitresults(state, out info, out c, out rep);
+
+            fit_parameters_2 = c;
+            RelativeError_2 = rep.avgrelerror;
+            r2_2 = rep.r2;
+
+            y_fit_2.Clear();
+
+            for (int IdxConc = 0; IdxConc < x_fit_log_1.Count; IdxConc++)
+            {
+                y_fit_2.Add(Sigmoid(c, x_fit_log_1[IdxConc]));
+            }
+
+        }
+
+        public void draw_DRC()
+        {
+            string cpd = compound_id;
+
+            fit_DRC_1();
+            fit_DRC_2();
+
+            chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
+
+            //Color second_color = Color.Cyan;
+            //if (chart_color == Color.Red) second_color = Color.Salmon;
+            //if (chart_color == Color.Green) second_color = Color.LightGreen;
+            //if (chart_color == Color.Black) second_color = Color.DarkGray;
+
+
+            // Draw the first graph
+            chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            chart.Series["Series1"].Points.DataBindXY(drc_points_x_1_log, drc_points_y_1);
+            chart.Series["Series1"].Color = chart_color;
+
+            chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart.Series["Series2"].Points.DataBindXY(x_fit_log_1, y_fit_1);
+            chart.Series["Series2"].Color = chart_color;
+
+            // Draw the second graph
+            chart.Series["Series3"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            chart.Series["Series3"].Points.DataBindXY(drc_points_x_2_log, drc_points_y_2);
+            chart.Series["Series3"].Color = Color.DarkGray;
+
+            chart.Series["Series4"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart.Series["Series4"].Points.DataBindXY(x_fit_log_1, y_fit_2);
+            chart.Series["Series4"].Color = Color.DarkGray;
+
+            double ratio = 100.0 / (Math.Ceiling(_form1.get_descriptors_number() / 2.0));
+            _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
+
+            _form1.tableLayoutPanel1.Controls.Add(chart);
+            chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top);
+            //chart_already_loaded = true;
+        }
+
+        public string save_image(string path)
+        {
+            draw_DRC();
+            string descriptor_name = descriptor.Replace(@"/", @"_");
+            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
+
+            System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
+            chart.SaveImage(output_image, ChartImageFormat.Bmp);
+
+            return output_image;
         }
     }
 
-    public List<DataGridViewRow> get_Raw_Data()
+
+    public class Chart_DRC
     {
-        return raw_data;
-    }
+        MainTab _form1 = new MainTab();
 
-    public List<bool> get_Removed_Raw_Data()
-    {
-        return is_raw_data_removed;
-    }
+        private Chart chart;
 
-    public string get_Descriptor_Name()
-    {
-        return descriptor;
-    }
+        private List<double> drc_points_x_enable = new List<double>();
+        private List<double> drc_points_y_enable = new List<double>();
 
-    public double[] get_Fit_Parameters_1()
-    {
-        return fit_parameters_1;
-    }
+        List<double> drc_points_x_disable = new List<double>();
+        List<double> drc_points_y_disable = new List<double>();
 
-    public double[] get_Fit_Parameters_2()
-    {
-        return fit_parameters_2;
-    }
+        private RectangleAnnotation annotation_ec50 = new RectangleAnnotation();
+        private Color chart_color;
 
-    public double get_R2_1()
-    {
-        return r2_1;
-    }
+        private List<double> x_concentrations;
+        private List<double> x_concentrations_log;
 
-    public double get_R2_2()
-    {
-        return r2_2;
-    }
+        private List<double> y_response;
 
-    //private bool chart_already_loaded;
+        private double[] fit_parameters = new double[4];
+        private List<double> x_fit;
+        private List<double> x_fit_log;
 
-    private T MinA<T>(T[] rest) where T : IComparable
-    {
-        T min = rest[0];
-        foreach (T f in rest) if (f.CompareTo(min) < 0)
-                min = f;
-        return min;
-    }
+        private List<double> y_fit_;
+        private List<double> y_fit_log;
 
-    private T MaxA<T>(T[] rest) where T : IComparable
-    {
-        T max = rest[0];
-        foreach (T f in rest) if (f.CompareTo(max) > 0)
-                max = f;
-        return max;
-    }
+        private int step_curve;
 
-    public Chart_DRC_Overlap()
-    {
-    }
+        private double MinConcentrationLin;
+        private double MaxConcentrationLin;
 
-    public Chart_DRC_Overlap(string cpd, string descript, int step, ref List<double> x_1, ref List<double> x_log_1, ref List<double> x_2, ref List<double> x_log_2, ref List<double> y_1, ref List<double> y_2, Color color, int index, MainTab form)
-    {
-        _form1 = form;
+        private double r2;
+        private double RelativeError;
 
-        descriptor_index = index;
+        private string compound_id;
+        private string descriptor;
 
-        compound_id = cpd;
-        descriptor = descript;
-        step_curve = step;
-        chart_color = color;
+        private bool data_modified;
 
-        not_fitted = false;
-        data_modified = false;
+        private int descriptor_index;
 
-        drc_points_y_1 = y_1.ToList();
-        drc_points_y_2 = y_2.ToList();
+        private bool not_fitted;
+        private bool inactive;
 
-        drc_points_x_1_log = x_log_1.ToList();
-        drc_points_x_2_log = x_log_2.ToList();
+        private bool not_fitted_init;
+        private bool inactive_init;
 
-        drc_points_x_1 = x_1.ToList();
-        drc_points_x_2 = x_2.ToList();
+        List<DataGridViewRow> raw_data;
+        List<double> y_raw_data;
 
-        double min_x_1 = MinA(x_1.ToArray());
-        double min_x_2 = MinA(x_2.ToArray());
+        List<bool> is_raw_data_removed;
 
-        double max_x_1 = MaxA(x_1.ToArray());
-        double max_x_2 = MaxA(x_2.ToArray());
+        RectangleAnnotation menu_text = new RectangleAnnotation();
 
-        min_y_1 = MinA(y_1.ToArray());
-        min_y_2 = MinA(y_2.ToArray());
+        private Curves_Options options_form;
 
-        max_y_1 = MaxA(y_1.ToArray());
-        max_y_2 = MaxA(y_2.ToArray());
+        private double minX = -1;
+        private double maxX = -1;
 
-        MinConcentrationLin = Math.Min(min_x_1, min_x_2); //MinA(x_concentrations.ToArray());
-        MaxConcentrationLin = Math.Max(max_x_1, max_x_2); //MaxA(x_concentrations.ToArray());
-
-        x_fit_1 = new List<double>();
-        x_fit_log_1 = new List<double>();
-        y_fit_1 = new List<double>();
-        y_fit_2 = new List<double>();
-
-        is_raw_data_removed = new List<bool>();
-
-        for (int j = 0; j < step_curve; j++)
+        public bool is_Fitted()
         {
-            x_fit_1.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
-            x_fit_log_1.Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
+            return not_fitted;
         }
 
-        chart = new Chart();
-
-        ChartArea chartArea = new ChartArea();
-        Series series1 = new Series();
-        Series series2 = new Series();
-        Series series3 = new Series();
-        Series series4 = new Series();
-
-        //chartArea.Position.Auto = false;
-        Axis yAxis = new Axis(chartArea, AxisName.Y);
-        Axis xAxis = new Axis(chartArea, AxisName.X);
-
-        chartArea.AxisX.LabelStyle.Format = "N2";
-        chartArea.AxisX.Title = "Concentatrion";
-        chartArea.AxisY.Title = "Response";
-
-        //double max_y_1 = MaxA(drc_points_y_1.ToArray());
-        //double max_y_2 = MaxA(drc_points_y_2.ToArray());
-        double max_y = Math.Max(max_y_1, max_y_2);
-
-        //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
-
-        chartArea.Name = descriptor;
-
-        chart.ChartAreas.Add(chartArea);
-        chart.Name = descriptor;
-
-        chart.Location = new System.Drawing.Point(250, 100);
-
-        series1.ChartType = SeriesChartType.Point;
-        series2.ChartType = SeriesChartType.Line;
-        series3.ChartType = SeriesChartType.Point;
-        series4.ChartType = SeriesChartType.Line;
-
-        series1.MarkerStyle = MarkerStyle.Circle;
-        series3.MarkerStyle = MarkerStyle.Circle;
-
-        series1.Name = "Series1";
-        series2.Name = "Series2";
-        series3.Name = "Series3";
-        series4.Name = "Series4";
-
-        chart.Series.Add(series1);
-        chart.Series.Add(series2);
-        chart.Series.Add(series3);
-        chart.Series.Add(series4);
-
-        chart.Size = new System.Drawing.Size(550, 350);
-
-        chart.Titles.Add("Title1");
-
-        fit_DRC_1();
-        fit_DRC_2();
-    }
-
-    private static void function_SigmoidInhibition(double[] c, double[] x, ref double func, object obj)
-    {
-        func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
-    }
-
-    private double Sigmoid(double[] c, double x)
-    {
-        double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
-        return y;
-    }
-
-    private void fit_DRC_1()
-    {
-        double GlobalMax = double.MinValue;
-        double MaxValues = max_y_1;
-        GlobalMax = MaxValues;
-
-        double GlobalMin = double.MaxValue;
-        double MinValues = min_y_1;
-        GlobalMin = MinValues;
-
-        double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
-        double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
-
-        double epsf = 0;
-        double epsx = 0;
-
-        int maxits = 0;
-        int info;
-
-        double[] bndl = null;
-        double[] bndu = null;
-
-        // boundaries
-        bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
-        bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
-
-        alglib.lsfitstate state;
-        alglib.lsfitreport rep;
-        double diffstep = 1e-12;
-
-        // Fitting without weights
-        //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
-
-        double[,] Concentration = new double[drc_points_x_1_log.Count(), 1];
-        for (var i = 0; i < drc_points_x_1_log.Count(); ++i)
+        public bool is_Inactive()
         {
-            Concentration[i, 0] = drc_points_x_1_log[i];
+            return inactive;
         }
 
-        int NumDimension = 1;
-        alglib.lsfitcreatef(Concentration, drc_points_y_1.ToArray(), c, diffstep, out state);
-        alglib.lsfitsetcond(state, epsx, maxits);
-        alglib.lsfitsetbc(state, bndl, bndu);
-        // alglib.lsfitsetscale(state, s);
-
-        alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
-        alglib.lsfitresults(state, out info, out c, out rep);
-
-        fit_parameters_1 = c;
-        RelativeError_1 = rep.avgrelerror;
-        r2_1 = rep.r2;
-
-        y_fit_1.Clear();
-
-        for (int IdxConc = 0; IdxConc < x_fit_log_1.Count; IdxConc++)
+        public bool is_data_modified()
         {
-            y_fit_1.Add(Sigmoid(c, x_fit_log_1[IdxConc]));
+            return data_modified;
         }
 
-    }
-
-    private void fit_DRC_2()
-    {
-        double GlobalMax = double.MinValue;
-        double MaxValues = max_y_2;
-        GlobalMax = MaxValues;
-
-        double GlobalMin = double.MaxValue;
-        double MinValues = min_y_2;
-        GlobalMin = MinValues;
-
-        double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
-        double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
-
-        double epsf = 0;
-        double epsx = 0;
-
-        int maxits = 0;
-        int info;
-
-        double[] bndl = null;
-        double[] bndu = null;
-
-        // boundaries
-        bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
-        bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
-
-        alglib.lsfitstate state;
-        alglib.lsfitreport rep;
-        double diffstep = 1e-12;
-
-        // Fitting without weights
-        //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
-
-        double[,] Concentration = new double[drc_points_x_2_log.Count(), 1];
-        for (var i = 0; i < drc_points_x_2_log.Count(); ++i)
+        public void set_Raw_Data(List<DataGridViewRow> data)
         {
-            Concentration[i, 0] = drc_points_x_2_log[i];
+            raw_data = data.ToList();
+
+            y_raw_data = new List<double>();
+
+            foreach (DataGridViewRow item in raw_data)
+            {
+                y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
+            }
         }
 
-        int NumDimension = 1;
-        alglib.lsfitcreatef(Concentration, drc_points_y_2.ToArray(), c, diffstep, out state);
-        alglib.lsfitsetcond(state, epsx, maxits);
-        alglib.lsfitsetbc(state, bndl, bndu);
-        // alglib.lsfitsetscale(state, s);
-
-        alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
-        alglib.lsfitresults(state, out info, out c, out rep);
-
-        fit_parameters_2 = c;
-        RelativeError_2 = rep.avgrelerror;
-        r2_2 = rep.r2;
-
-        y_fit_2.Clear();
-
-        for (int IdxConc = 0; IdxConc < x_fit_log_1.Count; IdxConc++)
+        public List<DataGridViewRow> get_Raw_Data()
         {
-            y_fit_2.Add(Sigmoid(c, x_fit_log_1[IdxConc]));
+            return raw_data;
         }
 
-    }
-
-    public void draw_DRC()
-    {
-        string cpd = compound_id;
-
-        fit_DRC_1();
-        fit_DRC_2();
-
-        chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
-
-        //Color second_color = Color.Cyan;
-        //if (chart_color == Color.Red) second_color = Color.Salmon;
-        //if (chart_color == Color.Green) second_color = Color.LightGreen;
-        //if (chart_color == Color.Black) second_color = Color.DarkGray;
-
-
-        // Draw the first graph
-        chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-        chart.Series["Series1"].Points.DataBindXY(drc_points_x_1_log, drc_points_y_1);
-        chart.Series["Series1"].Color = chart_color;
-
-        chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-        chart.Series["Series2"].Points.DataBindXY(x_fit_log_1, y_fit_1);
-        chart.Series["Series2"].Color = chart_color;
-
-        // Draw the second graph
-        chart.Series["Series3"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-        chart.Series["Series3"].Points.DataBindXY(drc_points_x_2_log, drc_points_y_2);
-        chart.Series["Series3"].Color = Color.DarkGray;
-
-        chart.Series["Series4"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-        chart.Series["Series4"].Points.DataBindXY(x_fit_log_1, y_fit_2);
-        chart.Series["Series4"].Color = Color.DarkGray;
-
-        double ratio = 100.0 / (Math.Ceiling(_form1.get_descriptors_number() / 2.0));
-        _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
-
-        _form1.tableLayoutPanel1.Controls.Add(chart);
-        chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top);
-        //chart_already_loaded = true;
-    }
-
-    public string save_image(string path)
-    {
-        draw_DRC();
-        string descriptor_name = descriptor.Replace(@"/", @"_");
-        string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
-
-        System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
-        chart.SaveImage(output_image, ChartImageFormat.Bmp);
-
-        return output_image;
-    }
-}
-
-
-public class Chart_DRC
-{
-    MainTab _form1 = new MainTab();
-
-    private Chart chart;
-
-    private List<double> drc_points_x_enable = new List<double>();
-    private List<double> drc_points_y_enable = new List<double>();
-
-    List<double> drc_points_x_disable = new List<double>();
-    List<double> drc_points_y_disable = new List<double>();
-
-    private RectangleAnnotation annotation_ec50 = new RectangleAnnotation();
-    private Color chart_color;
-
-    private List<double> x_concentrations;
-    private List<double> x_concentrations_log;
-
-    private List<double> y_response;
-
-    private double[] fit_parameters = new double[4];
-    private List<double> x_fit;
-    private List<double> x_fit_log;
-
-    private List<double> y_fit_;
-    private List<double> y_fit_log;
-
-    private int step_curve;
-
-    private double MinConcentrationLin;
-    private double MaxConcentrationLin;
-
-    private double r2;
-    private double RelativeError;
-
-    private string compound_id;
-    private string descriptor;
-
-    private bool data_modified;
-
-    private int descriptor_index;
-
-    private bool not_fitted;
-    private bool inactive;
-
-    private bool not_fitted_init;
-    private bool inactive_init;
-
-    List<DataGridViewRow> raw_data;
-    List<double> y_raw_data;
-
-    List<bool> is_raw_data_removed;
-
-    RectangleAnnotation menu_text = new RectangleAnnotation();
-
-    private Curves_Options options_form;
-
-    private double minX = -1;
-    private double maxX = -1;
-
-    public bool is_Fitted()
-    {
-        return not_fitted;
-    }
-
-    public bool is_Inactive()
-    {
-        return inactive;
-    }
-
-    public bool is_data_modified()
-    {
-        return data_modified;
-    }
-
-    public void set_Raw_Data(List<DataGridViewRow> data)
-    {
-        raw_data = data.ToList();
-
-        y_raw_data = new List<double>();
-
-        foreach (DataGridViewRow item in raw_data)
+        public List<bool> get_Removed_Raw_Data()
         {
-            y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
-        }
-    }
-
-    public List<DataGridViewRow> get_Raw_Data()
-    {
-        return raw_data;
-    }
-
-    public List<bool> get_Removed_Raw_Data()
-    {
-        return is_raw_data_removed;
-    }
-
-    public string get_Descriptor_Name()
-    {
-        return descriptor;
-    }
-
-    //private bool chart_already_loaded;
-
-    private T MinA<T>(T[] rest) where T : IComparable
-    {
-        T min = rest[0];
-        foreach (T f in rest) if (f.CompareTo(min) < 0)
-                min = f;
-        return min;
-    }
-
-    private T MaxA<T>(T[] rest) where T : IComparable
-    {
-        T max = rest[0];
-        foreach (T f in rest) if (f.CompareTo(max) > 0)
-                max = f;
-        return max;
-    }
-
-    public double get_R2()
-    {
-        return r2;
-    }
-
-    public Chart_DRC()
-    {
-    }
-
-    public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color, int index, List<string> deselected, MainTab form)
-    {
-        _form1 = form;
-
-        descriptor_index = index;
-
-        compound_id = cpd;
-        descriptor = descript;
-        step_curve = step;
-        chart_color = color;
-
-        not_fitted = false;
-        data_modified = false;
-
-        y_response = resp.ToList();
-        drc_points_y_enable = resp.ToList();
-
-        x_concentrations = x.ToList();
-        drc_points_x_enable = x_log.ToList();
-        x_concentrations_log = x_log.ToList();
-
-        MinConcentrationLin = MinA(x_concentrations.ToArray());
-        MaxConcentrationLin = MaxA(x_concentrations.ToArray());
-
-        x_fit = new List<double>();
-        x_fit_log = new List<double>();
-        y_fit_log = new List<double>();
-
-        is_raw_data_removed = new List<bool>();
-
-        foreach (double data_point in y_response)
-        {
-            is_raw_data_removed.Add(false);
+            return is_raw_data_removed;
         }
 
-        for (int index_deselect = 0; index_deselect < deselected.Count(); ++index_deselect)
+        public string get_Descriptor_Name()
         {
-            if (deselected[index_deselect] == "True")
+            return descriptor;
+        }
+
+        //private bool chart_already_loaded;
+
+        private T MinA<T>(T[] rest) where T : IComparable
+        {
+            T min = rest[0];
+            foreach (T f in rest) if (f.CompareTo(min) < 0)
+                    min = f;
+            return min;
+        }
+
+        private T MaxA<T>(T[] rest) where T : IComparable
+        {
+            T max = rest[0];
+            foreach (T f in rest) if (f.CompareTo(max) > 0)
+                    max = f;
+            return max;
+        }
+
+        public double get_R2()
+        {
+            return r2;
+        }
+
+        public Chart_DRC()
+        {
+        }
+
+        public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color, int index, List<string> deselected, MainTab form)
+        {
+            _form1 = form;
+
+            descriptor_index = index;
+
+            compound_id = cpd;
+            descriptor = descript;
+            step_curve = step;
+            chart_color = color;
+
+            not_fitted = false;
+            data_modified = false;
+
+            y_response = resp.ToList();
+            drc_points_y_enable = resp.ToList();
+
+            x_concentrations = x.ToList();
+            drc_points_x_enable = x_log.ToList();
+            x_concentrations_log = x_log.ToList();
+
+            MinConcentrationLin = MinA(x_concentrations.ToArray());
+            MaxConcentrationLin = MaxA(x_concentrations.ToArray());
+
+            x_fit = new List<double>();
+            x_fit_log = new List<double>();
+            y_fit_log = new List<double>();
+
+            is_raw_data_removed = new List<bool>();
+
+            foreach (double data_point in y_response)
+            {
+                is_raw_data_removed.Add(false);
+            }
+
+            for (int index_deselect = 0; index_deselect < deselected.Count(); ++index_deselect)
+            {
+                if (deselected[index_deselect] == "True")
+                {
+
+                    drc_points_x_disable.Add(x_concentrations_log[index_deselect]);
+                    drc_points_y_disable.Add(y_response[index_deselect]);
+
+                    is_raw_data_removed[index_deselect] = true;
+
+                    double point_y = y_response[index_deselect];
+
+                    int remove_index = drc_points_y_enable.FindIndex(a => a < point_y + .00001 && a > point_y - .00001);
+
+
+                    drc_points_x_enable.RemoveAt(remove_index); //Add(data_chart[i].XValue);
+                    drc_points_y_enable.RemoveAt(remove_index); //Add(data_chart[i].YValues[0]);
+                }
+                if (deselected[0] == "Not Fitted")
+                {
+                    not_fitted = true;       // When first element is NOT FITTED all the columns are NOT FITTED (For the current descriptor)
+                    not_fitted_init = true;
+                }
+                else not_fitted_init = false;
+
+                if (deselected[0] == "Inactive")
+                {
+                    inactive = true;
+                    inactive_init = true;
+                }
+                else inactive_init = false;
+            }
+
+
+            for (int j = 0; j < step_curve; j++)
+            {
+                //x_fit.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
+                x_fit_log.Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
+                x_fit.Add(Math.Pow(10, Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve));
+            }
+
+            chart = new Chart();
+
+            ChartArea chartArea = new ChartArea();
+            Series series1 = new Series();
+            Series series2 = new Series();
+
+            //chartArea.Position.Auto = false;
+            Axis yAxis = new Axis(chartArea, AxisName.Y);
+            Axis xAxis = new Axis(chartArea, AxisName.X);
+
+            chartArea.AxisX.LabelStyle.Format = "N2";
+            chartArea.AxisX.Title = "Concentatrion";
+            chartArea.AxisY.Title = "Response";
+
+            double max_y = MaxA(y_response.ToArray());
+
+            //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
+
+            chartArea.Name = descriptor;
+
+            chart.ChartAreas.Add(chartArea);
+            chart.Name = descriptor;
+
+            //each chart will be 43 units higher than the last
+            chart.Location = new System.Drawing.Point(250, 100);
+
+            series1.ChartType = SeriesChartType.Point;
+            series2.ChartType = SeriesChartType.Line;
+
+            series1.MarkerStyle = MarkerStyle.Circle;
+
+            series1.Name = "Series1";
+            series2.Name = "Series2";
+
+            chart.Series.Add(series1);
+            chart.Series.Add(series2);
+
+            chart.Size = new System.Drawing.Size(550, 350);
+            //chart.Visible = true;
+            //chart.TabStop = false;
+            //chart.Update();
+            //chart.Show();
+
+            //chart.Width = new Unit(300, System.Web.UI.WebControls.UnitType.Pixel);
+            //chart.Height = new Unit(200, System.Web.UI.WebControls.UnitType.Pixel);
+
+            chart.Titles.Add("Title1");
+
+            chart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseUp);
+            chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
+            chart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDown);
+            chart.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDoubleClick);
+            chart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseClick);
+            chart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseClickMenu);
+            //chart.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.chart1_KeyPress);
+            //chart.PrePaint += new System.Windows.Forms.chart ChartPaintEventArgs(this.Chart1_PrePaint);
+            //Create a rectangle annotation
+
+            RectangleAnnotation annotationRectangle = new RectangleAnnotation();
+            annotation_ec50 = annotationRectangle;
+
+            //chart.ChartAreas[0].AxisX.Minimum = -10;
+            //chart.ChartAreas[0].AxisX.Maximum = -5;
+
+            //chart.ChartAreas[0].AxisY.Minimum = -1;
+            //chart.ChartAreas[0].AxisY.Maximum = +1;
+
+            //draw_DRC();
+
+            fit_DRC();
+        }
+
+
+        //protected void Chart1_PrePaint(object sender, ChartPaintEventArgs e)
+        //{
+        //    if (e.ChartElement is ChartArea)
+        //    {
+        //        var ta = new TextAnnotation();
+        //        ta.Text = "Menu";
+        //        ta.Width = e.Position.Width;
+        //        ta.Height = e.Position.Height;
+        //        ta.X = e.Position.X;
+        //        ta.Y = e.Position.Y;
+        //        ta.Font = new Font("Ms Sans Serif", 16, FontStyle.Bold);
+
+        //        chart.Annotations.Add(ta);
+        //    }
+        //}
+
+        private static void function_SigmoidInhibition(double[] c, double[] x, ref double func, object obj)
+        {
+            func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
+        }
+
+        private double Sigmoid(double[] c, double x)
+        {
+            double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
+            return y;
+        }
+
+        private void fit_DRC()
+        {
+            double GlobalMax = double.MinValue;
+            double MaxValues = MaxA(drc_points_y_enable.ToArray());
+            GlobalMax = MaxValues;
+
+            double GlobalMin = double.MaxValue;
+            double MinValues = MinA(drc_points_y_enable.ToArray());
+            GlobalMin = MinValues;
+            if ((double)_form1.numericUpDown3.Value != 0)
+            {
+                GlobalMax = (double)_form1.numericUpDown3.Value;
+            }
+
+            double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
+            double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
+
+            double epsf = 0;
+            double epsx = 0;
+
+            int maxits = 0;
+            int info;
+
+            double[] bndl = null;
+            double[] bndu = null;
+
+            // boundaries
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
+
+            alglib.lsfitstate state;
+            alglib.lsfitreport rep;
+            double diffstep = 1e-12;
+
+            // Fitting without weights
+            //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
+
+            double[,] Concentration = new double[drc_points_x_enable.Count(), 1];
+            for (var i = 0; i < drc_points_x_enable.Count(); ++i)
+            {
+                Concentration[i, 0] = drc_points_x_enable[i];
+            }
+
+            int NumDimension = 1;
+            alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
+            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetbc(state, bndl, bndu);
+            // alglib.lsfitsetscale(state, s);
+
+            alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
+            alglib.lsfitresults(state, out info, out c, out rep);
+
+            fit_parameters = c;
+            RelativeError = rep.avgrelerror;
+            r2 = rep.r2;
+
+            y_fit_log.Clear();
+
+            for (int IdxConc = 0; IdxConc < x_fit.Count; IdxConc++)
+            {
+                y_fit_log.Add(Sigmoid(c, x_fit_log[IdxConc]));
+            }
+
+        }
+
+        public void Is_Modified()
+        {
+            int k = 0;
+            foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+            {
+                string compound = row2.Cells[0].Value.ToString();
+                if (compound_id == compound) break;
+                k++;
+            }
+            int row_index = k;
+
+            // Redraw value in table
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
+            if (fit_parameters[0] < fit_parameters[1])
+            {
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
+            }
+            else
+            {
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
+            }
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
+
+            if (drc_points_x_disable.Count() > 0)
+            {
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+            }
+            else
+            {
+                data_modified = false;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+            }
+
+            if (not_fitted)
             {
 
-                drc_points_x_disable.Add(x_concentrations_log[index_deselect]);
-                drc_points_y_disable.Add(y_response[index_deselect]);
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Not Fitted";
 
-                is_raw_data_removed[index_deselect] = true;
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
 
-                double point_y = y_response[index_deselect];
-
-                int remove_index = drc_points_y_enable.FindIndex(a => a < point_y + .00001 && a > point_y - .00001);
-
-
-                drc_points_x_enable.RemoveAt(remove_index); //Add(data_chart[i].XValue);
-                drc_points_y_enable.RemoveAt(remove_index); //Add(data_chart[i].YValues[0]);
+                annotation_ec50.Text = "EC_50 = Not Fitted";
             }
-            if (deselected[0] == "Not Fitted")
+
+            if (inactive)
             {
-                not_fitted = true;       // When first element is NOT FITTED all the columns are NOT FITTED (For the current descriptor)
-                not_fitted_init = true;
-            }
-            else not_fitted_init = false;
 
-            if (deselected[0] == "Inactive")
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+
+                annotation_ec50.Text = "EC_50 = Inactive";
+            }
+
+        }
+
+        public void threshold_r2(double thr)
+        {
+            //double r2_threshold = double.Parse(_form1.numericUpDown1.Value.ToString());
+
+            not_fitted = not_fitted_init;
+
+            if (r2 < thr)
+            {
+                not_fitted = true;
+                if (inactive_init == true) not_fitted = false;
+            }
+
+
+            //Is_Modified();
+        }
+
+        public void threshold_inactive(double thr)
+        {
+            inactive = inactive_init;
+
+            double GlobalMax = double.MinValue;
+            double MaxValues = MaxA(drc_points_y_enable.ToArray());
+            GlobalMax = MaxValues;
+
+            double GlobalMin = double.MaxValue;
+            double MinValues = MinA(drc_points_y_enable.ToArray());
+            GlobalMin = MinValues;
+
+            double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
+
+            if (min_max_activity < thr)
             {
                 inactive = true;
-                inactive_init = true;
+                if (not_fitted_init == true) inactive = false;
             }
-            else inactive_init = false;
+
+            //Is_Modified();
         }
 
-
-        for (int j = 0; j < step_curve; j++)
+        public void draw_DRC(bool if_report)
         {
-            //x_fit.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
-            x_fit_log.Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
-            x_fit.Add(Math.Pow(10, Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve));
-        }
+            string cpd = compound_id;
 
-        chart = new Chart();
+            fit_DRC();
 
-        ChartArea chartArea = new ChartArea();
-        Series series1 = new Series();
-        Series series2 = new Series();
+            chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
 
-        //chartArea.Position.Auto = false;
-        Axis yAxis = new Axis(chartArea, AxisName.Y);
-        Axis xAxis = new Axis(chartArea, AxisName.X);
+            // Draw the first graph
+            chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
+            chart.Series["Series1"].Color = chart_color;
 
-        chartArea.AxisX.LabelStyle.Format = "N2";
-        chartArea.AxisX.Title = "Concentatrion";
-        chartArea.AxisY.Title = "Response";
+            chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+            chart.Series["Series2"].Color = chart_color;
 
-        double max_y = MaxA(y_response.ToArray());
 
-        //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
+            //----------------------------- Axis Labels ---------------------------//
 
-        chartArea.Name = descriptor;
+            double min_x = 0.0;
+            double max_x = 0.0;
 
-        chart.ChartAreas.Add(chartArea);
-        chart.Name = descriptor;
-
-        //each chart will be 43 units higher than the last
-        chart.Location = new System.Drawing.Point(250, 100);
-
-        series1.ChartType = SeriesChartType.Point;
-        series2.ChartType = SeriesChartType.Line;
-
-        series1.MarkerStyle = MarkerStyle.Circle;
-
-        series1.Name = "Series1";
-        series2.Name = "Series2";
-
-        chart.Series.Add(series1);
-        chart.Series.Add(series2);
-
-        chart.Size = new System.Drawing.Size(550, 350);
-        //chart.Visible = true;
-        //chart.TabStop = false;
-        //chart.Update();
-        //chart.Show();
-
-        //chart.Width = new Unit(300, System.Web.UI.WebControls.UnitType.Pixel);
-        //chart.Height = new Unit(200, System.Web.UI.WebControls.UnitType.Pixel);
-
-        chart.Titles.Add("Title1");
-
-        chart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseUp);
-        chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
-        chart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDown);
-        chart.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDoubleClick);
-        chart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseClick);
-        chart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseClickMenu);
-        //chart.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.chart1_KeyPress);
-        //chart.PrePaint += new System.Windows.Forms.chart ChartPaintEventArgs(this.Chart1_PrePaint);
-        //Create a rectangle annotation
-
-        RectangleAnnotation annotationRectangle = new RectangleAnnotation();
-        annotation_ec50 = annotationRectangle;
-
-        //chart.ChartAreas[0].AxisX.Minimum = -10;
-        //chart.ChartAreas[0].AxisX.Maximum = -5;
-
-        //chart.ChartAreas[0].AxisY.Minimum = -1;
-        //chart.ChartAreas[0].AxisY.Maximum = +1;
-
-        //draw_DRC();
-
-        fit_DRC();
-    }
-
-
-    //protected void Chart1_PrePaint(object sender, ChartPaintEventArgs e)
-    //{
-    //    if (e.ChartElement is ChartArea)
-    //    {
-    //        var ta = new TextAnnotation();
-    //        ta.Text = "Menu";
-    //        ta.Width = e.Position.Width;
-    //        ta.Height = e.Position.Height;
-    //        ta.X = e.Position.X;
-    //        ta.Y = e.Position.Y;
-    //        ta.Font = new Font("Ms Sans Serif", 16, FontStyle.Bold);
-
-    //        chart.Annotations.Add(ta);
-    //    }
-    //}
-
-    private static void function_SigmoidInhibition(double[] c, double[] x, ref double func, object obj)
-    {
-        func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
-    }
-
-    private double Sigmoid(double[] c, double x)
-    {
-        double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
-        return y;
-    }
-
-    private void fit_DRC()
-    {
-        double GlobalMax = double.MinValue;
-        double MaxValues = MaxA(drc_points_y_enable.ToArray());
-        GlobalMax = MaxValues;
-
-        double GlobalMin = double.MaxValue;
-        double MinValues = MinA(drc_points_y_enable.ToArray());
-        GlobalMin = MinValues;
-        if ((double)_form1.numericUpDown3.Value != 0)
-        {
-            GlobalMax = (double)_form1.numericUpDown3.Value;
-        }
-
-        double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
-        double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
-
-        double epsf = 0;
-        double epsx = 0;
-
-        int maxits = 0;
-        int info;
-
-        double[] bndl = null;
-        double[] bndu = null;
-
-        // boundaries
-        bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
-        bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
-
-        alglib.lsfitstate state;
-        alglib.lsfitreport rep;
-        double diffstep = 1e-12;
-
-        // Fitting without weights
-        //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
-
-        double[,] Concentration = new double[drc_points_x_enable.Count(), 1];
-        for (var i = 0; i < drc_points_x_enable.Count(); ++i)
-        {
-            Concentration[i, 0] = drc_points_x_enable[i];
-        }
-
-        int NumDimension = 1;
-        alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
-        alglib.lsfitsetcond(state, epsx, maxits);
-        alglib.lsfitsetbc(state, bndl, bndu);
-        // alglib.lsfitsetscale(state, s);
-
-        alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
-        alglib.lsfitresults(state, out info, out c, out rep);
-
-        fit_parameters = c;
-        RelativeError = rep.avgrelerror;
-        r2 = rep.r2;
-
-        y_fit_log.Clear();
-
-        for (int IdxConc = 0; IdxConc < x_fit.Count; IdxConc++)
-        {
-            y_fit_log.Add(Sigmoid(c, x_fit_log[IdxConc]));
-        }
-
-    }
-
-    public void Is_Modified()
-    {
-        int k = 0;
-        foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
-        {
-            string compound = row2.Cells[0].Value.ToString();
-            if (compound_id == compound) break;
-            k++;
-        }
-        int row_index = k;
-
-        // Redraw value in table
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
-        if (fit_parameters[0] < fit_parameters[1])
-        {
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
-        }
-        else
-        {
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
-        }
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
-
-        if (drc_points_x_disable.Count() > 0)
-        {
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
-        }
-        else
-        {
-            data_modified = false;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
-        }
-
-        if (not_fitted)
-        {
-
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Not Fitted";
-
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
-
-            annotation_ec50.Text = "EC_50 = Not Fitted";
-        }
-
-        if (inactive)
-        {
-
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
-
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
-
-            annotation_ec50.Text = "EC_50 = Inactive";
-        }
-
-    }
-
-    public void threshold_r2(double thr)
-    {
-        //double r2_threshold = double.Parse(_form1.numericUpDown1.Value.ToString());
-
-        not_fitted = not_fitted_init;
-
-        if (r2 < thr)
-        {
-            not_fitted = true;
-            if (inactive_init == true) not_fitted = false;
-        }
-
-
-        //Is_Modified();
-    }
-
-    public void threshold_inactive(double thr)
-    {
-        inactive = inactive_init;
-
-        double GlobalMax = double.MinValue;
-        double MaxValues = MaxA(drc_points_y_enable.ToArray());
-        GlobalMax = MaxValues;
-
-        double GlobalMin = double.MaxValue;
-        double MinValues = MinA(drc_points_y_enable.ToArray());
-        GlobalMin = MinValues;
-
-        double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
-
-        if (min_max_activity < thr)
-        {
-            inactive = true;
-            if (not_fitted_init == true) inactive = false;
-        }
-
-        //Is_Modified();
-    }
-
-    public void draw_DRC(bool if_report)
-    {
-        string cpd = compound_id;
-
-        fit_DRC();
-
-        chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
-
-        // Draw the first graph
-        chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-        chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
-        chart.Series["Series1"].Color = chart_color;
-
-        chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-        chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
-        chart.Series["Series2"].Color = chart_color;
-
-
-        //----------------------------- Axis Labels ---------------------------//
-
-        double min_x = 0.0;
-        double max_x = 0.0;
-
-        if (x_concentrations_log.Count > 0)
-        {
-            min_x = (int)Math.Floor(MinA<double>(x_concentrations_log.ToArray()));
-            max_x = (int)Math.Ceiling(MaxA<double>(x_concentrations_log.ToArray()));
-        }
-        else
-        {
-            max_x = -5.0;
-            min_x = -8.0;
-        }
-
-        if (minX < -0.5) minX = Math.Pow(10, min_x);
-        else minX = chart.ChartAreas[0].AxisX.Minimum;
-
-        if (maxX < -0.5) maxX = Math.Pow(10, max_x);
-        else maxX = chart.ChartAreas[0].AxisX.Maximum;
-
-        chart.ChartAreas[0].AxisX.Minimum = minX;
-        chart.ChartAreas[0].AxisX.Maximum = maxX;
-
-        chart.ChartAreas[0].AxisX.IsLogarithmic = true;
-        chart.ChartAreas[0].AxisX.LogarithmBase = 10;
-        chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
-
-        // End Axis Labels.
-
-        foreach (DataPoint dp in chart.Series["Series1"].Points)
-        {
-            double point_x = dp.XValue;
-            double point_y = dp.YValues[0];
-
-            if (drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y))
+            if (x_concentrations_log.Count > 0)
             {
-                dp.Color = Color.LightGray;
-                //continue;
+                min_x = (int)Math.Floor(MinA<double>(x_concentrations_log.ToArray()));
+                max_x = (int)Math.Ceiling(MaxA<double>(x_concentrations_log.ToArray()));
             }
-            // Remove Points enabled
-            if (!(drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y)))
-
+            else
             {
-                dp.Color = chart_color;
+                max_x = -5.0;
+                min_x = -8.0;
             }
-        }
 
-        if (drc_points_x_disable.Count() == 0) data_modified = false;
-        else data_modified = true;
+            if (minX < -0.5) minX = Math.Pow(10, min_x);
+            else minX = chart.ChartAreas[0].AxisX.Minimum;
 
-        int k = 0;
-        foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
-        {
-            string compound = row2.Cells[0].Value.ToString();
-            if (compound_id == compound) break;
-            k++;
-        }
-        int row_index = k;
+            if (maxX < -0.5) maxX = Math.Pow(10, max_x);
+            else maxX = chart.ChartAreas[0].AxisX.Maximum;
 
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
-        if (fit_parameters[0] < fit_parameters[1])
-        {
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
-        }
-        else
-        {
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
-        }
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
+            chart.ChartAreas[0].AxisX.Minimum = minX;
+            chart.ChartAreas[0].AxisX.Maximum = maxX;
 
+            chart.ChartAreas[0].AxisX.IsLogarithmic = true;
+            chart.ChartAreas[0].AxisX.LogarithmBase = 10;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
 
-        if (drc_points_x_disable.Count() > 0)
-        {
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
-        }
-        else
-        {
-            data_modified = false;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
-        }
-
-        // Setup visual attributes
-        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
-        annotation_ec50.BackColor = Color.FromArgb(240, 240, 240);
-        annotation_ec50.AnchorX = 40;
-        annotation_ec50.AnchorY = 25;
-        annotation_ec50.AllowSelecting = true;
-        annotation_ec50.AllowResizing = true;
-        annotation_ec50.AllowMoving = true;
-        annotation_ec50.AllowAnchorMoving = true;
-
-        // Add the annotation to the collection
-        chart.Annotations.Clear();
-        chart.Annotations.Add(annotation_ec50);
-
-        if (not_fitted)
-        {
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Not Fitted";
-
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
-
-            annotation_ec50.Text = "EC_50 = Not Fitted";
-        }
-
-        if (inactive)
-        {
-
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
-
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
-
-            annotation_ec50.Text = "EC_50 = Inactive";
-        }
-
-        //chart.Invalidate();
-        //chart.Update();
-        //chart.Show();
-
-        double ratio = 100.0 / (Math.Ceiling(_form1.get_descriptors_number() / 2.0));
-        _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
-
-        _form1.tableLayoutPanel1.Controls.Add(chart);
-        chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top);
-        //chart_already_loaded = true;
-
-        //RectangleAnnotation annotation_text = new RectangleAnnotation();
-        //RectangleAnnotation mytext = new RectangleAnnotation();
-
-        if (if_report == false)
-        {
-            RectangleAnnotation mytext = new RectangleAnnotation();
-            //mytext.Bottom = 10;
-            mytext.Name = "mytext";
-            mytext.Text = "+";
-            mytext.AnchorX = 97.5;
-            mytext.AnchorY = 5;
-            mytext.Height = 5;
-            mytext.Width = 4;
-            mytext.ForeColor = Color.Blue;
-            mytext.Font = new Font(mytext.Font.FontFamily, mytext.Font.Size + 5.0f, mytext.Font.Style);
-            mytext.Visible = true;
-            chart.Annotations.Add(mytext);
-        }
-        //mytext = annotation_text;
-
-    }
-
-    Point mdown = Point.Empty;
-    List<DataPoint> selectedPoints = null;
-
-    private void chart1_MouseDown(object sender, MouseEventArgs e)
-    {
-        mdown = e.Location;
-        selectedPoints = new List<DataPoint>();
-    }
-
-    private void chart1_MouseMove(object sender, MouseEventArgs e)
-    {
-        if (e.Button == System.Windows.Forms.MouseButtons.Left)
-        {
-            chart.Refresh();
-            using (Graphics g = chart.CreateGraphics())
-                g.DrawRectangle(Pens.Red, GetRectangle(mdown, e.Location));
-        }
-    }
-
-    private void chart1_MouseUp(object sender, MouseEventArgs e)
-    {
-        if (e.Button == MouseButtons.Left)
-        {
-
-            Axis ax = chart.ChartAreas[0].AxisX;
-            Axis ay = chart.ChartAreas[0].AxisY;
-            Rectangle rect = GetRectangle(mdown, e.Location);
+            // End Axis Labels.
 
             foreach (DataPoint dp in chart.Series["Series1"].Points)
             {
-                int x = (int)ax.ValueToPixelPosition(dp.XValue);
-                int y = (int)ay.ValueToPixelPosition(dp.YValues[0]);
+                double point_x = dp.XValue;
+                double point_y = dp.YValues[0];
 
+                if (drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y))
+                {
+                    dp.Color = Color.LightGray;
+                    //continue;
+                }
+                // Remove Points enabled
+                if (!(drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y)))
+
+                {
+                    dp.Color = chart_color;
+                }
+            }
+
+            if (drc_points_x_disable.Count() == 0) data_modified = false;
+            else data_modified = true;
+
+            int k = 0;
+            foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+            {
+                string compound = row2.Cells[0].Value.ToString();
+                if (compound_id == compound) break;
+                k++;
+            }
+            int row_index = k;
+
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
+            if (fit_parameters[0] < fit_parameters[1])
+            {
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
+            }
+            else
+            {
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
+            }
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
+            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
+
+
+            if (drc_points_x_disable.Count() > 0)
+            {
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+            }
+            else
+            {
+                data_modified = false;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+            }
+
+            // Setup visual attributes
+            annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+            annotation_ec50.BackColor = Color.FromArgb(240, 240, 240);
+            annotation_ec50.AnchorX = 40;
+            annotation_ec50.AnchorY = 25;
+            annotation_ec50.AllowSelecting = true;
+            annotation_ec50.AllowResizing = true;
+            annotation_ec50.AllowMoving = true;
+            annotation_ec50.AllowAnchorMoving = true;
+
+            // Add the annotation to the collection
+            chart.Annotations.Clear();
+            chart.Annotations.Add(annotation_ec50);
+
+            if (not_fitted)
+            {
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Not Fitted";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
+
+                annotation_ec50.Text = "EC_50 = Not Fitted";
+            }
+
+            if (inactive)
+            {
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+
+                annotation_ec50.Text = "EC_50 = Inactive";
+            }
+
+            //chart.Invalidate();
+            //chart.Update();
+            //chart.Show();
+
+            double ratio = 100.0 / (Math.Ceiling(_form1.get_descriptors_number() / 2.0));
+            _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
+
+            _form1.tableLayoutPanel1.Controls.Add(chart);
+            chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top);
+            //chart_already_loaded = true;
+
+            //RectangleAnnotation annotation_text = new RectangleAnnotation();
+            //RectangleAnnotation mytext = new RectangleAnnotation();
+
+            if (if_report == false)
+            {
+                RectangleAnnotation mytext = new RectangleAnnotation();
+                //mytext.Bottom = 10;
+                mytext.Name = "mytext";
+                mytext.Text = "+";
+                mytext.AnchorX = 97.5;
+                mytext.AnchorY = 5;
+                mytext.Height = 5;
+                mytext.Width = 4;
+                mytext.ForeColor = Color.Blue;
+                mytext.Font = new Font(mytext.Font.FontFamily, mytext.Font.Size + 5.0f, mytext.Font.Style);
+                mytext.Visible = true;
+                chart.Annotations.Add(mytext);
+            }
+            //mytext = annotation_text;
+
+        }
+
+        Point mdown = Point.Empty;
+        List<DataPoint> selectedPoints = null;
+
+        private void chart1_MouseDown(object sender, MouseEventArgs e)
+        {
+            mdown = e.Location;
+            selectedPoints = new List<DataPoint>();
+        }
+
+        private void chart1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                chart.Refresh();
+                using (Graphics g = chart.CreateGraphics())
+                    g.DrawRectangle(Pens.Red, GetRectangle(mdown, e.Location));
+            }
+        }
+
+        private void chart1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+
+                Axis ax = chart.ChartAreas[0].AxisX;
+                Axis ay = chart.ChartAreas[0].AxisY;
+                Rectangle rect = GetRectangle(mdown, e.Location);
+
+                foreach (DataPoint dp in chart.Series["Series1"].Points)
+                {
+                    int x = (int)ax.ValueToPixelPosition(dp.XValue);
+                    int y = (int)ay.ValueToPixelPosition(dp.YValues[0]);
+
+                    double point_x = Math.Log10(dp.XValue);
+                    double point_y = dp.YValues[0];
+
+                    if (rect.Contains(new Point(x, y)))
+                    {
+
+                        if (drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y))
+                        {
+                            // Add points enabled
+
+                            drc_points_x_enable.Add(point_x);
+                            drc_points_y_enable.Add(point_y);
+
+                            int index = drc_points_y_disable.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
+
+                            drc_points_x_disable.RemoveAt(index);
+                            drc_points_y_disable.RemoveAt(index);
+
+                            dp.Color = chart_color;
+                            continue;
+                        }
+                        // Remove Points enabled
+                        if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y)))
+                        {
+                            drc_points_x_disable.Add(point_x);
+                            drc_points_y_disable.Add(point_y);
+
+                            int index = drc_points_y_enable.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
+
+                            drc_points_x_enable.RemoveAt(index); //Add(data_chart[i].XValue);
+                            drc_points_y_enable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
+                            dp.Color = Color.LightGray;
+
+                            int index_raw_data = y_raw_data.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
+                            is_raw_data_removed[index_raw_data] = true;
+                        }
+
+                    }
+                }
+
+                fit_DRC();
+                chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+
+                int k = 0;
+                foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                {
+                    string compound = row2.Cells[0].Value.ToString();
+                    if (compound_id == compound) break;
+                    k++;
+                }
+                int row_index = k;
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
+                if (fit_parameters[0] < fit_parameters[1])
+                {
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                }
+                else
+                {
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                }
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
+
+                not_fitted = false;
+                inactive = false;
+
+                if (drc_points_x_disable.Count() > 0)
+                {
+                    data_modified = true;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                }
+                else
+                {
+                    data_modified = false;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                }
+
+                annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+            }
+        }
+
+        static public Rectangle GetRectangle(Point p1, Point p2)
+        {
+            return new Rectangle(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y),
+                Math.Abs(p1.X - p2.X), Math.Abs(p1.Y - p2.Y));
+        }
+
+        public double[] get_Fit_Parameters()
+        {
+            return fit_parameters;
+        }
+
+        public string save_image(string path)
+        {
+            draw_DRC(true);
+            string descriptor_name = descriptor.Replace(@"/", @"_");
+            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
+
+            //System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
+            chart.SaveImage(output_image, ChartImageFormat.Bmp);
+
+            return output_image;
+        }
+
+        private void chart1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+
+                int k = 0;
+                foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                {
+                    string compound = row2.Cells[0].Value.ToString();
+                    if (compound_id == compound) break;
+                    k++;
+                }
+                int row_index = k;
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Not Fitted";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Not Fitted";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Tomato;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
+
+                annotation_ec50.Text = "EC_50 = Not Fitted";
+
+                not_fitted = true;
+
+                not_fitted_init = true;
+                inactive_init = false;
+
+                inactive = false;
+
+            }
+
+        }
+
+        private void chart1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+
+                int k = 0;
+                foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                {
+                    string compound = row2.Cells[0].Value.ToString();
+                    if (compound_id == compound) break;
+                    k++;
+                }
+                int row_index = k;
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+
+                annotation_ec50.Text = "EC_50 = Inactive";
+
+                inactive = true;
+
+                inactive_init = true;
+                not_fitted_init = false;
+
+                not_fitted = false;
+
+            }
+
+            if (e.Button == MouseButtons.Middle)
+            {
+                ColorDialog dlg = new ColorDialog();
+                dlg.ShowDialog();
+
+                Color new_color = dlg.Color;
+
+                chart_color = new_color;
+
+                re_fill_color(chart_color);
+            }
+
+        }
+
+        //private void chart1_KeyPress(object sender, KeyPressEventArgs e)
+        //{
+        //    if (((Control.ModifierKeys & Keys.Control) == Keys.Control) && (e.KeyChar == 'M' || e.KeyChar == 'm'))
+        //    {
+        //        MessageBox.Show("test");
+        //    }
+        //}
+
+        public void re_fill_color(Color new_color)
+        {
+            foreach (DataPoint dp in chart.Series["Series1"].Points)
+            {
+                dp.Color = new_color;
+            }
+
+            chart_color = new_color;
+            chart.Series["Series2"].Color = new_color;
+        }
+
+        public void chart1_MouseClickMenu(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                double pointer_x = e.X;
+                double pointer_y = e.Y;
+
+                if (pointer_x >= 462 && pointer_y <= 18)
+                {
+                    Form fc = Application.OpenForms["Curves_Options"];
+
+                    if (fc == null)
+                        options_form = new Curves_Options(this);
+
+
+                    minX = chart.ChartAreas[0].AxisX.Minimum;
+                    double minY = chart.ChartAreas[0].AxisY.Minimum;
+                    maxX = chart.ChartAreas[0].AxisX.Maximum;
+                    double maxY = chart.ChartAreas[0].AxisY.Maximum;
+
+                    options_form.set_curve_params(minX, maxX, minY, maxY, chart_color);
+
+                    options_form.Visible = true;
+
+                }
+            }
+
+        }
+
+        public void change_params(double min_x, double max_x, double min_y, double max_y, Color my_color)
+        {
+            chart_color = my_color;
+
+            chart.ChartAreas[0].AxisX.Minimum = min_x;
+            chart.ChartAreas[0].AxisX.Maximum = max_x;
+            chart.ChartAreas[0].AxisY.Minimum = min_y;
+            chart.ChartAreas[0].AxisY.Maximum = max_y;
+        }
+
+        public void remove_outlier_median(double thresold_median)
+        {
+
+            Dictionary<double, List<double>> points_dict = new Dictionary<double, List<double>>();
+
+            foreach (DataPoint dp in chart.Series["Series1"].Points)
+            {
                 double point_x = Math.Log10(dp.XValue);
                 double point_y = dp.YValues[0];
 
-                if (rect.Contains(new Point(x, y)))
+                if (points_dict.ContainsKey(point_x))
                 {
+                    points_dict[point_x].Add(point_y);
+                }
+                else
+                {
+                    List<double> my_list = new List<double>();
+                    my_list.Add(point_y);
 
-                    if (drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y))
-                    {
-                        // Add points enabled
+                    points_dict[point_x] = my_list;
+                }
+            }
 
-                        drc_points_x_enable.Add(point_x);
-                        drc_points_y_enable.Add(point_y);
+            int counter = 0;
 
-                        int index = drc_points_y_disable.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
+            foreach (var item in points_dict)
+            {
+                double x_points = item.Key;
+                List<double> y_points = item.Value;
 
-                        drc_points_x_disable.RemoveAt(index);
-                        drc_points_y_disable.RemoveAt(index);
+                y_points.Sort();
 
-                        dp.Color = chart_color;
-                        continue;
-                    }
+                double median_value = 0;
+                int count = y_points.Count;
+
+                if (count % 2 == 0 && count > 0)
+                {
+                    // count is even, need to get the middle two elements, add them together, then divide by 2
+                    double middleElement1 = y_points[(count / 2) - 1];
+                    double middleElement2 = y_points[(count / 2)];
+                    median_value = (middleElement1 + middleElement2) / 2;
+                }
+                else
+                {
+                    median_value = y_points[(count / 2)];
+                }
+
+                //Compute the Average      
+                double avg = y_points.Average();
+                double sum = y_points.Sum(d => Math.Pow(d - avg, 2));
+                double std_dev = Math.Sqrt((sum) / (y_points.Count() - 1));
+
+                //if (counter < 1)
+                //{
+                //    string serie_line = "Line_" + counter.ToString();
+                //    chart.Series.Add(serie_line);
+                //    chart.Series[serie_line].Points.Add(new DataPoint(/*Math.Log10(*/x_points/*)*/, median_value + thresold_median * std_dev));
+                //    chart.Series[serie_line].Points.Add(new DataPoint(/*Math.Log10(*/x_points/*)*/, median_value - thresold_median * std_dev));
+
+                //    chart.Series[serie_line].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                //}
+
+                counter++;
+
+                foreach (double current_y in y_points)
+                {
+                    bool point_exclusion = false;
+
+                    if (current_y > (median_value + thresold_median * std_dev) || current_y < (median_value - thresold_median * std_dev)) point_exclusion = true;
+
                     // Remove Points enabled
-                    if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y)))
+                    if (!(drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && point_exclusion)
                     {
-                        drc_points_x_disable.Add(point_x);
-                        drc_points_y_disable.Add(point_y);
+                        drc_points_x_disable.Add(x_points);
+                        drc_points_y_disable.Add(current_y);
 
-                        int index = drc_points_y_enable.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
+                        int index = drc_points_y_enable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
 
                         drc_points_x_enable.RemoveAt(index); //Add(data_chart[i].XValue);
                         drc_points_y_enable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
-                        dp.Color = Color.LightGray;
 
-                        int index_raw_data = y_raw_data.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
+                        //chart.Series["Series1"].Points[point_index].Color = Color.LightGray;
+
+                        int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
                         is_raw_data_removed[index_raw_data] = true;
                     }
+                    else if ((drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && !point_exclusion)
+                    {
+                        drc_points_x_enable.Add(x_points);
+                        drc_points_y_enable.Add(current_y);
 
+                        int index = drc_points_y_disable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+
+                        drc_points_x_disable.RemoveAt(index); //Add(data_chart[i].XValue);
+                        drc_points_y_disable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
+
+                        //chart.Series["Series1"].Points[point_index].Color = Color.LightGray;
+
+                        int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+                        is_raw_data_removed[index_raw_data] = false;
+
+                    }
+                }
+
+            }
+
+            foreach (DataPoint dp in chart.Series["Series1"].Points)
+            {
+                double point_x = dp.XValue;
+                double point_y = dp.YValues[0];
+
+                if (drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y))
+                {
+                    dp.Color = Color.LightGray;
+                    //continue;
+                }
+                // Remove Points enabled
+                if (!(drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y)))
+                {
+                    dp.Color = chart_color;
                 }
             }
 
@@ -3947,355 +4295,323 @@ public class Chart_DRC
 
             annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
         }
+
     }
 
-    static public Rectangle GetRectangle(Point p1, Point p2)
+
+    public class Chart_DRC_Time_Line
     {
-        return new Rectangle(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y),
-            Math.Abs(p1.X - p2.X), Math.Abs(p1.Y - p2.Y));
-    }
+        MainTab _form1 = new MainTab();
 
-    public double[] get_Fit_Parameters()
-    {
-        return fit_parameters;
-    }
+        private Chart chart;
 
-    public string save_image(string path)
-    {
-        draw_DRC(true);
-        string descriptor_name = descriptor.Replace(@"/", @"_");
-        string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
+        private Dictionary<string, List<double>> drc_points_x = new Dictionary<string, List<double>>();
+        private Dictionary<string, List<double>> drc_points_y = new Dictionary<string, List<double>>();
+        private Dictionary<string, List<double>> drc_points_x_log = new Dictionary<string, List<double>>();
 
-        //System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
-        chart.SaveImage(output_image, ChartImageFormat.Bmp);
+        private Dictionary<string, Color> chart_colors = new Dictionary<string, Color>();
 
-        return output_image;
-    }
+        private double[] fit_parameters = new double[4];
 
-    private void chart1_MouseDoubleClick(object sender, MouseEventArgs e)
-    {
-        if (e.Button == MouseButtons.Right)
+        private List<double> x_fit;
+        private List<double> x_fit_log;
+        private List<double> y_fit;
+
+        private int step_curve;
+
+        private double MinConcentrationLin;
+        private double MaxConcentrationLin;
+
+        private double r2;
+        private double RelativeError;
+
+        private string compound_id;
+        private string descriptor;
+
+        private bool data_modified;
+
+        private int descriptor_index;
+
+        private bool not_fitted;
+
+        private string file_name;
+
+        private double min_y;
+        private double max_y;
+
+        //List<DataGridViewRow> raw_data;
+        //List<double> y_raw_data;
+
+        public bool is_Fitted()
         {
-
-            int k = 0;
-            foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
-            {
-                string compound = row2.Cells[0].Value.ToString();
-                if (compound_id == compound) break;
-                k++;
-            }
-            int row_index = k;
-
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Not Fitted";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Not Fitted";
-
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Tomato;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
-
-            annotation_ec50.Text = "EC_50 = Not Fitted";
-
-            not_fitted = true;
-
-            not_fitted_init = true;
-            inactive_init = false;
-
-            inactive = false;
-
+            return not_fitted;
         }
 
-    }
-
-    private void chart1_MouseClick(object sender, MouseEventArgs e)
-    {
-        if (e.Button == MouseButtons.Right)
+        public bool is_data_modified()
         {
+            return data_modified;
+        }
 
-            int k = 0;
-            foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
-            {
-                string compound = row2.Cells[0].Value.ToString();
-                if (compound_id == compound) break;
-                k++;
-            }
-            int row_index = k;
+        public string get_Descriptor_Name()
+        {
+            return descriptor;
+        }
 
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+        public double[] get_Fit_Parameters()
+        {
+            return fit_parameters;
+        }
 
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+        public double get_R2()
+        {
+            return r2;
+        }
 
-            annotation_ec50.Text = "EC_50 = Inactive";
+        //private bool chart_already_loaded;
 
-            inactive = true;
+        private T MinA<T>(T[] rest) where T : IComparable
+        {
+            T min = rest[0];
+            foreach (T f in rest) if (f.CompareTo(min) < 0)
+                    min = f;
+            return min;
+        }
 
-            inactive_init = true;
-            not_fitted_init = false;
+        private T MaxA<T>(T[] rest) where T : IComparable
+        {
+            T max = rest[0];
+            foreach (T f in rest) if (f.CompareTo(max) > 0)
+                    max = f;
+            return max;
+        }
+
+        public Chart_DRC_Time_Line()
+        {
+        }
+
+        public Chart_DRC_Time_Line(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color, int index, MainTab form, string filename)
+        {
+            _form1 = form;
+
+            file_name = filename;
+
+            descriptor_index = index;
+
+            compound_id = cpd;
+            descriptor = descript;
+            step_curve = step;
+            chart_colors[file_name] = color;
 
             not_fitted = false;
-
-        }
-
-        if (e.Button == MouseButtons.Middle)
-        {
-            ColorDialog dlg = new ColorDialog();
-            dlg.ShowDialog();
-
-            Color new_color = dlg.Color;
-
-            chart_color = new_color;
-
-            re_fill_color(chart_color);
-        }
-
-    }
-
-    //private void chart1_KeyPress(object sender, KeyPressEventArgs e)
-    //{
-    //    if (((Control.ModifierKeys & Keys.Control) == Keys.Control) && (e.KeyChar == 'M' || e.KeyChar == 'm'))
-    //    {
-    //        MessageBox.Show("test");
-    //    }
-    //}
-
-    public void re_fill_color(Color new_color)
-    {
-        foreach (DataPoint dp in chart.Series["Series1"].Points)
-        {
-            dp.Color = new_color;
-        }
-
-        chart_color = new_color;
-        chart.Series["Series2"].Color = new_color;
-    }
-
-    public void chart1_MouseClickMenu(object sender, MouseEventArgs e)
-    {
-        if (e.Button == MouseButtons.Left)
-        {
-            double pointer_x = e.X;
-            double pointer_y = e.Y;
-
-            if (pointer_x >= 462 && pointer_y <= 18)
-            {
-                Form fc = Application.OpenForms["Curves_Options"];
-
-                if (fc == null)
-                    options_form = new Curves_Options(this);
-
-
-                minX = chart.ChartAreas[0].AxisX.Minimum;
-                double minY = chart.ChartAreas[0].AxisY.Minimum;
-                maxX = chart.ChartAreas[0].AxisX.Maximum;
-                double maxY = chart.ChartAreas[0].AxisY.Maximum;
-
-                options_form.set_curve_params(minX, maxX, minY, maxY, chart_color);
-
-                options_form.Visible = true;
-
-            }
-        }
-
-    }
-
-    public void change_params(double min_x, double max_x, double min_y, double max_y, Color my_color)
-    {
-        chart_color = my_color;
-
-        chart.ChartAreas[0].AxisX.Minimum = min_x;
-        chart.ChartAreas[0].AxisX.Maximum = max_x;
-        chart.ChartAreas[0].AxisY.Minimum = min_y;
-        chart.ChartAreas[0].AxisY.Maximum = max_y;
-    }
-
-    public void remove_outlier_median(double thresold_median)
-    {
-
-        Dictionary<double, List<double>> points_dict = new Dictionary<double, List<double>>();
-
-        foreach (DataPoint dp in chart.Series["Series1"].Points)
-        {
-            double point_x = Math.Log10(dp.XValue);
-            double point_y = dp.YValues[0];
-
-            if (points_dict.ContainsKey(point_x))
-            {
-                points_dict[point_x].Add(point_y);
-            }
-            else
-            {
-                List<double> my_list = new List<double>();
-                my_list.Add(point_y);
-
-                points_dict[point_x] = my_list;
-            }
-        }
-
-        int counter = 0;
-
-        foreach (var item in points_dict)
-        {
-            double x_points = item.Key;
-            List<double> y_points = item.Value;
-
-            y_points.Sort();
-
-            double median_value = 0;
-            int count = y_points.Count;
-
-            if (count % 2 == 0 && count > 0)
-            {
-                // count is even, need to get the middle two elements, add them together, then divide by 2
-                double middleElement1 = y_points[(count / 2) - 1];
-                double middleElement2 = y_points[(count / 2)];
-                median_value = (middleElement1 + middleElement2) / 2;
-            }
-            else
-            {
-                median_value = y_points[(count / 2)];
-            }
-
-            //Compute the Average      
-            double avg = y_points.Average();
-            double sum = y_points.Sum(d => Math.Pow(d - avg, 2));
-            double std_dev = Math.Sqrt((sum) / (y_points.Count() - 1));
-
-            //if (counter < 1)
-            //{
-            //    string serie_line = "Line_" + counter.ToString();
-            //    chart.Series.Add(serie_line);
-            //    chart.Series[serie_line].Points.Add(new DataPoint(/*Math.Log10(*/x_points/*)*/, median_value + thresold_median * std_dev));
-            //    chart.Series[serie_line].Points.Add(new DataPoint(/*Math.Log10(*/x_points/*)*/, median_value - thresold_median * std_dev));
-
-            //    chart.Series[serie_line].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            //}
-
-            counter++;
-
-            foreach (double current_y in y_points)
-            {
-                bool point_exclusion = false;
-
-                if (current_y > (median_value + thresold_median * std_dev) || current_y < (median_value - thresold_median * std_dev)) point_exclusion = true;
-
-                // Remove Points enabled
-                if (!(drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && point_exclusion)
-                {
-                    drc_points_x_disable.Add(x_points);
-                    drc_points_y_disable.Add(current_y);
-
-                    int index = drc_points_y_enable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
-
-                    drc_points_x_enable.RemoveAt(index); //Add(data_chart[i].XValue);
-                    drc_points_y_enable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
-
-                    //chart.Series["Series1"].Points[point_index].Color = Color.LightGray;
-
-                    int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
-                    is_raw_data_removed[index_raw_data] = true;
-                }
-                else if ((drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && !point_exclusion)
-                {
-                    drc_points_x_enable.Add(x_points);
-                    drc_points_y_enable.Add(current_y);
-
-                    int index = drc_points_y_disable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
-
-                    drc_points_x_disable.RemoveAt(index); //Add(data_chart[i].XValue);
-                    drc_points_y_disable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
-
-                    //chart.Series["Series1"].Points[point_index].Color = Color.LightGray;
-
-                    int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
-                    is_raw_data_removed[index_raw_data] = false;
-
-                }
-            }
-
-        }
-
-        foreach (DataPoint dp in chart.Series["Series1"].Points)
-        {
-            double point_x = dp.XValue;
-            double point_y = dp.YValues[0];
-
-            if (drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y))
-            {
-                dp.Color = Color.LightGray;
-                //continue;
-            }
-            // Remove Points enabled
-            if (!(drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y)))
-            {
-                dp.Color = chart_color;
-            }
-        }
-
-        fit_DRC();
-        chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
-
-        int k = 0;
-        foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
-        {
-            string compound = row2.Cells[0].Value.ToString();
-            if (compound_id == compound) break;
-            k++;
-        }
-        int row_index = k;
-
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
-        if (fit_parameters[0] < fit_parameters[1])
-        {
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
-        }
-        else
-        {
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
-        }
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
-        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
-
-        not_fitted = false;
-        inactive = false;
-
-        if (drc_points_x_disable.Count() > 0)
-        {
-            data_modified = true;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
-        }
-        else
-        {
             data_modified = false;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+
+            drc_points_y[file_name] = y.ToList();
+
+            drc_points_x_log[file_name] = x_log.ToList();
+
+            drc_points_x[file_name] = x.ToList();
+
+            double min_x = MinA(x.ToArray());
+            double max_x = MaxA(x.ToArray());
+
+            min_y = MinA(y.ToArray());
+            max_y = MaxA(y.ToArray());
+
+            MinConcentrationLin = min_x;
+            MaxConcentrationLin = max_x;
+
+            x_fit = new List<double>();
+            x_fit_log = new List<double>();
+            y_fit= new List<double>();
+
+            for (int j = 0; j < step_curve; j++)
+            {
+                x_fit.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
+                x_fit_log.Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
+            }
+
+            chart = new Chart();
+
+            ChartArea chartArea = new ChartArea();
+            Series series1 = new Series();
+            Series series2 = new Series();
+
+            Axis yAxis = new Axis(chartArea, AxisName.Y);
+            Axis xAxis = new Axis(chartArea, AxisName.X);
+
+            chartArea.AxisX.LabelStyle.Format = "N2";
+            chartArea.AxisX.Title = "Concentatrion";
+            chartArea.AxisY.Title = "Response";
+
+            //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
+
+            chartArea.Name = descriptor;
+
+            chart.ChartAreas.Add(chartArea);
+            chart.Name = descriptor;
+
+            chart.Location = new System.Drawing.Point(250, 100);
+
+            series1.ChartType = SeriesChartType.Point;
+            series2.ChartType = SeriesChartType.Line;
+
+            series1.MarkerStyle = MarkerStyle.Circle;
+
+            series1.Name = "DRC_Points";
+            series2.Name = "DRC_Fit";
+
+            chart.Series.Add(series1);
+            chart.Series.Add(series2);
+
+            chart.Size = new System.Drawing.Size(550, 350);
+
+            chart.Titles.Add("Title1");
+
+            fit_DRC();
         }
 
-        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+        public void add_serie_points(string file, List<double> x, List<double> x_log, List<double> y, Color color)
+        {
+            drc_points_x[file] = x;
+            drc_points_x_log[file] = x_log;
+
+            drc_points_y[file] = y;
+            chart_colors[file] = color;
+
+            Series series_new_points = new Series();
+
+            series_new_points.ChartType = SeriesChartType.Point;
+            series_new_points.MarkerStyle = MarkerStyle.Circle;
+            series_new_points.Name = file;
+
+            chart.Series.Add(series_new_points);
+        }
+
+        public void remove_serie_points(string file)
+        {
+            drc_points_x.Remove(file);
+            drc_points_x_log.Remove(file);
+
+            drc_points_y.Remove(file);
+            chart_colors.Remove(file);
+
+            chart.Series.Remove(chart.Series[file]);
+        }
+
+        private static void function_SigmoidInhibition(double[] c, double[] x, ref double func, object obj)
+        {
+            func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
+        }
+
+        private double Sigmoid(double[] c, double x)
+        {
+            double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
+            return y;
+        }
+
+        private void fit_DRC()
+        {
+            double GlobalMax = double.MinValue;
+            double MaxValues = max_y;
+            GlobalMax = MaxValues;
+
+            double GlobalMin = double.MaxValue;
+            double MinValues = min_y;
+            GlobalMin = MinValues;
+
+            double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
+            double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
+
+            double epsf = 0;
+            double epsx = 0;
+
+            int maxits = 0;
+            int info;
+
+            double[] bndl = null;
+            double[] bndu = null;
+
+            // boundaries
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
+
+            alglib.lsfitstate state;
+            alglib.lsfitreport rep;
+            double diffstep = 1e-12;
+
+            // Fitting without weights
+            //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
+
+            double[,] Concentration = new double[drc_points_x_log[file_name].Count(), 1];
+            for (var i = 0; i < drc_points_x_log[file_name].Count(); ++i)
+            {
+                Concentration[i, 0] = drc_points_x_log[file_name][i];
+            }
+
+            int NumDimension = 1;
+            alglib.lsfitcreatef(Concentration, drc_points_y[file_name].ToArray(), c, diffstep, out state);
+            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetbc(state, bndl, bndu);
+            // alglib.lsfitsetscale(state, s);
+
+            alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
+            alglib.lsfitresults(state, out info, out c, out rep);
+
+            fit_parameters = c;
+            RelativeError = rep.avgrelerror;
+            r2 = rep.r2;
+
+            y_fit.Clear();
+
+            for (int IdxConc = 0; IdxConc < x_fit_log.Count; IdxConc++)
+            {
+                y_fit.Add(Sigmoid(c, x_fit_log[IdxConc]));
+            }
+
+        }
+
+        public void draw_DRC()
+        {
+            string cpd = compound_id;
+
+            fit_DRC();
+
+            chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
+
+            // Draw the first graph
+            chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            chart.Series["Series1"].Points.DataBindXY(drc_points_x_log[file_name], drc_points_y[file_name]);
+            chart.Series["Series1"].Color = chart_colors[file_name];
+
+            chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart.Series["Series2"].Points.DataBindXY(x_fit_log, y_fit);
+            chart.Series["Series2"].Color = chart_colors[file_name];
+
+            // Draw the other graph
+            foreach (KeyValuePair<string, List<double>> elem in drc_points_x)
+            {
+                chart.Series[elem.Key].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+                chart.Series[elem.Key].Points.DataBindXY(drc_points_x_log[elem.Key], drc_points_y[elem.Key]);
+                chart.Series[elem.Key].Color = chart_colors[elem.Key];
+            }
+
+            double ratio = 100.0 / (Math.Ceiling(_form1.get_descriptors_number() / 2.0));
+            _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
+
+            _form1.tableLayoutPanel1.Controls.Add(chart);
+            chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top);
+        }
+
+        public string save_image(string path)
+        {
+            draw_DRC();
+            string descriptor_name = descriptor.Replace(@"/", @"_");
+            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
+
+            System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
+            chart.SaveImage(output_image, ChartImageFormat.Bmp);
+
+            return output_image;
+        }
     }
-
-}
-
 }
