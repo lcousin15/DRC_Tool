@@ -2699,7 +2699,6 @@ namespace DRC
                 }
             }
 
-
             //charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>>(); // cpd_id, descriptor, chart
 
             if (!charts_time_line.ContainsKey(cpd_id))
@@ -2764,10 +2763,7 @@ namespace DRC
                     }
                     else
                     {
-                        foreach (KeyValuePair<string, Chart_DRC_Time_Line> chart in list_chart_descriptors)
-                        {
-                            chart.Value.remove_serie_points(current_file);
-                        }
+                        elem.Value.remove_serie_points(current_file);
                     }
                 }
             }
@@ -4601,6 +4597,8 @@ namespace DRC
                 chart_colors.Remove(file);
 
                 chart.Series.Remove(chart.Series[file]);
+
+                filenames.RemoveAll(p => p == file);
             }
 
             draw_DRC();
@@ -4704,7 +4702,13 @@ namespace DRC
                 {
                     chart.Series[elem.Key].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
                     chart.Series[elem.Key].Points.DataBindXY(drc_points_x_log[elem.Key], drc_points_y[elem.Key]);
-                    chart.Series[elem.Key].Color = curve_color[counter_color+1];
+
+                    if (counter_color + 1 >= curve_color.Count())
+                    {
+                        chart.Series[elem.Key].Color = curve_color[0];
+                    }
+                    else chart.Series[elem.Key].Color = curve_color[counter_color + 1];
+
                     counter_color++;
                 }
             }
