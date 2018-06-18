@@ -2799,6 +2799,28 @@ namespace DRC
         {
 
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            // threshold Inactive
+            double toxicity_treshold = double.Parse(this.numericUpDown6.Value.ToString());
+
+            for (var idx = 0; idx < list_cpd.Count; idx++)
+            {
+                string cpd_id = list_cpd[idx].ToString();
+
+                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                    continue;
+
+                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+
+                foreach (Chart_DRC current_chart in list_chart)
+                {
+                    current_chart.check_toxicity(toxicity_treshold);
+                    current_chart.Is_Modified();
+                }
+            }
+        }
     }
 
     public class Chart_DRC_Overlap
@@ -3733,14 +3755,14 @@ namespace DRC
             // Compute the top :
             double top = 0.0;
 
-            if (fit_parameters[0] < fit_parameters[1])
-            {
-                top = double.Parse(fit_parameters[0].ToString());
-            }
-            else
-            {
-                top = double.Parse(fit_parameters[1].ToString());
-            }
+            //if (fit_parameters[0] < fit_parameters[1])
+            //{
+            top = double.Parse(fit_parameters[1].ToString());
+            //}
+            //else
+            //{
+            //    top = double.Parse(fit_parameters[0].ToString());
+            //}
 
             // sort then take to last concentration
             var orderedZip = drc_points_x_enable.Zip(drc_points_y_enable, (x, y) => new { x, y })
@@ -3804,6 +3826,151 @@ namespace DRC
                 {
                     Console.WriteLine("Concentration = " + compound_id);
                     Console.WriteLine("Mean 2 last points, 90% = " + response_2_last_point + " , " + response_last_point + " , " + thr_2_last_points * response_last_point);
+                }
+
+            }
+
+        }
+
+        public void check_toxicity(double thr_toxicity)
+        {
+            // Compute the top :
+            double top = 0.0;
+
+            //if (fit_parameters[0] < fit_parameters[1])
+            //{
+            top = double.Parse(fit_parameters[1].ToString());
+            //}
+            //else
+            //{
+            //    top = double.Parse(fit_parameters[0].ToString());
+            //}
+
+            // sort then take to last concentration
+            var orderedZip = drc_points_x_enable.Zip(drc_points_y_enable, (x, y) => new { x, y })
+                                  .OrderBy(pair => pair.x)
+                                  .ToList();
+
+            drc_points_x_enable = orderedZip.Select(pair => pair.x).ToList();
+            drc_points_y_enable = orderedZip.Select(pair => pair.y).ToList();
+
+            SortedDictionary<double, List<double>> dict_points = new SortedDictionary<double, List<double>>();
+
+            for (int i = 0; i < drc_points_x_enable.Count(); i++)
+            {
+                //Console.WriteLine("x,y = " + x_concentrations[i] + " , " + y_response[i]);
+                if (dict_points.ContainsKey(drc_points_x_enable[i]))
+                {
+                    dict_points[drc_points_x_enable[i]].Add(drc_points_y_enable[i]);
+                }
+                else
+                {
+                    List<double> resp = new List<double>();
+                    resp.Add(drc_points_y_enable[i]);
+                    dict_points.Add(drc_points_x_enable[i], resp);
+                }
+            }
+
+            //// Print the dictionary
+            //foreach(KeyValuePair<double, List<double>> elem in dict_points)
+            //{
+            //    double conc = elem.Key;
+            //    List<double> resp = elem.Value;
+
+            //    Console.WriteLine("Cpd, Concentration = " + compound_id + " , " + conc);
+            //    foreach(double val in resp)
+            //    {
+            //        Console.WriteLine("-------Response = " + val);
+            //    }
+            //}
+
+            if (dict_points.Count() > 2)
+            {
+                double response_last_point = 0.0;
+
+                foreach (double val in dict_points.Values.ElementAt(dict_points.Count() - 1))
+                {
+                    response_last_point += val;
+                }
+
+                response_last_point /= (double)(dict_points.Values.ElementAt(dict_points.Count() - 1).Count());
+
+                if (response_last_point <= thr_toxicity * top)
+                {
+                    Console.WriteLine("Concentration = " + compound_id);
+                    Console.WriteLine("Mean 2 last points, 90% = " + response_last_point + " , " + thr_toxicity * response_last_point);
+
+                    double point_x = dict_points.Keys.ElementAt(dict_points.Count() - 1);
+                    List<double> list_point_y = dict_points.Values.ElementAt(dict_points.Count() - 1);
+
+                    foreach (double y_val in list_point_y)
+                    {
+                        // Remove Points enabled
+                        if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(y_val)))
+                        {
+                            drc_points_x_disable.Add(point_x);
+                            drc_points_y_disable.Add(y_val);
+
+                            int index = drc_points_y_enable.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+
+                            drc_points_x_enable.RemoveAt(index);
+                            drc_points_y_enable.RemoveAt(index);
+
+                            int index_raw_data = y_raw_data.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+                            is_raw_data_removed[index_raw_data] = true;
+                        }
+                    }
+                }
+
+                double response_2_last_point = 0.0;
+
+                foreach (double val in dict_points.Values.ElementAt(dict_points.Count() - 2))
+                {
+                    response_2_last_point += val;
+                }
+
+                response_2_last_point /= (double)(dict_points.Values.ElementAt(dict_points.Count() - 2).Count());
+
+                if (response_2_last_point <= thr_toxicity * top)
+                {
+                    double point_x = dict_points.Keys.ElementAt(dict_points.Count() - 2);
+                    List<double> list_point_y = dict_points.Values.ElementAt(dict_points.Count() - 2);
+
+                    foreach (double y_val in list_point_y)
+                    {
+                        // Remove Points enabled
+                        if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(y_val)))
+                        {
+                            drc_points_x_disable.Add(point_x);
+                            drc_points_y_disable.Add(y_val);
+
+                            int index = drc_points_y_enable.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+
+                            drc_points_x_enable.RemoveAt(index);
+                            drc_points_y_enable.RemoveAt(index);
+
+                            int index_raw_data = y_raw_data.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+                            is_raw_data_removed[index_raw_data] = true;
+                        }
+                    }
+                }
+
+                foreach (DataPoint dp in chart.Series["Series1"].Points)
+                {
+                    double point_x = dp.XValue;
+                    double point_y = dp.YValues[0];
+
+                    if (drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y))
+                    {
+                        dp.Color = Color.LightGray;
+                        //continue;
+                    }
+                    // Remove Points enabled
+                    if (!(drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y)))
+
+                    {
+                        dp.Color = chart_color;
+                    }
                 }
 
             }
