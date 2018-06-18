@@ -323,7 +323,7 @@ namespace DRC
             List<Chart_DRC> list_chart = descriptors_chart[current_cpd_id];
             foreach (Chart_DRC current_chart in list_chart)
             {
-                current_chart.draw_DRC(false);
+                current_chart.draw_DRC(false, true);
                 //test_modified += Convert.ToInt32(current_chart.is_data_modified());
             }
 
@@ -367,7 +367,7 @@ namespace DRC
 
             foreach (Chart_DRC current_chart in list_chart)
             {
-                current_chart.draw_DRC(false);
+                current_chart.draw_DRC(false, true);
                 //test_modified += Convert.ToInt32(current_chart.is_data_modified());
             }
 
@@ -3922,6 +3922,7 @@ namespace DRC
                     }
                 }
 
+                /* // Second points --> better to do the method 2 times with only the last point
                 double response_2_last_point = 0.0;
 
                 foreach (double val in dict_points.Values.ElementAt(dict_points.Count() - 2))
@@ -3954,29 +3955,14 @@ namespace DRC
                         }
                     }
                 }
+                */
 
-                foreach (DataPoint dp in chart.Series["Series1"].Points)
-                {
-                    double point_x = dp.XValue;
-                    double point_y = dp.YValues[0];
-
-                    if (drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y))
-                    {
-                        dp.Color = Color.LightGray;
-                        //continue;
-                    }
-                    // Remove Points enabled
-                    if (!(drc_points_x_disable.Contains(Math.Log10(point_x)) && drc_points_y_disable.Contains(point_y)))
-
-                    {
-                        dp.Color = chart_color;
-                    }
-                }
+                draw_DRC(false, false);
 
             }
         }
 
-        public void draw_DRC(bool if_report)
+        public void draw_DRC(bool if_report, bool add_chart)
         {
             string cpd = compound_id;
 
@@ -4144,10 +4130,14 @@ namespace DRC
             //chart.Update();
             //chart.Show();
 
-            double ratio = 100.0 / (Math.Ceiling((double)_form1.get_descriptors_number() / 2.0));
-            _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
+            if (add_chart)
+            {
+                double ratio = 100.0 / (Math.Ceiling((double)_form1.get_descriptors_number() / 2.0));
+                _form1.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)ratio));
 
-            _form1.tableLayoutPanel1.Controls.Add(chart);
+                _form1.tableLayoutPanel1.Controls.Add(chart);
+            }
+
             chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top);
             //chart_already_loaded = true;
 
@@ -4311,7 +4301,7 @@ namespace DRC
 
         public string save_image(string path)
         {
-            draw_DRC(true);
+            draw_DRC(true, true);
             string descriptor_name = descriptor.Replace(@"/", @"_");
             string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
 
