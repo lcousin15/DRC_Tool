@@ -3822,6 +3822,8 @@ namespace DRC
 
                 response_2_last_point /= (double)(dict_points.Values.ElementAt(dict_points.Count() - 2).Count());
 
+
+
                 if(response_2_last_point >= thr_2_last_points*top)
                 {
                     Console.WriteLine("Concentration = " + compound_id);
@@ -3895,10 +3897,20 @@ namespace DRC
 
                 response_last_point /= (double)(dict_points.Values.ElementAt(dict_points.Count() - 1).Count());
 
-                if (response_last_point <= thr_toxicity * top)
+                double GlobalMax = double.MinValue;
+                double MaxValues = MaxA(drc_points_y_enable.ToArray());
+                GlobalMax = MaxValues;
+
+                double GlobalMin = double.MaxValue;
+                double MinValues = MinA(drc_points_y_enable.ToArray());
+                GlobalMin = MinValues;
+
+                double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
+
+                if (Math.Abs(response_last_point-top) >= thr_toxicity * min_max_activity)
                 {
                     Console.WriteLine("Concentration = " + compound_id);
-                    Console.WriteLine("Mean 2 last points, 90% = " + response_last_point + " , " + thr_toxicity * response_last_point);
+                    Console.WriteLine("diff, min_max*thr = " + Math.Abs(response_last_point - top) + " , " + thr_toxicity * min_max_activity);
 
                     double point_x = dict_points.Keys.ElementAt(dict_points.Count() - 1);
                     List<double> list_point_y = dict_points.Values.ElementAt(dict_points.Count() - 1);

@@ -634,7 +634,7 @@
             // numericUpDown6
             // 
             this.numericUpDown6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown6.DecimalPlaces = 1;
+            this.numericUpDown6.DecimalPlaces = 2;
             this.numericUpDown6.Increment = new decimal(new int[] {
             1,
             0,
@@ -650,10 +650,10 @@
             this.numericUpDown6.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown6.TabIndex = 33;
             this.numericUpDown6.Value = new decimal(new int[] {
-            90,
+            1,
             0,
             0,
-            131072});
+            65536});
             // 
             // MainTab
             // 
