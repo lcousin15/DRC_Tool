@@ -2780,6 +2780,8 @@ namespace DRC
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
+                toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+
                 string cpd_id = list_cpd[idx].ToString();
 
                 if (cpd_id == "DMSO" || cpd_id == "Untreated")
@@ -2793,6 +2795,8 @@ namespace DRC
                     current_chart.Is_Modified();
                 }
             }
+
+            toolStripProgressBar1.Value = 0;
         }
 
         private void MainTab_Load(object sender, EventArgs e)
@@ -2807,6 +2811,8 @@ namespace DRC
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
+                toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+
                 string cpd_id = list_cpd[idx].ToString();
 
                 if (cpd_id == "DMSO" || cpd_id == "Untreated")
@@ -2820,6 +2826,8 @@ namespace DRC
                     current_chart.Is_Modified();
                 }
             }
+
+            toolStripProgressBar1.Value = 0;
         }
     }
 
@@ -3300,6 +3308,7 @@ namespace DRC
 
         private bool not_fitted;
         private bool inactive;
+        private bool is_ec50_exact = true; // last 2 points method
 
         private bool not_fitted_init;
         private bool inactive_init;
@@ -3315,6 +3324,11 @@ namespace DRC
 
         private double minX = -1;
         private double maxX = -1;
+
+        public bool check_ec50_exact()
+        {
+            return is_ec50_exact;
+        }
 
         public bool is_Fitted()
         {
@@ -3752,17 +3766,9 @@ namespace DRC
 
         public void test_two_points_around_top(double thr_2_last_points)
         {
-            // Compute the top :
-            double top = 0.0;
-
-            //if (fit_parameters[0] < fit_parameters[1])
-            //{
-            top = double.Parse(fit_parameters[1].ToString());
-            //}
-            //else
-            //{
-            //    top = double.Parse(fit_parameters[0].ToString());
-            //}
+            // Get the bottom and the top :
+            double top = double.Parse(fit_parameters[1].ToString());   
+            double bottom = double.Parse(fit_parameters[0].ToString());
 
             // sort then take to last concentration
             var orderedZip = drc_points_x_enable.Zip(drc_points_y_enable, (x, y) => new { x, y })
@@ -3822,12 +3828,15 @@ namespace DRC
 
                 response_2_last_point /= (double)(dict_points.Values.ElementAt(dict_points.Count() - 2).Count());
 
+                double diff_top_last_point = Math.Abs(response_last_point - top);
+                double diff_top_last_point2 = Math.Abs(response_2_last_point - top);
 
-
-                if(response_2_last_point >= thr_2_last_points*top)
+                if (diff_top_last_point >= thr_2_last_points*Math.Abs(top-bottom) && diff_top_last_point2 >= thr_2_last_points * Math.Abs(top-bottom))
                 {
                     Console.WriteLine("Concentration = " + compound_id);
-                    Console.WriteLine("Mean 2 last points, 90% = " + response_2_last_point + " , " + response_last_point + " , " + thr_2_last_points * response_last_point);
+                    Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * top);
+
+                    is_ec50_exact = false;
                 }
 
             }
@@ -3909,8 +3918,8 @@ namespace DRC
 
                 if (Math.Abs(response_last_point-top) >= thr_toxicity * min_max_activity)
                 {
-                    Console.WriteLine("Concentration = " + compound_id);
-                    Console.WriteLine("diff, min_max*thr = " + Math.Abs(response_last_point - top) + " , " + thr_toxicity * min_max_activity);
+                    //Console.WriteLine("Concentration = " + compound_id);
+                    //Console.WriteLine("diff, min_max*thr = " + Math.Abs(response_last_point - top) + " , " + thr_toxicity * min_max_activity);
 
                     double point_x = dict_points.Keys.ElementAt(dict_points.Count() - 1);
                     List<double> list_point_y = dict_points.Values.ElementAt(dict_points.Count() - 1);

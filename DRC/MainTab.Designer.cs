@@ -497,7 +497,7 @@
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button4.Location = new System.Drawing.Point(1072, 780);
+            this.button4.Location = new System.Drawing.Point(1072, 774);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(120, 35);
             this.button4.TabIndex = 25;
@@ -507,6 +507,7 @@
             // 
             // label4
             // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(1097, 818);
             this.label4.Name = "label4";
@@ -567,14 +568,14 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(1086, 621);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(90, 13);
+            this.label6.Size = new System.Drawing.Size(89, 13);
             this.label6.TabIndex = 31;
-            this.label6.Text = "Top 2 Last Points";
+            this.label6.Text = "% Diff Last Points";
             // 
             // numericUpDown5
             // 
             this.numericUpDown5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown5.DecimalPlaces = 1;
+            this.numericUpDown5.DecimalPlaces = 2;
             this.numericUpDown5.Increment = new decimal(new int[] {
             1,
             0,
@@ -590,10 +591,10 @@
             this.numericUpDown5.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown5.TabIndex = 30;
             this.numericUpDown5.Value = new decimal(new int[] {
-            90,
+            1,
             0,
             0,
-            131072});
+            65536});
             // 
             // button6
             // 
