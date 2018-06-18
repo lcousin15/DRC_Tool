@@ -107,7 +107,7 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 41);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 47);
             this.tableLayoutPanel1.MaximumSize = new System.Drawing.Size(1000, 10000);
             this.tableLayoutPanel1.MinimumSize = new System.Drawing.Size(950, 850);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -133,7 +133,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1000, 895);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1000, 883);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // saveFileDialog1
@@ -591,7 +591,7 @@
             this.numericUpDown5.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown5.TabIndex = 30;
             this.numericUpDown5.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
             65536});
@@ -651,10 +651,10 @@
             this.numericUpDown6.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown6.TabIndex = 33;
             this.numericUpDown6.Value = new decimal(new int[] {
-            1,
+            25,
             0,
             0,
-            65536});
+            131072});
             // 
             // MainTab
             // 

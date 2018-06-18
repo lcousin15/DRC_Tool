@@ -393,6 +393,7 @@ namespace DRC
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            check_last_points();
 
             exportDataToolStripMenuItem_Click(sender, e);
 
@@ -407,7 +408,7 @@ namespace DRC
 
                 f5.dataGridViewExport.Rows.Clear();
 
-                f5.dataGridViewExport.ColumnCount = 1 + 2 * descriptor_list.Count;
+                f5.dataGridViewExport.ColumnCount = 1 + 3 * descriptor_list.Count;
 
                 f5.dataGridViewExport.Columns[0].Name = "CPD_ID";
 
@@ -416,7 +417,7 @@ namespace DRC
                 {
 
                     DataGridViewImageColumn img = new DataGridViewImageColumn();
-                    f5.dataGridViewExport.Columns.Insert(3 * i + 1, img);
+                    f5.dataGridViewExport.Columns.Insert(4 * i + 1, img);
 
                     i++;
                 }
@@ -424,9 +425,10 @@ namespace DRC
                 i = 0;
                 foreach (string elem in descriptor_list)
                 {
-                    f5.dataGridViewExport.Columns[3 * i + 1].Name = elem;
-                    f5.dataGridViewExport.Columns[3 * i + 2].Name = "EC_50 " + elem;
-                    f5.dataGridViewExport.Columns[3 * i + 3].Name = "Top " + elem;
+                    f5.dataGridViewExport.Columns[4 * i + 1].Name = elem;
+                    f5.dataGridViewExport.Columns[4 * i + 2].Name = "Estimation";
+                    f5.dataGridViewExport.Columns[4 * i + 3].Name = "EC_50 " + elem;
+                    f5.dataGridViewExport.Columns[4 * i + 4].Name = "Top " + elem;
 
                     i++;
                 }
@@ -466,6 +468,7 @@ namespace DRC
                         double[] fit_params = current_chart.get_Fit_Parameters();
                         bool not_fitted = current_chart.is_Fitted();
                         bool inactive = current_chart.is_Inactive();
+                        bool last_2_points_text = current_chart.check_ec50_exact();
 
                         double current_top = fit_params[1];
                         double current_ec_50 = fit_params[2];
@@ -473,38 +476,53 @@ namespace DRC
                         Image image = Image.FromFile(list_images[i_img]);
 
                         //f5.dataGridViewExport.Rows[index].Height = 
-                        f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 1].Value = image;
+                        f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 1].Value = image;
                         if (!not_fitted || !inactive)
                         {
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Value = Math.Pow(10, current_ec_50);
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Style.BackColor = Color.LightGreen;
+                            if (last_2_points_text == true)
+                            {
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "=";
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Green;
 
-                            if (current_ec_50 <= 30 * 1E-6)
-                            {
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = current_top;
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.LightGreen;
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = Math.Pow(10, current_ec_50);
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.Green;
+
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = current_top;
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.Green;
                             }
-                            else if (current_ec_50 > 30.0 * 1E-6)
+                            else
                             {
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "EC_50 > 30uM";
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.Tomato;
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = ">";
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.LimeGreen;
+
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = Math.Pow(10, current_ec_50).ToString();
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.LimeGreen;
+
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = current_top;
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.LimeGreen;
                             }
                         }
                         if (not_fitted)
                         {
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Value = "Not Fitted";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Style.BackColor = Color.Tomato;
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Tomato;
 
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "Not Fitted";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.Tomato;
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = "Not Fitted";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.Tomato;
+
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = "Not Fitted";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.Tomato;
                         }
                         if (inactive)
                         {
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Value = "Inactive";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 2].Style.BackColor = Color.Orange;
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Orange;
 
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Value = "Inactive";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 3 + 3].Style.BackColor = Color.Orange;
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = "Inactive";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.Orange;
+
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = "Inactive";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.Orange;
                         }
 
                         i_img++;
@@ -512,6 +530,7 @@ namespace DRC
                     }
 
                 }
+
                 toolStripProgressBar1.Visible = false;
                 f5.Show();
                 MessageBox.Show("Images generated.");
@@ -2773,8 +2792,10 @@ namespace DRC
             }
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private void check_last_points()
         {
+            toolStripProgressBar1.Visible = true;
+
             // threshold Inactive
             double last_points_treshold = double.Parse(this.numericUpDown5.Value.ToString());
 
@@ -2796,7 +2817,12 @@ namespace DRC
                 }
             }
 
-            toolStripProgressBar1.Value = 0;
+            toolStripProgressBar1.Visible = false;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            check_last_points();
         }
 
         private void MainTab_Load(object sender, EventArgs e)
@@ -2806,12 +2832,14 @@ namespace DRC
 
         private void button7_Click(object sender, EventArgs e)
         {
+            toolStripProgressBar1.Visible = true;
+
             // threshold Inactive
             double toxicity_treshold = double.Parse(this.numericUpDown6.Value.ToString());
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
-                toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+                this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
 
                 string cpd_id = list_cpd[idx].ToString();
 
@@ -2827,7 +2855,7 @@ namespace DRC
                 }
             }
 
-            toolStripProgressBar1.Value = 0;
+            toolStripProgressBar1.Visible = false;
         }
     }
 
@@ -3579,11 +3607,14 @@ namespace DRC
         {
             double GlobalMax = double.MinValue;
             double MaxValues = MaxA(drc_points_y_enable.ToArray());
-            GlobalMax = MaxValues;
+
+            GlobalMax = MaxValues + 0.5 * Math.Abs(MaxValues);
 
             double GlobalMin = double.MaxValue;
             double MinValues = MinA(drc_points_y_enable.ToArray());
-            GlobalMin = MinValues;
+
+            GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
+
             if ((double)_form1.numericUpDown3.Value != 0)
             {
                 GlobalMax = (double)_form1.numericUpDown3.Value;
@@ -3602,8 +3633,8 @@ namespace DRC
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
-            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin)+1.0, 100.0 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin)-1.0, -100.0 };
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
@@ -3831,10 +3862,10 @@ namespace DRC
                 double diff_top_last_point = Math.Abs(response_last_point - top);
                 double diff_top_last_point2 = Math.Abs(response_2_last_point - top);
 
-                if (diff_top_last_point >= thr_2_last_points*Math.Abs(top-bottom) && diff_top_last_point2 >= thr_2_last_points * Math.Abs(top-bottom))
+                if (diff_top_last_point >= thr_2_last_points*Math.Abs(top-bottom) || diff_top_last_point2 >= thr_2_last_points * Math.Abs(top-bottom))
                 {
                     Console.WriteLine("Concentration = " + compound_id);
-                    Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * top);
+                    Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * Math.Abs(top - bottom));
 
                     is_ec50_exact = false;
                 }
@@ -4907,12 +4938,19 @@ namespace DRC
         private void fit_DRC()
         {
             double GlobalMax = double.MinValue;
-            double MaxValues = max_y;
-            GlobalMax = MaxValues;
+            double MaxValues = MaxA(drc_points_y[file_name].ToArray());
+
+            GlobalMax = MaxValues + 0.5 * Math.Abs(MaxValues);
 
             double GlobalMin = double.MaxValue;
-            double MinValues = min_y;
-            GlobalMin = MinValues;
+            double MinValues = MinA(drc_points_y[file_name].ToArray());
+
+            GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
+
+            if ((double)_form1.numericUpDown3.Value != 0)
+            {
+                GlobalMax = (double)_form1.numericUpDown3.Value;
+            }
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
             double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
@@ -4927,8 +4965,8 @@ namespace DRC
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
-            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin)+1.0, +100 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin)-1.0, -100 };
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
