@@ -627,9 +627,9 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(1086, 700);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(77, 13);
+            this.label7.Size = new System.Drawing.Size(78, 13);
             this.label7.TabIndex = 34;
-            this.label7.Text = "Check Toxicity";
+            this.label7.Text = "Detect Toxicity";
             // 
             // numericUpDown6
             // 
