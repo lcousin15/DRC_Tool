@@ -2773,6 +2773,32 @@ namespace DRC
             }
         }
 
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // threshold Inactive
+            double last_points_treshold = double.Parse(this.numericUpDown5.Value.ToString());
+
+            for (var idx = 0; idx < list_cpd.Count; idx++)
+            {
+                string cpd_id = list_cpd[idx].ToString();
+
+                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                    continue;
+
+                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+
+                foreach (Chart_DRC current_chart in list_chart)
+                {
+                    current_chart.test_two_points_around_top(last_points_treshold);
+                    current_chart.Is_Modified();
+                }
+            }
+        }
+
+        private void MainTab_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class Chart_DRC_Overlap
@@ -3700,6 +3726,87 @@ namespace DRC
             }
 
             //Is_Modified();
+        }
+
+        public void test_two_points_around_top(double thr_2_last_points)
+        {
+            // Compute the top :
+            double top = 0.0;
+
+            if (fit_parameters[0] < fit_parameters[1])
+            {
+                top = double.Parse(fit_parameters[0].ToString());
+            }
+            else
+            {
+                top = double.Parse(fit_parameters[1].ToString());
+            }
+
+            // sort then take to last concentration
+            var orderedZip = drc_points_x_enable.Zip(drc_points_y_enable, (x, y) => new { x, y })
+                                  .OrderBy(pair => pair.x)
+                                  .ToList();
+
+            drc_points_x_enable = orderedZip.Select(pair => pair.x).ToList();
+            drc_points_y_enable = orderedZip.Select(pair => pair.y).ToList();
+
+            SortedDictionary<double, List<double>> dict_points = new SortedDictionary<double, List<double>>();
+
+            for(int i=0; i< drc_points_x_enable.Count(); i++)
+            {
+                //Console.WriteLine("x,y = " + x_concentrations[i] + " , " + y_response[i]);
+                if (dict_points.ContainsKey(drc_points_x_enable[i]))
+                {
+                    dict_points[drc_points_x_enable[i]].Add(drc_points_y_enable[i]);
+                }
+                else
+                {
+                    List<double> resp = new List<double>();
+                    resp.Add(drc_points_y_enable[i]);
+                    dict_points.Add(drc_points_x_enable[i], resp);
+                }
+            }
+
+            //// Print the dictionary
+            //foreach(KeyValuePair<double, List<double>> elem in dict_points)
+            //{
+            //    double conc = elem.Key;
+            //    List<double> resp = elem.Value;
+
+            //    Console.WriteLine("Cpd, Concentration = " + compound_id + " , " + conc);
+            //    foreach(double val in resp)
+            //    {
+            //        Console.WriteLine("-------Response = " + val);
+            //    }
+            //}
+
+            if(dict_points.Count()>2)
+            {
+                double response_last_point = 0.0;
+
+                foreach(double val in dict_points.Values.ElementAt(dict_points.Count()-1))
+                {
+                    response_last_point += val;
+                }
+
+                response_last_point /= (double)(dict_points.Values.ElementAt(dict_points.Count() - 1).Count());
+
+                double response_2_last_point = 0.0;
+
+                foreach (double val in dict_points.Values.ElementAt(dict_points.Count() - 2))
+                {
+                    response_2_last_point += val;
+                }
+
+                response_2_last_point /= (double)(dict_points.Values.ElementAt(dict_points.Count() - 2).Count());
+
+                if(response_2_last_point >= thr_2_last_points*top)
+                {
+                    Console.WriteLine("Concentration = " + compound_id);
+                    Console.WriteLine("Mean 2 last points, 90% = " + response_2_last_point + " , " + response_last_point + " , " + thr_2_last_points * response_last_point);
+                }
+
+            }
         }
 
         public void draw_DRC(bool if_report)
