@@ -3118,12 +3118,14 @@ namespace DRC
         private void fit_DRC_1()
         {
             double GlobalMax = double.MinValue;
-            double MaxValues = max_y_1;
-            GlobalMax = MaxValues;
+            double MaxValues = MaxA(drc_points_y_1.ToArray());
+
+            GlobalMax = MaxValues + 0.5 * Math.Abs(MaxValues);
 
             double GlobalMin = double.MaxValue;
-            double MinValues = min_y_1;
-            GlobalMin = MinValues;
+            double MinValues = MinA(drc_points_y_1.ToArray());
+
+            GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
             double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
@@ -3138,8 +3140,8 @@ namespace DRC
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin), 100 };
-            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin), -100 };
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin)-1.0, 100 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin)+1.0, -100 };
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
@@ -3179,12 +3181,14 @@ namespace DRC
         private void fit_DRC_2()
         {
             double GlobalMax = double.MinValue;
-            double MaxValues = max_y_2;
-            GlobalMax = MaxValues;
+            double MaxValues = MaxA(drc_points_y_2.ToArray());
+
+            GlobalMax = MaxValues + 0.5 * Math.Abs(MaxValues);
 
             double GlobalMin = double.MaxValue;
-            double MinValues = min_y_2;
-            GlobalMin = MinValues;
+            double MinValues = MinA(drc_points_y_2.ToArray());
+
+            GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
             double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
