@@ -3686,8 +3686,8 @@ namespace DRC
                 min_bound_y = GlobalMin;
                 max_bound_y = GlobalMax;
 
-                min_bound_x = Math.Log10(MaxConcentrationLin) - 1.0;
-                max_bound_x = Math.Log10(MinConcentrationLin) + 1.0;
+                min_bound_x = Math.Log10(MaxConcentrationLin) + 1.0;
+                max_bound_x = Math.Log10(MinConcentrationLin) - 1.0;
             }
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
@@ -4312,7 +4312,7 @@ namespace DRC
                 menu_not_fitted.AnchorY = 5;
                 menu_not_fitted.Height = 5;
                 menu_not_fitted.Width = 5;
-                menu_not_fitted.ForeColor = Color.Blue;
+                menu_not_fitted.ForeColor = Color.LightGray;
                 menu_not_fitted.Font = new Font(menu_not_fitted.Font.FontFamily, menu_not_fitted.Font.Size, FontStyle.Bold);
                 menu_not_fitted.Visible = true;
                 chart.Annotations.Add(menu_not_fitted);
@@ -4324,7 +4324,7 @@ namespace DRC
                 menu_inactive.AnchorY = 5;
                 menu_inactive.Height = 5;
                 menu_inactive.Width = 4;
-                menu_inactive.ForeColor = Color.Blue;
+                menu_inactive.ForeColor = Color.LightGray;
                 menu_inactive.Font = new Font(menu_inactive.Font.FontFamily, menu_inactive.Font.Size, FontStyle.Bold);
                 menu_inactive.Visible = true;
                 chart.Annotations.Add(menu_inactive);
@@ -4353,7 +4353,9 @@ namespace DRC
 
         private void chart1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            double pointer_y = e.Y;
+
+            if (e.Button == MouseButtons.Left && pointer_y > 18)
             {
 
                 Axis ax = chart.ChartAreas[0].AxisX;
@@ -4452,6 +4454,9 @@ namespace DRC
                     _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
                     _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
                 }
+
+                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+                ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
 
                 annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
             }
@@ -4642,6 +4647,191 @@ namespace DRC
                         ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
                     }
                 }
+
+                if (pointer_x >= 2 && pointer_x < 27 && pointer_y <= 18)
+                {
+                    if (not_fitted == false)
+                    {
+                        int k = 0;
+                        foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                        {
+                            string compound = row2.Cells[0].Value.ToString();
+                            if (compound_id == compound) break;
+                            k++;
+                        }
+                        int row_index = k;
+
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Not Fitted";
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Not Fitted";
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Not Fitted";
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Not Fitted";
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Not Fitted";
+
+                        data_modified = true;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Tomato;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Tomato;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Tomato;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Tomato;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
+
+                        annotation_ec50.Text = "EC_50 = Not Fitted";
+
+                        not_fitted = true;
+
+                        not_fitted_init = true;
+                        inactive_init = false;
+
+                        inactive = false;
+
+                        ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                        ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+
+                    }
+                    else
+                    {
+                        ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+
+                        int k = 0;
+                        foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                        {
+                            string compound = row2.Cells[0].Value.ToString();
+                            if (compound_id == compound) break;
+                            k++;
+                        }
+                        int row_index = k;
+
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
+                        if (fit_parameters[0] < fit_parameters[1])
+                        {
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                        }
+                        else
+                        {
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                        }
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
+
+                        not_fitted = false;
+                        inactive = false;
+
+                        if (drc_points_x_disable.Count() > 0)
+                        {
+                            data_modified = true;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                        }
+                        else
+                        {
+                            data_modified = false;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                        }
+
+                        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+                    }
+                }
+
+                if (pointer_x >= 27 && pointer_x < 47 && pointer_y <= 18)
+                {
+                    if (inactive == false)
+                    {
+                        int k = 0;
+                        foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                        {
+                            string compound = row2.Cells[0].Value.ToString();
+                            if (compound_id == compound) break;
+                            k++;
+                        }
+                        int row_index = k;
+
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+
+                        data_modified = true;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+
+                        annotation_ec50.Text = "EC_50 = Inactive";
+
+                        inactive = true;
+
+                        inactive_init = true;
+                        not_fitted_init = false;
+
+                        not_fitted = false;
+
+                        ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
+                        ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+
+                    }
+                    else
+                    {
+                        ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+
+                        int k = 0;
+                        foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                        {
+                            string compound = row2.Cells[0].Value.ToString();
+                            if (compound_id == compound) break;
+                            k++;
+                        }
+                        int row_index = k;
+
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
+                        if (fit_parameters[0] < fit_parameters[1])
+                        {
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                        }
+                        else
+                        {
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                        }
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
+
+                        not_fitted = false;
+                        inactive = false;
+
+                        if (drc_points_x_disable.Count() > 0)
+                        {
+                            data_modified = true;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                        }
+                        else
+                        {
+                            data_modified = false;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                        }
+
+                        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+                    }
+                }
+
             }
 
         }
