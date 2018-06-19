@@ -479,7 +479,7 @@ namespace DRC
                         f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 1].Value = image;
                         if (!not_fitted || !inactive)
                         {
-                            if (last_2_points_text == true)
+                            if (last_2_points_text == false)
                             {
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "=";
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Green;
@@ -3797,6 +3797,9 @@ namespace DRC
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
 
                 annotation_ec50.Text = "EC_50 = Not Fitted";
+
+                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+                ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
             }
 
             if (inactive)
@@ -3816,6 +3819,9 @@ namespace DRC
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
 
                 annotation_ec50.Text = "EC_50 = Inactive";
+
+                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
+                ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
             }
 
         }
@@ -3829,7 +3835,17 @@ namespace DRC
             if (r2 < thr)
             {
                 not_fitted = true;
-                if (inactive_init == true) not_fitted = false;
+
+                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+                ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+
+                if (inactive_init == true)
+                {
+                    not_fitted = false;
+
+                    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
+                    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+                }
             }
 
             //Is_Modified();
@@ -3852,7 +3868,17 @@ namespace DRC
             if (min_max_activity < thr)
             {
                 inactive = true;
-                if (not_fitted_init == true) inactive = false;
+
+                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
+                ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+
+                if (not_fitted_init == true)
+                {
+                    inactive = false;
+
+                    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+                    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                }
             }
 
             //Is_Modified();
@@ -3935,6 +3961,7 @@ namespace DRC
                     is_ec50_exact = false;
                     ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
 
+                    annotation_ec50.Text = "EC_50 > " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
                 }
 
             }
@@ -4211,6 +4238,7 @@ namespace DRC
             {
                 annotation_ec50.AnchorY = 80;
             }
+
             annotation_ec50.AllowSelecting = true;
             annotation_ec50.AllowResizing = true;
             annotation_ec50.AllowMoving = true;
