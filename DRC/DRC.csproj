@@ -176,6 +176,12 @@
     <Compile Include="Curves_Options.Designer.cs">
       <DependentUpon>Curves_Options.cs</DependentUpon>
     </Compile>
+    <Compile Include="Curve_Fit_Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Curve_Fit_Options.Designer.cs">
+      <DependentUpon>Curve_Fit_Options.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainTab.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -264,6 +270,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Curves_Options.resx">
       <DependentUpon>Curves_Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Curve_Fit_Options.resx">
+      <DependentUpon>Curve_Fit_Options.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainTab.resx">
       <DependentUpon>MainTab.cs</DependentUpon>

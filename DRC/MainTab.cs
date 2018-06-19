@@ -3350,12 +3350,63 @@ namespace DRC
 
         List<bool> is_raw_data_removed;
 
-        RectangleAnnotation menu_text = new RectangleAnnotation();
-
         private Curves_Options options_form;
+        private Curve_Fit_Options options_fit_form;
 
         private double minX = -1;
         private double maxX = -1;
+
+        private double min_bound_x = 0.0;
+        private double max_bound_x = 0.0;
+        private double min_bound_y = 0.0;
+        private double max_bound_y = 0.0;
+
+        private bool bound_auto = true;
+
+        public void set_bound_status(bool status)
+        {
+            bound_auto = status;
+        }
+
+        public double get_min_bound_x()
+        {
+            return min_bound_x;
+        }
+
+        public double get_max_bound_x()
+        {
+            return max_bound_x;
+        }
+
+        public double get_min_bound_y()
+        {
+            return min_bound_y;
+        }
+
+        public double get_max_bound_y()
+        {
+            return max_bound_y;
+        }
+
+        public void set_min_bound_x(double x_min)
+        {
+            min_bound_x = x_min;
+        }
+
+        public void set_max_bound_x(double x_max)
+        {
+            max_bound_x = x_max;
+        }
+
+        public void set_min_bound_y(double y_min)
+        {
+            min_bound_y = y_min;
+        }
+
+        public void set_max_bound_y(double y_max)
+        {
+            max_bound_y = y_max;
+        }
 
         public bool check_ec50_exact()
         {
@@ -3521,7 +3572,7 @@ namespace DRC
             chartArea.AxisX.Title = "Concentatrion";
             chartArea.AxisY.Title = "Response";
 
-            double max_y = MaxA(y_response.ToArray());
+            //double max_y = MaxA(y_response.ToArray());
 
             //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
 
@@ -3619,13 +3670,10 @@ namespace DRC
 
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
-            if ((double)_form1.numericUpDown3.Value != 0)
-            {
-                GlobalMax = (double)_form1.numericUpDown3.Value;
-            }
-
-            double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
-            double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
+            //if ((double)_form1.numericUpDown3.Value != 0)
+            //{
+            //    max_bound_y = (double)_form1.numericUpDown3.Value;
+            //}
 
             double epsf = 0;
             double epsx = 0;
@@ -3633,12 +3681,24 @@ namespace DRC
             int maxits = 0;
             int info;
 
+            if (bound_auto)
+            {
+                min_bound_y = GlobalMin;
+                max_bound_y = GlobalMax;
+
+                min_bound_x = Math.Log10(MaxConcentrationLin) - 1.0;
+                max_bound_x = Math.Log10(MinConcentrationLin) + 1.0;
+            }
+
+            double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
+            double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
+
             double[] bndl = null;
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin)+1.0, 100.0 };
-            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin)-1.0, -100.0 };
+            bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +100.0 };
+            bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -100.0 };
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
@@ -4035,7 +4095,6 @@ namespace DRC
             chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
             chart.Series["Series2"].Color = chart_color;
 
-
             //----------------------------- Axis Labels ---------------------------//
 
             double min_x = 0.0;
@@ -4214,6 +4273,18 @@ namespace DRC
                 mytext.Font = new Font(mytext.Font.FontFamily, mytext.Font.Size + 5.0f, mytext.Font.Style);
                 mytext.Visible = true;
                 chart.Annotations.Add(mytext);
+
+                RectangleAnnotation menu_fit = new RectangleAnnotation();
+                menu_fit.Name = "menu_fit";
+                menu_fit.Text = "F";
+                menu_fit.AnchorX = 93.5;
+                menu_fit.AnchorY = 5;
+                menu_fit.Height = 5;
+                menu_fit.Width = 4;
+                menu_fit.ForeColor = Color.Blue;
+                menu_fit.Font = new Font(menu_fit.Font.FontFamily, menu_fit.Font.Size, FontStyle.Bold);
+                menu_fit.Visible = true;
+                chart.Annotations.Add(menu_fit);
             }
             //mytext = annotation_text;
 
@@ -4485,6 +4556,8 @@ namespace DRC
                 double pointer_x = e.X;
                 double pointer_y = e.Y;
 
+                //MessageBox.Show(pointer_x + " , " + pointer_y);
+
                 if (pointer_x >= 462 && pointer_y <= 18)
                 {
                     Form fc = Application.OpenForms["Curves_Options"];
@@ -4502,6 +4575,16 @@ namespace DRC
 
                     options_form.Visible = true;
 
+                }
+
+                if (pointer_x >= 443 && pointer_x < 462 && pointer_y <= 18)
+                {
+                    Form fc = Application.OpenForms["Curves_Fit_Options"];
+
+                    if (fc == null)
+                        options_fit_form = new Curve_Fit_Options(this);
+
+                    options_fit_form.Visible = true;
                 }
             }
 
@@ -4951,10 +5034,10 @@ namespace DRC
 
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
-            if ((double)_form1.numericUpDown3.Value != 0)
-            {
-                GlobalMax = (double)_form1.numericUpDown3.Value;
-            }
+            //if ((double)_form1.numericUpDown3.Value != 0)
+            //{
+            //    GlobalMax = (double)_form1.numericUpDown3.Value;
+            //}
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
             double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
