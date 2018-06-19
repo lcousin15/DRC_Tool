@@ -24,15 +24,15 @@ namespace DRC
             InitializeComponent();
             chart = my_chart;
 
-            txt_min_bound_x.Text = chart.get_min_bound_x().ToString();
-            txt_max_bound_x.Text = chart.get_max_bound_x().ToString();
-            txt_min_bound_y.Text = chart.get_min_bound_y().ToString();
-            txt_max_bound_y.Text = chart.get_max_bound_y().ToString();
+            txt_min_bound_x.Text = Math.Pow(10, chart.get_min_bound_x()).ToString();
+            txt_max_bound_x.Text = Math.Pow(10, chart.get_max_bound_x()).ToString();
+            txt_min_bound_y.Text = Math.Pow(10, chart.get_min_bound_y()).ToString();
+            txt_max_bound_y.Text = Math.Pow(10, chart.get_max_bound_y()).ToString();
 
-            bound_min_x = chart.get_min_bound_x();
-            bound_max_x = chart.get_max_bound_x();
-            bound_min_y = chart.get_min_bound_y();
-            bound_max_y = chart.get_max_bound_y();
+            bound_min_x = Math.Pow(10, chart.get_min_bound_x());
+            bound_max_x = Math.Pow(10, chart.get_max_bound_x());
+            bound_min_y = Math.Pow(10, chart.get_min_bound_y());
+            bound_max_y = Math.Pow(10, chart.get_max_bound_y());
         }
 
         private void btn_OK_Click(object sender, EventArgs e)
@@ -49,10 +49,10 @@ namespace DRC
             bound_min_y = Double.Parse(txt_min_bound_y.Text);
             bound_max_y = Double.Parse(txt_max_bound_y.Text);
 
-            chart.set_min_bound_x(Double.Parse(txt_min_bound_x.Text));
-            chart.set_max_bound_x(Double.Parse(txt_max_bound_x.Text));
-            chart.set_min_bound_y(Double.Parse(txt_min_bound_y.Text));
-            chart.set_max_bound_y(Double.Parse(txt_max_bound_y.Text));
+            chart.set_min_bound_x(Math.Log10(Double.Parse(txt_min_bound_x.Text)));
+            chart.set_max_bound_x(Math.Log10(Double.Parse(txt_max_bound_x.Text)));
+            chart.set_min_bound_y(Math.Log10(Double.Parse(txt_min_bound_y.Text)));
+            chart.set_max_bound_y(Math.Log10(Double.Parse(txt_max_bound_y.Text)));
 
             chart.draw_DRC(false, false);
         }
