@@ -3140,8 +3140,8 @@ namespace DRC
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin)-1.0, 100 };
-            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin)+1.0, -100 };
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin) - 1.0, 100 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin) + 1.0, -100 };
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
@@ -3616,8 +3616,8 @@ namespace DRC
             //chart.PrePaint += new System.Windows.Forms.chart ChartPaintEventArgs(this.Chart1_PrePaint);
             //Create a rectangle annotation
 
-            RectangleAnnotation annotationRectangle = new RectangleAnnotation();
-            annotation_ec50 = annotationRectangle;
+            //RectangleAnnotation annotationRectangle = new RectangleAnnotation();
+            //annotation_ec50 = annotationRectangle;
 
             //chart.ChartAreas[0].AxisX.Minimum = -10;
             //chart.ChartAreas[0].AxisX.Maximum = -5;
@@ -3861,7 +3861,7 @@ namespace DRC
         public void test_two_points_around_top(double thr_2_last_points)
         {
             // Get the bottom and the top :
-            double top = double.Parse(fit_parameters[1].ToString());   
+            double top = double.Parse(fit_parameters[1].ToString());
             double bottom = double.Parse(fit_parameters[0].ToString());
 
             // sort then take to last concentration
@@ -3874,7 +3874,7 @@ namespace DRC
 
             SortedDictionary<double, List<double>> dict_points = new SortedDictionary<double, List<double>>();
 
-            for(int i=0; i< drc_points_x_enable.Count(); i++)
+            for (int i = 0; i < drc_points_x_enable.Count(); i++)
             {
                 //Console.WriteLine("x,y = " + x_concentrations[i] + " , " + y_response[i]);
                 if (dict_points.ContainsKey(drc_points_x_enable[i]))
@@ -3902,11 +3902,11 @@ namespace DRC
             //    }
             //}
 
-            if(dict_points.Count()>2)
+            if (dict_points.Count() > 2)
             {
                 double response_last_point = 0.0;
 
-                foreach(double val in dict_points.Values.ElementAt(dict_points.Count()-1))
+                foreach (double val in dict_points.Values.ElementAt(dict_points.Count() - 1))
                 {
                     response_last_point += val;
                 }
@@ -3925,7 +3925,7 @@ namespace DRC
                 double diff_top_last_point = Math.Abs(response_last_point - top);
                 double diff_top_last_point2 = Math.Abs(response_2_last_point - top);
 
-                if (diff_top_last_point >= thr_2_last_points*Math.Abs(top-bottom) || diff_top_last_point2 >= thr_2_last_points * Math.Abs(top-bottom))
+                if (diff_top_last_point >= thr_2_last_points * Math.Abs(top - bottom) || diff_top_last_point2 >= thr_2_last_points * Math.Abs(top - bottom))
                 {
                     Console.WriteLine("Concentration = " + compound_id);
                     Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * Math.Abs(top - bottom));
@@ -4014,7 +4014,7 @@ namespace DRC
 
                 double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
 
-                if (Math.Abs(response_last_point-top) >= thr_toxicity * min_max_activity)
+                if (Math.Abs(response_last_point - top) >= thr_toxicity * min_max_activity)
                 {
                     //Console.WriteLine("Concentration = " + compound_id);
                     //Console.WriteLine("diff, min_max*thr = " + Math.Abs(response_last_point - top) + " , " + thr_toxicity * min_max_activity);
@@ -4197,7 +4197,20 @@ namespace DRC
             annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
             annotation_ec50.BackColor = Color.FromArgb(240, 240, 240);
             annotation_ec50.AnchorX = 40;
-            annotation_ec50.AnchorY = 25;
+
+            // test bottom top
+            double the_top = double.Parse(fit_parameters[1].ToString());
+            double MaxValues = MaxA(drc_points_y_enable.ToArray());
+            double MinValues = MinA(drc_points_y_enable.ToArray());
+
+            if ((MaxValues - the_top) < (the_top - MinValues))
+            {
+                annotation_ec50.AnchorY = 25;
+            }
+            else
+            {
+                annotation_ec50.AnchorY = 80;
+            }
             annotation_ec50.AllowSelecting = true;
             annotation_ec50.AllowResizing = true;
             annotation_ec50.AllowMoving = true;
@@ -4292,7 +4305,7 @@ namespace DRC
                 RectangleAnnotation menu_ec_50_sup = new RectangleAnnotation();
                 menu_ec_50_sup.Name = "menu_ec_50_sup";
 
-                if(is_ec50_exact) menu_ec_50_sup.Text = "=";
+                if (is_ec50_exact) menu_ec_50_sup.Text = "=";
                 else menu_ec_50_sup.Text = ">";
 
                 menu_ec_50_sup.AnchorX = 89.5;
@@ -5308,8 +5321,8 @@ namespace DRC
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin)+1.0, +100 };
-            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin)-1.0, -100 };
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin) + 1.0, +100 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin) - 1.0, -100 };
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
