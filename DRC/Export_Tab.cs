@@ -309,7 +309,7 @@ namespace DRC
 
                 for (int j = 1; j <= dataGridViewExport.Columns.Count; j++)
                 {
-                    if ((j-1) % 3 == 1) ws.Column(j).Width = width;
+                    if ((j-1) % 4 == 1) ws.Column(j).Width = width;
                     else ws.Column(j).Width = 15;
                     //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
                 }

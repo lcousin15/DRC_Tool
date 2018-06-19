@@ -245,3 +245,6 @@ E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Correlations_Exp_Name.resources
 F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Debug\DRC.Correlations_Exp_Name.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Correlations_Exp_Name.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csprojResolveAssemblyReference.cache
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.CPD_Time_Line.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Curves_Options.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Curve_Fit_Options.resources

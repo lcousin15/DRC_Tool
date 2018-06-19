@@ -106,7 +106,7 @@ namespace DRC
 
                             foreach (Chart_DRC current_chart in list_chart)
                             {
-                                current_chart.draw_DRC(false);
+                                current_chart.draw_DRC(false, true);
                             }
                         }
                     }
