@@ -484,10 +484,10 @@ namespace DRC
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "=";
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Green;
 
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = Math.Pow(10, current_ec_50);
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = Math.Pow(10, current_ec_50).ToString("E2");
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.Green;
 
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = current_top;
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = current_top.ToString("E2");
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.Green;
                             }
                             else
@@ -495,10 +495,10 @@ namespace DRC
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = ">";
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.LimeGreen;
 
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = Math.Pow(10, current_ec_50).ToString();
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = Math.Pow(10, current_ec_50).ToString("E2");
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.LimeGreen;
 
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = current_top;
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = current_top.ToString("E2");
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.LimeGreen;
                             }
                         }
