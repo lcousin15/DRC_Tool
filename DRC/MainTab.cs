@@ -479,7 +479,7 @@ namespace DRC
                         f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 1].Value = image;
                         if (!not_fitted || !inactive)
                         {
-                            if (last_2_points_text == false)
+                            if (last_2_points_text == true)
                             {
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "=";
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Green;
@@ -3828,6 +3828,8 @@ namespace DRC
 
         public void threshold_r2(double thr)
         {
+            draw_DRC(false, false);
+
             //double r2_threshold = double.Parse(_form1.numericUpDown1.Value.ToString());
 
             not_fitted = not_fitted_init;
@@ -3853,6 +3855,8 @@ namespace DRC
 
         public void threshold_inactive(double thr)
         {
+            draw_DRC(false, false);
+
             inactive = inactive_init;
 
             double GlobalMax = double.MinValue;
@@ -4369,6 +4373,18 @@ namespace DRC
                 menu_inactive.Font = new Font(menu_inactive.Font.FontFamily, menu_inactive.Font.Size, FontStyle.Bold);
                 menu_inactive.Visible = true;
                 chart.Annotations.Add(menu_inactive);
+
+                if (inactive)
+                {
+                    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
+                    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+                }
+
+                if (not_fitted)
+                {
+                    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+                    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                }
             }
 
         }
