@@ -3832,7 +3832,6 @@ namespace DRC
                 if (inactive_init == true) not_fitted = false;
             }
 
-
             //Is_Modified();
         }
 
@@ -4285,8 +4284,22 @@ namespace DRC
                 menu_fit.Font = new Font(menu_fit.Font.FontFamily, menu_fit.Font.Size, FontStyle.Bold);
                 menu_fit.Visible = true;
                 chart.Annotations.Add(menu_fit);
+
+                RectangleAnnotation menu_ec_50_sup = new RectangleAnnotation();
+                menu_ec_50_sup.Name = "menu_ec_50_sup";
+
+                if(is_ec50_exact) menu_ec_50_sup.Text = "=";
+                else menu_ec_50_sup.Text = ">";
+
+                menu_ec_50_sup.AnchorX = 89.5;
+                menu_ec_50_sup.AnchorY = 5;
+                menu_ec_50_sup.Height = 5;
+                menu_ec_50_sup.Width = 4;
+                menu_ec_50_sup.ForeColor = Color.Blue;
+                menu_ec_50_sup.Font = new Font(menu_ec_50_sup.Font.FontFamily, menu_ec_50_sup.Font.Size, FontStyle.Bold);
+                menu_ec_50_sup.Visible = true;
+                chart.Annotations.Add(menu_ec_50_sup);
             }
-            //mytext = annotation_text;
 
         }
 
@@ -4585,6 +4598,20 @@ namespace DRC
                         options_fit_form = new Curve_Fit_Options(this);
 
                     options_fit_form.Visible = true;
+                }
+
+                if (pointer_x >= 422 && pointer_x < 443 && pointer_y <= 18)
+                {
+                    if (is_ec50_exact == true)
+                    {
+                        is_ec50_exact = false;
+                        ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
+                    }
+                    else
+                    {
+                        is_ec50_exact = true;
+                        ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
+                    }
                 }
             }
 
