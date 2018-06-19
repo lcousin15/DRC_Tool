@@ -319,3 +319,4 @@ D:\DRC_Tool\DRC\obj\x64\Release\DRC.csprojResolveAssemblyReference.cache
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Correlations_Exp_Name.resources
 F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.Correlations_Exp_Name.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Correlations_Exp_Name.resources
+D:\DRC_Tool\DRC\obj\x64\Release\DRC.Curves_Options.resources
