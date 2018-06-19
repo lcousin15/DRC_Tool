@@ -393,7 +393,7 @@ namespace DRC
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            check_last_points();
+            //check_last_points();
 
             exportDataToolStripMenuItem_Click(sender, e);
 
@@ -3930,7 +3930,11 @@ namespace DRC
                     Console.WriteLine("Concentration = " + compound_id);
                     Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * Math.Abs(top - bottom));
 
+                    draw_DRC(false, false);
+
                     is_ec50_exact = false;
+                    ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
+
                 }
 
             }
