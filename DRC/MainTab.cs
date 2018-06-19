@@ -4303,6 +4303,31 @@ namespace DRC
                 menu_ec_50_sup.Font = new Font(menu_ec_50_sup.Font.FontFamily, menu_ec_50_sup.Font.Size, FontStyle.Bold);
                 menu_ec_50_sup.Visible = true;
                 chart.Annotations.Add(menu_ec_50_sup);
+
+
+                RectangleAnnotation menu_not_fitted = new RectangleAnnotation();
+                menu_not_fitted.Name = "menu_not_fitted";
+                menu_not_fitted.Text = "NF";
+                menu_not_fitted.AnchorX = 3.0;
+                menu_not_fitted.AnchorY = 5;
+                menu_not_fitted.Height = 5;
+                menu_not_fitted.Width = 5;
+                menu_not_fitted.ForeColor = Color.Blue;
+                menu_not_fitted.Font = new Font(menu_not_fitted.Font.FontFamily, menu_not_fitted.Font.Size, FontStyle.Bold);
+                menu_not_fitted.Visible = true;
+                chart.Annotations.Add(menu_not_fitted);
+
+                RectangleAnnotation menu_inactive = new RectangleAnnotation();
+                menu_inactive.Name = "menu_inactive";
+                menu_inactive.Text = "I";
+                menu_inactive.AnchorX = 7.5;
+                menu_inactive.AnchorY = 5;
+                menu_inactive.Height = 5;
+                menu_inactive.Width = 4;
+                menu_inactive.ForeColor = Color.Blue;
+                menu_inactive.Font = new Font(menu_inactive.Font.FontFamily, menu_inactive.Font.Size, FontStyle.Bold);
+                menu_inactive.Visible = true;
+                chart.Annotations.Add(menu_inactive);
             }
 
         }
