@@ -112,6 +112,7 @@ namespace DRC
         private List<string> descriptor_list;
 
         private List<string> deslected_data_descriptor;
+        private List<string> status_ec_50_descritpor;
 
         private string input_filename;
         private string output_filename;
@@ -192,6 +193,7 @@ namespace DRC
 
             List<string> CPD_ID = new List<string>();
             deslected_data_descriptor = new List<string>();
+            status_ec_50_descritpor = new List<string>();
 
             if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
                 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
@@ -219,7 +221,7 @@ namespace DRC
             {
                 if (f3.dataGridView1.Columns.Contains("Plate") && is_with_plate == true)
                 {
-                    CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString() + "__" + row.Cells["Plate"].Value.ToString());
+                    CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString());
                 }
                 else CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString());
             }
@@ -230,13 +232,20 @@ namespace DRC
             foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
             {
                 string col_name = col.HeaderText;
-                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run" && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected"))
+
+                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run" && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name!="Status")
                 {
                     checkedListBox1.Items.Add(col_name);
                 }
+
                 if (col_name.StartsWith("Deselected"))
                 {
                     deslected_data_descriptor.Add(col_name);
+                }
+
+                if (col_name.StartsWith("Status"))
+                {
+                    status_ec_50_descritpor.Add(col_name);
                 }
             }
 
@@ -255,8 +264,11 @@ namespace DRC
             descriptor_list = new List<string>();
             descriptor_list.Clear();
 
+            //deslected_data_descriptor.Clear();
             deslected_data_descriptor = new List<string>();
-            deslected_data_descriptor.Clear();
+
+            //status_ec_50_descritpor.Clear();
+            status_ec_50_descritpor = new List<string>();
 
             CPD_ID_List.Clear();
 
@@ -628,6 +640,8 @@ namespace DRC
                 List<double> concentrations = new List<double>();
                 List<double> concentrations_log = new List<double>();
 
+                Dictionary<string, string> ec_50_status = new Dictionary<string, string>();
+
                 List<DataGridViewRow> raw_data_rows = new List<DataGridViewRow>();
 
                 data_descriptor.Clear();
@@ -637,7 +651,7 @@ namespace DRC
                 {
                     string cpd_string = "";
 
-                    if (is_with_plate == true) cpd_string = row.Cells["CPD_ID"].Value.ToString() + "__" + row.Cells["Plate"].Value.ToString();
+                    if (is_with_plate == true) cpd_string = row.Cells["CPD_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString();
                     else cpd_string = row.Cells["CPD_ID"].Value.ToString();
 
                     if (cpd_string == cpd_id)
@@ -656,6 +670,7 @@ namespace DRC
                                 data_descriptor[descriptor_name] = new List<double>();
                                 data_descriptor[descriptor_name].Add(double.Parse(row.Cells[item.ToString()].Value.ToString()));
                             }
+
                         }
 
                         foreach (string item in deslected_data_descriptor)
@@ -671,6 +686,13 @@ namespace DRC
                                 deselected_data_descriptor[descriptor_name] = new List<string>();
                                 deselected_data_descriptor[descriptor_name].Add(row.Cells[item.ToString()].Value.ToString());
                             }
+                        }
+
+                        foreach (string item in status_ec_50_descritpor)
+                        {
+                            string name = item.ToString();
+                            string descriptor_name = name.Remove(0, 7);
+                            ec_50_status[descriptor_name] = row.Cells["Status_" + descriptor_name].Value.ToString();
                         }
 
                         concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
@@ -764,7 +786,11 @@ namespace DRC
                     List<string> deselected = new List<string>();
                     if (deselected_data_descriptor.ContainsKey(descriptor_name)) deselected = deselected_data_descriptor[descriptor_name];
 
-                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, this);
+                    string chart_ec_50_status;
+                    if (ec_50_status.ContainsKey(descriptor_name)) chart_ec_50_status = ec_50_status[descriptor_name];
+                    else chart_ec_50_status = "=";
+
+                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, chart_ec_50_status, this);
                     chart_drc.set_Raw_Data(raw_data_rows);
 
                     double[] parameters = chart_drc.get_Fit_Parameters();
@@ -833,8 +859,8 @@ namespace DRC
                     col_index++;
                 }
 
-                int col_already_present = 0;
-                int new_columns = 0;
+                //int col_already_present = 0;
+                //int new_columns = 0;
 
                 for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
                 {
@@ -847,7 +873,7 @@ namespace DRC
                             myRow.Cells[column_name].Value = null;
                         }
 
-                        col_already_present++;
+                        //col_already_present++;
                         f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
                         //dataGridView4.ColumnCount -= 1;
                     }
@@ -855,11 +881,33 @@ namespace DRC
                     {
                         dataGridView4.ColumnCount += 1;
                         dataGridView4.Columns[col_index].Name = column_name;
-                        new_columns++;
+                        //new_columns++;
                         col_index++;
                     }
 
-                    int content = dataGridView4.ColumnCount;
+                    //int content = dataGridView4.ColumnCount;
+                }
+
+                for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
+                {
+                    string column_name = "Status_" + descriptor_list[descriptor_index];
+
+                    if (f3.dataGridView1.Columns.Contains(column_name))
+                    {
+                        foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
+                        {
+                            myRow.Cells[column_name].Value = null;
+                        }
+
+                        f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                    }
+                    else
+                    {
+                        dataGridView4.ColumnCount += 1;
+                        dataGridView4.Columns[col_index].Name = column_name;
+                        col_index++;
+                    }
+
                 }
 
                 for (var idx = 0; idx < list_cpd.Count; idx++)
@@ -921,6 +969,29 @@ namespace DRC
 
                     }
 
+                    foreach (Chart_DRC current_chart in list_chart)
+                    {
+                        string descriptor_name = current_chart.get_Descriptor_Name();
+
+                        List<bool> removed_raw_data_cpd = new List<bool>();
+
+                        removed_raw_data_cpd = current_chart.get_Removed_Raw_Data().ToList();
+                        bool status_ec_50 = current_chart.check_ec50_exact();
+
+                        int k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            if (status_ec_50) newCell.Value = "=";
+                            else newCell.Value = ">";
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+                    }
+
                     foreach (KeyValuePair<int, DataGridViewRow> item in chart_row_data)
                     {
                         dataGridView4.Rows.Add(chart_row_data[item.Key]);
@@ -949,7 +1020,7 @@ namespace DRC
                         if (j == columnCount - 1) output[i] += dataGridView4.Rows[i - 1].Cells[j].Value.ToString();
                     }
                 }
-                System.IO.File.WriteAllLines(saveFileDialog1.FileName, output, System.Text.Encoding.UTF8);
+                System.IO.File.WriteAllLines(saveFileDialog1.FileName, output);
                 MessageBox.Show("File was generated.");
 
             }
@@ -1028,8 +1099,14 @@ namespace DRC
                 {
                     if (j != 0 && j < f2.dataGridView2.Columns.Count && i < f2.dataGridView2.Rows.Count - 1 && !(f2.dataGridView2.Columns[j].Name.Contains("R2")))
                     {
-                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted" || f2.dataGridView2.Rows[i].Cells[j].Value != "Inactive") current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
-                        else current_row.Add(-1);
+                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted" || f2.dataGridView2.Rows[i].Cells[j].Value != "Inactive")
+                        {
+                            current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
+                        }
+                        else
+                        {
+                            current_row.Add(-1);
+                        }
                     }
                 }
 
@@ -3482,7 +3559,8 @@ namespace DRC
         {
         }
 
-        public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color, int index, List<string> deselected, MainTab form)
+        public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
+            int index, List<string> deselected, string ec_50_status, MainTab form)
         {
             _form1 = form;
 
@@ -3495,6 +3573,9 @@ namespace DRC
 
             not_fitted = false;
             data_modified = false;
+
+            if (ec_50_status == "=") is_ec50_exact = true;
+            else if (ec_50_status == ">") is_ec50_exact = false;
 
             y_response = resp.ToList();
             drc_points_y_enable = resp.ToList();
@@ -3823,6 +3904,9 @@ namespace DRC
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
             }
+
+            //if(is_ec50_exact == true) ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
+            //else ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
 
         }
 
