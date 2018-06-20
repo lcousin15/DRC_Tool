@@ -3979,7 +3979,7 @@ namespace DRC
 
             inactive = inactive_init;
 
-            double min_max_activity = Math.Abs(fit_parameters[1]-fit_parameters[0]);
+            double min_max_activity = Math.Abs(fit_parameters[1] - fit_parameters[0]);
 
             if (min_max_activity < thr)
             {
@@ -4609,7 +4609,7 @@ namespace DRC
                                 if (drc_points_y_enable[i] < point_y + 1e-12 && drc_points_y_enable[i] > point_y - 1e-12)
                                     indices.Add(i);
 
-                            foreach(int idx in indices)
+                            foreach (int idx in indices)
                             {
                                 if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
                                 {
@@ -5155,10 +5155,39 @@ namespace DRC
                     median_value = y_points[(count / 2)];
                 }
 
-                //Compute the Average      
-                double avg = y_points.Average();
-                double sum = y_points.Sum(d => Math.Pow(d - avg, 2));
-                double std_dev = Math.Sqrt((sum) / (y_points.Count() - 1));
+                List<double> mad_vector = new List<double>();
+
+                for (int i = 0; i < y_points.Count(); ++i)
+                {
+                    mad_vector.Add(Math.Abs(y_points[i] - median_value));
+                }
+
+                mad_vector.Sort();
+
+                double median_value_mad = 0;
+                int count_mad = mad_vector.Count();
+
+                if (count_mad % 2 == 0 && count_mad > 0)
+                {
+                    // count is even, need to get the middle two elements, add them together, then divide by 2
+                    double middleElement1 = mad_vector[(count / 2) - 1];
+                    double middleElement2 = mad_vector[(count / 2)];
+                    median_value_mad = (middleElement1 + middleElement2) / 2;
+                }
+                else
+                {
+                    median_value_mad = mad_vector[(count / 2)];
+                }
+
+                for (int i = 0; i < mad_vector.Count(); ++i)
+                {
+                    mad_vector[i] = Math.Abs(y_points[i] - median_value) / median_value_mad;
+                }
+
+                ////Compute the Average      
+                //double avg = y_points.Average();
+                //double sum = y_points.Sum(d => Math.Pow(d - avg, 2));
+                //double std_dev = Math.Sqrt((sum) / (y_points.Count() - 1));
 
                 //if (counter < 1)
                 //{
@@ -5172,11 +5201,14 @@ namespace DRC
 
                 counter++;
 
-                foreach (double current_y in y_points)
+                for (int i = 0; i < y_points.Count(); ++i)
                 {
+
                     bool point_exclusion = false;
 
-                    if (current_y > (median_value + thresold_median * std_dev) || current_y < (median_value - thresold_median * std_dev)) point_exclusion = true;
+                    if (mad_vector[i] > thresold_median) point_exclusion = true;
+
+                    double current_y = y_points[i];
 
                     // Remove Points enabled
                     if (!(drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && point_exclusion)
@@ -5231,6 +5263,7 @@ namespace DRC
                 }
             }
 
+            /*
             fit_DRC();
             chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
 
@@ -5280,6 +5313,7 @@ namespace DRC
             }
 
             annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+            */
         }
 
     }
