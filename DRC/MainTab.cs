@@ -232,8 +232,8 @@ namespace DRC
             {
                 string col_name = col.HeaderText;
 
-                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run" 
-                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name!="Status")
+                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run"
+                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name != "Status")
                 {
                     checkedListBox1.Items.Add(col_name);
                 }
@@ -3019,6 +3019,7 @@ namespace DRC
 
         List<DataGridViewRow> raw_data;
         List<double> y_raw_data;
+        List<double> x_raw_data;
 
         List<bool> is_raw_data_removed;
 
@@ -3037,10 +3038,12 @@ namespace DRC
             raw_data = data.ToList();
 
             y_raw_data = new List<double>();
+            x_raw_data = new List<double>();
 
             foreach (DataGridViewRow item in raw_data)
             {
                 y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
+                x_raw_data.Add(double.Parse(item.Cells["Concentration"].Value.ToString()));
             }
         }
 
@@ -3450,6 +3453,7 @@ namespace DRC
 
         List<DataGridViewRow> raw_data;
         List<double> y_raw_data;
+        List<double> x_raw_data;
 
         List<bool> is_raw_data_removed;
 
@@ -3536,10 +3540,12 @@ namespace DRC
             raw_data = data.ToList();
 
             y_raw_data = new List<double>();
+            x_raw_data = new List<double>();
 
             foreach (DataGridViewRow item in raw_data)
             {
                 y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
+                x_raw_data.Add(double.Parse(item.Cells["Concentration"].Value.ToString()));
             }
         }
 
@@ -3636,7 +3642,7 @@ namespace DRC
 
                     double point_y = y_response[index_deselect];
 
-                    int remove_index = drc_points_y_enable.FindIndex(a => a < point_y + .00001 && a > point_y - .00001);
+                    int remove_index = drc_points_y_enable.FindIndex(a => a < point_y + .000001 && a > point_y - .000001);
 
 
                     drc_points_x_enable.RemoveAt(remove_index); //Add(data_chart[i].XValue);
@@ -3846,7 +3852,7 @@ namespace DRC
 
         public void Is_Modified()
         {
-            draw_DRC(false,false);
+            draw_DRC(false, false);
             /*
             int k = 0;
             foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
@@ -3973,15 +3979,7 @@ namespace DRC
 
             inactive = inactive_init;
 
-            double GlobalMax = double.MinValue;
-            double MaxValues = MaxA(drc_points_y_enable.ToArray());
-            GlobalMax = MaxValues;
-
-            double GlobalMin = double.MaxValue;
-            double MinValues = MinA(drc_points_y_enable.ToArray());
-            GlobalMin = MinValues;
-
-            double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
+            double min_max_activity = Math.Abs(fit_parameters[1]-fit_parameters[0]);
 
             if (min_max_activity < thr)
             {
@@ -4533,6 +4531,19 @@ namespace DRC
                 Axis ay = chart.ChartAreas[0].AxisY;
                 Rectangle rect = GetRectangle(mdown, e.Location);
 
+                int counter_point_changed = 0;
+
+                foreach (DataPoint dp in chart.Series["Series1"].Points)
+                {
+                    int x = (int)ax.ValueToPixelPosition(dp.XValue);
+                    int y = (int)ay.ValueToPixelPosition(dp.YValues[0]);
+
+                    if (rect.Contains(new Point(x, y)))
+                    {
+                        counter_point_changed++;
+                    }
+                }
+
                 foreach (DataPoint dp in chart.Series["Series1"].Points)
                 {
                     int x = (int)ax.ValueToPixelPosition(dp.XValue);
@@ -4543,38 +4554,108 @@ namespace DRC
 
                     if (rect.Contains(new Point(x, y)))
                     {
-
-                        if (drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y))
+                        if (drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y) && counter_point_changed > 0)
                         {
-                            // Add points enabled
+                            int index = 0;
 
+                            List<int> indices = new List<int>();
+                            for (int i = 0; i < drc_points_y_disable.Count(); i++)
+                                if (drc_points_y_disable[i] < point_y + 1e-12 && drc_points_y_disable[i] > point_y - 1e-12)
+                                    indices.Add(i);
+
+                            foreach (int idx in indices)
+                            {
+                                if (drc_points_x_disable[idx] < (point_x + 1e-12) && drc_points_x_disable[idx] > (point_x - 1e-12))
+                                {
+                                    index = idx;
+                                    break;
+                                }
+                            }
+
+                            // Add points enabled
                             drc_points_x_enable.Add(point_x);
                             drc_points_y_enable.Add(point_y);
 
-                            int index = drc_points_y_disable.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
-
+                            // Remove Points enabled
                             drc_points_x_disable.RemoveAt(index);
                             drc_points_y_disable.RemoveAt(index);
 
                             dp.Color = chart_color;
-                            continue;
+
+                            //point_last_change[data_point_idx] = true;
+                            counter_point_changed--;
                         }
-                        // Remove Points enabled
-                        if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y)))
+                    }
+                }
+
+                foreach (DataPoint dp in chart.Series["Series1"].Points)
+                {
+                    int x = (int)ax.ValueToPixelPosition(dp.XValue);
+                    int y = (int)ay.ValueToPixelPosition(dp.YValues[0]);
+
+                    double point_x = Math.Log10(dp.XValue);
+                    double point_y = dp.YValues[0];
+
+                    if (rect.Contains(new Point(x, y)))
+                    {
+                        if (drc_points_x_enable.Contains(point_x) && drc_points_y_enable.Contains(point_y) && counter_point_changed > 0)
                         {
+
+                            int index = 0;
+                            bool test = false;
+
+                            List<int> indices = new List<int>();
+                            for (int i = 0; i < drc_points_y_enable.Count(); i++)
+                                if (drc_points_y_enable[i] < point_y + 1e-12 && drc_points_y_enable[i] > point_y - 1e-12)
+                                    indices.Add(i);
+
+                            foreach(int idx in indices)
+                            {
+                                if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
+                                {
+                                    index = idx;
+                                    break;
+                                }
+                            }
+
                             drc_points_x_disable.Add(point_x);
                             drc_points_y_disable.Add(point_y);
-
-                            int index = drc_points_y_enable.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
 
                             drc_points_x_enable.RemoveAt(index); //Add(data_chart[i].XValue);
                             drc_points_y_enable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
                             dp.Color = Color.LightGray;
 
-                            int index_raw_data = y_raw_data.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
-                            is_raw_data_removed[index_raw_data] = true;
-                        }
+                            int index_raw_data = 0;
 
+                            List<int> indices_raw = new List<int>();
+
+                            for (int i = 0; i < y_raw_data.Count(); i++)
+                                if (y_raw_data[i] < point_y + 1e-12 && y_raw_data[i] > point_y - 1e-12)
+                                    indices_raw.Add(i);
+
+                            foreach (int idx in indices_raw)
+                            {
+                                if (x_raw_data[idx] < (point_x + 1e-12) && x_raw_data[idx] > (point_x - 1e-12))
+                                {
+                                    index_raw_data = idx;
+                                    break;
+                                }
+                            }
+
+                            is_raw_data_removed[index_raw_data] = true;
+
+                            counter_point_changed--;
+
+                            //y_raw_data.FindIndex(a => a < point_y + 1e-12 && a > point_y - 1e-12);
+                            //test = false;
+                            //do
+                            //{
+                            //    index_raw_data = y_raw_data.FindIndex(a => a < point_y + 1e-12 && a > point_y - 1e-12);
+                            //    if (drc_points_x_disable[index] < (point_x + 1e-12) && drc_points_x_disable[index] > (point_x - 1e-12)) test = true;
+
+                            //} while (test == false);
+
+                        }
                     }
                 }
 
