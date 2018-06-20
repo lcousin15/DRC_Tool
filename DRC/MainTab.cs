@@ -233,7 +233,8 @@ namespace DRC
             {
                 string col_name = col.HeaderText;
 
-                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run" && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name!="Status")
+                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run" 
+                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name!="Status")
                 {
                     checkedListBox1.Items.Add(col_name);
                 }
@@ -790,7 +791,9 @@ namespace DRC
                     if (ec_50_status.ContainsKey(descriptor_name)) chart_ec_50_status = ec_50_status[descriptor_name];
                     else chart_ec_50_status = "=";
 
-                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, chart_ec_50_status, this);
+                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color,
+                        descriptor_index, deselected, chart_ec_50_status, this);
+
                     chart_drc.set_Raw_Data(raw_data_rows);
 
                     double[] parameters = chart_drc.get_Fit_Parameters();
@@ -834,6 +837,7 @@ namespace DRC
                 }
 
             }
+
             f2.toolStripProgressBar1.Visible = false;
 
         }
@@ -3623,7 +3627,7 @@ namespace DRC
 
             for (int index_deselect = 0; index_deselect < deselected.Count(); ++index_deselect)
             {
-                if (deselected[index_deselect] == "True")
+                if (deselected[index_deselect] == "TRUE" || deselected[index_deselect] == "True")
                 {
 
                     drc_points_x_disable.Add(x_concentrations_log[index_deselect]);
@@ -3639,20 +3643,22 @@ namespace DRC
                     drc_points_x_enable.RemoveAt(remove_index); //Add(data_chart[i].XValue);
                     drc_points_y_enable.RemoveAt(remove_index); //Add(data_chart[i].YValues[0]);
                 }
-                if (deselected[0] == "Not Fitted")
-                {
-                    not_fitted = true;       // When first element is NOT FITTED all the columns are NOT FITTED (For the current descriptor)
-                    not_fitted_init = true;
-                }
-                else not_fitted_init = false;
-
-                if (deselected[0] == "Inactive")
-                {
-                    inactive = true;
-                    inactive_init = true;
-                }
-                else inactive_init = false;
+                
             }
+
+            if (deselected[0] == "Not Fitted")
+            {
+                not_fitted = true;       // When first element is NOT FITTED all the columns are NOT FITTED (For the current descriptor)
+                not_fitted_init = true;
+            }
+            else not_fitted_init = false;
+
+            if (deselected[0] == "Inactive")
+            {
+                inactive = true;
+                inactive_init = true;
+            }
+            else inactive_init = false;
 
 
             for (int j = 0; j < step_curve; j++)
@@ -3729,7 +3735,7 @@ namespace DRC
             //chart.ChartAreas[0].AxisY.Minimum = -1;
             //chart.ChartAreas[0].AxisY.Maximum = +1;
 
-            //draw_DRC();
+            //draw_DRC(false, false);
 
             fit_DRC();
         }
@@ -3841,6 +3847,8 @@ namespace DRC
 
         public void Is_Modified()
         {
+            draw_DRC(false,false);
+            /*
             int k = 0;
             foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
             {
@@ -3927,7 +3935,7 @@ namespace DRC
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
             }
-
+            */
             //if(is_ec50_exact == true) ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
             //else ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
 
@@ -4225,7 +4233,7 @@ namespace DRC
 
             fit_DRC();
 
-            chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
+            chart.Titles["Title1"].Text = descriptor + " CPD = " + compound_id;
 
             // Draw the first graph
             chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
