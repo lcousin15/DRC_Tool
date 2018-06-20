@@ -22,7 +22,6 @@ using System.Data;
 namespace DRC
 {
 
-
     public partial class MainTab : Form
     {
         //public bool imgCpdsViewOption = false;
@@ -3643,22 +3642,22 @@ namespace DRC
                     drc_points_x_enable.RemoveAt(remove_index); //Add(data_chart[i].XValue);
                     drc_points_y_enable.RemoveAt(remove_index); //Add(data_chart[i].YValues[0]);
                 }
-                
-            }
 
-            if (deselected[0] == "Not Fitted")
-            {
-                not_fitted = true;       // When first element is NOT FITTED all the columns are NOT FITTED (For the current descriptor)
-                not_fitted_init = true;
-            }
-            else not_fitted_init = false;
+                if (deselected[0] == "Not Fitted")
+                {
+                    not_fitted = true;       // When first element is NOT FITTED all the columns are NOT FITTED (For the current descriptor)
+                    not_fitted_init = true;
+                }
+                else not_fitted_init = false;
 
-            if (deselected[0] == "Inactive")
-            {
-                inactive = true;
-                inactive_init = true;
+                if (deselected[0] == "Inactive")
+                {
+                    inactive = true;
+                    inactive_init = true;
+                }
+                else inactive_init = false;
+
             }
-            else inactive_init = false;
 
 
             for (int j = 0; j < step_curve; j++)
