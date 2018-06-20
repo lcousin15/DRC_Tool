@@ -44,6 +44,7 @@
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clusteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pCAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSNEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -169,7 +170,8 @@
             this.exportDataToolStripMenuItem,
             this.exportToolStripMenuItem,
             this.rawDataToolStripMenuItem,
-            this.showImagesToolStripMenuItem});
+            this.showImagesToolStripMenuItem,
+            this.advancedToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -228,6 +230,13 @@
             this.showImagesToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.showImagesToolStripMenuItem.Text = "Check Images";
             this.showImagesToolStripMenuItem.Click += new System.EventHandler(this.checkImagesToolStripMenuItem_Click);
+            // 
+            // advancedToolStripMenuItem
+            // 
+            this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.advancedToolStripMenuItem.Text = "Advanced";
+            this.advancedToolStripMenuItem.Click += new System.EventHandler(this.advancedToolStripMenuItem_Click);
             // 
             // clusteringToolStripMenuItem
             // 
@@ -324,7 +333,7 @@
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(1043, 791);
+            this.comboBox1.Location = new System.Drawing.Point(1041, 399);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(173, 21);
             this.comboBox1.TabIndex = 13;
@@ -351,7 +360,7 @@
             0,
             0,
             65536});
-            this.numericUpDown1.Location = new System.Drawing.Point(1072, 363);
+            this.numericUpDown1.Location = new System.Drawing.Point(1071, 777);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             1,
             0,
@@ -365,16 +374,18 @@
             0,
             0,
             65536});
+            this.numericUpDown1.Visible = false;
             // 
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1093, 344);
+            this.label1.Location = new System.Drawing.Point(1092, 758);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 13);
             this.label1.TabIndex = 16;
             this.label1.Text = "R2 Threshold";
+            this.label1.Visible = false;
             // 
             // button1
             // 
@@ -382,12 +393,13 @@
             this.button1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.button1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(1072, 388);
+            this.button1.Location = new System.Drawing.Point(1071, 802);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 23);
             this.button1.TabIndex = 17;
             this.button1.Text = "Apply";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
@@ -395,23 +407,25 @@
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Location = new System.Drawing.Point(1072, 468);
+            this.button2.Location = new System.Drawing.Point(1072, 554);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 23);
             this.button2.TabIndex = 20;
             this.button2.Text = "Apply";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1084, 423);
+            this.label2.Location = new System.Drawing.Point(1084, 509);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(88, 13);
             this.label2.TabIndex = 19;
             this.label2.Text = "Max-Min Inactive";
+            this.label2.Visible = false;
             // 
             // numericUpDown2
             // 
@@ -422,7 +436,7 @@
             0,
             0,
             65536});
-            this.numericUpDown2.Location = new System.Drawing.Point(1072, 442);
+            this.numericUpDown2.Location = new System.Drawing.Point(1072, 528);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             1,
             0,
@@ -436,6 +450,7 @@
             0,
             0,
             65536});
+            this.numericUpDown2.Visible = false;
             // 
             // button3
             // 
@@ -470,7 +485,7 @@
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button4.Location = new System.Drawing.Point(1072, 731);
+            this.button4.Location = new System.Drawing.Point(1072, 335);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(120, 35);
             this.button4.TabIndex = 25;
@@ -482,7 +497,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(1097, 775);
+            this.label4.Location = new System.Drawing.Point(1091, 383);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(72, 13);
             this.label4.TabIndex = 26;
@@ -493,23 +508,25 @@
             this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button5.Location = new System.Drawing.Point(1072, 548);
+            this.button5.Location = new System.Drawing.Point(1071, 718);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(120, 23);
             this.button5.TabIndex = 29;
             this.button5.Text = "Apply";
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Visible = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // label5
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(1084, 503);
+            this.label5.Location = new System.Drawing.Point(1083, 673);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(92, 13);
             this.label5.TabIndex = 28;
             this.label5.Text = "Median Threshold";
+            this.label5.Visible = false;
             // 
             // numericUpDown4
             // 
@@ -520,7 +537,7 @@
             0,
             0,
             65536});
-            this.numericUpDown4.Location = new System.Drawing.Point(1072, 522);
+            this.numericUpDown4.Location = new System.Drawing.Point(1071, 692);
             this.numericUpDown4.Maximum = new decimal(new int[] {
             10,
             0,
@@ -534,16 +551,18 @@
             0,
             0,
             0});
+            this.numericUpDown4.Visible = false;
             // 
             // label6
             // 
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(1086, 578);
+            this.label6.Location = new System.Drawing.Point(1086, 595);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(89, 13);
             this.label6.TabIndex = 31;
             this.label6.Text = "% Diff Last Points";
+            this.label6.Visible = false;
             // 
             // numericUpDown5
             // 
@@ -554,7 +573,7 @@
             0,
             0,
             131072});
-            this.numericUpDown5.Location = new System.Drawing.Point(1072, 594);
+            this.numericUpDown5.Location = new System.Drawing.Point(1072, 611);
             this.numericUpDown5.Maximum = new decimal(new int[] {
             1,
             0,
@@ -568,18 +587,20 @@
             0,
             0,
             65536});
+            this.numericUpDown5.Visible = false;
             // 
             // button6
             // 
             this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button6.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button6.Location = new System.Drawing.Point(1072, 620);
+            this.button6.Location = new System.Drawing.Point(1072, 637);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(120, 23);
             this.button6.TabIndex = 32;
             this.button6.Text = "Apply";
             this.button6.UseVisualStyleBackColor = true;
+            this.button6.Visible = false;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button7
@@ -587,23 +608,25 @@
             this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button7.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button7.Location = new System.Drawing.Point(1072, 699);
+            this.button7.Location = new System.Drawing.Point(1072, 470);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(120, 23);
             this.button7.TabIndex = 35;
             this.button7.Text = "Apply";
             this.button7.UseVisualStyleBackColor = true;
+            this.button7.Visible = false;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // label7
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(1086, 657);
+            this.label7.Location = new System.Drawing.Point(1086, 428);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(74, 13);
             this.label7.TabIndex = 34;
             this.label7.Text = "Detect Ouliers";
+            this.label7.Visible = false;
             // 
             // numericUpDown6
             // 
@@ -614,7 +637,7 @@
             0,
             0,
             131072});
-            this.numericUpDown6.Location = new System.Drawing.Point(1072, 673);
+            this.numericUpDown6.Location = new System.Drawing.Point(1072, 444);
             this.numericUpDown6.Maximum = new decimal(new int[] {
             1,
             0,
@@ -628,6 +651,7 @@
             0,
             0,
             131072});
+            this.numericUpDown6.Visible = false;
             // 
             // MainTab
             // 
@@ -637,7 +661,10 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1244, 961);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.button7);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.numericUpDown6);
             this.Controls.Add(this.button6);
@@ -646,8 +673,6 @@
             this.Controls.Add(this.button5);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.numericUpDown4);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.button4);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -657,7 +682,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.checkedListBox1);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -733,6 +757,7 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Label label7;
         public System.Windows.Forms.NumericUpDown numericUpDown6;
+        private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
     }
 }
 

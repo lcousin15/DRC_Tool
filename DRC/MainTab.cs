@@ -2934,6 +2934,29 @@ namespace DRC
 
             toolStripProgressBar1.Visible = false;
         }
+
+        private void advancedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            label7.Visible = true;
+            numericUpDown6.Visible = true;
+            button7.Visible = true;
+
+            label2.Visible = true;
+            numericUpDown2.Visible = true;
+            button2.Visible = true;
+
+            label6.Visible = true;
+            numericUpDown5.Visible = true;
+            button6.Visible = true;
+
+            label5.Visible = true;
+            numericUpDown4.Visible = true;
+            button5.Visible = true;
+
+            label1.Visible = true;
+            numericUpDown1.Visible = true;
+            button1.Visible = true;
+        }
     }
 
     public class Chart_DRC_Overlap
