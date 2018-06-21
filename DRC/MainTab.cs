@@ -112,6 +112,7 @@ namespace DRC
 
         private List<string> deslected_data_descriptor;
         private List<string> status_ec_50_descritpor;
+        private List<string> bounds_descriptor;
 
         private string input_filename;
         private string output_filename;
@@ -193,6 +194,7 @@ namespace DRC
             List<string> CPD_ID = new List<string>();
             deslected_data_descriptor = new List<string>();
             status_ec_50_descritpor = new List<string>();
+            bounds_descriptor = new List<string>();
 
             if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
                 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
@@ -233,7 +235,8 @@ namespace DRC
                 string col_name = col.HeaderText;
 
                 if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run"
-                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name != "Status")
+                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") 
+                    && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound"))
                 {
                     checkedListBox1.Items.Add(col_name);
                 }
@@ -246,6 +249,11 @@ namespace DRC
                 if (col_name.StartsWith("Status"))
                 {
                     status_ec_50_descritpor.Add(col_name);
+                }
+
+                if (col_name.StartsWith("Bound"))
+                {
+                    bounds_descriptor.Add(col_name);
                 }
             }
 
@@ -641,6 +649,7 @@ namespace DRC
                 List<double> concentrations_log = new List<double>();
 
                 Dictionary<string, string> ec_50_status = new Dictionary<string, string>();
+                Dictionary<string, Dictionary<string, double>> fit_bounds = new Dictionary<string, Dictionary<string, double>>();
 
                 List<DataGridViewRow> raw_data_rows = new List<DataGridViewRow>();
 
@@ -695,6 +704,36 @@ namespace DRC
                             ec_50_status[descriptor_name] = row.Cells["Status_" + descriptor_name].Value.ToString();
                         }
 
+                        foreach (string item in bounds_descriptor)
+                        {
+                            string name = item.ToString();
+                            string descriptor_name = name.Remove(0, 12);
+                            string bound_name = name.Remove(0, 6);
+                            int len = bound_name.Length;
+                            bound_name = bound_name.Remove(5, len-5);
+
+                            if(fit_bounds.ContainsKey(descriptor_name))
+                            {
+                                Dictionary<string, double> bnd_temp = fit_bounds[descriptor_name];
+                                if (bnd_temp.ContainsKey(bound_name))
+                                {
+                                    fit_bounds[descriptor_name][bound_name] = Double.Parse(row.Cells[name].Value.ToString());
+                                }
+                                else
+                                {
+                                    bnd_temp.Add(bound_name, Double.Parse(row.Cells[name].Value.ToString()));
+                                }
+                            }
+                            else
+                            {
+                                Dictionary<string, Double> bnd_temp = new Dictionary<string, double>();
+                                bnd_temp.Add(bound_name, Double.Parse(row.Cells[name].Value.ToString()));
+
+                                fit_bounds.Add(descriptor_name, bnd_temp);
+                            }
+                            
+                        }
+
                         concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
                         concentrations_log.Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
                     }
@@ -736,6 +775,10 @@ namespace DRC
                 {
                     string descriptor_name = item.Key;
                     List<double> data = item.Value;
+
+                    Dictionary<string, double> bounds = new Dictionary<string, double>();
+
+                    if (fit_bounds.ContainsKey(descriptor_name)) bounds = fit_bounds[descriptor_name];
 
                     //List<Color> myColors = typeof(Color).GetProperties(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
                     //     .Select(c => (Color)c.GetValue(null, null))
@@ -791,7 +834,7 @@ namespace DRC
                     else chart_ec_50_status = "=";
 
                     Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color,
-                        descriptor_index, deselected, chart_ec_50_status, this);
+                        descriptor_index, deselected, chart_ec_50_status, bounds, this);
 
                     chart_drc.set_Raw_Data(raw_data_rows);
 
@@ -913,6 +956,38 @@ namespace DRC
 
                 }
 
+                List<string> bnds_type = new List<string>();
+                bnds_type.Add("min_x");
+                bnds_type.Add("max_x");
+                bnds_type.Add("min_y");
+                bnds_type.Add("max_y");
+
+                for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
+                {
+
+                    foreach (string type in bnds_type)
+                    {
+                        string column_name = "Bound_" + type + "_" + descriptor_list[descriptor_index];
+
+                        if (f3.dataGridView1.Columns.Contains(column_name))
+                        {
+                            foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
+                            {
+                                myRow.Cells[column_name].Value = null;
+                            }
+
+                            f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                        }
+                        else
+                        {
+                            dataGridView4.ColumnCount += 1;
+                            dataGridView4.Columns[col_index].Name = column_name;
+                            col_index++;
+                        }
+                    }
+                }
+               
+
                 for (var idx = 0; idx < list_cpd.Count; idx++)
                 {
                     string cpd_id = list_cpd[idx].ToString();
@@ -988,6 +1063,69 @@ namespace DRC
                             DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
                             if (status_ec_50) newCell.Value = "=";
                             else newCell.Value = ">";
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+                    }
+
+                    foreach (Chart_DRC current_chart in list_chart)
+                    {
+                        string descriptor_name = current_chart.get_Descriptor_Name();
+
+                        List<bool> removed_raw_data_cpd = new List<bool>();
+
+                        removed_raw_data_cpd = current_chart.get_Removed_Raw_Data().ToList();
+
+                        double bound_x_min = current_chart.get_min_bound_x();
+                        double bound_y_min = current_chart.get_min_bound_y();
+
+                        double bound_x_max = current_chart.get_max_bound_x();
+                        double bound_y_max = current_chart.get_max_bound_y();
+
+                        int k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = bound_x_min;
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+
+                        k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = bound_x_max;
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+
+                        k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = bound_y_min;
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+
+                        k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = bound_y_max;
 
                             chart_row_data[k].Cells.Add(newCell);
 
@@ -3468,6 +3606,9 @@ namespace DRC
         private double min_bound_y = 0.0;
         private double max_bound_y = 0.0;
 
+        private Dictionary<string, double> fit_bounds;
+
+        private bool manual_bounds = false;
         private bool bound_auto = true;
 
         public void set_bound_status(bool status)
@@ -3498,21 +3639,25 @@ namespace DRC
         public void set_min_bound_x(double x_min)
         {
             min_bound_x = x_min;
+            manual_bounds = true;
         }
 
         public void set_max_bound_x(double x_max)
         {
             max_bound_x = x_max;
+            manual_bounds = true;
         }
 
         public void set_min_bound_y(double y_min)
         {
             min_bound_y = y_min;
+            manual_bounds = true;
         }
 
         public void set_max_bound_y(double y_max)
         {
             max_bound_y = y_max;
+            manual_bounds = true;
         }
 
         public bool check_ec50_exact()
@@ -3592,7 +3737,7 @@ namespace DRC
         }
 
         public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
-            int index, List<string> deselected, string ec_50_status, MainTab form)
+            int index, List<string> deselected, string ec_50_status, Dictionary<string,double> bounds, MainTab form)
         {
             _form1 = form;
 
@@ -3602,6 +3747,9 @@ namespace DRC
             descriptor = descript;
             step_curve = step;
             chart_color = color;
+
+            fit_bounds = bounds;
+            if (fit_bounds.Count() > 0) set_bound_status(false);
 
             not_fitted = false;
             data_modified = false;
@@ -3818,6 +3966,15 @@ namespace DRC
 
                 min_bound_x = Math.Log10(MaxConcentrationLin) + 1.0;
                 max_bound_x = Math.Log10(MinConcentrationLin) - 1.0;
+            }
+
+            if(fit_bounds.Count()>0 && manual_bounds==false)
+            {
+                min_bound_y = fit_bounds["min_y"];
+                max_bound_y = fit_bounds["max_y"];
+
+                min_bound_x = fit_bounds["min_x"];
+                max_bound_x = fit_bounds["max_x"];
             }
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
