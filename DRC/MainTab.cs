@@ -3642,8 +3642,23 @@ namespace DRC
 
                     double point_y = y_response[index_deselect];
 
-                    int remove_index = drc_points_y_enable.FindIndex(a => a < point_y + .000001 && a > point_y - .000001);
+                    //int remove_index = drc_points_y_enable.FindIndex(a => a < point_y + .000001 && a > point_y - .000001);
 
+                    int remove_index = 0;
+
+                    List<int> indices = new List<int>();
+                    for (int i = 0; i < drc_points_y_enable.Count(); i++)
+                        if (drc_points_y_enable[i] < point_y + 1e-12 && drc_points_y_enable[i] > point_y - 1e-12)
+                            indices.Add(i);
+
+                    foreach (int idx in indices)
+                    {
+                        if (drc_points_x_enable[idx] < (x_concentrations_log[index_deselect] + 1e-12) && drc_points_x_enable[idx] > (x_concentrations_log[index_deselect] - 1e-12))
+                        {
+                            remove_index = idx;
+                            break;
+                        }
+                    }
 
                     drc_points_x_enable.RemoveAt(remove_index); //Add(data_chart[i].XValue);
                     drc_points_y_enable.RemoveAt(remove_index); //Add(data_chart[i].YValues[0]);
@@ -4170,16 +4185,52 @@ namespace DRC
                         // Remove Points enabled
                         if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(y_val)))
                         {
+
+                            int index = 0;
+
+                            List<int> indices = new List<int>();
+                            for (int i = 0; i < drc_points_y_enable.Count(); i++)
+                                if (drc_points_y_enable[i] < y_val + 1e-12 && drc_points_y_enable[i] > y_val - 1e-12)
+                                    indices.Add(i);
+
+                            foreach (int idx in indices)
+                            {
+                                if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
+                                {
+                                    index = idx;
+                                    break;
+                                }
+                            }
+
+                            //int index = drc_points_y_enable.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+
                             drc_points_x_disable.Add(point_x);
                             drc_points_y_disable.Add(y_val);
-
-                            int index = drc_points_y_enable.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
 
                             drc_points_x_enable.RemoveAt(index);
                             drc_points_y_enable.RemoveAt(index);
 
-                            int index_raw_data = y_raw_data.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+                            int index_raw_data = 0;
+
+                            List<int> indices_raw = new List<int>();
+
+                            for (int i = 0; i < y_raw_data.Count(); i++)
+                                if (y_raw_data[i] < y_val + 1e-12 && y_raw_data[i] > y_val - 1e-12)
+                                    indices_raw.Add(i);
+
+                            foreach (int idx in indices_raw)
+                            {
+                                if (x_raw_data[idx] < (point_x + 1e-12) && x_raw_data[idx] > (point_x - 1e-12))
+                                {
+                                    index_raw_data = idx;
+                                    break;
+                                }
+                            }
+
                             is_raw_data_removed[index_raw_data] = true;
+
+                            //int index_raw_data = y_raw_data.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+                            //is_raw_data_removed[index_raw_data] = true;
                         }
                     }
                 }
@@ -5213,10 +5264,26 @@ namespace DRC
                     // Remove Points enabled
                     if (!(drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && point_exclusion)
                     {
+                        //int index = drc_points_y_enable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+
+                        int index = 0;
+
+                        List<int> indices = new List<int>();
+                        for (int j = 0; j < drc_points_y_enable.Count(); j++)
+                            if (drc_points_y_enable[j] < current_y + 1e-12 && drc_points_y_enable[j] > current_y - 1e-12)
+                                indices.Add(j);
+
+                        foreach (int idx in indices)
+                        {
+                            if (drc_points_x_enable[idx] < (x_points + 1e-12) && drc_points_x_enable[idx] > (x_points - 1e-12))
+                            {
+                                index = idx;
+                                break;
+                            }
+                        }
+
                         drc_points_x_disable.Add(x_points);
                         drc_points_y_disable.Add(current_y);
-
-                        int index = drc_points_y_enable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
 
                         drc_points_x_enable.RemoveAt(index); //Add(data_chart[i].XValue);
                         drc_points_y_enable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
@@ -5228,18 +5295,53 @@ namespace DRC
                     }
                     else if ((drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && !point_exclusion)
                     {
+                        //int index = drc_points_y_disable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+
+                        int index = 0;
+
+                        List<int> indices = new List<int>();
+                        for (int j = 0; j < drc_points_y_disable.Count(); j++)
+                            if (drc_points_y_disable[j] < current_y + 1e-12 && drc_points_y_disable[j] > current_y - 1e-12)
+                                indices.Add(j);
+
+                        foreach (int idx in indices)
+                        {
+                            if (drc_points_x_disable[idx] < (x_points + 1e-12) && drc_points_x_disable[idx] > (x_points - 1e-12))
+                            {
+                                index = idx;
+                                break;
+                            }
+                        }
+
                         drc_points_x_enable.Add(x_points);
                         drc_points_y_enable.Add(current_y);
-
-                        int index = drc_points_y_disable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
 
                         drc_points_x_disable.RemoveAt(index); //Add(data_chart[i].XValue);
                         drc_points_y_disable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
 
                         //chart.Series["Series1"].Points[point_index].Color = Color.LightGray;
 
-                        int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
-                        is_raw_data_removed[index_raw_data] = false;
+                        int index_raw_data = 0;
+
+                        List<int> indices_raw = new List<int>();
+
+                        for (int j = 0; j < y_raw_data.Count(); j++)
+                            if (y_raw_data[j] < current_y + 1e-12 && y_raw_data[j] > current_y - 1e-12)
+                                indices_raw.Add(j);
+
+                        foreach (int idx in indices_raw)
+                        {
+                            if (x_raw_data[idx] < (x_points + 1e-12) && x_raw_data[idx] > (x_points - 1e-12))
+                            {
+                                index_raw_data = idx;
+                                break;
+                            }
+                        }
+
+                        is_raw_data_removed[index_raw_data] = true;
+
+                        //int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+                        //is_raw_data_removed[index_raw_data] = false;
 
                     }
                 }
