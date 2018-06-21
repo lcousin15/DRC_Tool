@@ -235,7 +235,7 @@ namespace DRC
                 string col_name = col.HeaderText;
 
                 if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run"
-                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") 
+                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected")
                     && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound"))
                 {
                     checkedListBox1.Items.Add(col_name);
@@ -710,9 +710,9 @@ namespace DRC
                             string descriptor_name = name.Remove(0, 12);
                             string bound_name = name.Remove(0, 6);
                             int len = bound_name.Length;
-                            bound_name = bound_name.Remove(5, len-5);
+                            bound_name = bound_name.Remove(5, len - 5);
 
-                            if(fit_bounds.ContainsKey(descriptor_name))
+                            if (fit_bounds.ContainsKey(descriptor_name))
                             {
                                 Dictionary<string, double> bnd_temp = fit_bounds[descriptor_name];
                                 if (bnd_temp.ContainsKey(bound_name))
@@ -731,7 +731,7 @@ namespace DRC
 
                                 fit_bounds.Add(descriptor_name, bnd_temp);
                             }
-                            
+
                         }
 
                         concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
@@ -898,12 +898,32 @@ namespace DRC
                 DataGridView dataGridView4 = new DataGridView();
                 dataGridView4.ColumnCount = f3.dataGridView1.ColumnCount; // + descritpor_number;
 
+                List<string> col_to_remove = new List<string>();
+
                 int col_index = 0;
                 foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                 {
+                    if (col.Name.StartsWith("Status_") || col.Name.StartsWith("Bound_") || col.Name.StartsWith("Deselected_"))
+                    {
+                        col_to_remove.Add(col.Name);
+                        continue;
+                    }
+
                     dataGridView4.Columns[col_index].Name = col.Name;
                     col_index++;
                 }
+
+                foreach(string col_name in col_to_remove)
+                {
+                    foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
+                    {
+                        myRow.Cells[col_name].Value = null;
+                    }
+
+                    f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[col_name]);
+                }
+
+                dataGridView4.ColumnCount = col_index; // + descritpor_number;
 
                 //int col_already_present = 0;
                 //int new_columns = 0;
@@ -920,7 +940,7 @@ namespace DRC
                         }
 
                         //col_already_present++;
-                        f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                        //f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
                         //dataGridView4.ColumnCount -= 1;
                     }
                     else
@@ -945,7 +965,7 @@ namespace DRC
                             myRow.Cells[column_name].Value = null;
                         }
 
-                        f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                        //f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
                     }
                     else
                     {
@@ -976,7 +996,7 @@ namespace DRC
                                 myRow.Cells[column_name].Value = null;
                             }
 
-                            f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                            //f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
                         }
                         else
                         {
@@ -986,7 +1006,6 @@ namespace DRC
                         }
                     }
                 }
-               
 
                 for (var idx = 0; idx < list_cpd.Count; idx++)
                 {
@@ -3737,7 +3756,7 @@ namespace DRC
         }
 
         public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
-            int index, List<string> deselected, string ec_50_status, Dictionary<string,double> bounds, MainTab form)
+            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, MainTab form)
         {
             _form1 = form;
 
@@ -3968,7 +3987,7 @@ namespace DRC
                 max_bound_x = Math.Log10(MinConcentrationLin) - 1.0;
             }
 
-            if(fit_bounds.Count()>0 && manual_bounds==false)
+            if (fit_bounds.Count() > 0 && manual_bounds == false)
             {
                 min_bound_y = fit_bounds["min_y"];
                 max_bound_y = fit_bounds["max_y"];
@@ -4241,8 +4260,8 @@ namespace DRC
 
                 if (diff_top_last_point >= thr_2_last_points * Math.Abs(top - bottom) || diff_top_last_point2 >= thr_2_last_points * Math.Abs(top - bottom))
                 {
-                    Console.WriteLine("Concentration = " + compound_id);
-                    Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * Math.Abs(top - bottom));
+                    //Console.WriteLine("Concentration = " + compound_id);
+                    //Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * Math.Abs(top - bottom));
 
                     draw_DRC(false, false);
 
