@@ -4811,6 +4811,26 @@ namespace DRC
 
                             //point_last_change[data_point_idx] = true;
                             counter_point_changed--;
+
+                            int index_raw_data = 0;
+
+                            List<int> indices_raw = new List<int>();
+
+                            for (int i = 0; i < y_raw_data.Count(); i++)
+                                if (y_raw_data[i] < point_y + 1e-12 && y_raw_data[i] > point_y - 1e-12)
+                                    indices_raw.Add(i);
+
+                            foreach (int idx in indices_raw)
+                            {
+                                if (x_raw_data[idx] < (point_x + 1e-12) && x_raw_data[idx] > (point_x - 1e-12))
+                                {
+                                    index_raw_data = idx;
+                                    break;
+                                }
+                            }
+
+                            is_raw_data_removed[index_raw_data] = false;
+
                         }
                     }
                 }
@@ -5466,7 +5486,23 @@ namespace DRC
 
                         //chart.Series["Series1"].Points[point_index].Color = Color.LightGray;
 
-                        int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+                        int index_raw_data = 0;
+
+                        List<int> indices_raw = new List<int>();
+
+                        for (int j = 0; j < y_raw_data.Count(); j++)
+                            if (y_raw_data[j] < current_y + 1e-12 && y_raw_data[j] > current_y - 1e-12)
+                                indices_raw.Add(j);
+
+                        foreach (int idx in indices_raw)
+                        {
+                            if (x_raw_data[idx] < (x_points + 1e-12) && x_raw_data[idx] > (x_points - 1e-12))
+                            {
+                                index_raw_data = idx;
+                                break;
+                            }
+                        }
+
                         is_raw_data_removed[index_raw_data] = true;
                     }
                     else if ((drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && !point_exclusion)
@@ -5514,7 +5550,7 @@ namespace DRC
                             }
                         }
 
-                        is_raw_data_removed[index_raw_data] = true;
+                        is_raw_data_removed[index_raw_data] = false;
 
                         //int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
                         //is_raw_data_removed[index_raw_data] = false;
