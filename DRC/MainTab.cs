@@ -85,7 +85,7 @@ namespace DRC
         public ViewList_CPD_Tab f11;
         public ViewImages_Options_Tab f13;
         public CPD_Time_Line TimeLine;
-
+        public Export_Tab f5;
 
         public void SetForm()
         {
@@ -94,11 +94,11 @@ namespace DRC
             f10 = new DRC_Overlap_Tab(this);
             f11 = new ViewList_CPD_Tab(this);
             TimeLine = new CPD_Time_Line(this);
+            f5 = new Export_Tab(this);
         }
 
         public RawData_Tab f3 = new RawData_Tab();
         public RawDataDRC_Tab f4 = new RawDataDRC_Tab();
-        public Export_Tab f5 = new Export_Tab();
         public Correlations_Tab f7 = new Correlations_Tab();
 
         public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
@@ -167,6 +167,8 @@ namespace DRC
         public bool set_param_cpd = false;
 
         List<Color> curve_color = new List<Color>();
+
+        //public Dictionary<string, List<string>> list_img_path_by_cpd = new Dictionary<string, List<string>>();
 
         public int get_descriptors_number()
         {
@@ -411,6 +413,12 @@ namespace DRC
 
         }
 
+        private static Image LoadImageNoLock(string path)
+        {
+            var stream = new MemoryStream(File.ReadAllBytes(path));
+            return Image.FromStream(stream);
+        }
+
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //check_last_points();
@@ -493,7 +501,7 @@ namespace DRC
                         double current_top = fit_params[1];
                         double current_ec_50 = fit_params[2];
 
-                        Image image = Image.FromFile(list_images[i_img]);
+                        Image image = LoadImageNoLock(list_images[i_img]);
 
                         //f5.dataGridViewExport.Rows[index].Height = 
                         f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 1].Value = image;
@@ -549,6 +557,8 @@ namespace DRC
 
                     }
 
+                    foreach (string current_path in list_images) File.Delete(current_path);
+                    //list_img_path_by_cpd.Add(cpd_id, list_images);
                 }
 
                 toolStripProgressBar1.Visible = false;
@@ -913,7 +923,7 @@ namespace DRC
                     col_index++;
                 }
 
-                foreach(string col_name in col_to_remove)
+                foreach (string col_name in col_to_remove)
                 {
                     foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
                     {

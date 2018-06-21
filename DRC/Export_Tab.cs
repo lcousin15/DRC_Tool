@@ -20,9 +20,12 @@ namespace DRC
 {
     public partial class Export_Tab : Form
     {
-        public Export_Tab()
+        MainTab _main_tab;
+
+        public Export_Tab(MainTab main_tab)
         {
             InitializeComponent();
+            _main_tab = main_tab;
         }
         //public Progress progress;
         public static Bitmap ResizeImage(Image image, int width, int height)
@@ -464,6 +467,8 @@ namespace DRC
                 toolStripProgressBar1.Visible = false;
                 pck.SaveAs(new FileInfo(@"" + sfd.FileName));
 
+                pck.Dispose();
+
                 MessageBox.Show("Export Successful");
 
             }
@@ -564,5 +569,24 @@ namespace DRC
             }
         }
 
+        private void Export_Tab_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            /*
+            foreach (KeyValuePair<string, List<string>> item in _main_tab.list_img_path_by_cpd)
+            {
+                dataGridViewExport.Rows.Clear();
+                dataGridViewExport.Refresh();
+                dataGridViewExport.Dispose();
+
+                List<string> list_path = item.Value;
+
+                foreach (string current_path in list_path)
+                {
+                    File.Delete(current_path);
+                }
+
+            }
+            */ 
+        }
     }
 }
