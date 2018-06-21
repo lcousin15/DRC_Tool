@@ -4396,7 +4396,7 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (x_raw_data[idx] < (point_x + 1e-12) && x_raw_data[idx] > (point_x - 1e-12))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
                                 {
                                     index_raw_data = idx;
                                     break;
@@ -4822,7 +4822,7 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (x_raw_data[idx] < (point_x + 1e-12) && x_raw_data[idx] > (point_x - 1e-12))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
                                 {
                                     index_raw_data = idx;
                                     break;
@@ -4882,7 +4882,7 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (x_raw_data[idx] < (point_x + 1e-12) && x_raw_data[idx] > (point_x - 1e-12))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
                                 {
                                     index_raw_data = idx;
                                     break;
@@ -5496,7 +5496,7 @@ namespace DRC
 
                         foreach (int idx in indices_raw)
                         {
-                            if (x_raw_data[idx] < (x_points + 1e-12) && x_raw_data[idx] > (x_points - 1e-12))
+                            if (Math.Log10(x_raw_data[idx]) < (x_points + 1e-4) && Math.Log10(x_raw_data[idx]) > (x_points - 1e-4))
                             {
                                 index_raw_data = idx;
                                 break;
@@ -5543,7 +5543,7 @@ namespace DRC
 
                         foreach (int idx in indices_raw)
                         {
-                            if (x_raw_data[idx] < (x_points + 1e-12) && x_raw_data[idx] > (x_points - 1e-12))
+                            if (Math.Log10(x_raw_data[idx]) < (x_points + 1e-4) && Math.Log10(x_raw_data[idx]) > (x_points - 1e-4))
                             {
                                 index_raw_data = idx;
                                 break;
