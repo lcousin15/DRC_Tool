@@ -3645,6 +3645,11 @@ namespace DRC
             bound_auto = status;
         }
 
+        public void set_manual_bound(bool status)
+        {
+            manual_bounds = status;
+        }
+
         public double get_min_bound_x()
         {
             return min_bound_x;

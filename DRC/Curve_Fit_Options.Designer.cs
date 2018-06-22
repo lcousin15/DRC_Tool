@@ -38,13 +38,14 @@
             this.txt_min_bound_y = new System.Windows.Forms.TextBox();
             this.txt_max_bound_x = new System.Windows.Forms.TextBox();
             this.txt_min_bound_x = new System.Windows.Forms.TextBox();
+            this.btn_reset = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_OK
             // 
-            this.btn_OK.Location = new System.Drawing.Point(111, 119);
+            this.btn_OK.Location = new System.Drawing.Point(30, 148);
             this.btn_OK.Name = "btn_OK";
-            this.btn_OK.Size = new System.Drawing.Size(75, 23);
+            this.btn_OK.Size = new System.Drawing.Size(156, 23);
             this.btn_OK.TabIndex = 21;
             this.btn_OK.Text = "Ok";
             this.btn_OK.UseVisualStyleBackColor = true;
@@ -124,11 +125,22 @@
             this.txt_min_bound_x.Size = new System.Drawing.Size(100, 20);
             this.txt_min_bound_x.TabIndex = 11;
             // 
+            // btn_reset
+            // 
+            this.btn_reset.Location = new System.Drawing.Point(111, 119);
+            this.btn_reset.Name = "btn_reset";
+            this.btn_reset.Size = new System.Drawing.Size(75, 23);
+            this.btn_reset.TabIndex = 22;
+            this.btn_reset.Text = "Reset";
+            this.btn_reset.UseVisualStyleBackColor = true;
+            this.btn_reset.Click += new System.EventHandler(this.btn_reset_Click);
+            // 
             // Curve_Fit_Options
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(215, 152);
+            this.ClientSize = new System.Drawing.Size(215, 181);
+            this.Controls.Add(this.btn_reset);
             this.Controls.Add(this.btn_OK);
             this.Controls.Add(this.btn_apply);
             this.Controls.Add(this.lbl_max_bound_y);
@@ -158,5 +170,6 @@
         private System.Windows.Forms.TextBox txt_min_bound_y;
         private System.Windows.Forms.TextBox txt_max_bound_x;
         private System.Windows.Forms.TextBox txt_min_bound_x;
+        private System.Windows.Forms.Button btn_reset;
     }
 }
