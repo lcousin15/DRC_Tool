@@ -132,6 +132,11 @@ namespace DRC
             return cpd_clustering;
         }
 
+        public List<string> get_descriptor_list()
+        {
+            return descriptor_list;
+        }
+
         CachedCsvReader csv;
 
         private bool is_with_plate;
@@ -1271,7 +1276,7 @@ namespace DRC
                 {
                     if (j != 0 && j < f2.dataGridView2.Columns.Count && i < f2.dataGridView2.Rows.Count - 1 && !(f2.dataGridView2.Columns[j].Name.Contains("R2")))
                     {
-                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted" || f2.dataGridView2.Rows[i].Cells[j].Value != "Inactive")
+                        if ((f2.dataGridView2.Rows[i].Cells[j].Value.ToString() != "Not Fitted") || (f2.dataGridView2.Rows[i].Cells[j].Value.ToString() != "Inactive"))
                         {
                             current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
                         }
@@ -1368,7 +1373,7 @@ namespace DRC
                 {
                     if (j != 0 && j < f2.dataGridView2.Columns.Count && i < f2.dataGridView2.Rows.Count - 1 && !(f2.dataGridView2.Columns[j].Name.Contains("R2")))
                     {
-                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted" || f2.dataGridView2.Rows[i].Cells[j].Value != "Inactive") current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
+                        if ((f2.dataGridView2.Rows[i].Cells[j].Value.ToString() != "Not Fitted") || (f2.dataGridView2.Rows[i].Cells[j].Value.ToString() != "Inactive")) current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
                         else current_row.Add(-1);
                     }
                 }
@@ -3192,27 +3197,6 @@ namespace DRC
 
                 int counter = 0;
 
-                // Fill the text boxes with the values of the first cpd.
-
-                //                public double get_min_bound_x()
-                //{
-                //    return min_bound_x;
-                //}
-
-                //public double get_max_bound_x()
-                //{
-                //    return max_bound_x;
-                //}
-
-                //public double get_min_bound_y()
-                //{
-                //    return min_bound_y;
-                //}
-
-                //public double get_max_bound_y()
-                //{
-                //    return max_bound_y;
-                //}
                 List<Chart_DRC> list_chart = descriptors_chart[descriptors_chart.First().Key];
 
                 foreach (Chart_DRC current_chart in list_chart)
@@ -3222,21 +3206,21 @@ namespace DRC
                     Label new_label = new Label();
                     new_label.Location = new Point(10, 20 + (counter + 1) * 25);
                     new_label.Text = descritpor_name;
-                    new_label.Name = "lbl_descriptor_" + counter.ToString();
+                    new_label.Name = "lbl_descriptor_" + descritpor_name;
                     new_label.AutoSize = true;
 
                     descriptors_general_options_form.Controls.Add(new_label);
 
                     TextBox text_box_bnd_min_x = new TextBox();
                     text_box_bnd_min_x.Location = new Point(90, 15 + (counter + 1) * 25);
-                    text_box_bnd_min_x.Name = "txt_box_bnd_min_x_descriptor_" + counter.ToString();
+                    text_box_bnd_min_x.Name = "txt_box_bnd_min_x_descriptor_" + descritpor_name;
                     text_box_bnd_min_x.Text = current_chart.get_min_bound_x().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_min_x);
 
                     TextBox text_box_bnd_max_x = new TextBox();
                     text_box_bnd_max_x.Location = new Point(240, 15 + (counter + 1) * 25);
-                    text_box_bnd_max_x.Name = "txt_box_bnd_max_x_descriptor_" + counter.ToString();
+                    text_box_bnd_max_x.Name = "txt_box_bnd_max_x_descriptor_" + descritpor_name;
                     text_box_bnd_max_x.Text = current_chart.get_max_bound_x().ToString();
 
 
@@ -3244,14 +3228,14 @@ namespace DRC
 
                     TextBox text_box_bnd_min_y = new TextBox();
                     text_box_bnd_min_y.Location = new Point(390, 15 + (counter + 1) * 25);
-                    text_box_bnd_min_y.Name = "txt_box_bnd_min_y_descriptor_" + counter.ToString();
+                    text_box_bnd_min_y.Name = "txt_box_bnd_min_y_descriptor_" + descritpor_name;
                     text_box_bnd_min_y.Text = current_chart.get_min_bound_y().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_min_y);
 
                     TextBox text_box_bnd_max_y = new TextBox();
                     text_box_bnd_max_y.Location = new Point(540, 15 + (counter + 1) * 25);
-                    text_box_bnd_max_y.Name = "txt_box_bnd_max_y_descriptor_" + counter.ToString();
+                    text_box_bnd_max_y.Name = "txt_box_bnd_max_y_descriptor_" + descritpor_name;
                     text_box_bnd_max_y.Text = current_chart.get_max_bound_y().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_max_y);
@@ -3296,31 +3280,36 @@ namespace DRC
                     Label new_label = new Label();
                     new_label.Location = new Point(10, 45 + (counter + 1) * 25);
                     new_label.Text = descritpor_name;
+                    new_label.Name = "lbl_window_descriptor_" + descritpor_name;
                     new_label.AutoSize = true;
 
                     descriptors_general_options_form.Controls.Add(new_label);
 
                     TextBox text_box_window_min_x = new TextBox();
                     text_box_window_min_x.Location = new Point(90, 40 + (counter + 1) * 25);
-                    text_box_window_min_x.Name = "txt_box_window_min_x_descriptor_" + counter.ToString();
+                    text_box_window_min_x.Name = "txt_box_window_min_x_descriptor_" + descritpor_name;
+                    text_box_window_min_x.Text = current_chart.get_window_x_min().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_min_x);
 
                     TextBox text_box_window_max_x = new TextBox();
                     text_box_window_max_x.Location = new Point(240, 40 + (counter + 1) * 25);
-                    text_box_window_max_x.Name = "txt_box_window_max_x_descriptor_" + counter.ToString();
+                    text_box_window_max_x.Name = "txt_box_window_max_x_descriptor_" + descritpor_name;
+                    text_box_window_max_x.Text = current_chart.get_window_x_max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_max_x);
 
                     TextBox text_box_window_min_y = new TextBox();
                     text_box_window_min_y.Location = new Point(390, 40 + (counter + 1) * 25);
-                    text_box_window_min_y.Name = "txt_box_window_min_y_descriptor_" + counter.ToString();
+                    text_box_window_min_y.Name = "txt_box_window_min_y_descriptor_" + descritpor_name;
+                    text_box_window_min_y.Text = current_chart.get_window_y_min().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_min_y);
 
                     TextBox text_box_window_max_y = new TextBox();
                     text_box_window_max_y.Location = new Point(540, 40 + (counter + 1) * 25);
-                    text_box_window_max_y.Name = "txt_box_window_max_y_descriptor_" + counter.ToString();
+                    text_box_window_max_y.Name = "txt_box_window_max_y_descriptor_" + descritpor_name;
+                    text_box_window_max_y.Text = current_chart.get_window_y_max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_max_y);
 
@@ -3331,9 +3320,32 @@ namespace DRC
             }
         }
 
-        public void apply_descritpor_general_options()
+        public void apply_descritpor_general_options(double bnd_min_x, double bnd_max_x, double bnd_min_y, double bnd_max_y,
+                double window_min_x, double window_max_x, double window_min_y, double window_max_y)
         {
-            return;
+            foreach(KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
+            {
+                string cpd_id = elem.Key;
+                List<Chart_DRC> cpd_charts = elem.Value;
+
+                foreach(Chart_DRC current_chart in cpd_charts)
+                {
+                    current_chart.set_general_params(true);
+
+                    current_chart.set_min_bound_x(bnd_min_x);
+                    current_chart.set_max_bound_x(bnd_max_x);
+                    current_chart.set_min_bound_y(bnd_min_y);
+                    current_chart.set_max_bound_y(bnd_max_y);
+
+                    current_chart.set_window_x_min(window_min_x);
+                    current_chart.set_window_x_max(window_max_x);
+                    current_chart.set_window_y_min(window_min_y);
+                    current_chart.set_window_y_max(window_max_y);
+
+                    current_chart.fit_DRC();
+                }
+            }
+
         }
     }
 
@@ -3801,7 +3813,7 @@ namespace DRC
         private List<double> x_fit;
         private List<double> x_fit_log;
 
-        private List<double> y_fit_;
+        //private List<double> y_fit;
         private List<double> y_fit_log;
 
         private int step_curve;
@@ -3837,6 +3849,8 @@ namespace DRC
 
         private double minX = -1;
         private double maxX = -1;
+        private double minY = 0.0;
+        private double maxY = 1.0;
 
         private double min_bound_x = 0.0;
         private double max_bound_x = 0.0;
@@ -3847,6 +3861,13 @@ namespace DRC
 
         private bool manual_bounds = false;
         private bool bound_auto = true;
+
+        private bool general_params;
+
+        public void set_general_params(bool test)
+        {
+            general_params = test;
+        }
 
         public void set_bound_status(bool status)
         {
@@ -3900,6 +3921,46 @@ namespace DRC
         {
             max_bound_y = y_max;
             manual_bounds = true;
+        }
+
+        public double get_window_x_min()
+        {
+            return minX;
+        }
+
+        public double get_window_x_max()
+        {
+            return maxX;
+        }
+
+        public double get_window_y_min()
+        {
+            return minY;
+        }
+
+        public double get_window_y_max()
+        {
+            return maxY;
+        }
+
+        public void set_window_x_min(double min_x)
+        {
+            minX = min_x;
+        }
+
+        public void set_window_x_max(double max_x)
+        {
+            maxX = max_x;
+        }
+
+        public void set_window_y_min(double min_y)
+        {
+            minY = min_y;
+        }
+
+        public void set_window_y_max(double max_y)
+        {
+            maxY = max_y;
         }
 
         public bool check_ec50_exact()
@@ -4147,6 +4208,8 @@ namespace DRC
 
             //draw_DRC(false, false);
 
+            general_params = false;
+
             fit_DRC();
         }
 
@@ -4178,7 +4241,7 @@ namespace DRC
             return y;
         }
 
-        private void fit_DRC()
+        public void fit_DRC()
         {
             double GlobalMax = double.MinValue;
             double MaxValues = MaxA(drc_points_y_enable.ToArray());
@@ -4218,6 +4281,7 @@ namespace DRC
                 min_bound_x = fit_bounds["min_x"];
                 max_bound_x = fit_bounds["max_x"];
             }
+            
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
             double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
@@ -4714,11 +4778,33 @@ namespace DRC
                 min_x = -8.0;
             }
 
-            if (minX < -0.5) minX = Math.Pow(10, min_x);
-            else minX = chart.ChartAreas[0].AxisX.Minimum;
+            if (general_params == false)
+            {
+                if (minX < -0.5)
+                {
+                    minX = Math.Pow(10, min_x); // initialized at -1. <-0.5 to test if it is the first filled values
+                }
+                else
+                {
+                    minX = chart.ChartAreas[0].AxisX.Minimum;
+                    minY = chart.ChartAreas[0].AxisY.Minimum;
+                }
 
-            if (maxX < -0.5) maxX = Math.Pow(10, max_x);
-            else maxX = chart.ChartAreas[0].AxisX.Maximum;
+                if (maxX < -0.5)
+                {
+                    maxX = Math.Pow(10, max_x);
+                }
+                else
+                {
+                    maxX = chart.ChartAreas[0].AxisX.Maximum;
+                    maxY = chart.ChartAreas[0].AxisY.Maximum;
+                }
+            }
+            else
+            {
+                chart.ChartAreas[0].AxisY.Minimum = minY;
+                chart.ChartAreas[0].AxisY.Maximum = maxY;
+            }
 
             chart.ChartAreas[0].AxisX.Minimum = minX;
             chart.ChartAreas[0].AxisX.Maximum = maxX;
@@ -5079,7 +5165,7 @@ namespace DRC
                         {
 
                             int index = 0;
-                            bool test = false;
+                            //bool test = false;
 
                             List<int> indices = new List<int>();
                             for (int i = 0; i < drc_points_y_enable.Count(); i++)
@@ -5349,9 +5435,9 @@ namespace DRC
 
 
                     minX = chart.ChartAreas[0].AxisX.Minimum;
-                    double minY = chart.ChartAreas[0].AxisY.Minimum;
+                    minY = chart.ChartAreas[0].AxisY.Minimum;
                     maxX = chart.ChartAreas[0].AxisX.Maximum;
-                    double maxY = chart.ChartAreas[0].AxisY.Maximum;
+                    maxY = chart.ChartAreas[0].AxisY.Maximum;
 
                     options_form.set_curve_params(minX, maxX, minY, maxY, chart_color);
 
@@ -5583,6 +5669,11 @@ namespace DRC
             chart.ChartAreas[0].AxisX.Maximum = max_x;
             chart.ChartAreas[0].AxisY.Minimum = min_y;
             chart.ChartAreas[0].AxisY.Maximum = max_y;
+
+            minX = min_x;
+            maxX = max_x;
+            minY = min_y;
+            maxY = max_y;
         }
 
         public void remove_outlier_median(double thresold_median, double thr_actvity)

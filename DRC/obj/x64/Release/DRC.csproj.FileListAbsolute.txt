@@ -130,7 +130,6 @@ C:\Users\arno\Source\Repos\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.GenerateResou
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\concrt140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\cvextern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\msvcp140.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\opencv_ffmpeg330_64.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\vcruntime140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x86\OpenCvSharpExtern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x86\opencv_ffmpeg341.dll
@@ -154,19 +153,6 @@ E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.Extensions.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.UserInterface.pdb
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.UserInterface.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.xml
-E:\DRC_Tool_Git\DRC\bin\x64\Release\de\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\es\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\fr\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\hu\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\it\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\ja\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\pt\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\ru\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\sk\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\sv\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\tr\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\zh-cn\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\zh-tw\ZedGraph.resources.dll
 D:\DRC_Tool\DRC\bin\x64\Release\x64\concrt140.dll
 D:\DRC_Tool\DRC\bin\x64\Release\x64\cvextern.dll
 D:\DRC_Tool\DRC\bin\x64\Release\x64\msvcp140.dll
@@ -325,5 +311,5 @@ E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Curve_Fit_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.CPD_Time_Line.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Curves_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Curve_Fit_Options.resources
-E:\DRC_Tool_Git\DRC\bin\x64\Release\StyleCop.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\StyleCop.xml
+E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\opencv_ffmpeg341_64.dll
+E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Descriptors_General_Options.resources
