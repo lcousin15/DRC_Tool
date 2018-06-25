@@ -82,6 +82,7 @@
             this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -174,7 +175,8 @@
             this.exportToolStripMenuItem,
             this.rawDataToolStripMenuItem,
             this.showImagesToolStripMenuItem,
-            this.advancedToolStripMenuItem});
+            this.advancedToolStripMenuItem,
+            this.quitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -692,6 +694,13 @@
             this.label3.Text = "% activity threshold";
             this.label3.Visible = false;
             // 
+            // quitToolStripMenuItem
+            // 
+            this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.quitToolStripMenuItem.Text = "Quit";
+            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
+            // 
             // MainTab
             // 
             this.AllowDrop = true;
@@ -802,6 +811,7 @@
         private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
         public System.Windows.Forms.NumericUpDown numericUpDown3;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
     }
 }
 

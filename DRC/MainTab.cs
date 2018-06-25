@@ -3144,6 +3144,11 @@ namespace DRC
             label3.Visible = true;
             numericUpDown3.Visible = true;
         }
+
+        private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 
     public class Chart_DRC_Overlap
@@ -4180,20 +4185,22 @@ namespace DRC
             if (r2 < thr)
             {
                 not_fitted = true;
+                inactive = false;
 
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
 
-                if (inactive_init == true)
-                {
-                    not_fitted = false;
+                //if (inactive_init == true)
+                //{
+                //    not_fitted = false;
+                //    inactive = true;
 
-                    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
-                    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
-                }
+                //    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
+                //    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+                //}
             }
 
-            //Is_Modified();
+            Is_Modified();
         }
 
         public void threshold_inactive(double thr)
@@ -4207,20 +4214,22 @@ namespace DRC
             if (min_max_activity < thr)
             {
                 inactive = true;
+                not_fitted = false;
 
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
 
-                if (not_fitted_init == true)
-                {
-                    inactive = false;
+                //if (not_fitted_init == true)
+                //{
+                //    inactive = false;
+                //    not_fitted = true;
 
-                    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
-                    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
-                }
+                //    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+                //    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                //}
             }
 
-            //Is_Modified();
+            Is_Modified();
         }
 
         public void test_two_points_around_top(double thr_2_last_points)
@@ -5050,8 +5059,8 @@ namespace DRC
 
                 not_fitted = true;
 
-                not_fitted_init = true;
-                inactive_init = false;
+                //not_fitted_init = true;
+                //inactive_init = false;
 
                 inactive = false;
 
@@ -5093,8 +5102,8 @@ namespace DRC
 
                 inactive = true;
 
-                inactive_init = true;
-                not_fitted_init = false;
+                //inactive_init = true;
+                //not_fitted_init = false;
 
                 not_fitted = false;
 
@@ -5222,8 +5231,8 @@ namespace DRC
 
                         not_fitted = true;
 
-                        not_fitted_init = true;
-                        inactive_init = false;
+                        //not_fitted_init = true;
+                        //inactive_init = false;
 
                         inactive = false;
 
@@ -5314,8 +5323,8 @@ namespace DRC
 
                         inactive = true;
 
-                        inactive_init = true;
-                        not_fitted_init = false;
+                        //inactive_init = true;
+                        //not_fitted_init = false;
 
                         not_fitted = false;
 
