@@ -1941,6 +1941,8 @@ namespace DRC
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
+                this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+
                 string cpd_id = list_cpd[idx].ToString();
 
                 if (cpd_id == "DMSO" || cpd_id == "Untreated")
@@ -1955,6 +1957,8 @@ namespace DRC
                 }
             }
 
+            this.toolStripProgressBar1.Visible = false;
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -1964,6 +1968,8 @@ namespace DRC
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
+                this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+
                 string cpd_id = list_cpd[idx].ToString();
 
                 if (cpd_id == "DMSO" || cpd_id == "Untreated")
@@ -1977,15 +1983,21 @@ namespace DRC
                     current_chart.Is_Modified();
                 }
             }
+
+            this.toolStripProgressBar1.Visible = false;
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             // threshold Inactive
             double median_treshold = double.Parse(this.numericUpDown4.Value.ToString());
+            // Threshold % actvity
+            double thr_activity = double.Parse(this.numericUpDown3.Value.ToString());
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
+                this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+
                 string cpd_id = list_cpd[idx].ToString();
 
                 if (cpd_id == "DMSO" || cpd_id == "Untreated")
@@ -1995,10 +2007,12 @@ namespace DRC
 
                 foreach (Chart_DRC current_chart in list_chart)
                 {
-                    current_chart.remove_outlier_median(median_treshold);
+                    current_chart.remove_outlier_median(median_treshold, thr_activity);
                     current_chart.Is_Modified();
                 }
             }
+
+            this.toolStripProgressBar1.Visible = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -3126,6 +3140,14 @@ namespace DRC
             label1.Visible = true;
             numericUpDown1.Visible = true;
             button1.Visible = true;
+
+            label3.Visible = true;
+            numericUpDown3.Visible = true;
+        }
+
+        private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 
@@ -4163,20 +4185,22 @@ namespace DRC
             if (r2 < thr)
             {
                 not_fitted = true;
+                inactive = false;
 
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
 
-                if (inactive_init == true)
-                {
-                    not_fitted = false;
+                //if (inactive_init == true)
+                //{
+                //    not_fitted = false;
+                //    inactive = true;
 
-                    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
-                    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
-                }
+                //    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
+                //    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+                //}
             }
 
-            //Is_Modified();
+            Is_Modified();
         }
 
         public void threshold_inactive(double thr)
@@ -4190,20 +4214,22 @@ namespace DRC
             if (min_max_activity < thr)
             {
                 inactive = true;
+                not_fitted = false;
 
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
 
-                if (not_fitted_init == true)
-                {
-                    inactive = false;
+                //if (not_fitted_init == true)
+                //{
+                //    inactive = false;
+                //    not_fitted = true;
 
-                    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
-                    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
-                }
+                //    ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+                //    ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                //}
             }
 
-            //Is_Modified();
+            Is_Modified();
         }
 
         public void test_two_points_around_top(double thr_2_last_points)
@@ -4293,11 +4319,11 @@ namespace DRC
         public void check_toxicity(double thr_toxicity)
         {
             // Compute the top :
-            double top = 0.0;
+            double curve_fit_value = 0.0;
 
             //if (fit_parameters[0] < fit_parameters[1])
             //{
-            top = double.Parse(fit_parameters[1].ToString());
+            
             //}
             //else
             //{
@@ -4326,6 +4352,7 @@ namespace DRC
                     List<double> resp = new List<double>();
                     resp.Add(drc_points_y_enable[i]);
                     dict_points.Add(drc_points_x_enable[i], resp);
+
                 }
             }
 
@@ -4363,7 +4390,9 @@ namespace DRC
 
                 double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
 
-                if (Math.Abs(response_last_point - top) >= thr_toxicity * min_max_activity)
+                curve_fit_value = Sigmoid(fit_parameters, dict_points.Keys.ElementAt(dict_points.Count() - 1));
+
+                if (Math.Abs(response_last_point - curve_fit_value) >= thr_toxicity * min_max_activity)
                 {
                     //Console.WriteLine("Concentration = " + compound_id);
                     //Console.WriteLine("diff, min_max*thr = " + Math.Abs(response_last_point - top) + " , " + thr_toxicity * min_max_activity);
@@ -5030,8 +5059,8 @@ namespace DRC
 
                 not_fitted = true;
 
-                not_fitted_init = true;
-                inactive_init = false;
+                //not_fitted_init = true;
+                //inactive_init = false;
 
                 inactive = false;
 
@@ -5073,8 +5102,8 @@ namespace DRC
 
                 inactive = true;
 
-                inactive_init = true;
-                not_fitted_init = false;
+                //inactive_init = true;
+                //not_fitted_init = false;
 
                 not_fitted = false;
 
@@ -5202,8 +5231,8 @@ namespace DRC
 
                         not_fitted = true;
 
-                        not_fitted_init = true;
-                        inactive_init = false;
+                        //not_fitted_init = true;
+                        //inactive_init = false;
 
                         inactive = false;
 
@@ -5294,8 +5323,8 @@ namespace DRC
 
                         inactive = true;
 
-                        inactive_init = true;
-                        not_fitted_init = false;
+                        //inactive_init = true;
+                        //not_fitted_init = false;
 
                         not_fitted = false;
 
@@ -5370,19 +5399,23 @@ namespace DRC
             chart.ChartAreas[0].AxisY.Maximum = max_y;
         }
 
-        public void remove_outlier_median(double thresold_median)
+        public void remove_outlier_median(double thresold_median, double thr_actvity)
         {
 
             Dictionary<double, List<double>> points_dict = new Dictionary<double, List<double>>();
+            //Dictionary<double, List<double>> residual_dict = new Dictionary<double, List<double>>();
 
             foreach (DataPoint dp in chart.Series["Series1"].Points)
             {
                 double point_x = Math.Log10(dp.XValue);
                 double point_y = dp.YValues[0];
 
+                double residual = Math.Abs(point_y - Sigmoid(fit_parameters, point_x));
+
                 if (points_dict.ContainsKey(point_x))
                 {
                     points_dict[point_x].Add(point_y);
+                    //residual_dict[point_x].Add(residual);
                 }
                 else
                 {
@@ -5390,6 +5423,11 @@ namespace DRC
                     my_list.Add(point_y);
 
                     points_dict[point_x] = my_list;
+
+                    //List<double> my_list_residual = new List<double>();
+                    //my_list_residual.Add(residual);
+
+                    //residual_dict[point_x] = my_list_residual;
                 }
             }
 
@@ -5446,29 +5484,16 @@ namespace DRC
                     mad_vector[i] = Math.Abs(y_points[i] - median_value) / median_value_mad;
                 }
 
-                ////Compute the Average      
-                //double avg = y_points.Average();
-                //double sum = y_points.Sum(d => Math.Pow(d - avg, 2));
-                //double std_dev = Math.Sqrt((sum) / (y_points.Count() - 1));
-
-                //if (counter < 1)
-                //{
-                //    string serie_line = "Line_" + counter.ToString();
-                //    chart.Series.Add(serie_line);
-                //    chart.Series[serie_line].Points.Add(new DataPoint(/*Math.Log10(*/x_points/*)*/, median_value + thresold_median * std_dev));
-                //    chart.Series[serie_line].Points.Add(new DataPoint(/*Math.Log10(*/x_points/*)*/, median_value - thresold_median * std_dev));
-
-                //    chart.Series[serie_line].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-                //}
-
                 counter++;
 
+                // Enable/Disabel points :
                 for (int i = 0; i < y_points.Count(); ++i)
                 {
 
                     bool point_exclusion = false;
 
-                    if (mad_vector[i] > thresold_median) point_exclusion = true;
+                    // test MAD + residual % of activity
+                    if (mad_vector[i] > thresold_median && ((y_points[i] - Sigmoid(fit_parameters, x_points)) >= thr_actvity*Math.Abs(fit_parameters[0]-fit_parameters[1]))) point_exclusion = true;
 
                     double current_y = y_points[i];
 
@@ -5592,57 +5617,8 @@ namespace DRC
                 }
             }
 
-            /*
-            fit_DRC();
-            chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+            draw_DRC(false, false);
 
-            int k = 0;
-            foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
-            {
-                string compound = row2.Cells[0].Value.ToString();
-                if (compound_id == compound) break;
-                k++;
-            }
-            int row_index = k;
-
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
-            if (fit_parameters[0] < fit_parameters[1])
-            {
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
-            }
-            else
-            {
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
-            }
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
-
-            not_fitted = false;
-            inactive = false;
-
-            if (drc_points_x_disable.Count() > 0)
-            {
-                data_modified = true;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
-            }
-            else
-            {
-                data_modified = false;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
-            }
-
-            annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
-            */
         }
 
     }

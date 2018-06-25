@@ -325,3 +325,5 @@ E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Curve_Fit_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.CPD_Time_Line.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Curves_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Curve_Fit_Options.resources
+E:\DRC_Tool_Git\DRC\bin\x64\Release\StyleCop.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Release\StyleCop.xml
