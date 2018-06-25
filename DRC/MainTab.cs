@@ -4293,11 +4293,11 @@ namespace DRC
         public void check_toxicity(double thr_toxicity)
         {
             // Compute the top :
-            double top = 0.0;
+            double curve_fit_value = 0.0;
 
             //if (fit_parameters[0] < fit_parameters[1])
             //{
-            top = double.Parse(fit_parameters[1].ToString());
+            
             //}
             //else
             //{
@@ -4326,6 +4326,7 @@ namespace DRC
                     List<double> resp = new List<double>();
                     resp.Add(drc_points_y_enable[i]);
                     dict_points.Add(drc_points_x_enable[i], resp);
+
                 }
             }
 
@@ -4363,7 +4364,9 @@ namespace DRC
 
                 double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
 
-                if (Math.Abs(response_last_point - top) >= thr_toxicity * min_max_activity)
+                curve_fit_value = Sigmoid(fit_parameters, dict_points.Keys.ElementAt(dict_points.Count() - 1));
+
+                if (Math.Abs(response_last_point - curve_fit_value) >= thr_toxicity * min_max_activity)
                 {
                     //Console.WriteLine("Concentration = " + compound_id);
                     //Console.WriteLine("diff, min_max*thr = " + Math.Abs(response_last_point - top) + " , " + thr_toxicity * min_max_activity);
