@@ -166,7 +166,6 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csprojResolveAssemblyReference.cache
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\concrt140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\cvextern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\msvcp140.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\opencv_ffmpeg330_64.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\vcruntime140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x86\OpenCvSharpExtern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x86\opencv_ffmpeg341.dll
@@ -212,19 +211,6 @@ E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Extensions.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.UserInterface.pdb
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.UserInterface.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\ZedGraph.xml
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\de\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\es\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\fr\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\hu\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\it\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\ja\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\pt\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\ru\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\sk\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\sv\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\tr\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\zh-cn\ZedGraph.resources.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\zh-tw\ZedGraph.resources.dll
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csproj.ResolveComReference.cache
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Correlations_Exp_Name.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.CPD_Time_Line.resources
@@ -247,5 +233,6 @@ E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Properties.Resources.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csproj.GenerateResource.Cache
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.exe
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.pdb
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\StyleCop.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\StyleCop.xml
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csprojResolveAssemblyReference.cache
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Descriptors_General_Options.resources
+E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\opencv_ffmpeg341_64.dll

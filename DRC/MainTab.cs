@@ -103,6 +103,8 @@ namespace DRC
 
         public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
 
+        public Descriptors_General_Options descriptors_general_options_form;
+
         private string current_cpd_id;
         private Dictionary<string, int> cpd_row_index = new Dictionary<string, int>();
         public List<string> list_cpd;
@@ -3149,6 +3151,190 @@ namespace DRC
         {
             this.Close();
         }
+
+        private void btn_descriptors_options_Click(object sender, EventArgs e)
+        {
+            Form fc = Application.OpenForms["Descriptors_General_Options"];
+
+            if (fc == null)
+            {
+                descriptors_general_options_form = new Descriptors_General_Options(this);
+
+                Label label_bnd_min_x = new Label();
+                label_bnd_min_x.Location = new Point(100, 20);
+                label_bnd_min_x.Text = "Bound Min X";
+                label_bnd_min_x.Name = "lbl_bnd_min_x";
+                label_bnd_min_x.AutoSize = true;
+
+                Label label_bnd_max_x = new Label();
+                label_bnd_max_x.Location = new Point(250, 20);
+                label_bnd_max_x.Text = "Bound Max X";
+                label_bnd_max_x.Name = "lbl_bnd_max_x";
+
+                label_bnd_max_x.AutoSize = true;
+
+                Label label_bnd_min_y = new Label();
+                label_bnd_min_y.Location = new Point(400, 20);
+                label_bnd_min_y.Text = "Bound Min Y";
+                label_bnd_min_y.Name = "lbl_bnd_min_y";
+                label_bnd_min_y.AutoSize = true;
+
+                Label label_bnd_max_y = new Label();
+                label_bnd_max_y.Location = new Point(550, 20);
+                label_bnd_max_y.Text = "Bound Max Y";
+                label_bnd_min_x.Name = "lbl_bnd_max_y";
+                label_bnd_max_y.AutoSize = true;
+
+                descriptors_general_options_form.Controls.Add(label_bnd_min_x);
+                descriptors_general_options_form.Controls.Add(label_bnd_max_x);
+                descriptors_general_options_form.Controls.Add(label_bnd_min_y);
+                descriptors_general_options_form.Controls.Add(label_bnd_max_y);
+
+                int counter = 0;
+
+                // Fill the text boxes with the values of the first cpd.
+
+                //                public double get_min_bound_x()
+                //{
+                //    return min_bound_x;
+                //}
+
+                //public double get_max_bound_x()
+                //{
+                //    return max_bound_x;
+                //}
+
+                //public double get_min_bound_y()
+                //{
+                //    return min_bound_y;
+                //}
+
+                //public double get_max_bound_y()
+                //{
+                //    return max_bound_y;
+                //}
+                List<Chart_DRC> list_chart = descriptors_chart[descriptors_chart.First().Key];
+
+                foreach (Chart_DRC current_chart in list_chart)
+                {
+                    string descritpor_name = current_chart.get_Descriptor_Name();
+
+                    Label new_label = new Label();
+                    new_label.Location = new Point(10, 20 + (counter + 1) * 25);
+                    new_label.Text = descritpor_name;
+                    new_label.Name = "lbl_descriptor_" + counter.ToString();
+                    new_label.AutoSize = true;
+
+                    descriptors_general_options_form.Controls.Add(new_label);
+
+                    TextBox text_box_bnd_min_x = new TextBox();
+                    text_box_bnd_min_x.Location = new Point(90, 15 + (counter + 1) * 25);
+                    text_box_bnd_min_x.Name = "txt_box_bnd_min_x_descriptor_" + counter.ToString();
+                    text_box_bnd_min_x.Text = current_chart.get_min_bound_x().ToString();
+
+                    descriptors_general_options_form.Controls.Add(text_box_bnd_min_x);
+
+                    TextBox text_box_bnd_max_x = new TextBox();
+                    text_box_bnd_max_x.Location = new Point(240, 15 + (counter + 1) * 25);
+                    text_box_bnd_max_x.Name = "txt_box_bnd_max_x_descriptor_" + counter.ToString();
+                    text_box_bnd_max_x.Text = current_chart.get_max_bound_x().ToString();
+
+
+                    descriptors_general_options_form.Controls.Add(text_box_bnd_max_x);
+
+                    TextBox text_box_bnd_min_y = new TextBox();
+                    text_box_bnd_min_y.Location = new Point(390, 15 + (counter + 1) * 25);
+                    text_box_bnd_min_y.Name = "txt_box_bnd_min_y_descriptor_" + counter.ToString();
+                    text_box_bnd_min_y.Text = current_chart.get_min_bound_y().ToString();
+
+                    descriptors_general_options_form.Controls.Add(text_box_bnd_min_y);
+
+                    TextBox text_box_bnd_max_y = new TextBox();
+                    text_box_bnd_max_y.Location = new Point(540, 15 + (counter + 1) * 25);
+                    text_box_bnd_max_y.Name = "txt_box_bnd_max_y_descriptor_" + counter.ToString();
+                    text_box_bnd_max_y.Text = current_chart.get_max_bound_y().ToString();
+
+                    descriptors_general_options_form.Controls.Add(text_box_bnd_max_y);
+
+                    counter++;
+                }
+
+                Label label_window_min_x = new Label();
+                label_window_min_x.Location = new Point(100, 20 + (counter + 1) * 25);
+                label_window_min_x.Text = "Window Min X";
+                label_window_min_x.Name = "lbl_window_min_x";
+                label_window_min_x.AutoSize = true;
+
+                Label label_window_max_x = new Label();
+                label_window_max_x.Location = new Point(250, 20 + (counter + 1) * 25);
+                label_window_max_x.Text = "Window Max X";
+                label_window_max_x.Name = "lbl_window_max_x";
+                label_window_max_x.AutoSize = true;
+
+                Label label_window_min_y = new Label();
+                label_window_min_y.Location = new Point(400, 20 + (counter + 1) * 25);
+                label_window_min_y.Text = "Window Min Y";
+                label_window_min_y.Name = "lbl_window_min_y";
+                label_window_min_y.AutoSize = true;
+
+                Label label_window_max_y = new Label();
+                label_window_max_y.Location = new Point(550, 20 + (counter + 1) * 25);
+                label_window_max_y.Text = "Window Max Y";
+                label_window_max_y.Name = "lbl_window_max_y";
+
+                label_window_max_y.AutoSize = true;
+
+                descriptors_general_options_form.Controls.Add(label_window_min_x);
+                descriptors_general_options_form.Controls.Add(label_window_max_x);
+                descriptors_general_options_form.Controls.Add(label_window_min_y);
+                descriptors_general_options_form.Controls.Add(label_window_max_y);
+
+                foreach (Chart_DRC current_chart in list_chart)
+                {
+                    string descritpor_name = current_chart.get_Descriptor_Name();
+
+                    Label new_label = new Label();
+                    new_label.Location = new Point(10, 45 + (counter + 1) * 25);
+                    new_label.Text = descritpor_name;
+                    new_label.AutoSize = true;
+
+                    descriptors_general_options_form.Controls.Add(new_label);
+
+                    TextBox text_box_window_min_x = new TextBox();
+                    text_box_window_min_x.Location = new Point(90, 40 + (counter + 1) * 25);
+                    text_box_window_min_x.Name = "txt_box_window_min_x_descriptor_" + counter.ToString();
+
+                    descriptors_general_options_form.Controls.Add(text_box_window_min_x);
+
+                    TextBox text_box_window_max_x = new TextBox();
+                    text_box_window_max_x.Location = new Point(240, 40 + (counter + 1) * 25);
+                    text_box_window_max_x.Name = "txt_box_window_max_x_descriptor_" + counter.ToString();
+
+                    descriptors_general_options_form.Controls.Add(text_box_window_max_x);
+
+                    TextBox text_box_window_min_y = new TextBox();
+                    text_box_window_min_y.Location = new Point(390, 40 + (counter + 1) * 25);
+                    text_box_window_min_y.Name = "txt_box_window_min_y_descriptor_" + counter.ToString();
+
+                    descriptors_general_options_form.Controls.Add(text_box_window_min_y);
+
+                    TextBox text_box_window_max_y = new TextBox();
+                    text_box_window_max_y.Location = new Point(540, 40 + (counter + 1) * 25);
+                    text_box_window_max_y.Name = "txt_box_window_max_y_descriptor_" + counter.ToString();
+
+                    descriptors_general_options_form.Controls.Add(text_box_window_max_y);
+
+                    counter++;
+                }
+
+                descriptors_general_options_form.Visible = true;
+            }
+        }
+
+        public void apply_descritpor_general_options()
+        {
+            return;
+        }
     }
 
     public class Chart_DRC_Overlap
@@ -4323,7 +4509,7 @@ namespace DRC
 
             //if (fit_parameters[0] < fit_parameters[1])
             //{
-            
+
             //}
             //else
             //{
@@ -5493,7 +5679,7 @@ namespace DRC
                     bool point_exclusion = false;
 
                     // test MAD + residual % of activity
-                    if (mad_vector[i] > thresold_median && ((y_points[i] - Sigmoid(fit_parameters, x_points)) >= thr_actvity*Math.Abs(fit_parameters[0]-fit_parameters[1]))) point_exclusion = true;
+                    if (mad_vector[i] > thresold_median && ((y_points[i] - Sigmoid(fit_parameters, x_points)) >= thr_actvity * Math.Abs(fit_parameters[0] - fit_parameters[1]))) point_exclusion = true;
 
                     double current_y = y_points[i];
 
