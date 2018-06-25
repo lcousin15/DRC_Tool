@@ -88,7 +88,7 @@
             // saveToExcelToolStripMenuItem
             // 
             this.saveToExcelToolStripMenuItem.Name = "saveToExcelToolStripMenuItem";
-            this.saveToExcelToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.saveToExcelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.saveToExcelToolStripMenuItem.Text = "Save To Excel";
             this.saveToExcelToolStripMenuItem.Click += new System.EventHandler(this.saveToExcelToolStripMenuItem_Click);
             // 
