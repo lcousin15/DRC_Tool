@@ -22,7 +22,6 @@ using System.Data;
 namespace DRC
 {
 
-
     public partial class MainTab : Form
     {
         //public bool imgCpdsViewOption = false;
@@ -86,7 +85,7 @@ namespace DRC
         public ViewList_CPD_Tab f11;
         public ViewImages_Options_Tab f13;
         public CPD_Time_Line TimeLine;
-
+        public Export_Tab f5;
 
         public void SetForm()
         {
@@ -95,11 +94,11 @@ namespace DRC
             f10 = new DRC_Overlap_Tab(this);
             f11 = new ViewList_CPD_Tab(this);
             TimeLine = new CPD_Time_Line(this);
+            f5 = new Export_Tab(this);
         }
 
         public RawData_Tab f3 = new RawData_Tab();
         public RawDataDRC_Tab f4 = new RawDataDRC_Tab();
-        public Export_Tab f5 = new Export_Tab();
         public Correlations_Tab f7 = new Correlations_Tab();
 
         public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
@@ -112,6 +111,8 @@ namespace DRC
         private List<string> descriptor_list;
 
         private List<string> deslected_data_descriptor;
+        private List<string> status_ec_50_descritpor;
+        private List<string> bounds_descriptor;
 
         private string input_filename;
         private string output_filename;
@@ -167,6 +168,8 @@ namespace DRC
 
         List<Color> curve_color = new List<Color>();
 
+        //public Dictionary<string, List<string>> list_img_path_by_cpd = new Dictionary<string, List<string>>();
+
         public int get_descriptors_number()
         {
             return descriptor_list.Count();
@@ -192,6 +195,8 @@ namespace DRC
 
             List<string> CPD_ID = new List<string>();
             deslected_data_descriptor = new List<string>();
+            status_ec_50_descritpor = new List<string>();
+            bounds_descriptor = new List<string>();
 
             if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
                 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
@@ -219,7 +224,7 @@ namespace DRC
             {
                 if (f3.dataGridView1.Columns.Contains("Plate") && is_with_plate == true)
                 {
-                    CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString() + "__" + row.Cells["Plate"].Value.ToString());
+                    CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString());
                 }
                 else CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString());
             }
@@ -230,13 +235,27 @@ namespace DRC
             foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
             {
                 string col_name = col.HeaderText;
-                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run" && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected"))
+
+                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run"
+                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected")
+                    && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound"))
                 {
                     checkedListBox1.Items.Add(col_name);
                 }
+
                 if (col_name.StartsWith("Deselected"))
                 {
                     deslected_data_descriptor.Add(col_name);
+                }
+
+                if (col_name.StartsWith("Status"))
+                {
+                    status_ec_50_descritpor.Add(col_name);
+                }
+
+                if (col_name.StartsWith("Bound"))
+                {
+                    bounds_descriptor.Add(col_name);
                 }
             }
 
@@ -255,8 +274,11 @@ namespace DRC
             descriptor_list = new List<string>();
             descriptor_list.Clear();
 
+            //deslected_data_descriptor.Clear();
             deslected_data_descriptor = new List<string>();
-            deslected_data_descriptor.Clear();
+
+            //status_ec_50_descritpor.Clear();
+            status_ec_50_descritpor = new List<string>();
 
             CPD_ID_List.Clear();
 
@@ -391,6 +413,12 @@ namespace DRC
 
         }
 
+        private static Image LoadImageNoLock(string path)
+        {
+            var stream = new MemoryStream(File.ReadAllBytes(path));
+            return Image.FromStream(stream);
+        }
+
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //check_last_points();
@@ -473,7 +501,7 @@ namespace DRC
                         double current_top = fit_params[1];
                         double current_ec_50 = fit_params[2];
 
-                        Image image = Image.FromFile(list_images[i_img]);
+                        Image image = LoadImageNoLock(list_images[i_img]);
 
                         //f5.dataGridViewExport.Rows[index].Height = 
                         f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 1].Value = image;
@@ -529,6 +557,8 @@ namespace DRC
 
                     }
 
+                    foreach (string current_path in list_images) File.Delete(current_path);
+                    //list_img_path_by_cpd.Add(cpd_id, list_images);
                 }
 
                 toolStripProgressBar1.Visible = false;
@@ -628,6 +658,9 @@ namespace DRC
                 List<double> concentrations = new List<double>();
                 List<double> concentrations_log = new List<double>();
 
+                Dictionary<string, string> ec_50_status = new Dictionary<string, string>();
+                Dictionary<string, Dictionary<string, double>> fit_bounds = new Dictionary<string, Dictionary<string, double>>();
+
                 List<DataGridViewRow> raw_data_rows = new List<DataGridViewRow>();
 
                 data_descriptor.Clear();
@@ -637,7 +670,7 @@ namespace DRC
                 {
                     string cpd_string = "";
 
-                    if (is_with_plate == true) cpd_string = row.Cells["CPD_ID"].Value.ToString() + "__" + row.Cells["Plate"].Value.ToString();
+                    if (is_with_plate == true) cpd_string = row.Cells["CPD_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString();
                     else cpd_string = row.Cells["CPD_ID"].Value.ToString();
 
                     if (cpd_string == cpd_id)
@@ -656,6 +689,7 @@ namespace DRC
                                 data_descriptor[descriptor_name] = new List<double>();
                                 data_descriptor[descriptor_name].Add(double.Parse(row.Cells[item.ToString()].Value.ToString()));
                             }
+
                         }
 
                         foreach (string item in deslected_data_descriptor)
@@ -671,6 +705,43 @@ namespace DRC
                                 deselected_data_descriptor[descriptor_name] = new List<string>();
                                 deselected_data_descriptor[descriptor_name].Add(row.Cells[item.ToString()].Value.ToString());
                             }
+                        }
+
+                        foreach (string item in status_ec_50_descritpor)
+                        {
+                            string name = item.ToString();
+                            string descriptor_name = name.Remove(0, 7);
+                            ec_50_status[descriptor_name] = row.Cells["Status_" + descriptor_name].Value.ToString();
+                        }
+
+                        foreach (string item in bounds_descriptor)
+                        {
+                            string name = item.ToString();
+                            string descriptor_name = name.Remove(0, 12);
+                            string bound_name = name.Remove(0, 6);
+                            int len = bound_name.Length;
+                            bound_name = bound_name.Remove(5, len - 5);
+
+                            if (fit_bounds.ContainsKey(descriptor_name))
+                            {
+                                Dictionary<string, double> bnd_temp = fit_bounds[descriptor_name];
+                                if (bnd_temp.ContainsKey(bound_name))
+                                {
+                                    fit_bounds[descriptor_name][bound_name] = Double.Parse(row.Cells[name].Value.ToString());
+                                }
+                                else
+                                {
+                                    bnd_temp.Add(bound_name, Double.Parse(row.Cells[name].Value.ToString()));
+                                }
+                            }
+                            else
+                            {
+                                Dictionary<string, Double> bnd_temp = new Dictionary<string, double>();
+                                bnd_temp.Add(bound_name, Double.Parse(row.Cells[name].Value.ToString()));
+
+                                fit_bounds.Add(descriptor_name, bnd_temp);
+                            }
+
                         }
 
                         concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
@@ -714,6 +785,10 @@ namespace DRC
                 {
                     string descriptor_name = item.Key;
                     List<double> data = item.Value;
+
+                    Dictionary<string, double> bounds = new Dictionary<string, double>();
+
+                    if (fit_bounds.ContainsKey(descriptor_name)) bounds = fit_bounds[descriptor_name];
 
                     //List<Color> myColors = typeof(Color).GetProperties(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
                     //     .Select(c => (Color)c.GetValue(null, null))
@@ -764,7 +839,13 @@ namespace DRC
                     List<string> deselected = new List<string>();
                     if (deselected_data_descriptor.ContainsKey(descriptor_name)) deselected = deselected_data_descriptor[descriptor_name];
 
-                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color, descriptor_index, deselected, this);
+                    string chart_ec_50_status;
+                    if (ec_50_status.ContainsKey(descriptor_name)) chart_ec_50_status = ec_50_status[descriptor_name];
+                    else chart_ec_50_status = "=";
+
+                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color,
+                        descriptor_index, deselected, chart_ec_50_status, bounds, this);
+
                     chart_drc.set_Raw_Data(raw_data_rows);
 
                     double[] parameters = chart_drc.get_Fit_Parameters();
@@ -808,6 +889,7 @@ namespace DRC
                 }
 
             }
+
             f2.toolStripProgressBar1.Visible = false;
 
         }
@@ -826,15 +908,35 @@ namespace DRC
                 DataGridView dataGridView4 = new DataGridView();
                 dataGridView4.ColumnCount = f3.dataGridView1.ColumnCount; // + descritpor_number;
 
+                List<string> col_to_remove = new List<string>();
+
                 int col_index = 0;
                 foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                 {
+                    if (col.Name.StartsWith("Status_") || col.Name.StartsWith("Bound_") || col.Name.StartsWith("Deselected_"))
+                    {
+                        col_to_remove.Add(col.Name);
+                        continue;
+                    }
+
                     dataGridView4.Columns[col_index].Name = col.Name;
                     col_index++;
                 }
 
-                int col_already_present = 0;
-                int new_columns = 0;
+                foreach (string col_name in col_to_remove)
+                {
+                    foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
+                    {
+                        myRow.Cells[col_name].Value = null;
+                    }
+
+                    f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[col_name]);
+                }
+
+                dataGridView4.ColumnCount = col_index; // + descritpor_number;
+
+                //int col_already_present = 0;
+                //int new_columns = 0;
 
                 for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
                 {
@@ -847,19 +949,72 @@ namespace DRC
                             myRow.Cells[column_name].Value = null;
                         }
 
-                        col_already_present++;
-                        f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                        //col_already_present++;
+                        //f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
                         //dataGridView4.ColumnCount -= 1;
                     }
                     else
                     {
                         dataGridView4.ColumnCount += 1;
                         dataGridView4.Columns[col_index].Name = column_name;
-                        new_columns++;
+                        //new_columns++;
                         col_index++;
                     }
 
-                    int content = dataGridView4.ColumnCount;
+                    //int content = dataGridView4.ColumnCount;
+                }
+
+                for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
+                {
+                    string column_name = "Status_" + descriptor_list[descriptor_index];
+
+                    if (f3.dataGridView1.Columns.Contains(column_name))
+                    {
+                        foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
+                        {
+                            myRow.Cells[column_name].Value = null;
+                        }
+
+                        //f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                    }
+                    else
+                    {
+                        dataGridView4.ColumnCount += 1;
+                        dataGridView4.Columns[col_index].Name = column_name;
+                        col_index++;
+                    }
+
+                }
+
+                List<string> bnds_type = new List<string>();
+                bnds_type.Add("min_x");
+                bnds_type.Add("max_x");
+                bnds_type.Add("min_y");
+                bnds_type.Add("max_y");
+
+                for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
+                {
+
+                    foreach (string type in bnds_type)
+                    {
+                        string column_name = "Bound_" + type + "_" + descriptor_list[descriptor_index];
+
+                        if (f3.dataGridView1.Columns.Contains(column_name))
+                        {
+                            foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
+                            {
+                                myRow.Cells[column_name].Value = null;
+                            }
+
+                            //f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                        }
+                        else
+                        {
+                            dataGridView4.ColumnCount += 1;
+                            dataGridView4.Columns[col_index].Name = column_name;
+                            col_index++;
+                        }
+                    }
                 }
 
                 for (var idx = 0; idx < list_cpd.Count; idx++)
@@ -921,6 +1076,92 @@ namespace DRC
 
                     }
 
+                    foreach (Chart_DRC current_chart in list_chart)
+                    {
+                        string descriptor_name = current_chart.get_Descriptor_Name();
+
+                        List<bool> removed_raw_data_cpd = new List<bool>();
+
+                        removed_raw_data_cpd = current_chart.get_Removed_Raw_Data().ToList();
+                        bool status_ec_50 = current_chart.check_ec50_exact();
+
+                        int k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            if (status_ec_50) newCell.Value = "=";
+                            else newCell.Value = ">";
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+                    }
+
+                    foreach (Chart_DRC current_chart in list_chart)
+                    {
+                        string descriptor_name = current_chart.get_Descriptor_Name();
+
+                        List<bool> removed_raw_data_cpd = new List<bool>();
+
+                        removed_raw_data_cpd = current_chart.get_Removed_Raw_Data().ToList();
+
+                        double bound_x_min = current_chart.get_min_bound_x();
+                        double bound_y_min = current_chart.get_min_bound_y();
+
+                        double bound_x_max = current_chart.get_max_bound_x();
+                        double bound_y_max = current_chart.get_max_bound_y();
+
+                        int k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = bound_x_min;
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+
+                        k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = bound_x_max;
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+
+                        k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = bound_y_min;
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+
+                        k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = bound_y_max;
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+                    }
+
                     foreach (KeyValuePair<int, DataGridViewRow> item in chart_row_data)
                     {
                         dataGridView4.Rows.Add(chart_row_data[item.Key]);
@@ -949,7 +1190,7 @@ namespace DRC
                         if (j == columnCount - 1) output[i] += dataGridView4.Rows[i - 1].Cells[j].Value.ToString();
                     }
                 }
-                System.IO.File.WriteAllLines(saveFileDialog1.FileName, output, System.Text.Encoding.UTF8);
+                System.IO.File.WriteAllLines(saveFileDialog1.FileName, output);
                 MessageBox.Show("File was generated.");
 
             }
@@ -1028,8 +1269,14 @@ namespace DRC
                 {
                     if (j != 0 && j < f2.dataGridView2.Columns.Count && i < f2.dataGridView2.Rows.Count - 1 && !(f2.dataGridView2.Columns[j].Name.Contains("R2")))
                     {
-                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted" || f2.dataGridView2.Rows[i].Cells[j].Value != "Inactive") current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
-                        else current_row.Add(-1);
+                        if (f2.dataGridView2.Rows[i].Cells[j].Value != "Not Fitted" || f2.dataGridView2.Rows[i].Cells[j].Value != "Inactive")
+                        {
+                            current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
+                        }
+                        else
+                        {
+                            current_row.Add(-1);
+                        }
                     }
                 }
 
@@ -2857,6 +3104,29 @@ namespace DRC
 
             toolStripProgressBar1.Visible = false;
         }
+
+        private void advancedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            label7.Visible = true;
+            numericUpDown6.Visible = true;
+            button7.Visible = true;
+
+            label2.Visible = true;
+            numericUpDown2.Visible = true;
+            button2.Visible = true;
+
+            label6.Visible = true;
+            numericUpDown5.Visible = true;
+            button6.Visible = true;
+
+            label5.Visible = true;
+            numericUpDown4.Visible = true;
+            button5.Visible = true;
+
+            label1.Visible = true;
+            numericUpDown1.Visible = true;
+            button1.Visible = true;
+        }
     }
 
     public class Chart_DRC_Overlap
@@ -2916,6 +3186,7 @@ namespace DRC
 
         List<DataGridViewRow> raw_data;
         List<double> y_raw_data;
+        List<double> x_raw_data;
 
         List<bool> is_raw_data_removed;
 
@@ -2934,10 +3205,12 @@ namespace DRC
             raw_data = data.ToList();
 
             y_raw_data = new List<double>();
+            x_raw_data = new List<double>();
 
             foreach (DataGridViewRow item in raw_data)
             {
                 y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
+                x_raw_data.Add(double.Parse(item.Cells["Concentration"].Value.ToString()));
             }
         }
 
@@ -3347,6 +3620,7 @@ namespace DRC
 
         List<DataGridViewRow> raw_data;
         List<double> y_raw_data;
+        List<double> x_raw_data;
 
         List<bool> is_raw_data_removed;
 
@@ -3361,11 +3635,19 @@ namespace DRC
         private double min_bound_y = 0.0;
         private double max_bound_y = 0.0;
 
+        private Dictionary<string, double> fit_bounds;
+
+        private bool manual_bounds = false;
         private bool bound_auto = true;
 
         public void set_bound_status(bool status)
         {
             bound_auto = status;
+        }
+
+        public void set_manual_bound(bool status)
+        {
+            manual_bounds = status;
         }
 
         public double get_min_bound_x()
@@ -3391,21 +3673,25 @@ namespace DRC
         public void set_min_bound_x(double x_min)
         {
             min_bound_x = x_min;
+            manual_bounds = true;
         }
 
         public void set_max_bound_x(double x_max)
         {
             max_bound_x = x_max;
+            manual_bounds = true;
         }
 
         public void set_min_bound_y(double y_min)
         {
             min_bound_y = y_min;
+            manual_bounds = true;
         }
 
         public void set_max_bound_y(double y_max)
         {
             max_bound_y = y_max;
+            manual_bounds = true;
         }
 
         public bool check_ec50_exact()
@@ -3433,10 +3719,12 @@ namespace DRC
             raw_data = data.ToList();
 
             y_raw_data = new List<double>();
+            x_raw_data = new List<double>();
 
             foreach (DataGridViewRow item in raw_data)
             {
                 y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
+                x_raw_data.Add(double.Parse(item.Cells["Concentration"].Value.ToString()));
             }
         }
 
@@ -3482,7 +3770,8 @@ namespace DRC
         {
         }
 
-        public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color, int index, List<string> deselected, MainTab form)
+        public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
+            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, MainTab form)
         {
             _form1 = form;
 
@@ -3493,8 +3782,14 @@ namespace DRC
             step_curve = step;
             chart_color = color;
 
+            fit_bounds = bounds;
+            if (fit_bounds.Count() > 0) set_bound_status(false);
+
             not_fitted = false;
             data_modified = false;
+
+            if (ec_50_status == "=") is_ec50_exact = true;
+            else if (ec_50_status == ">") is_ec50_exact = false;
 
             y_response = resp.ToList();
             drc_points_y_enable = resp.ToList();
@@ -3519,7 +3814,7 @@ namespace DRC
 
             for (int index_deselect = 0; index_deselect < deselected.Count(); ++index_deselect)
             {
-                if (deselected[index_deselect] == "True")
+                if (deselected[index_deselect] == "TRUE" || deselected[index_deselect] == "True")
                 {
 
                     drc_points_x_disable.Add(x_concentrations_log[index_deselect]);
@@ -3529,12 +3824,28 @@ namespace DRC
 
                     double point_y = y_response[index_deselect];
 
-                    int remove_index = drc_points_y_enable.FindIndex(a => a < point_y + .00001 && a > point_y - .00001);
+                    //int remove_index = drc_points_y_enable.FindIndex(a => a < point_y + .000001 && a > point_y - .000001);
 
+                    int remove_index = 0;
+
+                    List<int> indices = new List<int>();
+                    for (int i = 0; i < drc_points_y_enable.Count(); i++)
+                        if (drc_points_y_enable[i] < point_y + 1e-12 && drc_points_y_enable[i] > point_y - 1e-12)
+                            indices.Add(i);
+
+                    foreach (int idx in indices)
+                    {
+                        if (drc_points_x_enable[idx] < (x_concentrations_log[index_deselect] + 1e-12) && drc_points_x_enable[idx] > (x_concentrations_log[index_deselect] - 1e-12))
+                        {
+                            remove_index = idx;
+                            break;
+                        }
+                    }
 
                     drc_points_x_enable.RemoveAt(remove_index); //Add(data_chart[i].XValue);
                     drc_points_y_enable.RemoveAt(remove_index); //Add(data_chart[i].YValues[0]);
                 }
+
                 if (deselected[0] == "Not Fitted")
                 {
                     not_fitted = true;       // When first element is NOT FITTED all the columns are NOT FITTED (For the current descriptor)
@@ -3548,6 +3859,7 @@ namespace DRC
                     inactive_init = true;
                 }
                 else inactive_init = false;
+
             }
 
 
@@ -3625,7 +3937,7 @@ namespace DRC
             //chart.ChartAreas[0].AxisY.Minimum = -1;
             //chart.ChartAreas[0].AxisY.Maximum = +1;
 
-            //draw_DRC();
+            //draw_DRC(false, false);
 
             fit_DRC();
         }
@@ -3690,6 +4002,15 @@ namespace DRC
                 max_bound_x = Math.Log10(MinConcentrationLin) - 1.0;
             }
 
+            if (fit_bounds.Count() > 0 && manual_bounds == false)
+            {
+                min_bound_y = fit_bounds["min_y"];
+                max_bound_y = fit_bounds["max_y"];
+
+                min_bound_x = fit_bounds["min_x"];
+                max_bound_x = fit_bounds["max_x"];
+            }
+
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
             double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
 
@@ -3737,6 +4058,8 @@ namespace DRC
 
         public void Is_Modified()
         {
+            draw_DRC(false, false);
+            /*
             int k = 0;
             foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
             {
@@ -3823,6 +4146,9 @@ namespace DRC
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
             }
+            */
+            //if(is_ec50_exact == true) ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
+            //else ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
 
         }
 
@@ -3859,15 +4185,7 @@ namespace DRC
 
             inactive = inactive_init;
 
-            double GlobalMax = double.MinValue;
-            double MaxValues = MaxA(drc_points_y_enable.ToArray());
-            GlobalMax = MaxValues;
-
-            double GlobalMin = double.MaxValue;
-            double MinValues = MinA(drc_points_y_enable.ToArray());
-            GlobalMin = MinValues;
-
-            double min_max_activity = Math.Abs(GlobalMax - GlobalMin);
+            double min_max_activity = Math.Abs(fit_parameters[1] - fit_parameters[0]);
 
             if (min_max_activity < thr)
             {
@@ -3957,8 +4275,8 @@ namespace DRC
 
                 if (diff_top_last_point >= thr_2_last_points * Math.Abs(top - bottom) || diff_top_last_point2 >= thr_2_last_points * Math.Abs(top - bottom))
                 {
-                    Console.WriteLine("Concentration = " + compound_id);
-                    Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * Math.Abs(top - bottom));
+                    //Console.WriteLine("Concentration = " + compound_id);
+                    //Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * Math.Abs(top - bottom));
 
                     draw_DRC(false, false);
 
@@ -4058,16 +4376,52 @@ namespace DRC
                         // Remove Points enabled
                         if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(y_val)))
                         {
+
+                            int index = 0;
+
+                            List<int> indices = new List<int>();
+                            for (int i = 0; i < drc_points_y_enable.Count(); i++)
+                                if (drc_points_y_enable[i] < y_val + 1e-12 && drc_points_y_enable[i] > y_val - 1e-12)
+                                    indices.Add(i);
+
+                            foreach (int idx in indices)
+                            {
+                                if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
+                                {
+                                    index = idx;
+                                    break;
+                                }
+                            }
+
+                            //int index = drc_points_y_enable.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+
                             drc_points_x_disable.Add(point_x);
                             drc_points_y_disable.Add(y_val);
-
-                            int index = drc_points_y_enable.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
 
                             drc_points_x_enable.RemoveAt(index);
                             drc_points_y_enable.RemoveAt(index);
 
-                            int index_raw_data = y_raw_data.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+                            int index_raw_data = 0;
+
+                            List<int> indices_raw = new List<int>();
+
+                            for (int i = 0; i < y_raw_data.Count(); i++)
+                                if (y_raw_data[i] < y_val + 1e-12 && y_raw_data[i] > y_val - 1e-12)
+                                    indices_raw.Add(i);
+
+                            foreach (int idx in indices_raw)
+                            {
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
+                                {
+                                    index_raw_data = idx;
+                                    break;
+                                }
+                            }
+
                             is_raw_data_removed[index_raw_data] = true;
+
+                            //int index_raw_data = y_raw_data.FindIndex(a => a < y_val + .0000001 && a > y_val - .0000001);
+                            //is_raw_data_removed[index_raw_data] = true;
                         }
                     }
                 }
@@ -4118,7 +4472,7 @@ namespace DRC
 
             fit_DRC();
 
-            chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
+            chart.Titles["Title1"].Text = descriptor + " CPD = " + compound_id;
 
             // Draw the first graph
             chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
@@ -4419,6 +4773,19 @@ namespace DRC
                 Axis ay = chart.ChartAreas[0].AxisY;
                 Rectangle rect = GetRectangle(mdown, e.Location);
 
+                int counter_point_changed = 0;
+
+                foreach (DataPoint dp in chart.Series["Series1"].Points)
+                {
+                    int x = (int)ax.ValueToPixelPosition(dp.XValue);
+                    int y = (int)ay.ValueToPixelPosition(dp.YValues[0]);
+
+                    if (rect.Contains(new Point(x, y)))
+                    {
+                        counter_point_changed++;
+                    }
+                }
+
                 foreach (DataPoint dp in chart.Series["Series1"].Points)
                 {
                     int x = (int)ax.ValueToPixelPosition(dp.XValue);
@@ -4429,38 +4796,128 @@ namespace DRC
 
                     if (rect.Contains(new Point(x, y)))
                     {
-
-                        if (drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y))
+                        if (drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y) && counter_point_changed > 0)
                         {
-                            // Add points enabled
+                            int index = 0;
 
+                            List<int> indices = new List<int>();
+                            for (int i = 0; i < drc_points_y_disable.Count(); i++)
+                                if (drc_points_y_disable[i] < point_y + 1e-12 && drc_points_y_disable[i] > point_y - 1e-12)
+                                    indices.Add(i);
+
+                            foreach (int idx in indices)
+                            {
+                                if (drc_points_x_disable[idx] < (point_x + 1e-12) && drc_points_x_disable[idx] > (point_x - 1e-12))
+                                {
+                                    index = idx;
+                                    break;
+                                }
+                            }
+
+                            // Add points enabled
                             drc_points_x_enable.Add(point_x);
                             drc_points_y_enable.Add(point_y);
 
-                            int index = drc_points_y_disable.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
-
+                            // Remove Points enabled
                             drc_points_x_disable.RemoveAt(index);
                             drc_points_y_disable.RemoveAt(index);
 
                             dp.Color = chart_color;
-                            continue;
+
+                            //point_last_change[data_point_idx] = true;
+                            counter_point_changed--;
+
+                            int index_raw_data = 0;
+
+                            List<int> indices_raw = new List<int>();
+
+                            for (int i = 0; i < y_raw_data.Count(); i++)
+                                if (y_raw_data[i] < point_y + 1e-12 && y_raw_data[i] > point_y - 1e-12)
+                                    indices_raw.Add(i);
+
+                            foreach (int idx in indices_raw)
+                            {
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
+                                {
+                                    index_raw_data = idx;
+                                    break;
+                                }
+                            }
+
+                            is_raw_data_removed[index_raw_data] = false;
+
                         }
-                        // Remove Points enabled
-                        if (!(drc_points_x_disable.Contains(point_x) && drc_points_y_disable.Contains(point_y)))
+                    }
+                }
+
+                foreach (DataPoint dp in chart.Series["Series1"].Points)
+                {
+                    int x = (int)ax.ValueToPixelPosition(dp.XValue);
+                    int y = (int)ay.ValueToPixelPosition(dp.YValues[0]);
+
+                    double point_x = Math.Log10(dp.XValue);
+                    double point_y = dp.YValues[0];
+
+                    if (rect.Contains(new Point(x, y)))
+                    {
+                        if (drc_points_x_enable.Contains(point_x) && drc_points_y_enable.Contains(point_y) && counter_point_changed > 0)
                         {
+
+                            int index = 0;
+                            bool test = false;
+
+                            List<int> indices = new List<int>();
+                            for (int i = 0; i < drc_points_y_enable.Count(); i++)
+                                if (drc_points_y_enable[i] < point_y + 1e-12 && drc_points_y_enable[i] > point_y - 1e-12)
+                                    indices.Add(i);
+
+                            foreach (int idx in indices)
+                            {
+                                if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
+                                {
+                                    index = idx;
+                                    break;
+                                }
+                            }
+
                             drc_points_x_disable.Add(point_x);
                             drc_points_y_disable.Add(point_y);
-
-                            int index = drc_points_y_enable.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
 
                             drc_points_x_enable.RemoveAt(index); //Add(data_chart[i].XValue);
                             drc_points_y_enable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
                             dp.Color = Color.LightGray;
 
-                            int index_raw_data = y_raw_data.FindIndex(a => a < point_y + .0000001 && a > point_y - .0000001);
-                            is_raw_data_removed[index_raw_data] = true;
-                        }
+                            int index_raw_data = 0;
 
+                            List<int> indices_raw = new List<int>();
+
+                            for (int i = 0; i < y_raw_data.Count(); i++)
+                                if (y_raw_data[i] < point_y + 1e-12 && y_raw_data[i] > point_y - 1e-12)
+                                    indices_raw.Add(i);
+
+                            foreach (int idx in indices_raw)
+                            {
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
+                                {
+                                    index_raw_data = idx;
+                                    break;
+                                }
+                            }
+
+                            is_raw_data_removed[index_raw_data] = true;
+
+                            counter_point_changed--;
+
+                            //y_raw_data.FindIndex(a => a < point_y + 1e-12 && a > point_y - 1e-12);
+                            //test = false;
+                            //do
+                            //{
+                            //    index_raw_data = y_raw_data.FindIndex(a => a < point_y + 1e-12 && a > point_y - 1e-12);
+                            //    if (drc_points_x_disable[index] < (point_x + 1e-12) && drc_points_x_disable[index] > (point_x - 1e-12)) test = true;
+
+                            //} while (test == false);
+
+                        }
                     }
                 }
 
@@ -4960,10 +5417,39 @@ namespace DRC
                     median_value = y_points[(count / 2)];
                 }
 
-                //Compute the Average      
-                double avg = y_points.Average();
-                double sum = y_points.Sum(d => Math.Pow(d - avg, 2));
-                double std_dev = Math.Sqrt((sum) / (y_points.Count() - 1));
+                List<double> mad_vector = new List<double>();
+
+                for (int i = 0; i < y_points.Count(); ++i)
+                {
+                    mad_vector.Add(Math.Abs(y_points[i] - median_value));
+                }
+
+                mad_vector.Sort();
+
+                double median_value_mad = 0;
+                int count_mad = mad_vector.Count();
+
+                if (count_mad % 2 == 0 && count_mad > 0)
+                {
+                    // count is even, need to get the middle two elements, add them together, then divide by 2
+                    double middleElement1 = mad_vector[(count / 2) - 1];
+                    double middleElement2 = mad_vector[(count / 2)];
+                    median_value_mad = (middleElement1 + middleElement2) / 2;
+                }
+                else
+                {
+                    median_value_mad = mad_vector[(count / 2)];
+                }
+
+                for (int i = 0; i < mad_vector.Count(); ++i)
+                {
+                    mad_vector[i] = Math.Abs(y_points[i] - median_value) / median_value_mad;
+                }
+
+                ////Compute the Average      
+                //double avg = y_points.Average();
+                //double sum = y_points.Sum(d => Math.Pow(d - avg, 2));
+                //double std_dev = Math.Sqrt((sum) / (y_points.Count() - 1));
 
                 //if (counter < 1)
                 //{
@@ -4977,42 +5463,112 @@ namespace DRC
 
                 counter++;
 
-                foreach (double current_y in y_points)
+                for (int i = 0; i < y_points.Count(); ++i)
                 {
+
                     bool point_exclusion = false;
 
-                    if (current_y > (median_value + thresold_median * std_dev) || current_y < (median_value - thresold_median * std_dev)) point_exclusion = true;
+                    if (mad_vector[i] > thresold_median) point_exclusion = true;
+
+                    double current_y = y_points[i];
 
                     // Remove Points enabled
                     if (!(drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && point_exclusion)
                     {
+                        //int index = drc_points_y_enable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+
+                        int index = 0;
+
+                        List<int> indices = new List<int>();
+                        for (int j = 0; j < drc_points_y_enable.Count(); j++)
+                            if (drc_points_y_enable[j] < current_y + 1e-12 && drc_points_y_enable[j] > current_y - 1e-12)
+                                indices.Add(j);
+
+                        foreach (int idx in indices)
+                        {
+                            if (drc_points_x_enable[idx] < (x_points + 1e-12) && drc_points_x_enable[idx] > (x_points - 1e-12))
+                            {
+                                index = idx;
+                                break;
+                            }
+                        }
+
                         drc_points_x_disable.Add(x_points);
                         drc_points_y_disable.Add(current_y);
-
-                        int index = drc_points_y_enable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
 
                         drc_points_x_enable.RemoveAt(index); //Add(data_chart[i].XValue);
                         drc_points_y_enable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
 
                         //chart.Series["Series1"].Points[point_index].Color = Color.LightGray;
 
-                        int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+                        int index_raw_data = 0;
+
+                        List<int> indices_raw = new List<int>();
+
+                        for (int j = 0; j < y_raw_data.Count(); j++)
+                            if (y_raw_data[j] < current_y + 1e-12 && y_raw_data[j] > current_y - 1e-12)
+                                indices_raw.Add(j);
+
+                        foreach (int idx in indices_raw)
+                        {
+                            if (Math.Log10(x_raw_data[idx]) < (x_points + 1e-4) && Math.Log10(x_raw_data[idx]) > (x_points - 1e-4))
+                            {
+                                index_raw_data = idx;
+                                break;
+                            }
+                        }
+
                         is_raw_data_removed[index_raw_data] = true;
                     }
                     else if ((drc_points_x_disable.Contains(x_points) && drc_points_y_disable.Contains(current_y)) && !point_exclusion)
                     {
+                        //int index = drc_points_y_disable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+
+                        int index = 0;
+
+                        List<int> indices = new List<int>();
+                        for (int j = 0; j < drc_points_y_disable.Count(); j++)
+                            if (drc_points_y_disable[j] < current_y + 1e-12 && drc_points_y_disable[j] > current_y - 1e-12)
+                                indices.Add(j);
+
+                        foreach (int idx in indices)
+                        {
+                            if (drc_points_x_disable[idx] < (x_points + 1e-12) && drc_points_x_disable[idx] > (x_points - 1e-12))
+                            {
+                                index = idx;
+                                break;
+                            }
+                        }
+
                         drc_points_x_enable.Add(x_points);
                         drc_points_y_enable.Add(current_y);
-
-                        int index = drc_points_y_disable.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
 
                         drc_points_x_disable.RemoveAt(index); //Add(data_chart[i].XValue);
                         drc_points_y_disable.RemoveAt(index); //Add(data_chart[i].YValues[0]);
 
                         //chart.Series["Series1"].Points[point_index].Color = Color.LightGray;
 
-                        int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+                        int index_raw_data = 0;
+
+                        List<int> indices_raw = new List<int>();
+
+                        for (int j = 0; j < y_raw_data.Count(); j++)
+                            if (y_raw_data[j] < current_y + 1e-12 && y_raw_data[j] > current_y - 1e-12)
+                                indices_raw.Add(j);
+
+                        foreach (int idx in indices_raw)
+                        {
+                            if (Math.Log10(x_raw_data[idx]) < (x_points + 1e-4) && Math.Log10(x_raw_data[idx]) > (x_points - 1e-4))
+                            {
+                                index_raw_data = idx;
+                                break;
+                            }
+                        }
+
                         is_raw_data_removed[index_raw_data] = false;
+
+                        //int index_raw_data = y_raw_data.FindIndex(a => a < current_y + .0000001 && a > current_y - .0000001);
+                        //is_raw_data_removed[index_raw_data] = false;
 
                     }
                 }
@@ -5036,6 +5592,7 @@ namespace DRC
                 }
             }
 
+            /*
             fit_DRC();
             chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
 
@@ -5085,6 +5642,7 @@ namespace DRC
             }
 
             annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+            */
         }
 
     }

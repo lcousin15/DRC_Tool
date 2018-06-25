@@ -73,7 +73,7 @@
             // saveToExcelToolStripMenuItem
             // 
             this.saveToExcelToolStripMenuItem.Name = "saveToExcelToolStripMenuItem";
-            this.saveToExcelToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.saveToExcelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.saveToExcelToolStripMenuItem.Text = "Save To Excel";
             this.saveToExcelToolStripMenuItem.Click += new System.EventHandler(this.saveToExcelToolStripMenuItem_Click);
             // 
@@ -104,6 +104,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Export_Tab";
             this.Text = "Form5";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Export_Tab_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewExport)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

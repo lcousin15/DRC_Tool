@@ -56,5 +56,23 @@ namespace DRC
 
             chart.draw_DRC(false, false);
         }
+
+        private void btn_reset_Click(object sender, EventArgs e)
+        {
+            chart.set_bound_status(true);
+            chart.set_manual_bound(true);
+
+            chart.draw_DRC(false, false);
+
+            txt_min_bound_x.Text = Math.Pow(10, chart.get_min_bound_x()).ToString();
+            txt_max_bound_x.Text = Math.Pow(10, chart.get_max_bound_x()).ToString();
+            txt_min_bound_y.Text = chart.get_min_bound_y().ToString();
+            txt_max_bound_y.Text = chart.get_max_bound_y().ToString();
+
+            bound_min_x = Math.Pow(10, chart.get_min_bound_x());
+            bound_max_x = Math.Pow(10, chart.get_max_bound_x());
+            bound_min_y = chart.get_min_bound_y();
+            bound_max_y = chart.get_max_bound_y();
+        }
     }
 }
