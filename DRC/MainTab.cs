@@ -3331,14 +3331,14 @@ namespace DRC
                     TextBox text_box_bnd_min_x = new TextBox();
                     text_box_bnd_min_x.Location = new Point(90, 15 + (counter + 1) * 25);
                     text_box_bnd_min_x.Name = "txt_box_bnd_min_x_descriptor_" + descritpor_name;
-                    text_box_bnd_min_x.Text = dict_descriptor_min_bnd_x[descritpor_name].Min().ToString();
+                    text_box_bnd_min_x.Text = Math.Pow(10, dict_descriptor_min_bnd_x[descritpor_name].Min()).ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_min_x);
 
                     TextBox text_box_bnd_max_x = new TextBox();
                     text_box_bnd_max_x.Location = new Point(240, 15 + (counter + 1) * 25);
                     text_box_bnd_max_x.Name = "txt_box_bnd_max_x_descriptor_" + descritpor_name;
-                    text_box_bnd_max_x.Text = dict_descriptor_max_bnd_x[descritpor_name].Max().ToString();
+                    text_box_bnd_max_x.Text = Math.Pow(10, dict_descriptor_max_bnd_x[descritpor_name].Max()).ToString();
 
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_max_x);
@@ -3987,6 +3987,12 @@ namespace DRC
         public void set_general_params(bool test)
         {
             general_params = test;
+
+            if(test)
+            {
+                manual_bounds = false;
+                bound_auto = false;
+            }
         }
 
         public void set_bound_status(bool status)
@@ -4021,26 +4027,26 @@ namespace DRC
 
         public void set_min_bound_x(double x_min)
         {
-            min_bound_x = x_min;
-            manual_bounds = true;
+            min_bound_x = Math.Log10(x_min);
+            if (general_params == false) manual_bounds = true;
         }
 
         public void set_max_bound_x(double x_max)
         {
-            max_bound_x = x_max;
-            manual_bounds = true;
+            max_bound_x = Math.Log10(x_max);
+            if(general_params==false) manual_bounds = true;
         }
 
         public void set_min_bound_y(double y_min)
         {
             min_bound_y = y_min;
-            manual_bounds = true;
+            if (general_params == false) manual_bounds = true;
         }
 
         public void set_max_bound_y(double y_max)
         {
             max_bound_y = y_max;
-            manual_bounds = true;
+            if (general_params == false) manual_bounds = true;
         }
 
         public double get_window_x_min()
@@ -4172,7 +4178,11 @@ namespace DRC
             chart_color = color;
 
             fit_bounds = bounds;
-            if (fit_bounds.Count() > 0) set_bound_status(false);
+            if (fit_bounds.Count() > 0)
+            {
+                set_bound_status(false);
+                set_manual_bound(true);
+            }
 
             not_fitted = false;
             data_modified = false;
@@ -4393,7 +4403,7 @@ namespace DRC
                 max_bound_x = Math.Log10(MinConcentrationLin) - 1.0;
             }
 
-            if (fit_bounds.Count() > 0 && manual_bounds == false)
+            if (fit_bounds.Count() > 0 && manual_bounds)
             {
                 min_bound_y = fit_bounds["min_y"];
                 max_bound_y = fit_bounds["max_y"];
@@ -4401,7 +4411,6 @@ namespace DRC
                 min_bound_x = fit_bounds["min_x"];
                 max_bound_x = fit_bounds["max_x"];
             }
-            
 
             double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
             double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };

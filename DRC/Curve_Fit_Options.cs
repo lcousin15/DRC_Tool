@@ -43,6 +43,8 @@ namespace DRC
         private void btn_apply_Click(object sender, EventArgs e)
         {
             chart.set_bound_status(false);
+            chart.set_manual_bound(true);
+            chart.set_general_params(false);
 
             bound_min_x = Math.Log10(Double.Parse(txt_min_bound_x.Text));
             bound_max_x = Math.Log10(Double.Parse(txt_max_bound_x.Text));
@@ -61,6 +63,7 @@ namespace DRC
         {
             chart.set_bound_status(true);
             chart.set_manual_bound(true);
+            chart.set_general_params(false);
 
             chart.draw_DRC(false, false);
 
