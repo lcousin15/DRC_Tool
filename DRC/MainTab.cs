@@ -4066,12 +4066,26 @@ namespace DRC
         private double min_bound_y = 0.0;
         private double max_bound_y = 0.0;
 
+        private static double fixed_top = 1.0;
+
         private Dictionary<string, double> fit_bounds;
 
         private bool manual_bounds = false;
         private bool bound_auto = true;
 
         private bool general_params;
+
+        private bool is_top_fixed = false;
+
+        public void set_top_fixed(bool test)
+        {
+            is_top_fixed = test;
+        }
+
+        public void set_top_fixed_value(double val)
+        {
+            fixed_top = val;
+        }
 
         public void set_general_params(bool test)
         {
@@ -4461,7 +4475,12 @@ namespace DRC
         {
             func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
         }
-
+        /*
+        private static void function_SigmoidInhibition_top_Fixed( double[] c, double[] x, ref double func, object obj)
+        {
+            func = c[0] + ((fixed_top - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
+        }
+        */
         private double Sigmoid(double[] c, double x)
         {
             double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
@@ -4518,6 +4537,13 @@ namespace DRC
             // boundaries
             bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +100.0 };
             bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -100.0 };
+
+            if (is_top_fixed)
+            {
+                //c[1] = fixed_top;
+                bndu[1] = fixed_top;
+                bndl[1] = fixed_top;
+            }
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;

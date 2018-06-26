@@ -19,6 +19,8 @@ namespace DRC
         private double bound_min_y;
         private double bound_max_y;
 
+        private double top_fixed;
+
         public Curve_Fit_Options(Chart_DRC my_chart)
         {
             InitializeComponent();
@@ -48,6 +50,7 @@ namespace DRC
             chart.set_bound_status(false);
             chart.set_manual_bound(true);
             chart.set_general_params(false);
+            chart.set_top_fixed(false);
 
             bound_min_x = Math.Log10(Double.Parse(txt_min_bound_x.Text));
             bound_max_x = Math.Log10(Double.Parse(txt_max_bound_x.Text));
@@ -67,6 +70,7 @@ namespace DRC
             chart.set_bound_status(true);
             chart.set_manual_bound(true);
             chart.set_general_params(false);
+            chart.set_top_fixed(false);
 
             chart.draw_DRC(false, false);
 
@@ -79,6 +83,20 @@ namespace DRC
             bound_max_x = Math.Pow(10, chart.get_max_bound_x());
             bound_min_y = chart.get_min_bound_y();
             bound_max_y = chart.get_max_bound_y();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            top_fixed = double.Parse(text_box_fix_top.Text.ToString());
+
+            chart.set_bound_status(true);
+            chart.set_manual_bound(true);
+            chart.set_general_params(false);
+            chart.set_top_fixed(true);
+
+            chart.set_top_fixed_value(top_fixed);
+
+            chart.draw_DRC(false, false);
         }
     }
 }
