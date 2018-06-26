@@ -20,5 +20,15 @@ namespace DRC
 
             _main_tab = main_tab;
         }
+
+        private void btn_apply_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btn_ok_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

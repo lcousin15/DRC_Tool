@@ -3469,7 +3469,7 @@ namespace DRC
                         foreach (Chart_DRC current_chart in current_cpd_charts)
                         {
                             string current_descriptor = current_chart.get_Descriptor_Name();
-                            if(current_descriptor==descriptor_name) current_chart.re_fill_color(new_color);
+                            if (current_descriptor == descriptor_name) current_chart.re_fill_color(new_color);
                         }
                     }
                 }
@@ -3500,6 +3500,28 @@ namespace DRC
                         current_chart.set_window_x_max(window_max_x);
                         current_chart.set_window_y_min(window_min_y);
                         current_chart.set_window_y_max(window_max_y);
+
+                        current_chart.draw_DRC(false, false);
+                    }
+                }
+            }
+        }
+
+        public void apply_descriptor_fixed_top(string descriptor_name, double fixed_top)
+        {
+            foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
+            {
+                string cpd_id = elem.Key;
+                List<Chart_DRC> cpd_charts = elem.Value;
+
+                foreach (Chart_DRC current_chart in cpd_charts)
+                {
+                    if (current_chart.get_Descriptor_Name() == descriptor_name)
+                    {
+                        //current_chart.set_general_params(true);
+
+                        current_chart.set_top_fixed(true);
+                        current_chart.set_top_fixed_value(fixed_top);
 
                         current_chart.draw_DRC(false, false);
                     }
@@ -3548,12 +3570,43 @@ namespace DRC
 
                     descriptors_fix_top_form.Controls.Add(text_boxfix_top);
 
+                    Button apply_button = new Button();
+                    apply_button.Location = new Point(200, 15 + (counter + 1) * 25);
+                    apply_button.Name = "button_apply_descriptor_" + descritpor_name;
+                    apply_button.Text = "Apply";
+
+                    apply_button.Click += new EventHandler(this.btn_clicked_fix_top);
+
+                    descriptors_fix_top_form.Controls.Add(apply_button);
+
                     counter++;
                 }
 
             }
 
             descriptors_fix_top_form.Visible = true;
+        }
+
+        private void btn_clicked_fix_top(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+
+            foreach (string descriptor_name in descriptor_list)
+            {
+                if (btn.Name == "button_apply_descriptor_" + descriptor_name)
+                {
+                    double fixed_top = 0.0;
+
+                    if (descriptors_fix_top_form.Controls.ContainsKey("txt_box_fix_top_descriptor_" + descriptor_name))
+                    {
+                        TextBox txt_box = descriptors_fix_top_form.Controls["txt_box_fix_top_descriptor_" + descriptor_name] as TextBox;
+                        bool is_converted = double.TryParse(txt_box.Text.ToString(), out fixed_top);
+                    }
+
+                    apply_descriptor_fixed_top(descriptor_name, fixed_top);
+                }
+            }
+
         }
 
     }
@@ -4559,6 +4612,7 @@ namespace DRC
             }
 
             int NumDimension = 1;
+
             alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
             alglib.lsfitsetcond(state, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
