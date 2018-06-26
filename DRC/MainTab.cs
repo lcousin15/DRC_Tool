@@ -3331,7 +3331,7 @@ namespace DRC
                     TextBox text_box_bnd_min_x = new TextBox();
                     text_box_bnd_min_x.Location = new Point(90, 15 + (counter + 1) * 25);
                     text_box_bnd_min_x.Name = "txt_box_bnd_min_x_descriptor_" + descritpor_name;
-                    text_box_bnd_min_x.Text = dict_descriptor_min_bnd_x[descritpor_name].Max().ToString();
+                    text_box_bnd_min_x.Text = dict_descriptor_min_bnd_x[descritpor_name].Min().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_min_x);
 
@@ -3346,7 +3346,7 @@ namespace DRC
                     TextBox text_box_bnd_min_y = new TextBox();
                     text_box_bnd_min_y.Location = new Point(390, 15 + (counter + 1) * 25);
                     text_box_bnd_min_y.Name = "txt_box_bnd_min_y_descriptor_" + descritpor_name;
-                    text_box_bnd_min_y.Text = dict_descriptor_min_bnd_y[descritpor_name].Max().ToString();
+                    text_box_bnd_min_y.Text = dict_descriptor_min_bnd_y[descritpor_name].Min().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_min_y);
 
@@ -3405,7 +3405,7 @@ namespace DRC
                     TextBox text_box_window_min_x = new TextBox();
                     text_box_window_min_x.Location = new Point(90, 40 + (counter + 1) * 25);
                     text_box_window_min_x.Name = "txt_box_window_min_x_descriptor_" + descritpor_name;
-                    text_box_window_min_x.Text = dict_descriptor_min_window_x[descritpor_name].Max().ToString();
+                    text_box_window_min_x.Text = dict_descriptor_min_window_x[descritpor_name].Min().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_min_x);
 
@@ -3419,7 +3419,7 @@ namespace DRC
                     TextBox text_box_window_min_y = new TextBox();
                     text_box_window_min_y.Location = new Point(390, 40 + (counter + 1) * 25);
                     text_box_window_min_y.Name = "txt_box_window_min_y_descriptor_" + descritpor_name;
-                    text_box_window_min_y.Text = dict_descriptor_min_window_y[descritpor_name].Max().ToString();
+                    text_box_window_min_y.Text = dict_descriptor_min_window_y[descritpor_name].Min().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_min_y);
 
