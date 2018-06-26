@@ -3212,12 +3212,12 @@ namespace DRC
                 {
                     List<Chart_DRC> current_cpd_charts = elem.Value;
 
-                    foreach(Chart_DRC current_chart in current_cpd_charts)
+                    foreach (Chart_DRC current_chart in current_cpd_charts)
                     {
                         string descriptor_name = current_chart.get_Descriptor_Name();
 
                         // Min bound x :
-                        if(dict_descriptor_min_bnd_x.ContainsKey(descriptor_name))
+                        if (dict_descriptor_min_bnd_x.ContainsKey(descriptor_name))
                         {
                             dict_descriptor_min_bnd_x[descriptor_name].Add(current_chart.get_min_bound_x());
                         }
@@ -3440,19 +3440,19 @@ namespace DRC
         public void apply_descritpor_general_options(string descriptor_name, double bnd_min_x, double bnd_max_x, double bnd_min_y, double bnd_max_y,
                 double window_min_x, double window_max_x, double window_min_y, double window_max_y)
         {
-            foreach(KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
+            foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
             {
                 string cpd_id = elem.Key;
                 List<Chart_DRC> cpd_charts = elem.Value;
 
-                foreach(Chart_DRC current_chart in cpd_charts)
+                foreach (Chart_DRC current_chart in cpd_charts)
                 {
                     if (current_chart.get_Descriptor_Name() == descriptor_name)
                     {
                         current_chart.set_general_params(true);
 
-                        current_chart.set_min_bound_x(bnd_min_x);
-                        current_chart.set_max_bound_x(bnd_max_x);
+                        current_chart.set_min_bound_x(Math.Log10(bnd_min_x));
+                        current_chart.set_max_bound_x(Math.Log10(bnd_max_x));
                         current_chart.set_min_bound_y(bnd_min_y);
                         current_chart.set_max_bound_y(bnd_max_y);
 
@@ -3988,7 +3988,7 @@ namespace DRC
         {
             general_params = test;
 
-            if(test)
+            if (test)
             {
                 manual_bounds = false;
                 bound_auto = false;
@@ -4027,25 +4027,33 @@ namespace DRC
 
         public void set_min_bound_x(double x_min)
         {
-            min_bound_x = Math.Log10(x_min);
+            min_bound_x = x_min;
+            fit_bounds["min_x"] = x_min;
+
             if (general_params == false) manual_bounds = true;
         }
 
         public void set_max_bound_x(double x_max)
         {
-            max_bound_x = Math.Log10(x_max);
-            if(general_params==false) manual_bounds = true;
+            max_bound_x = x_max;
+            fit_bounds["max_x"] = x_max;
+
+            if (general_params == false) manual_bounds = true;
         }
 
         public void set_min_bound_y(double y_min)
         {
             min_bound_y = y_min;
+            fit_bounds["min_y"] = y_min;
+
             if (general_params == false) manual_bounds = true;
         }
 
         public void set_max_bound_y(double y_max)
         {
             max_bound_y = y_max;
+            fit_bounds["max_y"] = y_max;
+
             if (general_params == false) manual_bounds = true;
         }
 
@@ -5571,7 +5579,6 @@ namespace DRC
 
                     if (fc == null)
                         options_form = new Curves_Options(this);
-
 
                     minX = chart.ChartAreas[0].AxisX.Minimum;
                     minY = chart.ChartAreas[0].AxisY.Minimum;

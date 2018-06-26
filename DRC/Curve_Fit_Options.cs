@@ -24,6 +24,9 @@ namespace DRC
             InitializeComponent();
             chart = my_chart;
 
+            chart.set_manual_bound(true);
+            chart.set_bound_status(false);
+
             txt_min_bound_x.Text = Math.Pow(10, chart.get_min_bound_x()).ToString();
             txt_max_bound_x.Text = Math.Pow(10, chart.get_max_bound_x()).ToString();
             txt_min_bound_y.Text = chart.get_min_bound_y().ToString();
