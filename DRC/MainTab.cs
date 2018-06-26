@@ -5712,7 +5712,11 @@ namespace DRC
                             _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
                         }
 
-                        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+                        string sign = "";
+
+                        if (is_ec50_exact == true) sign = "=";
+                        else sign = ">";
+                        annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
                     }
                 }
 
@@ -5804,7 +5808,11 @@ namespace DRC
                             _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
                         }
 
-                        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+                        string sign = "";
+
+                        if (is_ec50_exact == true) sign = "=";
+                        else sign = ">";
+                        annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
                     }
                 }
 
