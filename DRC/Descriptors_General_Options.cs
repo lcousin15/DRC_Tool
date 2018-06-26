@@ -37,6 +37,11 @@ namespace DRC
 
         private void btn_apply_Click(object sender, EventArgs e)
         {
+            double idx = 0;
+            double descriptor_number = _main_tab.get_descriptor_list().Count;
+
+            toolStripProgressBar1.Visible = true;
+
             foreach (string item in _main_tab.get_descriptor_list())
             {
                 //-------------------------- Fit Bounds Parameters --------------------------//
@@ -93,8 +98,13 @@ namespace DRC
 
                 _main_tab.apply_descritpor_general_options(item, bnd_min_x, bnd_max_x, bnd_min_y, bnd_max_y,
                     window_min_x, window_max_x, window_min_y, window_max_y); // item = descriptor name
+
+                idx++;
+                toolStripProgressBar1.Value = (int)(100 * idx / descriptor_number);
+
             }
 
+            toolStripProgressBar1.Visible = false;
         }
     };
 
