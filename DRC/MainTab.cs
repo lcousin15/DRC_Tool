@@ -104,6 +104,7 @@ namespace DRC
         public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
 
         public Descriptors_General_Options descriptors_general_options_form;
+        public Descriptors_Fix_Top_Options descriptors_fix_top_form;
 
         private string current_cpd_id;
         private Dictionary<string, int> cpd_row_index = new Dictionary<string, int>();
@@ -3165,6 +3166,8 @@ namespace DRC
             {
                 descriptors_general_options_form = new Descriptors_General_Options(this);
 
+                if (descriptors_chart.Count() < 1) return;
+
                 Label label_bnd_min_x = new Label();
                 label_bnd_min_x.Location = new Point(100, 20);
                 label_bnd_min_x.Text = "Bound Min X";
@@ -3196,7 +3199,6 @@ namespace DRC
                 descriptors_general_options_form.Controls.Add(label_bnd_max_y);
 
                 int counter = 0;
-
 
                 Dictionary<string, List<double>> dict_descriptor_min_bnd_x = new Dictionary<string, List<double>>();
                 Dictionary<string, List<double>> dict_descriptor_max_bnd_x = new Dictionary<string, List<double>>();
@@ -3430,11 +3432,49 @@ namespace DRC
 
                     descriptors_general_options_form.Controls.Add(text_box_window_max_y);
 
+                    Button color_button = new Button();
+                    color_button.Location = new Point(690, 40 + (counter + 1) * 25);
+                    color_button.Name = "button_color_descriptor_" + descritpor_name;
+                    color_button.Text = "Color";
+
+                    color_button.Click += new EventHandler(this.btn_clicked);
+
+                    descriptors_general_options_form.Controls.Add(color_button);
+
                     counter++;
                 }
 
                 descriptors_general_options_form.Visible = true;
             }
+        }
+
+        private void btn_clicked(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+
+            foreach (string descriptor_name in descriptor_list)
+            {
+                if (btn.Name == "button_color_descriptor_" + descriptor_name)
+                {
+                    ColorDialog dlg = new ColorDialog();
+                    dlg.ShowDialog();
+
+                    Color new_color = dlg.Color;
+
+
+                    foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
+                    {
+                        List<Chart_DRC> current_cpd_charts = elem.Value;
+
+                        foreach (Chart_DRC current_chart in current_cpd_charts)
+                        {
+                            string current_descriptor = current_chart.get_Descriptor_Name();
+                            if(current_descriptor==descriptor_name) current_chart.re_fill_color(new_color);
+                        }
+                    }
+                }
+            }
+
         }
 
         public void apply_descritpor_general_options(string descriptor_name, double bnd_min_x, double bnd_max_x, double bnd_min_y, double bnd_max_y,
@@ -3465,8 +3505,57 @@ namespace DRC
                     }
                 }
             }
-
         }
+
+        private void btn_fix_top_bottom_Click(object sender, EventArgs e)
+        {
+            Form fc = Application.OpenForms["Descriptors_General_Options"];
+
+            if (fc == null)
+            {
+                descriptors_fix_top_form = new Descriptors_Fix_Top_Options(this);
+
+                Label label_window_min_x = new Label();
+                label_window_min_x.Location = new Point(100, 20);
+                label_window_min_x.Text = "Top/Bottom";
+                label_window_min_x.Name = "lbl_fix_top_bottom";
+                label_window_min_x.AutoSize = true;
+
+                descriptors_fix_top_form.Controls.Add(label_window_min_x);
+
+                int counter = 0;
+
+                List<Chart_DRC> list_chart;
+                if (descriptors_chart.Count() > 0) list_chart = descriptors_chart[descriptors_chart.First().Key];
+                else return;
+
+                foreach (Chart_DRC current_chart in list_chart)
+                {
+                    string descritpor_name = current_chart.get_Descriptor_Name();
+
+                    Label new_label = new Label();
+                    new_label.Location = new Point(10, 20 + (counter + 1) * 25);
+                    new_label.Text = descritpor_name;
+                    new_label.Name = "lbl_descriptor_" + descritpor_name;
+                    new_label.AutoSize = true;
+
+                    descriptors_fix_top_form.Controls.Add(new_label);
+
+                    TextBox text_boxfix_top = new TextBox();
+                    text_boxfix_top.Location = new Point(90, 15 + (counter + 1) * 25);
+                    text_boxfix_top.Name = "txt_box_fix_top_descriptor_" + descritpor_name;
+                    text_boxfix_top.Text = "0.0";
+
+                    descriptors_fix_top_form.Controls.Add(text_boxfix_top);
+
+                    counter++;
+                }
+
+            }
+
+            descriptors_fix_top_form.Visible = true;
+        }
+
     }
 
     public class Chart_DRC_Overlap

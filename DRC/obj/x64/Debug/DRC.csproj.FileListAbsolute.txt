@@ -236,3 +236,4 @@ E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.pdb
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csprojResolveAssemblyReference.cache
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Descriptors_General_Options.resources
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\opencv_ffmpeg341_64.dll
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Descriptors_Fix_Top_Options.resources

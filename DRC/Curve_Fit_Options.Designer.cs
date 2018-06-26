@@ -82,20 +82,20 @@
             // lbl_max_bound_x
             // 
             this.lbl_max_bound_x.AutoSize = true;
-            this.lbl_max_bound_x.Location = new System.Drawing.Point(12, 36);
+            this.lbl_max_bound_x.Location = new System.Drawing.Point(12, 12);
             this.lbl_max_bound_x.Name = "lbl_max_bound_x";
             this.lbl_max_bound_x.Size = new System.Drawing.Size(80, 13);
             this.lbl_max_bound_x.TabIndex = 16;
-            this.lbl_max_bound_x.Text = "Upper Bound X";
+            this.lbl_max_bound_x.Text = "Lower Bound X";
             // 
             // lbl_min_bound_x
             // 
             this.lbl_min_bound_x.AutoSize = true;
-            this.lbl_min_bound_x.Location = new System.Drawing.Point(12, 9);
+            this.lbl_min_bound_x.Location = new System.Drawing.Point(12, 38);
             this.lbl_min_bound_x.Name = "lbl_min_bound_x";
             this.lbl_min_bound_x.Size = new System.Drawing.Size(80, 13);
             this.lbl_min_bound_x.TabIndex = 15;
-            this.lbl_min_bound_x.Text = "Lower Bound X";
+            this.lbl_min_bound_x.Text = "Upper Bound X";
             // 
             // txt_max_bound_y
             // 
@@ -113,14 +113,14 @@
             // 
             // txt_max_bound_x
             // 
-            this.txt_max_bound_x.Location = new System.Drawing.Point(104, 33);
+            this.txt_max_bound_x.Location = new System.Drawing.Point(104, 9);
             this.txt_max_bound_x.Name = "txt_max_bound_x";
             this.txt_max_bound_x.Size = new System.Drawing.Size(100, 20);
             this.txt_max_bound_x.TabIndex = 12;
             // 
             // txt_min_bound_x
             // 
-            this.txt_min_bound_x.Location = new System.Drawing.Point(104, 6);
+            this.txt_min_bound_x.Location = new System.Drawing.Point(103, 35);
             this.txt_min_bound_x.Name = "txt_min_bound_x";
             this.txt_min_bound_x.Size = new System.Drawing.Size(100, 20);
             this.txt_min_bound_x.TabIndex = 11;
