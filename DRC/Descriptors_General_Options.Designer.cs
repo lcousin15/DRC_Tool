@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.btn_ok = new System.Windows.Forms.Button();
+            this.btn_apply = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_ok
@@ -41,11 +42,22 @@
             this.btn_ok.UseVisualStyleBackColor = true;
             this.btn_ok.Click += new System.EventHandler(this.btn_ok_Click);
             // 
+            // btn_apply
+            // 
+            this.btn_apply.Location = new System.Drawing.Point(497, 530);
+            this.btn_apply.Name = "btn_apply";
+            this.btn_apply.Size = new System.Drawing.Size(82, 25);
+            this.btn_apply.TabIndex = 1;
+            this.btn_apply.Text = "Apply";
+            this.btn_apply.UseVisualStyleBackColor = true;
+            this.btn_apply.Click += new System.EventHandler(this.btn_apply_Click);
+            // 
             // Descriptors_General_Options
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 565);
+            this.Controls.Add(this.btn_apply);
             this.Controls.Add(this.btn_ok);
             this.Name = "Descriptors_General_Options";
             this.Text = "Descriptors_General_Options";
@@ -56,5 +68,6 @@
         #endregion
 
         private System.Windows.Forms.Button btn_ok;
+        private System.Windows.Forms.Button btn_apply;
     }
 }

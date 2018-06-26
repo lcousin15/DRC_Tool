@@ -3197,6 +3197,123 @@ namespace DRC
 
                 int counter = 0;
 
+
+                Dictionary<string, List<double>> dict_descriptor_min_bnd_x = new Dictionary<string, List<double>>();
+                Dictionary<string, List<double>> dict_descriptor_max_bnd_x = new Dictionary<string, List<double>>();
+                Dictionary<string, List<double>> dict_descriptor_min_bnd_y = new Dictionary<string, List<double>>();
+                Dictionary<string, List<double>> dict_descriptor_max_bnd_y = new Dictionary<string, List<double>>();
+
+                Dictionary<string, List<double>> dict_descriptor_min_window_x = new Dictionary<string, List<double>>();
+                Dictionary<string, List<double>> dict_descriptor_max_window_x = new Dictionary<string, List<double>>();
+                Dictionary<string, List<double>> dict_descriptor_min_window_y = new Dictionary<string, List<double>>();
+                Dictionary<string, List<double>> dict_descriptor_max_window_y = new Dictionary<string, List<double>>();
+
+                foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
+                {
+                    List<Chart_DRC> current_cpd_charts = elem.Value;
+
+                    foreach(Chart_DRC current_chart in current_cpd_charts)
+                    {
+                        string descriptor_name = current_chart.get_Descriptor_Name();
+
+                        // Min bound x :
+                        if(dict_descriptor_min_bnd_x.ContainsKey(descriptor_name))
+                        {
+                            dict_descriptor_min_bnd_x[descriptor_name].Add(current_chart.get_min_bound_x());
+                        }
+                        else
+                        {
+                            List<double> list_min_x = new List<double>();
+                            list_min_x.Add(current_chart.get_min_bound_x());
+                            dict_descriptor_min_bnd_x[descriptor_name] = list_min_x;
+                        }
+
+                        // Max bound x :
+                        if (dict_descriptor_max_bnd_x.ContainsKey(descriptor_name))
+                        {
+                            dict_descriptor_max_bnd_x[descriptor_name].Add(current_chart.get_max_bound_x());
+                        }
+                        else
+                        {
+                            List<double> list_max_x = new List<double>();
+                            list_max_x.Add(current_chart.get_max_bound_x());
+                            dict_descriptor_max_bnd_x[descriptor_name] = list_max_x;
+                        }
+
+                        // Min bound y :
+                        if (dict_descriptor_min_bnd_y.ContainsKey(descriptor_name))
+                        {
+                            dict_descriptor_min_bnd_y[descriptor_name].Add(current_chart.get_min_bound_y());
+                        }
+                        else
+                        {
+                            List<double> list_min_y = new List<double>();
+                            list_min_y.Add(current_chart.get_min_bound_y());
+                            dict_descriptor_min_bnd_y[descriptor_name] = list_min_y;
+                        }
+
+                        // Max bound y :
+                        if (dict_descriptor_max_bnd_y.ContainsKey(descriptor_name))
+                        {
+                            dict_descriptor_max_bnd_y[descriptor_name].Add(current_chart.get_max_bound_y());
+                        }
+                        else
+                        {
+                            List<double> list_max_y = new List<double>();
+                            list_max_y.Add(current_chart.get_max_bound_y());
+                            dict_descriptor_max_bnd_y[descriptor_name] = list_max_y;
+                        }
+
+                        // Min window x :
+                        if (dict_descriptor_min_window_x.ContainsKey(descriptor_name))
+                        {
+                            dict_descriptor_min_window_x[descriptor_name].Add(current_chart.get_window_x_min());
+                        }
+                        else
+                        {
+                            List<double> list_min_x = new List<double>();
+                            list_min_x.Add(current_chart.get_window_x_min());
+                            dict_descriptor_min_window_x[descriptor_name] = list_min_x;
+                        }
+
+                        // Max window x :
+                        if (dict_descriptor_max_window_x.ContainsKey(descriptor_name))
+                        {
+                            dict_descriptor_max_window_x[descriptor_name].Add(current_chart.get_window_x_max());
+                        }
+                        else
+                        {
+                            List<double> list_max_x = new List<double>();
+                            list_max_x.Add(current_chart.get_window_x_max());
+                            dict_descriptor_max_window_x[descriptor_name] = list_max_x;
+                        }
+
+                        // Min window y :
+                        if (dict_descriptor_min_window_y.ContainsKey(descriptor_name))
+                        {
+                            dict_descriptor_min_window_y[descriptor_name].Add(current_chart.get_window_y_min());
+                        }
+                        else
+                        {
+                            List<double> list_min_y = new List<double>();
+                            list_min_y.Add(current_chart.get_window_y_min());
+                            dict_descriptor_min_window_y[descriptor_name] = list_min_y;
+                        }
+
+                        // Max window y :
+                        if (dict_descriptor_max_window_y.ContainsKey(descriptor_name))
+                        {
+                            dict_descriptor_max_window_y[descriptor_name].Add(current_chart.get_window_y_max());
+                        }
+                        else
+                        {
+                            List<double> list_max_y = new List<double>();
+                            list_max_y.Add(current_chart.get_window_y_max());
+                            dict_descriptor_max_window_y[descriptor_name] = list_max_y;
+                        }
+                    }
+                }
+
                 List<Chart_DRC> list_chart = descriptors_chart[descriptors_chart.First().Key];
 
                 foreach (Chart_DRC current_chart in list_chart)
@@ -3214,14 +3331,14 @@ namespace DRC
                     TextBox text_box_bnd_min_x = new TextBox();
                     text_box_bnd_min_x.Location = new Point(90, 15 + (counter + 1) * 25);
                     text_box_bnd_min_x.Name = "txt_box_bnd_min_x_descriptor_" + descritpor_name;
-                    text_box_bnd_min_x.Text = current_chart.get_min_bound_x().ToString();
+                    text_box_bnd_min_x.Text = dict_descriptor_min_bnd_x[descritpor_name].Max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_min_x);
 
                     TextBox text_box_bnd_max_x = new TextBox();
                     text_box_bnd_max_x.Location = new Point(240, 15 + (counter + 1) * 25);
                     text_box_bnd_max_x.Name = "txt_box_bnd_max_x_descriptor_" + descritpor_name;
-                    text_box_bnd_max_x.Text = current_chart.get_max_bound_x().ToString();
+                    text_box_bnd_max_x.Text = dict_descriptor_max_bnd_x[descritpor_name].Max().ToString();
 
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_max_x);
@@ -3229,14 +3346,14 @@ namespace DRC
                     TextBox text_box_bnd_min_y = new TextBox();
                     text_box_bnd_min_y.Location = new Point(390, 15 + (counter + 1) * 25);
                     text_box_bnd_min_y.Name = "txt_box_bnd_min_y_descriptor_" + descritpor_name;
-                    text_box_bnd_min_y.Text = current_chart.get_min_bound_y().ToString();
+                    text_box_bnd_min_y.Text = dict_descriptor_min_bnd_y[descritpor_name].Max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_min_y);
 
                     TextBox text_box_bnd_max_y = new TextBox();
                     text_box_bnd_max_y.Location = new Point(540, 15 + (counter + 1) * 25);
                     text_box_bnd_max_y.Name = "txt_box_bnd_max_y_descriptor_" + descritpor_name;
-                    text_box_bnd_max_y.Text = current_chart.get_max_bound_y().ToString();
+                    text_box_bnd_max_y.Text = dict_descriptor_max_bnd_y[descritpor_name].Max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_bnd_max_y);
 
@@ -3288,28 +3405,28 @@ namespace DRC
                     TextBox text_box_window_min_x = new TextBox();
                     text_box_window_min_x.Location = new Point(90, 40 + (counter + 1) * 25);
                     text_box_window_min_x.Name = "txt_box_window_min_x_descriptor_" + descritpor_name;
-                    text_box_window_min_x.Text = current_chart.get_window_x_min().ToString();
+                    text_box_window_min_x.Text = dict_descriptor_min_window_x[descritpor_name].Max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_min_x);
 
                     TextBox text_box_window_max_x = new TextBox();
                     text_box_window_max_x.Location = new Point(240, 40 + (counter + 1) * 25);
                     text_box_window_max_x.Name = "txt_box_window_max_x_descriptor_" + descritpor_name;
-                    text_box_window_max_x.Text = current_chart.get_window_x_max().ToString();
+                    text_box_window_max_x.Text = dict_descriptor_max_window_x[descritpor_name].Max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_max_x);
 
                     TextBox text_box_window_min_y = new TextBox();
                     text_box_window_min_y.Location = new Point(390, 40 + (counter + 1) * 25);
                     text_box_window_min_y.Name = "txt_box_window_min_y_descriptor_" + descritpor_name;
-                    text_box_window_min_y.Text = current_chart.get_window_y_min().ToString();
+                    text_box_window_min_y.Text = dict_descriptor_min_window_y[descritpor_name].Max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_min_y);
 
                     TextBox text_box_window_max_y = new TextBox();
                     text_box_window_max_y.Location = new Point(540, 40 + (counter + 1) * 25);
                     text_box_window_max_y.Name = "txt_box_window_max_y_descriptor_" + descritpor_name;
-                    text_box_window_max_y.Text = current_chart.get_window_y_max().ToString();
+                    text_box_window_max_y.Text = dict_descriptor_max_window_y[descritpor_name].Max().ToString();
 
                     descriptors_general_options_form.Controls.Add(text_box_window_max_y);
 
@@ -3320,7 +3437,7 @@ namespace DRC
             }
         }
 
-        public void apply_descritpor_general_options(double bnd_min_x, double bnd_max_x, double bnd_min_y, double bnd_max_y,
+        public void apply_descritpor_general_options(string descriptor_name, double bnd_min_x, double bnd_max_x, double bnd_min_y, double bnd_max_y,
                 double window_min_x, double window_max_x, double window_min_y, double window_max_y)
         {
             foreach(KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
@@ -3330,19 +3447,22 @@ namespace DRC
 
                 foreach(Chart_DRC current_chart in cpd_charts)
                 {
-                    current_chart.set_general_params(true);
+                    if (current_chart.get_Descriptor_Name() == descriptor_name)
+                    {
+                        current_chart.set_general_params(true);
 
-                    current_chart.set_min_bound_x(bnd_min_x);
-                    current_chart.set_max_bound_x(bnd_max_x);
-                    current_chart.set_min_bound_y(bnd_min_y);
-                    current_chart.set_max_bound_y(bnd_max_y);
+                        current_chart.set_min_bound_x(bnd_min_x);
+                        current_chart.set_max_bound_x(bnd_max_x);
+                        current_chart.set_min_bound_y(bnd_min_y);
+                        current_chart.set_max_bound_y(bnd_max_y);
 
-                    current_chart.set_window_x_min(window_min_x);
-                    current_chart.set_window_x_max(window_max_x);
-                    current_chart.set_window_y_min(window_min_y);
-                    current_chart.set_window_y_max(window_max_y);
+                        current_chart.set_window_x_min(window_min_x);
+                        current_chart.set_window_x_max(window_max_x);
+                        current_chart.set_window_y_min(window_min_y);
+                        current_chart.set_window_y_max(window_max_y);
 
-                    current_chart.fit_DRC();
+                        current_chart.draw_DRC(false, false);
+                    }
                 }
             }
 
@@ -3849,8 +3969,8 @@ namespace DRC
 
         private double minX = -1;
         private double maxX = -1;
-        private double minY = 0.0;
-        private double maxY = 1.0;
+        private double minY = -10;
+        private double maxY = -10;
 
         private double min_bound_x = 0.0;
         private double max_bound_x = 0.0;
@@ -4764,6 +4884,8 @@ namespace DRC
 
             //----------------------------- Axis Labels ---------------------------//
 
+            chart.ChartAreas[0].RecalculateAxesScale();
+
             double min_x = 0.0;
             double max_x = 0.0;
 
@@ -4787,7 +4909,6 @@ namespace DRC
                 else
                 {
                     minX = chart.ChartAreas[0].AxisX.Minimum;
-                    minY = chart.ChartAreas[0].AxisY.Minimum;
                 }
 
                 if (maxX < -0.5)
@@ -4797,6 +4918,15 @@ namespace DRC
                 else
                 {
                     maxX = chart.ChartAreas[0].AxisX.Maximum;
+                }
+
+                if (minY < -9.99)
+                {
+                    minY = chart.ChartAreas[0].AxisY.Minimum;
+                }
+
+                if (maxY < -9.99)
+                {
                     maxY = chart.ChartAreas[0].AxisY.Maximum;
                 }
             }

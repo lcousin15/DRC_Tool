@@ -32,7 +32,11 @@ namespace DRC
 
         private void btn_ok_Click(object sender, EventArgs e)
         {
+            this.Close();
+        }
 
+        private void btn_apply_Click(object sender, EventArgs e)
+        {
             foreach (string item in _main_tab.get_descriptor_list())
             {
                 //-------------------------- Fit Bounds Parameters --------------------------//
@@ -86,13 +90,11 @@ namespace DRC
                     TextBox txt_box = this.Controls["txt_box_window_max_y_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out window_max_y);
                 }
-   
+
+                _main_tab.apply_descritpor_general_options(item, bnd_min_x, bnd_max_x, bnd_min_y, bnd_max_y,
+                    window_min_x, window_max_x, window_min_y, window_max_y); // item = descriptor name
             }
 
-            _main_tab.apply_descritpor_general_options(bnd_min_x, bnd_max_x, bnd_min_y, bnd_max_y,
-                window_min_x, window_max_x, window_min_y, window_max_y);
-
-            this.Close();
         }
     };
 
