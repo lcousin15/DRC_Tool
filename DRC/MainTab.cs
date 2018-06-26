@@ -5027,7 +5027,12 @@ namespace DRC
             }
 
             // Setup visual attributes
-            annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+            string sign = "";
+
+            if (is_ec50_exact == true) sign = "=";
+            else sign = ">";
+
+            annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
             annotation_ec50.BackColor = Color.FromArgb(240, 240, 240);
             annotation_ec50.AnchorX = 40;
 
