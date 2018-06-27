@@ -4125,7 +4125,6 @@ namespace DRC
         }
     }
 
-
     public class Chart_DRC
     {
         MainTab _form1 = new MainTab();
@@ -4603,6 +4602,12 @@ namespace DRC
             //chart.ChartAreas[0].AxisY.Maximum = +1;
 
             //draw_DRC(false, false);
+
+            chart.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+            chart.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+
+            chart.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.LightGray;
+            chart.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.LightGray;
 
             general_params = false;
 
@@ -6490,7 +6495,7 @@ namespace DRC
             Axis xAxis = new Axis(chartArea, AxisName.X);
 
             chartArea.AxisX.LabelStyle.Format = "N2";
-            chartArea.AxisX.Title = "Concentatrion";
+            chartArea.AxisX.Title = "Concentration";
             chartArea.AxisY.Title = "Response";
 
             //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
