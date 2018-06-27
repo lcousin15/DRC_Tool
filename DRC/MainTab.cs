@@ -116,6 +116,7 @@ namespace DRC
         private List<string> deslected_data_descriptor;
         private List<string> status_ec_50_descritpor;
         private List<string> bounds_descriptor;
+        private List<string> fixed_top_descriptor;
 
         private string input_filename;
         private string output_filename;
@@ -205,6 +206,7 @@ namespace DRC
             deslected_data_descriptor = new List<string>();
             status_ec_50_descritpor = new List<string>();
             bounds_descriptor = new List<string>();
+            fixed_top_descriptor = new List<string>();
 
             if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
                 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
@@ -246,7 +248,7 @@ namespace DRC
 
                 if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run"
                     && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected")
-                    && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound"))
+                    && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound") && !col_name.StartsWith("Fixed_Top"))
                 {
                     checkedListBox1.Items.Add(col_name);
                 }
@@ -264,6 +266,11 @@ namespace DRC
                 if (col_name.StartsWith("Bound"))
                 {
                     bounds_descriptor.Add(col_name);
+                }
+
+                if (col_name.StartsWith("Fixed_Top"))
+                {
+                    fixed_top_descriptor.Add(col_name);
                 }
             }
 
@@ -287,6 +294,7 @@ namespace DRC
 
             //status_ec_50_descritpor.Clear();
             status_ec_50_descritpor = new List<string>();
+            fixed_top_descriptor = new List<string>();
 
             CPD_ID_List.Clear();
 
@@ -667,6 +675,8 @@ namespace DRC
                 List<double> concentrations_log = new List<double>();
 
                 Dictionary<string, string> ec_50_status = new Dictionary<string, string>();
+                Dictionary<string, string> fixed_top_status = new Dictionary<string, string>();
+
                 Dictionary<string, Dictionary<string, double>> fit_bounds = new Dictionary<string, Dictionary<string, double>>();
 
                 List<DataGridViewRow> raw_data_rows = new List<DataGridViewRow>();
@@ -750,6 +760,13 @@ namespace DRC
                                 fit_bounds.Add(descriptor_name, bnd_temp);
                             }
 
+                        }
+
+                        foreach (string item in fixed_top_descriptor)
+                        {
+                            string name = item.ToString();
+                            string descriptor_name = name.Remove(0, 10);
+                            fixed_top_status[descriptor_name] = row.Cells["Fixed_Top_" + descriptor_name].Value.ToString();
                         }
 
                         concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
@@ -851,8 +868,12 @@ namespace DRC
                     if (ec_50_status.ContainsKey(descriptor_name)) chart_ec_50_status = ec_50_status[descriptor_name];
                     else chart_ec_50_status = "=";
 
+                    string fixed_top;
+                    if (fixed_top_status.ContainsKey(descriptor_name)) fixed_top = fixed_top_status[descriptor_name];
+                    else fixed_top = "Not Fixed";
+
                     Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color,
-                        descriptor_index, deselected, chart_ec_50_status, bounds, this);
+                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, this);
 
                     chart_drc.set_Raw_Data(raw_data_rows);
 
@@ -921,7 +942,7 @@ namespace DRC
                 int col_index = 0;
                 foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                 {
-                    if (col.Name.StartsWith("Status_") || col.Name.StartsWith("Bound_") || col.Name.StartsWith("Deselected_"))
+                    if (col.Name.StartsWith("Status_") || col.Name.StartsWith("Bound_") || col.Name.StartsWith("Deselected_") || col.Name.StartsWith("Fixed_Top_"))
                     {
                         col_to_remove.Add(col.Name);
                         continue;
@@ -1025,6 +1046,27 @@ namespace DRC
                     }
                 }
 
+                for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
+                {
+                    string column_name = "Fixed_Top_" + descriptor_list[descriptor_index];
+
+                    if (f3.dataGridView1.Columns.Contains(column_name))
+                    {
+                        foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
+                        {
+                            myRow.Cells[column_name].Value = null;
+                        }
+
+                        //f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                    }
+                    else
+                    {
+                        dataGridView4.ColumnCount += 1;
+                        dataGridView4.Columns[col_index].Name = column_name;
+                        col_index++;
+                    }
+                }
+
                 for (var idx = 0; idx < list_cpd.Count; idx++)
                 {
                     string cpd_id = list_cpd[idx].ToString();
@@ -1081,7 +1123,6 @@ namespace DRC
 
                             ++k;
                         }
-
                     }
 
                     foreach (Chart_DRC current_chart in list_chart)
@@ -1170,12 +1211,38 @@ namespace DRC
                         }
                     }
 
+                    foreach (Chart_DRC current_chart in list_chart)
+                    {
+
+                        string descriptor_name = current_chart.get_Descriptor_Name();
+
+                        List<bool> removed_raw_data_cpd = new List<bool>();
+
+                        removed_raw_data_cpd = current_chart.get_Removed_Raw_Data().ToList();
+                        bool is_top_fixed = current_chart.top_fixed();
+
+                        int k = 0;
+
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            if (is_top_fixed) newCell.Value = current_chart.get_top_fixed();
+                            else newCell.Value = "Not Fixed";
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+                    }
+
                     foreach (KeyValuePair<int, DataGridViewRow> item in chart_row_data)
                     {
                         dataGridView4.Rows.Add(chart_row_data[item.Key]);
                     }
 
                 }
+
 
                 int columnCount = dataGridView4.ColumnCount; // - 2*col_already_present + new_columns;
                 string columnNames = "";
@@ -4130,6 +4197,16 @@ namespace DRC
 
         private bool is_top_fixed = false;
 
+        public bool top_fixed()
+        {
+            return is_top_fixed;
+        }
+
+        public double get_top_fixed()
+        {
+            return fixed_top;
+        }
+
         public void set_top_fixed(bool test)
         {
             is_top_fixed = test;
@@ -4330,7 +4407,7 @@ namespace DRC
         }
 
         public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
-            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, MainTab form)
+            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, MainTab form)
         {
             _form1 = form;
 
@@ -4353,6 +4430,19 @@ namespace DRC
 
             if (ec_50_status == "=") is_ec50_exact = true;
             else if (ec_50_status == ">") is_ec50_exact = false;
+
+            double fixed_top_val;
+            if (fix_top != "Not Fixed")
+            {
+                bool is_converted = double.TryParse(fix_top, out fixed_top_val);
+
+                fixed_top = fixed_top_val;
+
+                set_bound_status(true);
+                set_manual_bound(true);
+                set_general_params(false);
+                set_top_fixed(true);
+            }
 
             y_response = resp.ToList();
             drc_points_y_enable = resp.ToList();
