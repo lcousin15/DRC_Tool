@@ -3633,7 +3633,15 @@ namespace DRC
                     TextBox text_boxfix_top = new TextBox();
                     text_boxfix_top.Location = new Point(90, 15 + (counter + 1) * 25);
                     text_boxfix_top.Name = "txt_box_fix_top_descriptor_" + descritpor_name;
-                    text_boxfix_top.Text = current_chart.get_top_fixed().ToString();
+
+                    if (current_chart.top_fixed())
+                    {
+                        text_boxfix_top.Text = current_chart.get_top_fixed().ToString();
+                    }
+                    else
+                    {
+                        text_boxfix_top.Text = "";
+                    }
 
                     descriptors_fix_top_form.Controls.Add(text_boxfix_top);
 
@@ -4186,7 +4194,7 @@ namespace DRC
         private double min_bound_y = 0.0;
         private double max_bound_y = 0.0;
 
-        private static double fixed_top = 1.0;
+        private static double fixed_top = 0.0;
 
         private Dictionary<string, double> fit_bounds;
 
@@ -4442,6 +4450,10 @@ namespace DRC
                 set_manual_bound(true);
                 set_general_params(false);
                 set_top_fixed(true);
+            }
+            else
+            {
+                set_top_fixed(false);
             }
 
             y_response = resp.ToList();

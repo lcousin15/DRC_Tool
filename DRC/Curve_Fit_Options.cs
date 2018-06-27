@@ -38,8 +38,7 @@ namespace DRC
             bound_max_x = Math.Pow(10, chart.get_max_bound_x());
             bound_min_y = chart.get_min_bound_y();
             bound_max_y = chart.get_max_bound_y();
-
-            text_box_fix_top.Text = chart.get_top_fixed().ToString();
+            if(chart.top_fixed()) text_box_fix_top.Text = chart.get_top_fixed().ToString();
         }
 
         private void btn_OK_Click(object sender, EventArgs e)
