@@ -4540,6 +4540,9 @@ namespace DRC
             Series series1 = new Series();
             Series series2 = new Series();
 
+            Series serie_ec_50_line_x = new Series();
+            Series serie_ec_50_line_y = new Series();
+
             //chartArea.Position.Auto = false;
             Axis yAxis = new Axis(chartArea, AxisName.Y);
             Axis xAxis = new Axis(chartArea, AxisName.X);
@@ -4563,13 +4566,22 @@ namespace DRC
             series1.ChartType = SeriesChartType.Point;
             series2.ChartType = SeriesChartType.Line;
 
+            serie_ec_50_line_x.ChartType = SeriesChartType.Line;
+            serie_ec_50_line_y.ChartType = SeriesChartType.Line;
+
             series1.MarkerStyle = MarkerStyle.Circle;
 
             series1.Name = "Series1";
             series2.Name = "Series2";
 
+            serie_ec_50_line_x.Name = "line_ec_50_x";
+            serie_ec_50_line_y.Name = "line_ec_50_y";
+
             chart.Series.Add(series1);
             chart.Series.Add(series2);
+
+            chart.Series.Add(serie_ec_50_line_x);
+            chart.Series.Add(serie_ec_50_line_y);
 
             chart.Size = new System.Drawing.Size(550, 350);
             //chart.Visible = true;
@@ -4739,6 +4751,7 @@ namespace DRC
                 y_fit_log.Add(Sigmoid(c, x_fit_log[IdxConc]));
             }
 
+            draw_ec_50_lines();
         }
 
         public void Is_Modified()
@@ -5167,6 +5180,7 @@ namespace DRC
             chart.Titles["Title1"].Text = descriptor + " CPD = " + compound_id;
 
             // Draw the first graph
+
             chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
             chart.Series["Series1"].Color = chart_color;
@@ -5309,7 +5323,8 @@ namespace DRC
             else sign = ">";
 
             annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
-            annotation_ec50.BackColor = Color.FromArgb(240, 240, 240);
+            //annotation_ec50.BackColor = Color.FromArgb(240, 240, 240);
+            annotation_ec50.BackColor = Color.White;
             annotation_ec50.AnchorX = 40;
 
             // test bottom top
@@ -5470,6 +5485,37 @@ namespace DRC
                 }
             }
 
+        }
+
+        private void draw_ec_50_lines()
+        {
+            // Ec 50 Line :
+
+            List<double> line_ec_50_point_x = new List<double>();
+            line_ec_50_point_x.Add(Math.Pow(10, fit_parameters[2]));
+            line_ec_50_point_x.Add(Math.Pow(10, fit_parameters[2]));
+
+            List<double> line_ec_50_point_y = new List<double>();
+            line_ec_50_point_y.Add(y_fit_log.Min());
+            line_ec_50_point_y.Add(Sigmoid(fit_parameters, fit_parameters[2]));
+
+            chart.Series["line_ec_50_x"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart.Series["line_ec_50_x"].Points.DataBindXY(line_ec_50_point_x, line_ec_50_point_y);
+            chart.Series["line_ec_50_x"].Color = Color.DimGray;
+            chart.Series["line_ec_50_x"].BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+
+            List<double> line_ec_50_point_y_bis = new List<double>();
+            line_ec_50_point_y_bis.Add(Sigmoid(fit_parameters, fit_parameters[2]));
+            line_ec_50_point_y_bis.Add(Sigmoid(fit_parameters, fit_parameters[2]));
+
+            List<double> line_ec_50_point_x_bis = new List<double>();
+            line_ec_50_point_x_bis.Add(x_fit[0]);
+            line_ec_50_point_x_bis.Add(Math.Pow(10, fit_parameters[2]));
+
+            chart.Series["line_ec_50_y"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart.Series["line_ec_50_y"].Points.DataBindXY(line_ec_50_point_x_bis, line_ec_50_point_y_bis);
+            chart.Series["line_ec_50_y"].Color = Color.DimGray;
+            chart.Series["line_ec_50_y"].BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
         }
 
         Point mdown = Point.Empty;
