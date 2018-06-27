@@ -3633,7 +3633,7 @@ namespace DRC
                     TextBox text_boxfix_top = new TextBox();
                     text_boxfix_top.Location = new Point(90, 15 + (counter + 1) * 25);
                     text_boxfix_top.Name = "txt_box_fix_top_descriptor_" + descritpor_name;
-                    text_boxfix_top.Text = "0.0";
+                    text_boxfix_top.Text = current_chart.get_top_fixed().ToString();
 
                     descriptors_fix_top_form.Controls.Add(text_boxfix_top);
 
