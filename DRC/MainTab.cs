@@ -113,6 +113,8 @@ namespace DRC
         private int descritpor_number;
         private List<string> descriptor_list;
 
+        private Dictionary<string, string> dict_cpd_batch_id = new Dictionary<string, string>();
+
         private List<string> deslected_data_descriptor;
         private List<string> status_ec_50_descritpor;
         private List<string> bounds_descriptor;
@@ -211,7 +213,7 @@ namespace DRC
             if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
                 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
             {
-                System.Windows.Forms.MessageBox.Show("The file must contain at least these 5 columns : \n {[Plate, Well, Concentration, CPD_ID], Descr_0,...}", "Error",
+                System.Windows.Forms.MessageBox.Show("The file must contain at least these 6 columns : \n {[Plate, Well, Concentration, CPD_ID, BATCH_ID], Descr_0,...}", "Error",
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 return;
             }
@@ -247,7 +249,7 @@ namespace DRC
                 string col_name = col.HeaderText;
 
                 if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run"
-                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected")
+                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name!="BATCH_ID"
                     && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound") && !col_name.StartsWith("Fixed_Top"))
                 {
                     checkedListBox1.Items.Add(col_name);
@@ -452,16 +454,17 @@ namespace DRC
 
                 f5.dataGridViewExport.Rows.Clear();
 
-                f5.dataGridViewExport.ColumnCount = 1 + 3 * descriptor_list.Count;
+                f5.dataGridViewExport.ColumnCount = 2 + 3 * descriptor_list.Count;
 
                 f5.dataGridViewExport.Columns[0].Name = "CPD_ID";
+                f5.dataGridViewExport.Columns[1].Name = "BATCH_ID";
 
                 int i = 0;
                 foreach (string elem in descriptor_list)
                 {
 
                     DataGridViewImageColumn img = new DataGridViewImageColumn();
-                    f5.dataGridViewExport.Columns.Insert(4 * i + 1, img);
+                    f5.dataGridViewExport.Columns.Insert(4 * i + 2, img);
 
                     i++;
                 }
@@ -469,10 +472,10 @@ namespace DRC
                 i = 0;
                 foreach (string elem in descriptor_list)
                 {
-                    f5.dataGridViewExport.Columns[4 * i + 1].Name = elem;
-                    f5.dataGridViewExport.Columns[4 * i + 2].Name = "Estimation";
-                    f5.dataGridViewExport.Columns[4 * i + 3].Name = "EC_50 " + elem;
-                    f5.dataGridViewExport.Columns[4 * i + 4].Name = "Top " + elem;
+                    f5.dataGridViewExport.Columns[4 * i + 2].Name = elem;
+                    f5.dataGridViewExport.Columns[4 * i + 3].Name = "Estimation";
+                    f5.dataGridViewExport.Columns[4 * i + 4].Name = "EC_50 " + elem;
+                    f5.dataGridViewExport.Columns[4 * i + 5].Name = "Top " + elem;
 
                     i++;
                 }
@@ -505,6 +508,7 @@ namespace DRC
 
                     int index = f5.dataGridViewExport.Rows.Add();
                     f5.dataGridViewExport.Rows[index].Cells[0].Value = cpd_id;
+                    f5.dataGridViewExport.Rows[index].Cells[1].Value = dict_cpd_batch_id[cpd_id];
 
                     int i_img = 0;
                     foreach (Chart_DRC current_chart in list_chart)
@@ -520,53 +524,53 @@ namespace DRC
                         Image image = LoadImageNoLock(list_images[i_img]);
 
                         //f5.dataGridViewExport.Rows[index].Height = 
-                        f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 1].Value = image;
+                        f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = image;
                         if (!not_fitted || !inactive)
                         {
                             if (last_2_points_text == true)
                             {
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "=";
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Green;
-
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = Math.Pow(10, current_ec_50).ToString("E2");
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = "=";
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.Green;
 
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = current_top.ToString("E2");
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = Math.Pow(10, current_ec_50).ToString("E2");
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.Green;
+
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 5].Value = current_top.ToString("E2");
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 5].Style.BackColor = Color.Green;
                             }
                             else
                             {
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = ">";
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.LimeGreen;
-
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = Math.Pow(10, current_ec_50).ToString("E2");
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = ">";
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.LimeGreen;
 
-                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = current_top.ToString("E2");
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = Math.Pow(10, current_ec_50).ToString("E2");
                                 f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.LimeGreen;
+
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 5].Value = current_top.ToString("E2");
+                                f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 5].Style.BackColor = Color.LimeGreen;
                             }
                         }
                         if (not_fitted)
                         {
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Tomato;
-
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = "Not Fitted";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = "";
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.Tomato;
 
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = "Not Fitted";
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.Tomato;
+
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 5].Value = "Not Fitted";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 5].Style.BackColor = Color.Tomato;
                         }
                         if (inactive)
                         {
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Value = "";
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 2].Style.BackColor = Color.Orange;
-
-                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = "Inactive";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Value = "";
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 3].Style.BackColor = Color.Orange;
 
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Value = "Inactive";
                             f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 4].Style.BackColor = Color.Orange;
+
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 5].Value = "Inactive";
+                            f5.dataGridViewExport.Rows[index].Cells[i_img * 4 + 5].Style.BackColor = Color.Orange;
                         }
 
                         i_img++;
@@ -690,6 +694,8 @@ namespace DRC
 
                     if (is_with_plate == true) cpd_string = row.Cells["CPD_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString();
                     else cpd_string = row.Cells["CPD_ID"].Value.ToString();
+
+                    dict_cpd_batch_id[row.Cells["CPD_ID"].Value.ToString()] = row.Cells["BATCH_ID"].Value.ToString();
 
                     if (cpd_string == cpd_id)
                     {
@@ -872,7 +878,7 @@ namespace DRC
                     if (fixed_top_status.ContainsKey(descriptor_name)) fixed_top = fixed_top_status[descriptor_name];
                     else fixed_top = "Not Fixed";
 
-                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 100, ref concentrations, ref concentrations_log, ref data, color,
+                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 250, ref concentrations, ref concentrations_log, ref data, color,
                         descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, this);
 
                     chart_drc.set_Raw_Data(raw_data_rows);

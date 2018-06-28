@@ -54,9 +54,10 @@ namespace DRC
                     int columnCount = dataGridView2.ColumnCount;
                     string columnNames = "";
                     string[] output = new string[dataGridView2.RowCount + 1];
-                    for (int i = 0; i < columnCount; i++)
+                    for (int i = 0; i < columnCount-1; i++)
                     {
-                        columnNames += dataGridView2.Columns[i].Name.ToString() + ",";
+                        if (i < columnCount - 2) columnNames += dataGridView2.Columns[i].Name.ToString() + ",";
+                        else columnNames += dataGridView2.Columns[i].Name.ToString();
                     }
                     output[0] += columnNames;
                     for (int i = 1; (i - 1) < dataGridView2.RowCount; i++)
