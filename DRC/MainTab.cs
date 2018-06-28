@@ -4602,20 +4602,22 @@ namespace DRC
             chart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseClickMenu);
             //chart.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.chart1_KeyPress);
             //chart.PrePaint += new System.Windows.Forms.chart ChartPaintEventArgs(this.Chart1_PrePaint);
+            chart.PostPaint += new EventHandler<ChartPaintEventArgs>(this.chart1_PostPaint);
+
             //Create a rectangle annotation
 
-            //RectangleAnnotation annotationRectangle = new RectangleAnnotation();
-            //annotation_ec50 = annotationRectangle;
+        //RectangleAnnotation annotationRectangle = new RectangleAnnotation();
+        //annotation_ec50 = annotationRectangle;
 
-            //chart.ChartAreas[0].AxisX.Minimum = -10;
-            //chart.ChartAreas[0].AxisX.Maximum = -5;
+        //chart.ChartAreas[0].AxisX.Minimum = -10;
+        //chart.ChartAreas[0].AxisX.Maximum = -5;
 
-            //chart.ChartAreas[0].AxisY.Minimum = -1;
-            //chart.ChartAreas[0].AxisY.Maximum = +1;
+        //chart.ChartAreas[0].AxisY.Minimum = -1;
+        //chart.ChartAreas[0].AxisY.Maximum = +1;
 
-            //draw_DRC(false, false);
+        //draw_DRC(false, false);
 
-            chart.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+        chart.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
             chart.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
 
             chart.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.LightGray;
@@ -4751,7 +4753,7 @@ namespace DRC
                 y_fit_log.Add(Sigmoid(c, x_fit_log[IdxConc]));
             }
 
-            draw_ec_50_lines();
+            //draw_ec_50_lines();
         }
 
         public void Is_Modified()
@@ -5250,6 +5252,9 @@ namespace DRC
             chart.ChartAreas[0].AxisX.LogarithmBase = 10;
             chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
 
+            //chart.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
+            //chart.ChartAreas[0].AxisY.ScaleView.Zoomable = false;
+
             // End Axis Labels.
 
             foreach (DataPoint dp in chart.Series["Series1"].Points)
@@ -5487,35 +5492,78 @@ namespace DRC
 
         }
 
-        private void draw_ec_50_lines()
+        //private void draw_ec_50_lines()
+        //{
+        private void chart1_PostPaint(object sender, System.Windows.Forms.DataVisualization.Charting.ChartPaintEventArgs e)
         {
-            // Ec 50 Line :
+            Chart my_chart = (Chart)sender;
+            ChartArea area = my_chart.ChartAreas[0];
+            if (area.Name == descriptor)
+            {
+                Axis ax = chart.ChartAreas[0].AxisX;
+                Axis ay = chart.ChartAreas[0].AxisY;
 
-            List<double> line_ec_50_point_x = new List<double>();
-            line_ec_50_point_x.Add(Math.Pow(10, fit_parameters[2]));
-            line_ec_50_point_x.Add(Math.Pow(10, fit_parameters[2]));
+                //double minimum_x = chart.ChartAreas[0].AxisX.Minimum;
+                //double minimum_y = chart.ChartAreas[0].AxisY.Minimum;
 
-            List<double> line_ec_50_point_y = new List<double>();
-            line_ec_50_point_y.Add(y_fit_log.Min());
-            line_ec_50_point_y.Add(Sigmoid(fit_parameters, fit_parameters[2]));
+                // Ec 50 Line :
+                //List<double> line_ec_50_point_x = new List<double>();
+                //line_ec_50_point_x.Add(Math.Pow(10, fit_parameters[2]));
+                //line_ec_50_point_x.Add(Math.Pow(10, fit_parameters[2]));
 
-            chart.Series["line_ec_50_x"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["line_ec_50_x"].Points.DataBindXY(line_ec_50_point_x, line_ec_50_point_y);
-            chart.Series["line_ec_50_x"].Color = Color.DimGray;
-            chart.Series["line_ec_50_x"].BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+                //List<double> line_ec_50_point_y = new List<double>();
+                ////line_ec_50_point_y.Add(y_fit_log.Min());
+                //line_ec_50_point_y.Add(chart.ChartAreas[0].AxisY.Minimum);
+                //line_ec_50_point_y.Add(Sigmoid(fit_parameters, fit_parameters[2]));
 
-            List<double> line_ec_50_point_y_bis = new List<double>();
-            line_ec_50_point_y_bis.Add(Sigmoid(fit_parameters, fit_parameters[2]));
-            line_ec_50_point_y_bis.Add(Sigmoid(fit_parameters, fit_parameters[2]));
+                //chart.Series["line_ec_50_x"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                //chart.Series["line_ec_50_x"].Points.DataBindXY(line_ec_50_point_x, line_ec_50_point_y);
+                //chart.Series["line_ec_50_x"].Color = Color.DimGray;
+                //chart.Series["line_ec_50_x"].BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
 
-            List<double> line_ec_50_point_x_bis = new List<double>();
-            line_ec_50_point_x_bis.Add(x_fit[0]);
-            line_ec_50_point_x_bis.Add(Math.Pow(10, fit_parameters[2]));
+                Graphics graph = e.ChartGraphics.Graphics;
 
-            chart.Series["line_ec_50_y"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["line_ec_50_y"].Points.DataBindXY(line_ec_50_point_x_bis, line_ec_50_point_y_bis);
-            chart.Series["line_ec_50_y"].Color = Color.DimGray;
-            chart.Series["line_ec_50_y"].BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+                PointF point1 = PointF.Empty;
+                PointF point2 = PointF.Empty;
+
+                point1.X = (float)ax.ValueToPixelPosition(Math.Pow(10, fit_parameters[2]));
+                point1.Y = (float)ay.ValueToPixelPosition(chart.ChartAreas[0].AxisY.Minimum);
+                point2.X = (float)ax.ValueToPixelPosition(Math.Pow(10, fit_parameters[2]));
+                point2.Y = (float)ay.ValueToPixelPosition(Sigmoid(fit_parameters, fit_parameters[2]));
+
+                float[] dashValues = { 2, 2, 2, 2 };
+                Pen blackPen = new Pen(Color.DimGray, 0.25f);
+                blackPen.DashPattern = dashValues;
+
+                graph.DrawLine(blackPen, point1, point2);
+
+                //List<double> line_ec_50_point_y_bis = new List<double>();
+                //line_ec_50_point_y_bis.Add(Sigmoid(fit_parameters, fit_parameters[2]));
+                //line_ec_50_point_y_bis.Add(Sigmoid(fit_parameters, fit_parameters[2]));
+
+                //List<double> line_ec_50_point_x_bis = new List<double>();
+                ////line_ec_50_point_x_bis.Add(x_fit[0]);
+                //line_ec_50_point_x_bis.Add(chart.ChartAreas[0].AxisX.Minimum);
+                //line_ec_50_point_x_bis.Add(Math.Pow(10, fit_parameters[2]));
+
+                //chart.Series["line_ec_50_y"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                //chart.Series["line_ec_50_y"].Points.DataBindXY(line_ec_50_point_x_bis, line_ec_50_point_y_bis);
+                //chart.Series["line_ec_50_y"].Color = Color.DimGray;
+                //chart.Series["line_ec_50_y"].BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+
+                PointF point3 = PointF.Empty;
+                PointF point4 = PointF.Empty;
+
+                point3.X = (float)ax.ValueToPixelPosition(chart.ChartAreas[0].AxisX.Minimum);
+                point3.Y = (float)ay.ValueToPixelPosition(Sigmoid(fit_parameters, fit_parameters[2]));
+                point4.X = (float)ax.ValueToPixelPosition(Math.Pow(10, fit_parameters[2]));
+                point4.Y = (float)ay.ValueToPixelPosition(Sigmoid(fit_parameters, fit_parameters[2]));
+
+                graph.DrawLine(blackPen, point3, point4);
+
+                //chart.ChartAreas[0].AxisX.Minimum = minimum_x;
+                //chart.ChartAreas[0].AxisY.Minimum = minimum_y;
+            }
         }
 
         Point mdown = Point.Empty;
