@@ -39,11 +39,14 @@
             this.txt_max_bound_x = new System.Windows.Forms.TextBox();
             this.txt_min_bound_x = new System.Windows.Forms.TextBox();
             this.btn_reset = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.text_box_fix_top = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_OK
             // 
-            this.btn_OK.Location = new System.Drawing.Point(30, 148);
+            this.btn_OK.Location = new System.Drawing.Point(30, 207);
             this.btn_OK.Name = "btn_OK";
             this.btn_OK.Size = new System.Drawing.Size(156, 23);
             this.btn_OK.TabIndex = 21;
@@ -82,20 +85,20 @@
             // lbl_max_bound_x
             // 
             this.lbl_max_bound_x.AutoSize = true;
-            this.lbl_max_bound_x.Location = new System.Drawing.Point(12, 36);
+            this.lbl_max_bound_x.Location = new System.Drawing.Point(12, 12);
             this.lbl_max_bound_x.Name = "lbl_max_bound_x";
             this.lbl_max_bound_x.Size = new System.Drawing.Size(80, 13);
             this.lbl_max_bound_x.TabIndex = 16;
-            this.lbl_max_bound_x.Text = "Upper Bound X";
+            this.lbl_max_bound_x.Text = "Lower Bound X";
             // 
             // lbl_min_bound_x
             // 
             this.lbl_min_bound_x.AutoSize = true;
-            this.lbl_min_bound_x.Location = new System.Drawing.Point(12, 9);
+            this.lbl_min_bound_x.Location = new System.Drawing.Point(12, 38);
             this.lbl_min_bound_x.Name = "lbl_min_bound_x";
             this.lbl_min_bound_x.Size = new System.Drawing.Size(80, 13);
             this.lbl_min_bound_x.TabIndex = 15;
-            this.lbl_min_bound_x.Text = "Lower Bound X";
+            this.lbl_min_bound_x.Text = "Upper Bound X";
             // 
             // txt_max_bound_y
             // 
@@ -113,14 +116,14 @@
             // 
             // txt_max_bound_x
             // 
-            this.txt_max_bound_x.Location = new System.Drawing.Point(104, 33);
+            this.txt_max_bound_x.Location = new System.Drawing.Point(104, 9);
             this.txt_max_bound_x.Name = "txt_max_bound_x";
             this.txt_max_bound_x.Size = new System.Drawing.Size(100, 20);
             this.txt_max_bound_x.TabIndex = 12;
             // 
             // txt_min_bound_x
             // 
-            this.txt_min_bound_x.Location = new System.Drawing.Point(104, 6);
+            this.txt_min_bound_x.Location = new System.Drawing.Point(103, 35);
             this.txt_min_bound_x.Name = "txt_min_bound_x";
             this.txt_min_bound_x.Size = new System.Drawing.Size(100, 20);
             this.txt_min_bound_x.TabIndex = 11;
@@ -135,11 +138,40 @@
             this.btn_reset.UseVisualStyleBackColor = true;
             this.btn_reset.Click += new System.EventHandler(this.btn_reset_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(50, 155);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(42, 13);
+            this.label1.TabIndex = 24;
+            this.label1.Text = "Fix Top";
+            // 
+            // text_box_fix_top
+            // 
+            this.text_box_fix_top.Location = new System.Drawing.Point(103, 152);
+            this.text_box_fix_top.Name = "text_box_fix_top";
+            this.text_box_fix_top.Size = new System.Drawing.Size(100, 20);
+            this.text_box_fix_top.TabIndex = 23;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(30, 178);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "Apply";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Curve_Fit_Options
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(215, 181);
+            this.ClientSize = new System.Drawing.Size(215, 235);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.text_box_fix_top);
             this.Controls.Add(this.btn_reset);
             this.Controls.Add(this.btn_OK);
             this.Controls.Add(this.btn_apply);
@@ -171,5 +203,8 @@
         private System.Windows.Forms.TextBox txt_max_bound_x;
         private System.Windows.Forms.TextBox txt_min_bound_x;
         private System.Windows.Forms.Button btn_reset;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox text_box_fix_top;
+        private System.Windows.Forms.Button button1;
     }
 }

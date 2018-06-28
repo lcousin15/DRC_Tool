@@ -176,7 +176,7 @@ namespace DRC
                 {
                     string cpd = row.Cells["CPD_ID"].Value.ToString();
                     string val_str = row.Cells[item].Value.ToString();
-                    run_description_1 = row.Cells["Run"].Value.ToString();
+                    run_description_1 = label_exp_1;
 
                     double value = 0;
                     if (!val_str.Contains("Not Fitted") && !val_str.Contains("Inactive"))
@@ -207,7 +207,7 @@ namespace DRC
                 {
                     string cpd = row.Cells["CPD_ID"].Value.ToString();
                     string val_str = row.Cells[item].Value.ToString();
-                    run_description_2 = row.Cells["Run"].Value.ToString();
+                    run_description_2 = label_exp_2;
 
                     double value = 0;
                     if (!val_str.Contains("Not Fitted") && !val_str.Contains("Inactive"))
