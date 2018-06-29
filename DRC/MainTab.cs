@@ -2017,6 +2017,8 @@ namespace DRC
 
         private void button1_Click(object sender, EventArgs e)
         {
+            this.toolStripProgressBar1.Visible = true;
+
             // threshold R2
             double r2_threshold = double.Parse(this.numericUpDown1.Value.ToString());
 
@@ -2044,6 +2046,8 @@ namespace DRC
 
         private void button2_Click(object sender, EventArgs e)
         {
+            this.toolStripProgressBar1.Visible = true;
+
             // threshold Inactive
             double inactive_threshold = double.Parse(this.numericUpDown2.Value.ToString());
 
@@ -4505,7 +4509,7 @@ namespace DRC
 
                     foreach (int idx in indices)
                     {
-                        if (drc_points_x_enable[idx] < (x_concentrations_log[index_deselect] + 1e-12) && drc_points_x_enable[idx] > (x_concentrations_log[index_deselect] - 1e-12))
+                        if (drc_points_x_enable[idx] < (x_concentrations_log[index_deselect] + 1e-4) && drc_points_x_enable[idx] > (x_concentrations_log[index_deselect] - 1e-4))
                         {
                             remove_index = idx;
                             break;
@@ -4960,6 +4964,9 @@ namespace DRC
             //    }
             //}
 
+            //string my_descritpor_name = descriptor;
+            //string cpound_id = compound_id;
+
             if (dict_points.Count() > 2)
             {
                 double response_last_point = 0.0;
@@ -4983,11 +4990,17 @@ namespace DRC
                 double diff_top_last_point = Math.Abs(response_last_point - top);
                 double diff_top_last_point2 = Math.Abs(response_2_last_point - top);
 
-                if (diff_top_last_point >= thr_2_last_points * Math.Abs(top - bottom) || diff_top_last_point2 >= thr_2_last_points * Math.Abs(top - bottom))
+                if (diff_top_last_point <= thr_2_last_points * Math.Abs(top - bottom) && diff_top_last_point2 <= thr_2_last_points * Math.Abs(top - bottom))
                 {
-                    //Console.WriteLine("Concentration = " + compound_id);
-                    //Console.WriteLine("Diff last point, last point 2, thr*top = " + diff_top_last_point + " , " + diff_top_last_point2 + " , " + thr_2_last_points * Math.Abs(top - bottom));
+                    draw_DRC(false, false);
 
+                    is_ec50_exact = true;
+                    ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
+
+                    annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+                }
+                else
+                {
                     draw_DRC(false, false);
 
                     is_ec50_exact = false;
@@ -4995,6 +5008,7 @@ namespace DRC
 
                     annotation_ec50.Text = "EC_50 > " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
                 }
+
 
             }
 
