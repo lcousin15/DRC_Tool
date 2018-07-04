@@ -115,3 +115,5 @@ C:\Users\arno\Source\Repos\DRC_Tool\DRC\bin\Release\DRC.exe.config
 C:\Users\arno\Source\Repos\DRC_Tool\DRC\obj\Release\DRC.csproj.ResolveComReference.cache
 C:\Users\arno\Source\Repos\DRC_Tool\DRC\obj\Release\DRC.exe
 C:\Users\arno\Source\Repos\DRC_Tool\DRC\obj\Release\DRC.pdb
+D:\DRC_Tool\DRC\obj\Release\DRC.exe
+D:\DRC_Tool\DRC\obj\Release\DRC.pdb
