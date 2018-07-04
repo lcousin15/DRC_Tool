@@ -106,7 +106,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.AutoScroll = true;
             this.tableLayoutPanel1.AutoScrollMargin = new System.Drawing.Size(25, 25);
-            this.tableLayoutPanel1.AutoScrollMinSize = new System.Drawing.Size(900, 1010);
+            this.tableLayoutPanel1.AutoScrollMinSize = new System.Drawing.Size(900, 1000);
             this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));

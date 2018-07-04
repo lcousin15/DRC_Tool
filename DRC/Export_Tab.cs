@@ -312,7 +312,7 @@ namespace DRC
 
                 for (int j = 1; j <= dataGridViewExport.Columns.Count; j++)
                 {
-                    if ((j-1) % 4 == 1) ws.Column(j).Width = width;
+                    if ((j-1) % 4 == 2) ws.Column(j).Width = width;
                     else ws.Column(j).Width = 15;
                     //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
                 }
@@ -403,7 +403,7 @@ namespace DRC
                                 //ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
                                 //ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.VerticalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
                             }
-                            if (j == 0)
+                            if (j == 0 || j == 1)
                             {
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value;
 
