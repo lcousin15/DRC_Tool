@@ -48,27 +48,27 @@ namespace DRC
 
                 //-------------------------- Window Parameters --------------------------//
 
-                if (this.Controls.ContainsKey("txt_box_window_min_x_descriptor_" + item))
+                if (this.panel2.Controls.ContainsKey("txt_box_window_min_x_descriptor_" + item))
                 {
-                    TextBox txt_box = this.Controls["txt_box_window_min_x_descriptor_" + item] as TextBox;
+                    TextBox txt_box = this.panel2.Controls["txt_box_window_min_x_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out window_min_x);
                 }
 
-                if (this.Controls.ContainsKey("txt_box_window_max_x_descriptor_" + item))
+                if (this.panel2.Controls.ContainsKey("txt_box_window_max_x_descriptor_" + item))
                 {
-                    TextBox txt_box = this.Controls["txt_box_window_max_x_descriptor_" + item] as TextBox;
+                    TextBox txt_box = this.panel2.Controls["txt_box_window_max_x_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out window_max_x);
                 }
 
-                if (this.Controls.ContainsKey("txt_box_window_min_y_descriptor_" + item))
+                if (this.panel2.Controls.ContainsKey("txt_box_window_min_y_descriptor_" + item))
                 {
-                    TextBox txt_box = this.Controls["txt_box_window_min_y_descriptor_" + item] as TextBox;
+                    TextBox txt_box = this.panel2.Controls["txt_box_window_min_y_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out window_min_y);
                 }
 
-                if (this.Controls.ContainsKey("txt_box_window_max_y_descriptor_" + item))
+                if (this.panel2.Controls.ContainsKey("txt_box_window_max_y_descriptor_" + item))
                 {
-                    TextBox txt_box = this.Controls["txt_box_window_max_y_descriptor_" + item] as TextBox;
+                    TextBox txt_box = this.panel2.Controls["txt_box_window_max_y_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out window_max_y);
                 }
 
@@ -92,27 +92,27 @@ namespace DRC
             foreach (string item in _main_tab.get_descriptor_list())
             {
 
-                if (this.Controls.ContainsKey("txt_box_bnd_min_x_descriptor_" + item))
+                if (this.panel1.Controls.ContainsKey("txt_box_bnd_min_x_descriptor_" + item))
                 {
-                    TextBox txt_box = this.Controls["txt_box_bnd_min_x_descriptor_" + item] as TextBox;
+                    TextBox txt_box = this.panel1.Controls["txt_box_bnd_min_x_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out bnd_min_x);
                 }
 
-                if (this.Controls.ContainsKey("txt_box_bnd_max_x_descriptor_" + item))
+                if (this.panel1.Controls.ContainsKey("txt_box_bnd_max_x_descriptor_" + item))
                 {
-                    TextBox txt_box = this.Controls["txt_box_bnd_max_x_descriptor_" + item] as TextBox;
+                    TextBox txt_box = this.panel1.Controls["txt_box_bnd_max_x_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out bnd_max_x);
                 }
 
-                if (this.Controls.ContainsKey("txt_box_bnd_min_y_descriptor_" + item))
+                if (this.panel1.Controls.ContainsKey("txt_box_bnd_min_y_descriptor_" + item))
                 {
-                    TextBox txt_box = this.Controls["txt_box_bnd_min_y_descriptor_" + item] as TextBox;
+                    TextBox txt_box = this.panel1.Controls["txt_box_bnd_min_y_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out bnd_min_y);
                 }
 
-                if (this.Controls.ContainsKey("txt_box_bnd_max_y_descriptor_" + item))
+                if (this.panel1.Controls.ContainsKey("txt_box_bnd_max_y_descriptor_" + item))
                 {
-                    TextBox txt_box = this.Controls["txt_box_bnd_max_y_descriptor_" + item] as TextBox;
+                    TextBox txt_box = this.panel1.Controls["txt_box_bnd_max_y_descriptor_" + item] as TextBox;
                     bool is_converted = double.TryParse(txt_box.Text.ToString(), out bnd_max_y);
                 }
 

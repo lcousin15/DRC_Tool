@@ -3270,12 +3270,18 @@ namespace DRC
                 label_bnd_min_x.Name = "lbl_bnd_max_y";
                 label_bnd_max_y.AutoSize = true;
 
-                descriptors_general_options_form.Controls.Add(label_bnd_min_x);
-                descriptors_general_options_form.Controls.Add(label_bnd_max_x);
-                descriptors_general_options_form.Controls.Add(label_bnd_min_y);
-                descriptors_general_options_form.Controls.Add(label_bnd_max_y);
+                //descriptors_general_options_form.Controls.Add(label_bnd_min_x);
+                //descriptors_general_options_form.Controls.Add(label_bnd_max_x);
+                //descriptors_general_options_form.Controls.Add(label_bnd_min_y);
+                //descriptors_general_options_form.Controls.Add(label_bnd_max_y);
+
+                descriptors_general_options_form.panel1.Controls.Add(label_bnd_min_x);
+                descriptors_general_options_form.panel1.Controls.Add(label_bnd_max_x);
+                descriptors_general_options_form.panel1.Controls.Add(label_bnd_min_y);
+                descriptors_general_options_form.panel1.Controls.Add(label_bnd_max_y);
 
                 int counter = 0;
+
 
                 Dictionary<string, List<double>> dict_descriptor_min_bnd_x = new Dictionary<string, List<double>>();
                 Dictionary<string, List<double>> dict_descriptor_max_bnd_x = new Dictionary<string, List<double>>();
@@ -3405,118 +3411,124 @@ namespace DRC
                     new_label.Name = "lbl_descriptor_" + descritpor_name;
                     new_label.AutoSize = true;
 
-                    descriptors_general_options_form.Controls.Add(new_label);
+                    //descriptors_general_options_form.Controls.Add(new_label);
+                    descriptors_general_options_form.panel1.Controls.Add(new_label);
 
                     TextBox text_box_bnd_min_x = new TextBox();
                     text_box_bnd_min_x.Location = new Point(90, 15 + (counter + 1) * 25);
                     text_box_bnd_min_x.Name = "txt_box_bnd_min_x_descriptor_" + descritpor_name;
                     text_box_bnd_min_x.Text = Math.Pow(10, dict_descriptor_min_bnd_x[descritpor_name].Min()).ToString();
 
-                    descriptors_general_options_form.Controls.Add(text_box_bnd_min_x);
+                    //descriptors_general_options_form.Controls.Add(text_box_bnd_min_x);
+                    descriptors_general_options_form.panel1.Controls.Add(text_box_bnd_min_x);
 
                     TextBox text_box_bnd_max_x = new TextBox();
                     text_box_bnd_max_x.Location = new Point(240, 15 + (counter + 1) * 25);
                     text_box_bnd_max_x.Name = "txt_box_bnd_max_x_descriptor_" + descritpor_name;
                     text_box_bnd_max_x.Text = Math.Pow(10, dict_descriptor_max_bnd_x[descritpor_name].Max()).ToString();
 
-
-                    descriptors_general_options_form.Controls.Add(text_box_bnd_max_x);
+                    //descriptors_general_options_form.Controls.Add(text_box_bnd_max_x);
+                    descriptors_general_options_form.panel1.Controls.Add(text_box_bnd_max_x);
 
                     TextBox text_box_bnd_min_y = new TextBox();
                     text_box_bnd_min_y.Location = new Point(390, 15 + (counter + 1) * 25);
                     text_box_bnd_min_y.Name = "txt_box_bnd_min_y_descriptor_" + descritpor_name;
                     text_box_bnd_min_y.Text = dict_descriptor_min_bnd_y[descritpor_name].Min().ToString();
 
-                    descriptors_general_options_form.Controls.Add(text_box_bnd_min_y);
+                    //descriptors_general_options_form.Controls.Add(text_box_bnd_min_y);
+                    descriptors_general_options_form.panel1.Controls.Add(text_box_bnd_min_y);
 
                     TextBox text_box_bnd_max_y = new TextBox();
                     text_box_bnd_max_y.Location = new Point(540, 15 + (counter + 1) * 25);
                     text_box_bnd_max_y.Name = "txt_box_bnd_max_y_descriptor_" + descritpor_name;
                     text_box_bnd_max_y.Text = dict_descriptor_max_bnd_y[descritpor_name].Max().ToString();
 
-                    descriptors_general_options_form.Controls.Add(text_box_bnd_max_y);
+                    //descriptors_general_options_form.Controls.Add(text_box_bnd_max_y);
+                    descriptors_general_options_form.panel1.Controls.Add(text_box_bnd_max_y);
 
                     counter++;
                 }
 
                 Label label_window_min_x = new Label();
-                label_window_min_x.Location = new Point(100, 20 + (counter + 1) * 25);
+                label_window_min_x.Location = new Point(100, 20);
                 label_window_min_x.Text = "Window Min X";
                 label_window_min_x.Name = "lbl_window_min_x";
                 label_window_min_x.AutoSize = true;
 
                 Label label_window_max_x = new Label();
-                label_window_max_x.Location = new Point(250, 20 + (counter + 1) * 25);
+                label_window_max_x.Location = new Point(250, 20);
                 label_window_max_x.Text = "Window Max X";
                 label_window_max_x.Name = "lbl_window_max_x";
                 label_window_max_x.AutoSize = true;
 
                 Label label_window_min_y = new Label();
-                label_window_min_y.Location = new Point(400, 20 + (counter + 1) * 25);
+                label_window_min_y.Location = new Point(400, 20);
                 label_window_min_y.Text = "Window Min Y";
                 label_window_min_y.Name = "lbl_window_min_y";
                 label_window_min_y.AutoSize = true;
 
                 Label label_window_max_y = new Label();
-                label_window_max_y.Location = new Point(550, 20 + (counter + 1) * 25);
+                label_window_max_y.Location = new Point(550, 20);
                 label_window_max_y.Text = "Window Max Y";
                 label_window_max_y.Name = "lbl_window_max_y";
 
                 label_window_max_y.AutoSize = true;
 
-                descriptors_general_options_form.Controls.Add(label_window_min_x);
-                descriptors_general_options_form.Controls.Add(label_window_max_x);
-                descriptors_general_options_form.Controls.Add(label_window_min_y);
-                descriptors_general_options_form.Controls.Add(label_window_max_y);
+                descriptors_general_options_form.panel2.Controls.Add(label_window_min_x);
+                descriptors_general_options_form.panel2.Controls.Add(label_window_max_x);
+                descriptors_general_options_form.panel2.Controls.Add(label_window_min_y);
+                descriptors_general_options_form.panel2.Controls.Add(label_window_max_y);
+
+                counter = 0;
 
                 foreach (Chart_DRC current_chart in list_chart)
                 {
                     string descritpor_name = current_chart.get_Descriptor_Name();
 
                     Label new_label = new Label();
-                    new_label.Location = new Point(10, 45 + (counter + 1) * 25);
+                    new_label.Location = new Point(10, 20 + (counter + 1) * 25);
                     new_label.Text = descritpor_name;
                     new_label.Name = "lbl_window_descriptor_" + descritpor_name;
                     new_label.AutoSize = true;
 
-                    descriptors_general_options_form.Controls.Add(new_label);
+                    descriptors_general_options_form.panel2.Controls.Add(new_label);
 
                     TextBox text_box_window_min_x = new TextBox();
-                    text_box_window_min_x.Location = new Point(90, 40 + (counter + 1) * 25);
+                    text_box_window_min_x.Location = new Point(100, 20 + (counter + 1) * 25);
                     text_box_window_min_x.Name = "txt_box_window_min_x_descriptor_" + descritpor_name;
                     text_box_window_min_x.Text = dict_descriptor_min_window_x[descritpor_name].Min().ToString();
 
-                    descriptors_general_options_form.Controls.Add(text_box_window_min_x);
+                    descriptors_general_options_form.panel2.Controls.Add(text_box_window_min_x);
 
                     TextBox text_box_window_max_x = new TextBox();
-                    text_box_window_max_x.Location = new Point(240, 40 + (counter + 1) * 25);
+                    text_box_window_max_x.Location = new Point(250, 20 + (counter + 1) * 25);
                     text_box_window_max_x.Name = "txt_box_window_max_x_descriptor_" + descritpor_name;
                     text_box_window_max_x.Text = dict_descriptor_max_window_x[descritpor_name].Max().ToString();
 
-                    descriptors_general_options_form.Controls.Add(text_box_window_max_x);
+                    descriptors_general_options_form.panel2.Controls.Add(text_box_window_max_x);
 
                     TextBox text_box_window_min_y = new TextBox();
-                    text_box_window_min_y.Location = new Point(390, 40 + (counter + 1) * 25);
+                    text_box_window_min_y.Location = new Point(400, 20 + (counter + 1) * 25);
                     text_box_window_min_y.Name = "txt_box_window_min_y_descriptor_" + descritpor_name;
                     text_box_window_min_y.Text = dict_descriptor_min_window_y[descritpor_name].Min().ToString();
 
-                    descriptors_general_options_form.Controls.Add(text_box_window_min_y);
+                    descriptors_general_options_form.panel2.Controls.Add(text_box_window_min_y);
 
                     TextBox text_box_window_max_y = new TextBox();
-                    text_box_window_max_y.Location = new Point(540, 40 + (counter + 1) * 25);
+                    text_box_window_max_y.Location = new Point(550, 20 + (counter + 1) * 25);
                     text_box_window_max_y.Name = "txt_box_window_max_y_descriptor_" + descritpor_name;
                     text_box_window_max_y.Text = dict_descriptor_max_window_y[descritpor_name].Max().ToString();
 
-                    descriptors_general_options_form.Controls.Add(text_box_window_max_y);
+                    descriptors_general_options_form.panel2.Controls.Add(text_box_window_max_y);
 
                     Button color_button = new Button();
-                    color_button.Location = new Point(690, 40 + (counter + 1) * 25);
+                    color_button.Location = new Point(680, 20 + (counter + 1) * 25);
                     color_button.Name = "button_color_descriptor_" + descritpor_name;
                     color_button.Text = "Color";
 
                     color_button.Click += new EventHandler(this.btn_clicked);
 
-                    descriptors_general_options_form.Controls.Add(color_button);
+                    descriptors_general_options_form.panel2.Controls.Add(color_button);
 
                     counter++;
                 }
