@@ -32,6 +32,7 @@
             this.btn_apply = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.button1 = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,11 +48,11 @@
             // 
             // btn_apply
             // 
-            this.btn_apply.Location = new System.Drawing.Point(604, 515);
+            this.btn_apply.Location = new System.Drawing.Point(587, 515);
             this.btn_apply.Name = "btn_apply";
-            this.btn_apply.Size = new System.Drawing.Size(82, 25);
+            this.btn_apply.Size = new System.Drawing.Size(99, 25);
             this.btn_apply.TabIndex = 1;
-            this.btn_apply.Text = "Apply";
+            this.btn_apply.Text = "Apply Scale";
             this.btn_apply.UseVisualStyleBackColor = true;
             this.btn_apply.Click += new System.EventHandler(this.btn_apply_Click);
             // 
@@ -70,11 +71,22 @@
             this.toolStripProgressBar1.Name = "toolStripProgressBar1";
             this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(482, 515);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(99, 25);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "Apply Bounds";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Descriptors_General_Options
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(779, 565);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btn_apply);
             this.Controls.Add(this.btn_ok);
@@ -93,5 +105,6 @@
         private System.Windows.Forms.Button btn_apply;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.Button button1;
     }
 }

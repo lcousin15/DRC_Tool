@@ -3554,8 +3554,31 @@ namespace DRC
 
         }
 
-        public void apply_descritpor_general_options(string descriptor_name, double bnd_min_x, double bnd_max_x, double bnd_min_y, double bnd_max_y,
-                double window_min_x, double window_max_x, double window_min_y, double window_max_y)
+        public void apply_descritpor_general_scale(string descriptor_name, double window_min_x, double window_max_x, double window_min_y, double window_max_y)
+        {
+            foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
+            {
+                string cpd_id = elem.Key;
+                List<Chart_DRC> cpd_charts = elem.Value;
+
+                foreach (Chart_DRC current_chart in cpd_charts)
+                {
+                    if (current_chart.get_Descriptor_Name() == descriptor_name)
+                    {
+                        current_chart.set_general_params(true);
+
+                        current_chart.set_window_x_min(window_min_x);
+                        current_chart.set_window_x_max(window_max_x);
+                        current_chart.set_window_y_min(window_min_y);
+                        current_chart.set_window_y_max(window_max_y);
+
+                        current_chart.draw_DRC(false, false);
+                    }
+                }
+            }
+        }
+
+        public void apply_descritpor_general_bounds(string descriptor_name, double bnd_min_x, double bnd_max_x, double bnd_min_y, double bnd_max_y)
         {
             foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
             {
@@ -3573,16 +3596,12 @@ namespace DRC
                         current_chart.set_min_bound_y(bnd_min_y);
                         current_chart.set_max_bound_y(bnd_max_y);
 
-                        current_chart.set_window_x_min(window_min_x);
-                        current_chart.set_window_x_max(window_max_x);
-                        current_chart.set_window_y_min(window_min_y);
-                        current_chart.set_window_y_max(window_max_y);
-
                         current_chart.draw_DRC(false, false);
                     }
                 }
             }
         }
+
 
         public void apply_descriptor_fixed_top(string descriptor_name, double fixed_top)
         {
