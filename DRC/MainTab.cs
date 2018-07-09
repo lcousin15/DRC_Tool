@@ -3696,7 +3696,7 @@ namespace DRC
                         current_chart.set_top_fixed(true);
                         current_chart.set_top_fixed_value(fixed_top);
                         current_chart.set_data_modified(true);
-
+                 
                         current_chart.draw_DRC(false, false);
                     }
                 }
@@ -3782,10 +3782,11 @@ namespace DRC
                     if (descriptors_fix_top_form.Controls.ContainsKey("txt_box_fix_top_descriptor_" + descriptor_name))
                     {
                         TextBox txt_box = descriptors_fix_top_form.Controls["txt_box_fix_top_descriptor_" + descriptor_name] as TextBox;
-                        bool is_converted = double.TryParse(txt_box.Text.ToString(), out fixed_top);
-                    }
 
-                    apply_descriptor_fixed_top(descriptor_name, fixed_top);
+                        fixed_top = double.Parse(txt_box.Text.ToString());
+
+                        apply_descriptor_fixed_top(descriptor_name, fixed_top);
+                    }
                 }
             }
 
@@ -4300,7 +4301,7 @@ namespace DRC
         private double min_bound_y = 0.0;
         private double max_bound_y = 0.0;
 
-        private static double fixed_top = 0.0;
+        private double fixed_top = 0.0;
 
         private Dictionary<string, double> fit_bounds;
 

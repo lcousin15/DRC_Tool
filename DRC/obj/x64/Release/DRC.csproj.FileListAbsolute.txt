@@ -152,7 +152,6 @@ E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.Extensions.pdb
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.Extensions.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.UserInterface.pdb
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.UserInterface.xml
-E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.xml
 D:\DRC_Tool\DRC\bin\x64\Release\x64\concrt140.dll
 D:\DRC_Tool\DRC\bin\x64\Release\x64\cvextern.dll
 D:\DRC_Tool\DRC\bin\x64\Release\x64\msvcp140.dll
