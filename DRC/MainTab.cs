@@ -4543,17 +4543,17 @@ namespace DRC
             step_curve = step;
             chart_color = color;
 
+            data_modified = false;
+            if (if_modified == "True" || if_modified == "TRUE" || if_modified == "true") data_modified = true;
+
             fit_bounds = bounds;
             if (fit_bounds.Count() > 0)
             {
                 set_bound_status(false);
-                set_manual_bound(true);
+                 set_manual_bound(true);
             }
 
             not_fitted = false;
-            data_modified = false;
-
-            if (if_modified == "True" || if_modified == "TRUE" || if_modified == "true") data_modified = true;
 
             if (ec_50_status == "=") is_ec50_exact = true;
             else if (ec_50_status == ">") is_ec50_exact = false;
@@ -5447,7 +5447,7 @@ namespace DRC
             }
             else
             {
-                if (is_top_fixed)
+                if ((is_top_fixed || manual_bounds) && data_modified)
                 {
                     data_modified = true;
 
