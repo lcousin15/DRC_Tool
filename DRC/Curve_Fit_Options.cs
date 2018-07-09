@@ -52,6 +52,7 @@ namespace DRC
             chart.set_manual_bound(true);
             chart.set_general_params(false);
             chart.set_top_fixed(false);
+            chart.set_data_modified(true);
 
             bound_min_x = Math.Log10(Double.Parse(txt_min_bound_x.Text));
             bound_max_x = Math.Log10(Double.Parse(txt_max_bound_x.Text));
@@ -72,6 +73,7 @@ namespace DRC
             chart.set_manual_bound(true);
             chart.set_general_params(false);
             chart.set_top_fixed(false);
+            chart.set_data_modified(false);
 
             chart.draw_DRC(false, false);
 
@@ -94,6 +96,7 @@ namespace DRC
             chart.set_manual_bound(true);
             chart.set_general_params(false);
             chart.set_top_fixed(true);
+            chart.set_data_modified(true);
 
             chart.set_top_fixed_value(top_fixed);
 

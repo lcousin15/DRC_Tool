@@ -119,6 +119,7 @@ namespace DRC
         private List<string> status_ec_50_descritpor;
         private List<string> bounds_descriptor;
         private List<string> fixed_top_descriptor;
+        private List<string> data_modified_descriptor;
 
         private string input_filename;
         private string output_filename;
@@ -209,6 +210,7 @@ namespace DRC
             status_ec_50_descritpor = new List<string>();
             bounds_descriptor = new List<string>();
             fixed_top_descriptor = new List<string>();
+            data_modified_descriptor = new List<string>();
 
             if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
                 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
@@ -249,8 +251,9 @@ namespace DRC
                 string col_name = col.HeaderText;
 
                 if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run"
-                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name!="BATCH_ID"
-                    && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound") && !col_name.StartsWith("Fixed_Top"))
+                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name != "BATCH_ID"
+                    && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound") && !col_name.StartsWith("Fixed_Top")
+                    && !col_name.StartsWith("Data_Modified"))
                 {
                     checkedListBox1.Items.Add(col_name);
                 }
@@ -273,6 +276,10 @@ namespace DRC
                 if (col_name.StartsWith("Fixed_Top"))
                 {
                     fixed_top_descriptor.Add(col_name);
+                }
+                if(col_name.StartsWith("Data_Modified"))
+                {
+                    data_modified_descriptor.Add(col_name);
                 }
             }
 
@@ -297,6 +304,7 @@ namespace DRC
             //status_ec_50_descritpor.Clear();
             status_ec_50_descritpor = new List<string>();
             fixed_top_descriptor = new List<string>();
+            data_modified_descriptor = new List<string>();
 
             CPD_ID_List.Clear();
 
@@ -680,6 +688,7 @@ namespace DRC
 
                 Dictionary<string, string> ec_50_status = new Dictionary<string, string>();
                 Dictionary<string, string> fixed_top_status = new Dictionary<string, string>();
+                Dictionary<string, string> data_modified_status = new Dictionary<string, string>();
 
                 Dictionary<string, Dictionary<string, double>> fit_bounds = new Dictionary<string, Dictionary<string, double>>();
 
@@ -773,6 +782,13 @@ namespace DRC
                             string name = item.ToString();
                             string descriptor_name = name.Remove(0, 10);
                             fixed_top_status[descriptor_name] = row.Cells["Fixed_Top_" + descriptor_name].Value.ToString();
+                        }
+
+                        foreach (string item in data_modified_descriptor)
+                        {
+                            string name = item.ToString();
+                            string descriptor_name = name.Remove(0, 14);
+                            data_modified_status[descriptor_name] = row.Cells["Data_Modified_" + descriptor_name].Value.ToString();
                         }
 
                         concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
@@ -878,8 +894,12 @@ namespace DRC
                     if (fixed_top_status.ContainsKey(descriptor_name)) fixed_top = fixed_top_status[descriptor_name];
                     else fixed_top = "Not Fixed";
 
+                    string is_data_modified;
+                    if (data_modified_status.ContainsKey(descriptor_name)) is_data_modified = data_modified_status[descriptor_name];
+                    else is_data_modified = "FALSE";
+
                     Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 250, ref concentrations, ref concentrations_log, ref data, color,
-                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, this);
+                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, is_data_modified, this);
 
                     chart_drc.set_Raw_Data(raw_data_rows);
 
@@ -948,7 +968,8 @@ namespace DRC
                 int col_index = 0;
                 foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                 {
-                    if (col.Name.StartsWith("Status_") || col.Name.StartsWith("Bound_") || col.Name.StartsWith("Deselected_") || col.Name.StartsWith("Fixed_Top_"))
+                    if (col.Name.StartsWith("Status_") || col.Name.StartsWith("Bound_") || col.Name.StartsWith("Deselected_")
+                        || col.Name.StartsWith("Fixed_Top_")|| col.Name.StartsWith("Data_Modified_") )
                     {
                         col_to_remove.Add(col.Name);
                         continue;
@@ -1055,6 +1076,27 @@ namespace DRC
                 for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
                 {
                     string column_name = "Fixed_Top_" + descriptor_list[descriptor_index];
+
+                    if (f3.dataGridView1.Columns.Contains(column_name))
+                    {
+                        foreach (DataGridViewRow myRow in f3.dataGridView1.Rows)
+                        {
+                            myRow.Cells[column_name].Value = null;
+                        }
+
+                        //f3.dataGridView1.Columns.Remove(f3.dataGridView1.Columns[column_name]);
+                    }
+                    else
+                    {
+                        dataGridView4.ColumnCount += 1;
+                        dataGridView4.Columns[col_index].Name = column_name;
+                        col_index++;
+                    }
+                }
+
+                for (int descriptor_index = 0; descriptor_index < descritpor_number; descriptor_index++)
+                {
+                    string column_name = "Data_Modified_" + descriptor_list[descriptor_index];
 
                     if (f3.dataGridView1.Columns.Contains(column_name))
                     {
@@ -1235,6 +1277,27 @@ namespace DRC
                             DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
                             if (is_top_fixed) newCell.Value = current_chart.get_top_fixed();
                             else newCell.Value = "Not Fixed";
+
+                            chart_row_data[k].Cells.Add(newCell);
+
+                            ++k;
+                        }
+                    }
+
+                    foreach (Chart_DRC current_chart in list_chart)
+                    {
+                        string descriptor_name = current_chart.get_Descriptor_Name();
+
+                        List<bool> removed_raw_data_cpd = new List<bool>();
+
+                        removed_raw_data_cpd = current_chart.get_Removed_Raw_Data().ToList();
+                        bool data_modified = current_chart.is_data_modified();
+
+                        int k = 0;
+                        foreach (bool elem in removed_raw_data_cpd)
+                        {
+                            DataGridViewTextBoxCell newCell = new DataGridViewTextBoxCell();
+                            newCell.Value = data_modified;
 
                             chart_row_data[k].Cells.Add(newCell);
 
@@ -2449,7 +2512,7 @@ namespace DRC
                     foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                     {
                         string col_name = col.HeaderText;
-                        if (col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Class")
+                        if (col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Class" && col_name != "BATCH_ID")
                         {
                             if (descriptors_dict.Keys.Contains(col_name))
                             {
@@ -3578,6 +3641,7 @@ namespace DRC
                     if (current_chart.get_Descriptor_Name() == descriptor_name)
                     {
                         current_chart.set_general_params(true);
+                        current_chart.set_data_modified(true);
 
                         current_chart.set_window_x_min(window_min_x);
                         current_chart.set_window_x_max(window_max_x);
@@ -3602,6 +3666,7 @@ namespace DRC
                     if (current_chart.get_Descriptor_Name() == descriptor_name)
                     {
                         current_chart.set_general_params(true);
+                        current_chart.set_data_modified(true);
 
                         current_chart.set_min_bound_x(Math.Log10(bnd_min_x));
                         current_chart.set_max_bound_x(Math.Log10(bnd_max_x));
@@ -3630,6 +3695,7 @@ namespace DRC
 
                         current_chart.set_top_fixed(true);
                         current_chart.set_top_fixed_value(fixed_top);
+                        current_chart.set_data_modified(true);
 
                         current_chart.draw_DRC(false, false);
                     }
@@ -4398,6 +4464,17 @@ namespace DRC
             return data_modified;
         }
 
+        public void set_data_modified(bool test)
+        {
+            data_modified = test;
+        }
+
+        public bool is_fit_modified()
+        {
+            if (general_params || is_top_fixed || manual_bounds) return true;
+            else return false;
+        }
+
         public void set_Raw_Data(List<DataGridViewRow> data)
         {
             raw_data = data.ToList();
@@ -4455,7 +4532,7 @@ namespace DRC
         }
 
         public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
-            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, MainTab form)
+            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, string if_modified, MainTab form)
         {
             _form1 = form;
 
@@ -4476,6 +4553,8 @@ namespace DRC
             not_fitted = false;
             data_modified = false;
 
+            if (if_modified == "True" || if_modified == "TRUE" || if_modified == "true") data_modified = true;
+
             if (ec_50_status == "=") is_ec50_exact = true;
             else if (ec_50_status == ">") is_ec50_exact = false;
 
@@ -4490,6 +4569,7 @@ namespace DRC
                 set_manual_bound(true);
                 set_general_params(false);
                 set_top_fixed(true);
+                //set_data_modified(true);
             }
             else
             {
@@ -4647,18 +4727,18 @@ namespace DRC
 
             //Create a rectangle annotation
 
-        //RectangleAnnotation annotationRectangle = new RectangleAnnotation();
-        //annotation_ec50 = annotationRectangle;
+            //RectangleAnnotation annotationRectangle = new RectangleAnnotation();
+            //annotation_ec50 = annotationRectangle;
 
-        //chart.ChartAreas[0].AxisX.Minimum = -10;
-        //chart.ChartAreas[0].AxisX.Maximum = -5;
+            //chart.ChartAreas[0].AxisX.Minimum = -10;
+            //chart.ChartAreas[0].AxisX.Maximum = -5;
 
-        //chart.ChartAreas[0].AxisY.Minimum = -1;
-        //chart.ChartAreas[0].AxisY.Maximum = +1;
+            //chart.ChartAreas[0].AxisY.Minimum = -1;
+            //chart.ChartAreas[0].AxisY.Maximum = +1;
 
-        //draw_DRC(false, false);
+            //draw_DRC(false, false);
 
-        chart.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+            chart.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
             chart.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
 
             chart.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.LightGray;
@@ -4667,6 +4747,7 @@ namespace DRC
             general_params = false;
 
             fit_DRC();
+            //draw_DRC(false, false);
         }
 
 
@@ -4875,7 +4956,8 @@ namespace DRC
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
 
-                data_modified = true;
+                
+            = true;
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
@@ -5326,8 +5408,9 @@ namespace DRC
                 }
             }
 
-            if (drc_points_x_disable.Count() == 0) data_modified = false;
-            else data_modified = true;
+            //if (drc_points_x_disable.Count() == 0 && data_modified==false) data_modified = false;
+            //else data_modified = true;
+            if (drc_points_x_disable.Count() > 0) data_modified = true;
 
             int k = 0;
             foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
@@ -5364,12 +5447,27 @@ namespace DRC
             }
             else
             {
-                data_modified = false;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                if (is_top_fixed)
+                {
+                    data_modified = true;
+
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                }
+
+                else
+                {
+                    data_modified = false;
+
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                }
             }
 
             // Setup visual attributes
@@ -5441,6 +5539,15 @@ namespace DRC
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
 
                 annotation_ec50.Text = "EC_50 = Inactive";
+            }
+
+            if ((is_top_fixed || manual_bounds) && data_modified==true && inactive==false && not_fitted==false) // general_params || 
+            {
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
             }
 
             //chart.Invalidate();
@@ -5835,12 +5942,27 @@ namespace DRC
                 }
                 else
                 {
-                    data_modified = false;
-                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                    if (is_top_fixed || manual_bounds)
+                    {
+                        data_modified = true;
+
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                    }
+
+                    else
+                    {
+                        data_modified = false;
+
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                    }
                 }
 
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
@@ -6125,12 +6247,27 @@ namespace DRC
                         }
                         else
                         {
-                            data_modified = false;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                            if (is_top_fixed || manual_bounds)
+                            {
+                                data_modified = true;
+
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                            }
+
+                            else
+                            {
+                                data_modified = false;
+
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                            }
                         }
 
                         string sign = "";
@@ -6221,12 +6358,27 @@ namespace DRC
                         }
                         else
                         {
-                            data_modified = false;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-                            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                            if (is_top_fixed || manual_bounds)
+                            {
+                                data_modified = true;
+
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                            }
+
+                            else
+                            {
+                                data_modified = false;
+
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                            }
                         }
 
                         string sign = "";
