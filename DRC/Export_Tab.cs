@@ -20,9 +20,12 @@ namespace DRC
 {
     public partial class Export_Tab : Form
     {
-        public Export_Tab()
+        MainTab _main_tab;
+
+        public Export_Tab(MainTab main_tab)
         {
             InitializeComponent();
+            _main_tab = main_tab;
         }
         //public Progress progress;
         public static Bitmap ResizeImage(Image image, int width, int height)
@@ -309,7 +312,7 @@ namespace DRC
 
                 for (int j = 1; j <= dataGridViewExport.Columns.Count; j++)
                 {
-                    if ((j-1) % 3 == 1) ws.Column(j).Width = width;
+                    if ((j-1) % 4 == 2) ws.Column(j).Width = width;
                     else ws.Column(j).Width = 15;
                     //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
                 }
@@ -379,8 +382,10 @@ namespace DRC
 
                             if (j > 0)
                             {
-
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
+                                double current_value;
+                                bool is_double = Double.TryParse(dataGridViewExport.Rows[i].Cells[j].Value.ToString(), out current_value);
+                                if(is_double) ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = (double)current_value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
+                                else ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value;
 
                                 //if (cellRowIndex + 1 == 1) ws.Row(cellRowIndex + 1).Height = 20;
                                 //else ws.Row(cellRowIndex + 1).Height = 350.0 / g.DpiY * 72.0f; ;
@@ -400,9 +405,13 @@ namespace DRC
                                 //ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
                                 //ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.VerticalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
                             }
-                            if (j == 0)
+                            if (j == 0 || j == 1)
                             {
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value;
+
+                                double current_value;
+                                bool is_double = Double.TryParse(dataGridViewExport.Rows[i].Cells[j].Value.ToString(), out current_value);
+                                if (is_double) ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = (double)current_value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
+                                else ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value;
 
                                 //if (cellRowIndex + 1 == 1) ws.Row(cellRowIndex + 1).Height = 20;
                                 //else ws.Row(cellRowIndex + 1).Height = 350.0 / g.DpiY * 72.0f; ;
@@ -463,6 +472,8 @@ namespace DRC
                 */
                 toolStripProgressBar1.Visible = false;
                 pck.SaveAs(new FileInfo(@"" + sfd.FileName));
+
+                pck.Dispose();
 
                 MessageBox.Show("Export Successful");
 
@@ -564,5 +575,24 @@ namespace DRC
             }
         }
 
+        private void Export_Tab_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            /*
+            foreach (KeyValuePair<string, List<string>> item in _main_tab.list_img_path_by_cpd)
+            {
+                dataGridViewExport.Rows.Clear();
+                dataGridViewExport.Refresh();
+                dataGridViewExport.Dispose();
+
+                List<string> list_path = item.Value;
+
+                foreach (string current_path in list_path)
+                {
+                    File.Delete(current_path);
+                }
+
+            }
+            */ 
+        }
     }
 }

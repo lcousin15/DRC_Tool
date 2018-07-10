@@ -104,17 +104,14 @@
     <Reference Include="alglibnet2">
       <HintPath>..\..\alglib_csharp\net-core\alglibnet2.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.UI, Version=3.3.0.2824, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EMGU.CV.3.3.0.2824\lib\net35\Emgu.CV.UI.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Emgu.CV.UI, Version=3.4.1.2976, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EMGU.CV.3.4.1.2976\lib\net35\Emgu.CV.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.World, Version=3.3.0.2824, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EMGU.CV.3.3.0.2824\lib\net35\Emgu.CV.World.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Emgu.CV.World, Version=3.4.1.2976, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EMGU.CV.3.4.1.2976\lib\net35\Emgu.CV.World.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus, Version=4.5.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.4.5.1\lib\net40\EPPlus.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.2.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
       <HintPath>..\packages\LumenWorksCsvReader.4.0.0\lib\net45\LumenWorks.Framework.IO.dll</HintPath>
@@ -152,10 +149,6 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZedGraph, Version=5.1.5.28844, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZedGraph.5.1.5\lib\ZedGraph.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Correlations_Exp_Name.cs">
@@ -164,11 +157,35 @@
     <Compile Include="Correlations_Exp_Name.Designer.cs">
       <DependentUpon>Correlations_Exp_Name.cs</DependentUpon>
     </Compile>
+    <Compile Include="CPD_Time_Line.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CPD_Time_Line.Designer.cs">
+      <DependentUpon>CPD_Time_Line.cs</DependentUpon>
+    </Compile>
     <Compile Include="Curves_Options.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Curves_Options.Designer.cs">
       <DependentUpon>Curves_Options.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Curve_Fit_Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Curve_Fit_Options.Designer.cs">
+      <DependentUpon>Curve_Fit_Options.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Descriptors_Fix_Top_Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Descriptors_Fix_Top_Options.Designer.cs">
+      <DependentUpon>Descriptors_Fix_Top_Options.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Descriptors_General_Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Descriptors_General_Options.Designer.cs">
+      <DependentUpon>Descriptors_General_Options.cs</DependentUpon>
     </Compile>
     <Compile Include="MainTab.cs">
       <SubType>Form</SubType>
@@ -253,8 +270,20 @@
     <EmbeddedResource Include="Correlations_Exp_Name.resx">
       <DependentUpon>Correlations_Exp_Name.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CPD_Time_Line.resx">
+      <DependentUpon>CPD_Time_Line.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Curves_Options.resx">
       <DependentUpon>Curves_Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Curve_Fit_Options.resx">
+      <DependentUpon>Curve_Fit_Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Descriptors_Fix_Top_Options.resx">
+      <DependentUpon>Descriptors_Fix_Top_Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Descriptors_General_Options.resx">
+      <DependentUpon>Descriptors_General_Options.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainTab.resx">
       <DependentUpon>MainTab.cs</DependentUpon>
@@ -372,10 +401,10 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Accord.3.8.2-alpha\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.2-alpha\build\Accord.targets'))" />
-    <Error Condition="!Exists('..\packages\EMGU.CV.3.3.0.2824\build\Emgu.CV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EMGU.CV.3.3.0.2824\build\Emgu.CV.targets'))" />
     <Error Condition="!Exists('..\packages\OpenCvSharp3-AnyCPU.3.4.1.20180319\build\OpenCvSharp3-AnyCPU.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCvSharp3-AnyCPU.3.4.1.20180319\build\OpenCvSharp3-AnyCPU.props'))" />
+    <Error Condition="!Exists('..\packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets'))" />
   </Target>
-  <Import Project="..\packages\EMGU.CV.3.3.0.2824\build\Emgu.CV.targets" Condition="Exists('..\packages\EMGU.CV.3.3.0.2824\build\Emgu.CV.targets')" />
+  <Import Project="..\packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets" Condition="Exists('..\packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

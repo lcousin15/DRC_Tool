@@ -54,9 +54,10 @@ namespace DRC
                     int columnCount = dataGridView2.ColumnCount;
                     string columnNames = "";
                     string[] output = new string[dataGridView2.RowCount + 1];
-                    for (int i = 0; i < columnCount; i++)
+                    for (int i = 0; i < columnCount-1; i++)
                     {
-                        columnNames += dataGridView2.Columns[i].Name.ToString() + ",";
+                        if (i < columnCount - 2) columnNames += dataGridView2.Columns[i].Name.ToString() + ",";
+                        else columnNames += dataGridView2.Columns[i].Name.ToString();
                     }
                     output[0] += columnNames;
                     for (int i = 1; (i - 1) < dataGridView2.RowCount; i++)
@@ -70,8 +71,7 @@ namespace DRC
                             else if (j == columnCount - 2) output[i] += dataGridView2.Rows[i - 1].Cells[j].Value.ToString();
                         }
                     }
-                    System.IO.File.WriteAllLines(@sfd.FileName, output, System.Text.Encoding.UTF8);
-
+                    System.IO.File.WriteAllLines(sfd.FileName, output);
                     MessageBox.Show("File was generated.");
                 }
             }

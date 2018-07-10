@@ -44,6 +44,8 @@
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clusteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pCAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSNEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,6 +56,8 @@
             this.drawCurvesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hItsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadHitsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dRCTimeLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -65,20 +69,30 @@
             this.button3 = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
             this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
             this.button4 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
+            this.numericUpDown5 = new System.Windows.Forms.NumericUpDown();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.btn_descriptors_options = new System.Windows.Forms.Button();
+            this.btn_fix_top_bottom = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -92,12 +106,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.AutoScroll = true;
             this.tableLayoutPanel1.AutoScrollMargin = new System.Drawing.Size(25, 25);
-            this.tableLayoutPanel1.AutoScrollMinSize = new System.Drawing.Size(900, 1010);
+            this.tableLayoutPanel1.AutoScrollMinSize = new System.Drawing.Size(900, 1000);
             this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 41);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 47);
             this.tableLayoutPanel1.MaximumSize = new System.Drawing.Size(1000, 10000);
             this.tableLayoutPanel1.MinimumSize = new System.Drawing.Size(950, 850);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -123,7 +137,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1000, 895);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1000, 883);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // saveFileDialog1
@@ -145,7 +159,8 @@
             this.clusteringToolStripMenuItem,
             this.correlationsToolStripMenuItem1,
             this.curvesSuperpositionToolStripMenuItem,
-            this.hItsToolStripMenuItem});
+            this.hItsToolStripMenuItem,
+            this.dRCToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1244, 24);
@@ -161,7 +176,9 @@
             this.exportDataToolStripMenuItem,
             this.exportToolStripMenuItem,
             this.rawDataToolStripMenuItem,
-            this.showImagesToolStripMenuItem});
+            this.showImagesToolStripMenuItem,
+            this.advancedToolStripMenuItem,
+            this.quitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -220,6 +237,20 @@
             this.showImagesToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.showImagesToolStripMenuItem.Text = "Check Images";
             this.showImagesToolStripMenuItem.Click += new System.EventHandler(this.checkImagesToolStripMenuItem_Click);
+            // 
+            // advancedToolStripMenuItem
+            // 
+            this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.advancedToolStripMenuItem.Text = "Advanced";
+            this.advancedToolStripMenuItem.Click += new System.EventHandler(this.advancedToolStripMenuItem_Click);
+            // 
+            // quitToolStripMenuItem
+            // 
+            this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.quitToolStripMenuItem.Text = "Quit";
+            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
             // clusteringToolStripMenuItem
             // 
@@ -297,11 +328,26 @@
             this.loadHitsToolStripMenuItem.Text = "Load Hits";
             this.loadHitsToolStripMenuItem.Click += new System.EventHandler(this.loadHitsToolStripMenuItem_Click);
             // 
+            // dRCToolStripMenuItem
+            // 
+            this.dRCToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dRCTimeLineToolStripMenuItem});
+            this.dRCToolStripMenuItem.Name = "dRCToolStripMenuItem";
+            this.dRCToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            this.dRCToolStripMenuItem.Text = "Time Line";
+            // 
+            // dRCTimeLineToolStripMenuItem
+            // 
+            this.dRCTimeLineToolStripMenuItem.Name = "dRCTimeLineToolStripMenuItem";
+            this.dRCTimeLineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dRCTimeLineToolStripMenuItem.Text = "DRC Time Line";
+            this.dRCTimeLineToolStripMenuItem.Click += new System.EventHandler(this.dRCTimeLineToolStripMenuItem_Click);
+            // 
             // comboBox1
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(1043, 698);
+            this.comboBox1.Location = new System.Drawing.Point(1048, 477);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(173, 21);
             this.comboBox1.TabIndex = 13;
@@ -328,7 +374,7 @@
             0,
             0,
             65536});
-            this.numericUpDown1.Location = new System.Drawing.Point(1072, 357);
+            this.numericUpDown1.Location = new System.Drawing.Point(1077, 806);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             1,
             0,
@@ -342,16 +388,18 @@
             0,
             0,
             65536});
+            this.numericUpDown1.Visible = false;
             // 
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1093, 338);
+            this.label1.Location = new System.Drawing.Point(1098, 787);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 13);
             this.label1.TabIndex = 16;
             this.label1.Text = "R2 Threshold";
+            this.label1.Visible = false;
             // 
             // button1
             // 
@@ -359,12 +407,13 @@
             this.button1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.button1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(1072, 382);
+            this.button1.Location = new System.Drawing.Point(1077, 831);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 23);
             this.button1.TabIndex = 17;
             this.button1.Text = "Apply";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
@@ -372,23 +421,25 @@
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Location = new System.Drawing.Point(1072, 462);
+            this.button2.Location = new System.Drawing.Point(1079, 752);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 23);
             this.button2.TabIndex = 20;
             this.button2.Text = "Apply";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1084, 417);
+            this.label2.Location = new System.Drawing.Point(1091, 707);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(88, 13);
             this.label2.TabIndex = 19;
             this.label2.Text = "Max-Min Inactive";
+            this.label2.Visible = false;
             // 
             // numericUpDown2
             // 
@@ -399,7 +450,7 @@
             0,
             0,
             65536});
-            this.numericUpDown2.Location = new System.Drawing.Point(1072, 436);
+            this.numericUpDown2.Location = new System.Drawing.Point(1079, 726);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             1,
             0,
@@ -409,16 +460,17 @@
             this.numericUpDown2.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown2.TabIndex = 18;
             this.numericUpDown2.Value = new decimal(new int[] {
-            1,
+            4,
             0,
             0,
             65536});
+            this.numericUpDown2.Visible = false;
             // 
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Location = new System.Drawing.Point(1072, 287);
+            this.button3.Location = new System.Drawing.Point(1072, 295);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(120, 34);
             this.button3.TabIndex = 21;
@@ -443,35 +495,11 @@
             this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
             this.toolStripProgressBar1.Visible = false;
             // 
-            // numericUpDown3
-            // 
-            this.numericUpDown3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown3.DecimalPlaces = 1;
-            this.numericUpDown3.Location = new System.Drawing.Point(1072, 594);
-            this.numericUpDown3.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown3.TabIndex = 23;
-            // 
-            // label3
-            // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(1108, 578);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(49, 13);
-            this.label3.TabIndex = 24;
-            this.label3.Text = "Max Top";
-            // 
             // button4
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button4.Location = new System.Drawing.Point(1072, 631);
+            this.button4.Location = new System.Drawing.Point(1072, 335);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(120, 35);
             this.button4.TabIndex = 25;
@@ -481,8 +509,9 @@
             // 
             // label4
             // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(1097, 682);
+            this.label4.Location = new System.Drawing.Point(1098, 461);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(72, 13);
             this.label4.TabIndex = 26;
@@ -493,23 +522,25 @@
             this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button5.Location = new System.Drawing.Point(1072, 542);
+            this.button5.Location = new System.Drawing.Point(1079, 595);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(120, 23);
             this.button5.TabIndex = 29;
             this.button5.Text = "Apply";
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Visible = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // label5
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(1084, 497);
+            this.label5.Location = new System.Drawing.Point(1091, 509);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(92, 13);
             this.label5.TabIndex = 28;
             this.label5.Text = "Median Threshold";
+            this.label5.Visible = false;
             // 
             // numericUpDown4
             // 
@@ -520,20 +551,181 @@
             0,
             0,
             65536});
-            this.numericUpDown4.Location = new System.Drawing.Point(1072, 516);
+            this.numericUpDown4.Location = new System.Drawing.Point(1081, 528);
             this.numericUpDown4.Maximum = new decimal(new int[] {
             10,
             0,
             0,
             0});
             this.numericUpDown4.Name = "numericUpDown4";
-            this.numericUpDown4.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown4.Size = new System.Drawing.Size(118, 20);
             this.numericUpDown4.TabIndex = 27;
             this.numericUpDown4.Value = new decimal(new int[] {
             3,
             0,
             0,
             0});
+            this.numericUpDown4.Visible = false;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(1090, 869);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(89, 13);
+            this.label6.TabIndex = 31;
+            this.label6.Text = "% Diff Last Points";
+            this.label6.Visible = false;
+            // 
+            // numericUpDown5
+            // 
+            this.numericUpDown5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericUpDown5.DecimalPlaces = 2;
+            this.numericUpDown5.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.numericUpDown5.Location = new System.Drawing.Point(1076, 885);
+            this.numericUpDown5.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown5.Name = "numericUpDown5";
+            this.numericUpDown5.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown5.TabIndex = 30;
+            this.numericUpDown5.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUpDown5.Visible = false;
+            // 
+            // button6
+            // 
+            this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button6.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button6.Location = new System.Drawing.Point(1076, 911);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(120, 23);
+            this.button6.TabIndex = 32;
+            this.button6.Text = "Apply";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Visible = false;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button7.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button7.Location = new System.Drawing.Point(1079, 668);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(120, 23);
+            this.button7.TabIndex = 35;
+            this.button7.Text = "Apply";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Visible = false;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(1093, 626);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(74, 13);
+            this.label7.TabIndex = 34;
+            this.label7.Text = "Detect Ouliers";
+            this.label7.Visible = false;
+            // 
+            // numericUpDown6
+            // 
+            this.numericUpDown6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericUpDown6.DecimalPlaces = 2;
+            this.numericUpDown6.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.numericUpDown6.Location = new System.Drawing.Point(1079, 642);
+            this.numericUpDown6.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown6.Name = "numericUpDown6";
+            this.numericUpDown6.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown6.TabIndex = 33;
+            this.numericUpDown6.Value = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.numericUpDown6.Visible = false;
+            // 
+            // numericUpDown3
+            // 
+            this.numericUpDown3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericUpDown3.DecimalPlaces = 2;
+            this.numericUpDown3.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.numericUpDown3.Location = new System.Drawing.Point(1081, 569);
+            this.numericUpDown3.Maximum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.numericUpDown3.Name = "numericUpDown3";
+            this.numericUpDown3.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown3.TabIndex = 36;
+            this.numericUpDown3.Value = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.numericUpDown3.Visible = false;
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(1091, 551);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(97, 13);
+            this.label3.TabIndex = 37;
+            this.label3.Text = "% activity threshold";
+            this.label3.Visible = false;
+            // 
+            // btn_descriptors_options
+            // 
+            this.btn_descriptors_options.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_descriptors_options.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btn_descriptors_options.Location = new System.Drawing.Point(1072, 376);
+            this.btn_descriptors_options.Name = "btn_descriptors_options";
+            this.btn_descriptors_options.Size = new System.Drawing.Size(120, 35);
+            this.btn_descriptors_options.TabIndex = 38;
+            this.btn_descriptors_options.Text = "Descriptors Limits";
+            this.btn_descriptors_options.UseVisualStyleBackColor = true;
+            this.btn_descriptors_options.Click += new System.EventHandler(this.btn_descriptors_options_Click);
+            // 
+            // btn_fix_top_bottom
+            // 
+            this.btn_fix_top_bottom.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_fix_top_bottom.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btn_fix_top_bottom.Location = new System.Drawing.Point(1072, 417);
+            this.btn_fix_top_bottom.Name = "btn_fix_top_bottom";
+            this.btn_fix_top_bottom.Size = new System.Drawing.Size(120, 35);
+            this.btn_fix_top_bottom.TabIndex = 39;
+            this.btn_fix_top_bottom.Text = "Fix Top/Bottom";
+            this.btn_fix_top_bottom.UseVisualStyleBackColor = true;
+            this.btn_fix_top_bottom.Click += new System.EventHandler(this.btn_fix_top_bottom_Click);
             // 
             // MainTab
             // 
@@ -543,13 +735,22 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1244, 961);
+            this.Controls.Add(this.btn_fix_top_bottom);
+            this.Controls.Add(this.btn_descriptors_options);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.numericUpDown3);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.numericUpDown6);
+            this.Controls.Add(this.button6);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.numericUpDown5);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.numericUpDown4);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.numericUpDown3);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -559,7 +760,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.checkedListBox1);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -568,6 +768,7 @@
             this.MinimumSize = new System.Drawing.Size(1200, 1000);
             this.Name = "MainTab";
             this.Text = "DRC Main Tab";
+            this.Load += new System.EventHandler(this.MainTab_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form_DragEnter);
             this.menuStrip1.ResumeLayout(false);
@@ -576,8 +777,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -616,8 +819,6 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.StatusStrip statusStrip1;
         public System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
-        private System.Windows.Forms.Label label3;
-        public System.Windows.Forms.NumericUpDown numericUpDown3;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog2;
         private System.Windows.Forms.ToolStripMenuItem showImagesToolStripMenuItem;
         private System.Windows.Forms.Button button4;
@@ -627,6 +828,20 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label5;
         public System.Windows.Forms.NumericUpDown numericUpDown4;
+        private System.Windows.Forms.ToolStripMenuItem dRCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dRCTimeLineToolStripMenuItem;
+        private System.Windows.Forms.Label label6;
+        public System.Windows.Forms.NumericUpDown numericUpDown5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Label label7;
+        public System.Windows.Forms.NumericUpDown numericUpDown6;
+        private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
+        public System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
+        private System.Windows.Forms.Button btn_descriptors_options;
+        private System.Windows.Forms.Button btn_fix_top_bottom;
     }
 }
 
