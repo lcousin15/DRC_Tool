@@ -277,7 +277,7 @@ namespace DRC
                 {
                     fixed_top_descriptor.Add(col_name);
                 }
-                if(col_name.StartsWith("Data_Modified"))
+                if (col_name.StartsWith("Data_Modified"))
                 {
                     data_modified_descriptor.Add(col_name);
                 }
@@ -969,7 +969,7 @@ namespace DRC
                 foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                 {
                     if (col.Name.StartsWith("Status_") || col.Name.StartsWith("Bound_") || col.Name.StartsWith("Deselected_")
-                        || col.Name.StartsWith("Fixed_Top_")|| col.Name.StartsWith("Data_Modified_") )
+                        || col.Name.StartsWith("Fixed_Top_") || col.Name.StartsWith("Data_Modified_"))
                     {
                         col_to_remove.Add(col.Name);
                         continue;
@@ -2381,7 +2381,7 @@ namespace DRC
 
         }
 
-        public void load_cpd_images(List<string> list_cpd_id)
+        public void load_cpd_images(List<string> list_cpd_id)       // need to debug this part--> add rows for each cpd
         {
             f11.Visible = true;
 
@@ -2428,7 +2428,7 @@ namespace DRC
             int progress = 0;
             foreach (string cpd in list_cpd)
             {
-                draw_images(cpd);
+                draw_images(cpd, progress, list_cpd.Count);
                 progress++;
                 f12.toolStripProgressBar1.Value = progress * 100 / list_cpd.Count;
             }
@@ -2470,7 +2470,7 @@ namespace DRC
             }
         }
 
-        public void draw_images(string cpd_id)
+        public void draw_images(string cpd_id, int cpd_idx, int cpd_nb)
         {
 
             //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
@@ -2512,8 +2512,8 @@ namespace DRC
                     foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                     {
                         string col_name = col.HeaderText;
-                        if (col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration" 
-                            && col_name != "Class" && col_name != "BATCH_ID" && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound") 
+                        if (col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration"
+                            && col_name != "Class" && col_name != "BATCH_ID" && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound")
                             && !col_name.StartsWith("Fixed_Top") && !col_name.StartsWith("Data_Modified") && !col_name.StartsWith("Deselected"))
                         {
                             if (descriptors_dict.Keys.Contains(col_name))
@@ -2556,17 +2556,19 @@ namespace DRC
 
             if (view_images_per_concentration == true)
             {
-
-                f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
-                f12.dataGridView1.Columns[0].Name = "Plate";
-
-                for (int i = 1; i < cols + 1; i++)
+                if (cpd_idx == 0)
                 {
-                    DataGridViewImageColumn img = new DataGridViewImageColumn();
-                    f12.dataGridView1.Columns.Insert(i, img);
-                }
+                    f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
+                    f12.dataGridView1.Columns[0].Name = "CPD/Plate";
 
-                f12.dataGridView1.RowCount = rows;
+                    for (int i = 1; i < cols + 1; i++)
+                    {
+                        DataGridViewImageColumn img = new DataGridViewImageColumn();
+                        f12.dataGridView1.Columns.Insert(i, img);
+                    }
+
+                    f12.dataGridView1.RowCount = cpd_nb * rows;
+                }
             }
             else
             {
@@ -2775,7 +2777,6 @@ namespace DRC
                     channels.Push(my_new_mat);
                 }
 
-
                 string color_format = f13.comboBox2.SelectedItem.ToString();
 
                 //if (color_format == "Rgb")
@@ -2843,8 +2844,12 @@ namespace DRC
 
                 if (view_images_per_concentration == true)
                 {
-                    f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
-                    f12.dataGridView1.Rows[(counter - 1) % total_plate_nb].Cells[0].Value = plates[i];
+                    f12.dataGridView1.Rows[rows * cpd_idx + (counter - 1) % total_plate_nb].Cells[0].Style.WrapMode = DataGridViewTriState.True;
+                    f12.dataGridView1.Rows[rows * cpd_idx + (counter - 1) % total_plate_nb].Cells[0].Value = cpd_id + "\r\n" + "\r\n" + plates[i];
+                    f12.dataGridView1.Rows[rows * cpd_idx + (counter - 1) % total_plate_nb].Cells[0].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                    f12.dataGridView1.Rows[rows * cpd_idx + (counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
+
                     if (replicate != 1) f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1) / total_plate_nb) * replicate].ToString();
                     else f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)) * replicate].ToString();
                 }
@@ -3704,7 +3709,7 @@ namespace DRC
                         current_chart.set_top_fixed(true);
                         current_chart.set_top_fixed_value(fixed_top);
                         current_chart.set_data_modified(true);
-                 
+
                         current_chart.draw_DRC(false, false);
                     }
                 }
@@ -4559,7 +4564,7 @@ namespace DRC
             if (fit_bounds.Count() > 0)
             {
                 set_bound_status(false);
-                 set_manual_bound(true);
+                set_manual_bound(true);
             }
 
             not_fitted = false;
@@ -5550,7 +5555,7 @@ namespace DRC
                 annotation_ec50.Text = "EC_50 = Inactive";
             }
 
-            if ((is_top_fixed || manual_bounds) && data_modified==true && inactive==false && not_fitted==false) // general_params || 
+            if ((is_top_fixed || manual_bounds) && data_modified == true && inactive == false && not_fitted == false) // general_params || 
             {
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
