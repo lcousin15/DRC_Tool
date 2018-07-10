@@ -70,7 +70,8 @@ namespace DRC
                             else if (j == columnCount - 2) output[i] += dataGridView2.Rows[i - 1].Cells[j].Value.ToString();
                         }
                     }
-                    System.IO.File.WriteAllLines(sfd.FileName, output, System.Text.Encoding.UTF8);
+                    System.IO.File.WriteAllLines(@sfd.FileName, output, System.Text.Encoding.UTF8);
+
                     MessageBox.Show("File was generated.");
                 }
             }
