@@ -2309,12 +2309,15 @@ namespace DRC
         /// </summary>
         /// <param name="imageIn"></param>
         /// <returns></returns>
+        /// 
+
         public byte[] imageToByteArray(System.Drawing.Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
             return ms.ToArray();
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -2431,7 +2434,10 @@ namespace DRC
                 draw_images(cpd, progress, list_cpd.Count);
                 progress++;
                 f12.toolStripProgressBar1.Value = progress * 100 / list_cpd.Count;
+
             }
+
+            f12.toolStripProgressBar1.Visible = false;
         }
 
         private void copy_data_grid_view(ref DataGridView dataGridView1, ref DataGridView dataGridView2)
@@ -2610,6 +2616,8 @@ namespace DRC
 
             //List<string> concentration_ordered = new List<string>();
             int counter = 0;
+
+            f12.toolStripProgressBar1.Visible = true;
 
             for (int i = 0; i < wells.Count(); i++)
             {
@@ -2876,6 +2884,8 @@ namespace DRC
 
                 //Console.WriteLine("i = " + i + " cols/rows = " + cols.ToString() + "  " + rows.ToString());
             }
+
+            f12.toolStripProgressBar1.Visible = false;
 
             //Graphics g = this.CreateGraphics();
 
