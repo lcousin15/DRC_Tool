@@ -1413,13 +1413,13 @@ namespace DRC
                 {
                     if (j != 0 && j < f2.dataGridView2.Columns.Count && i < f2.dataGridView2.Rows.Count - 1 && !(f2.dataGridView2.Columns[j].Name.Contains("R2")))
                     {
-                        if ((f2.dataGridView2.Rows[i].Cells[j].Value.ToString() != "Not Fitted") || (f2.dataGridView2.Rows[i].Cells[j].Value.ToString() != "Inactive"))
+                        if ((f2.dataGridView2.Rows[i].Cells[j].Value.ToString() == "Not Fitted") || (f2.dataGridView2.Rows[i].Cells[j].Value.ToString() == "Inactive"))
                         {
-                            current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
+                            current_row.Add(-1);
                         }
                         else
                         {
-                            current_row.Add(-1);
+                            current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
                         }
                     }
                 }
@@ -1510,8 +1510,8 @@ namespace DRC
                 {
                     if (j != 0 && j < f2.dataGridView2.Columns.Count && i < f2.dataGridView2.Rows.Count - 1 && !(f2.dataGridView2.Columns[j].Name.Contains("R2")))
                     {
-                        if ((f2.dataGridView2.Rows[i].Cells[j].Value.ToString() != "Not Fitted") || (f2.dataGridView2.Rows[i].Cells[j].Value.ToString() != "Inactive")) current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
-                        else current_row.Add(-1);
+                        if ((f2.dataGridView2.Rows[i].Cells[j].Value.ToString() == "Not Fitted") || (f2.dataGridView2.Rows[i].Cells[j].Value.ToString() == "Inactive")) current_row.Add(-1);
+                        else current_row.Add((double)f2.dataGridView2.Rows[i].Cells[j].Value);
                     }
                 }
 
@@ -2512,16 +2512,24 @@ namespace DRC
                     foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                     {
                         string col_name = col.HeaderText;
-                        if (col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Class" && col_name != "BATCH_ID")
+                        if (col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration" 
+                            && col_name != "Class" && col_name != "BATCH_ID" && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound") 
+                            && !col_name.StartsWith("Fixed_Top") && !col_name.StartsWith("Data_Modified") && !col_name.StartsWith("Deselected"))
                         {
                             if (descriptors_dict.Keys.Contains(col_name))
                             {
-                                descriptors_dict[col_name].Add(double.Parse(row.Cells[col_name].Value.ToString()));
+                                if (row.Cells[col_name].Value.ToString() != "Inactive" && row.Cells[col_name].Value.ToString() != "Not Fitted")
+                                {
+                                    descriptors_dict[col_name].Add(double.Parse(row.Cells[col_name].Value.ToString()));
+                                }
                             }
                             else
                             {
                                 List<double> my_list = new List<double>();
-                                my_list.Add(double.Parse(row.Cells[col_name].Value.ToString()));
+                                if (row.Cells[col_name].Value.ToString() != "Inactive" && row.Cells[col_name].Value.ToString() != "Not Fitted")
+                                {
+                                    my_list.Add(double.Parse(row.Cells[col_name].Value.ToString()));
+                                }
                                 descriptors_dict[col_name] = my_list;
                             }
                         }
