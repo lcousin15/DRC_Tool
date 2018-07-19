@@ -102,7 +102,10 @@ namespace DRC
             _form1.cpd_color_format = comboBox2.SelectedIndex;
             _form1.cpd_segm_method = comboBox3.SelectedIndex;
 
-            if(if_list==false) _form1.draw_images(selected_cpd);
+            if (if_list == false)
+            {
+                _form1.draw_images(selected_cpd, 0, 1);
+            }
             else
             {
                 _form1.draw_list_cpds(list_cpd);

@@ -382,8 +382,10 @@ namespace DRC
 
                             if (j > 0)
                             {
-
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
+                                double current_value;
+                                bool is_double = Double.TryParse(dataGridViewExport.Rows[i].Cells[j].Value.ToString(), out current_value);
+                                if(is_double) ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = (double)current_value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
+                                else ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value;
 
                                 //if (cellRowIndex + 1 == 1) ws.Row(cellRowIndex + 1).Height = 20;
                                 //else ws.Row(cellRowIndex + 1).Height = 350.0 / g.DpiY * 72.0f; ;
@@ -405,7 +407,11 @@ namespace DRC
                             }
                             if (j == 0 || j == 1)
                             {
-                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value;
+
+                                double current_value;
+                                bool is_double = Double.TryParse(dataGridViewExport.Rows[i].Cells[j].Value.ToString(), out current_value);
+                                if (is_double) ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = (double)current_value; //Convert.ToDouble(dataGridViewExport.Rows[i].Cells[j].Value);
+                                else ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridViewExport.Rows[i].Cells[j].Value;
 
                                 //if (cellRowIndex + 1 == 1) ws.Row(cellRowIndex + 1).Height = 20;
                                 //else ws.Row(cellRowIndex + 1).Height = 350.0 / g.DpiY * 72.0f; ;

@@ -135,6 +135,7 @@ namespace DRC
 
                             if (j == 0)
                             {
+                                ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.WrapText = true;
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridView1.Rows[i].Cells[j].Value;
 
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
@@ -157,15 +158,13 @@ namespace DRC
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
 
                             }
-
-
                         }
 
                         cellColumnIndex++;
                     }
+
                     cellColumnIndex = 1;
                     cellRowIndex++;
-
                 }
 
                 toolStripProgressBar1.Visible = false;

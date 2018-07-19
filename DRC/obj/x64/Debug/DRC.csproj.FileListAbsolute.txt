@@ -193,7 +193,6 @@ E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Extensions.pdb
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Extensions.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.UserInterface.pdb
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.UserInterface.xml
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\ZedGraph.xml
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csproj.ResolveComReference.cache
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Correlations_Exp_Name.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.CPD_Time_Line.resources
