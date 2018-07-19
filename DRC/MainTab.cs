@@ -63,6 +63,43 @@ namespace DRC
             }
         }
 
+        public class RowComparer_Plate_Well : System.Collections.IComparer
+        {
+            private static int sortOrderModifier = 1;
+
+            public RowComparer_Plate_Well(SortOrder sortOrder)
+            {
+                if (sortOrder == SortOrder.Descending)
+                {
+                    sortOrderModifier = -1;
+                }
+                else if (sortOrder == SortOrder.Ascending)
+                {
+                    sortOrderModifier = 1;
+                }
+            }
+
+            public int Compare(object x, object y)
+            {
+                DataGridViewRow DataGridViewRow1 = (DataGridViewRow)x;
+                DataGridViewRow DataGridViewRow2 = (DataGridViewRow)y;
+
+                // Try to sort based on the Last Name column.
+                int CompareResult = System.String.Compare(
+                    DataGridViewRow1.Cells["Plate"].Value.ToString(),
+                    DataGridViewRow2.Cells["Plate"].Value.ToString());
+
+                // If the Last Names are equal, sort based on the First Name.
+                if (CompareResult == 0)
+                {
+                    CompareResult = System.String.Compare(
+                        DataGridViewRow1.Cells["Well"].Value.ToString(),
+                        DataGridViewRow2.Cells["Well"].Value.ToString());
+                }
+                return CompareResult * sortOrderModifier;
+            }
+        }
+
         public MainTab()
         {
             InitializeComponent();
@@ -3815,6 +3852,438 @@ namespace DRC
 
         }
 
+        private void loadPSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Patient Stratificaton :
+            // CPD_ID_List Table :
+
+            Dictionary<string, string> template_plate_1 = new Dictionary<string, string>();
+            Dictionary<string, string> template_plate_2 = new Dictionary<string, string>();
+
+            Dictionary<string, double> template_plate_concentration = new Dictionary<string, double>();
+
+            List<double> ps_concentrations = new List<double>();
+            ps_concentrations.Add(30 * 1e-6);
+            ps_concentrations.Add(7.5 * 1e-6);
+            ps_concentrations.Add(1.875 * 1e-6);
+            ps_concentrations.Add(0.46875 * 1e-6);
+            ps_concentrations.Add(0.1171875 * 1e-6);
+            ps_concentrations.Add(0.029296875 * 1e-6);
+            ps_concentrations.Add(0.00732421875 * 1e-6);
+
+            List<string> first_letter = new List<string>();
+            first_letter.Add("B");
+            first_letter.Add("C");
+            first_letter.Add("D");
+            first_letter.Add("E");
+            first_letter.Add("F");
+            first_letter.Add("G");
+            first_letter.Add("H");
+
+            List<string> second_letter = new List<string>();
+            second_letter.Add("I");
+            second_letter.Add("J");
+            second_letter.Add("K");
+            second_letter.Add("L");
+            second_letter.Add("M");
+            second_letter.Add("N");
+            second_letter.Add("O");
+
+            Dictionary<string, string> cpd_position_1 = new Dictionary<string, string>();
+
+            cpd_position_1["B02"] = "DMSO";
+            cpd_position_1["B03"] = "Sunitinib Malate(Sutent)";
+            cpd_position_1["B04"] = "Vismodegib (GDC-0449)";
+            cpd_position_1["B05"] = "5-fu";
+            cpd_position_1["B06"] = "Axitinib";
+            cpd_position_1["B07"] = "Oxaliplatin";
+            cpd_position_1["B08"] = "Dasatinib(BMS-354825)";
+            cpd_position_1["B09"] = "Temsirolimus";
+            cpd_position_1["B10"] = "Vemurafenib";
+            cpd_position_1["B11"] = "Erlotinib HCl";
+            cpd_position_1["B12"] = "Vandetanib";
+            cpd_position_1["B13"] = "Ruxolitinib";
+            cpd_position_1["B14"] = "Imatinib(Gleevec)";
+            cpd_position_1["B15"] = "Gefitinib(Iressa)";
+            cpd_position_1["B16"] = "ABT-888(Veliparib)";
+            cpd_position_1["B17"] = "Dovitinib(TKI-258)";
+            cpd_position_1["B18"] = "BGJ398(NVP-BGJ398)";
+            cpd_position_1["B19"] = "AZD2014";
+            cpd_position_1["B20"] = "LGK-974";
+            cpd_position_1["B21"] = "AZD5363";
+            cpd_position_1["B22"] = "CI-1033(Canertinib)";
+            cpd_position_1["B23"] = "Tandutinib(MLN518)";
+            cpd_position_1["I02"] = "Untreated";
+            cpd_position_1["I03"] = "Everolimus(RAD001)";
+            cpd_position_1["I04"] = "Dabrafenib";
+            cpd_position_1["I05"] = "Bortezomib(Velcade)";
+            cpd_position_1["I06"] = "Regorafenib";
+            cpd_position_1["I07"] = "Lapatinib";
+            cpd_position_1["I08"] = "Trametinib";
+            cpd_position_1["I09"] = "Bosutinib";
+            cpd_position_1["I10"] = "Nilotinib(AMN-107)";
+            cpd_position_1["I11"] = "Crizotinib(PF-02341066)";
+            cpd_position_1["I12"] = "Irinotecan";
+            cpd_position_1["I13"] = "Ibrutinib";
+            cpd_position_1["I14"] = "Carfilzomib";
+            cpd_position_1["I15"] = "Pazopanib HCl";
+            cpd_position_1["I16"] = "Foretinib(XL880)";
+            cpd_position_1["I17"] = "AZD8931";
+            cpd_position_1["I18"] = "INCB28060";
+            cpd_position_1["I19"] = "LY2835219(Abemaciclib)";
+            cpd_position_1["I20"] = "ABT-199(GDC-0199)";
+            cpd_position_1["I21"] = "AZD6244(Selumetinib)";
+            cpd_position_1["I22"] = "PD 0332991(Palbociclib) HCl";
+            cpd_position_1["I23"] = "DMSO";
+
+            foreach (KeyValuePair<string, string> elem in cpd_position_1)
+            {
+                string number = elem.Key[1].ToString() + elem.Key[2].ToString();
+                string current_letter = elem.Key[0].ToString();
+
+                if (first_letter.Contains(current_letter))
+                {
+                    foreach (string letter in first_letter)
+                    {
+                        template_plate_1[letter + number] = elem.Value;
+
+                        switch (letter)
+                        {
+                            case "B":
+                                template_plate_concentration[letter + number] = ps_concentrations[0];
+                                break;
+                            case "C":
+                                template_plate_concentration[letter + number] = ps_concentrations[1];
+                                break;
+                            case "D":
+                                template_plate_concentration[letter + number] = ps_concentrations[2];
+                                break;
+                            case "E":
+                                template_plate_concentration[letter + number] = ps_concentrations[3];
+                                break;
+                            case "F":
+                                template_plate_concentration[letter + number] = ps_concentrations[4];
+                                break;
+                            case "G":
+                                template_plate_concentration[letter + number] = ps_concentrations[5];
+                                break;
+                            case "H":
+                                template_plate_concentration[letter + number] = ps_concentrations[6];
+                                break;
+                        }
+
+                    }
+                }
+
+                if (second_letter.Contains(current_letter))
+                {
+                    foreach (string letter in second_letter)
+                    {
+                        template_plate_1[letter + number] = elem.Value;
+
+                        switch (letter)
+                        {
+                            case "I":
+                                template_plate_concentration[letter + number] = ps_concentrations[0];
+                                break;
+                            case "J":
+                                template_plate_concentration[letter + number] = ps_concentrations[1];
+                                break;
+                            case "K":
+                                template_plate_concentration[letter + number] = ps_concentrations[2];
+                                break;
+                            case "L":
+                                template_plate_concentration[letter + number] = ps_concentrations[3];
+                                break;
+                            case "M":
+                                template_plate_concentration[letter + number] = ps_concentrations[4];
+                                break;
+                            case "N":
+                                template_plate_concentration[letter + number] = ps_concentrations[5];
+                                break;
+                            case "O":
+                                template_plate_concentration[letter + number] = ps_concentrations[6];
+                                break;
+                        }
+                    }
+                }
+
+            }
+
+            Dictionary<string, string> cpd_position_2 = new Dictionary<string, string>();
+
+            cpd_position_2["B02"] = "DMSO";
+            cpd_position_2["B03"] = "BKM120(NVP-BKM120)";
+            cpd_position_2["B04"] = "Sotrastaurin(AEB071)";
+            cpd_position_2["B05"] = "PF-04449913";
+            cpd_position_2["B06"] = "BEZ235";
+            cpd_position_2["B07"] = "Cabozantinib(XL184)";
+            cpd_position_2["B08"] = "AZD4547";
+            cpd_position_2["B09"] = "CO 1686";
+            cpd_position_2["B10"] = "Afatinib(BIBW2992)";
+            cpd_position_2["B11"] = "BMS-599626(AC480)";
+            cpd_position_2["B12"] = "AEE788(NVP-AEE788)";
+            cpd_position_2["B13"] = "PF-05212384(PKI-587)";
+            cpd_position_2["B14"] = "LEE011(Ribociclib)";
+            cpd_position_2["B15"] = "Panobinostat(LBH589)";
+            cpd_position_2["B16"] = "Olaparib(AZD2281)";
+            cpd_position_2["B17"] = "BYL719";
+            cpd_position_2["B18"] = "XL147(pilaralisib)";
+            cpd_position_2["B19"] = "Neratinib(HKI-272)";
+            cpd_position_2["B20"] = "XL765(SAR245409)";
+            cpd_position_2["B21"] = "Cediranib(AZD2171)";
+            cpd_position_2["B22"] = "AUY922(NVP-AUY922)";
+            cpd_position_2["B23"] = "Tivozanib(AV-951)";
+            cpd_position_2["I02"] = "Untreated";
+            cpd_position_2["I03"] = "LDE225(NVP-LDE225 Erismodegib)";
+            cpd_position_2["I04"] = "Dacomitinib(PF299804 PF-00299804)";
+            cpd_position_2["I05"] = "LDK378(Ceritinib)";
+            cpd_position_2["I06"] = "RXDX-101";
+            cpd_position_2["I23"] = "DMSO";
+
+            foreach (KeyValuePair<string, string> elem in cpd_position_2)
+            {
+                string number = elem.Key[1].ToString() + elem.Key[2].ToString();
+                string current_letter = elem.Key[0].ToString();
+
+                if (first_letter.Contains(current_letter))
+                {
+                    foreach (string letter in first_letter)
+                    {
+                        template_plate_2[letter + number] = elem.Value;
+                    }
+                }
+
+                if (second_letter.Contains(current_letter))
+                {
+                    foreach (string letter in second_letter)
+                    {
+                        template_plate_2[letter + number] = elem.Value;
+                    }
+                }
+            }
+
+            comboBox1.Visible = true;
+
+            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
+            // Allow the user to select multiple images.
+            //openFileDialog1.Multiselect = true;
+            openFileDialog1.Title = "Files First Plate";
+
+            for (int k = 0; k < 4; ++k)
+            {
+                if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    Reset();
+                    is_with_plate = false;
+
+                    string file = openFileDialog1.FileName;
+
+                    if (k == 0)
+                    {
+                        System.IO.StreamReader sr = new System.IO.StreamReader(file);
+                        csv = new CachedCsvReader(sr, true);
+
+                        int fieldCount = csv.FieldCount;
+
+                        string[] headers = csv.GetFieldHeaders();
+
+                        //for(int i=0 ; i<fieldCount ; ++i)
+                        //{
+                        //    f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                        //}
+
+                        while (csv.ReadNextRecord())
+                        {
+                            DataGridViewRow my_row = new DataGridViewRow();
+
+                            //for (int i = 0; i < fieldCount; i++)
+                            //{
+                            f3.dataGridView1.ColumnCount = headers.Count();
+
+                            for (int i = 0; i < fieldCount; ++i)
+                            {
+                                f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                                f3.dataGridView1.Columns[i].Name = headers[i];
+
+                                if (csv[i].ToString() != "nan" && csv[i].ToString() != "inf")
+                                {
+                                    my_row.Cells.Add(new DataGridViewTextBoxCell { Value = csv[i] });
+                                }
+                                else
+                                {
+                                    my_row.Cells.Add(new DataGridViewTextBoxCell { Value = "0.0" });
+                                }
+                            }
+
+                            //my_row.SetValues(csv[0]);
+                            //my_row.Cells[i].Value = csv[i];
+                            //}
+
+                            f3.dataGridView1.Rows.Add(my_row);
+                        }
+
+
+                    }
+                    else if (k > 0)
+                    {
+                        System.IO.StreamReader sr_2 = new System.IO.StreamReader(file);
+                        CachedCsvReader csv_2 = new CachedCsvReader(sr_2, true);
+
+                        int fieldCount = csv_2.FieldCount;
+
+                        string[] headers = csv_2.GetFieldHeaders();
+
+                        while (csv_2.ReadNextRecord())
+                        {
+                            DataGridViewRow my_row = new DataGridViewRow(); // (DataGridViewRow)f3.dataGridView1.Rows[0].Clone();
+                                                                            //for (int i = 0; i < fieldCount; i++)
+                                                                            //{
+                                                                            //f3.dataGridView1.ColumnCount = headers.Count();
+
+                            for (int i = 0; i < fieldCount; ++i)
+                            {
+                                //f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                                //my_row.Cells[headers[i]].Value = csv_2[i];
+                                my_row.Cells.Add(new DataGridViewTextBoxCell());
+                            }
+
+                            f3.dataGridView1.Rows.Add(my_row);
+
+                            for (int i = 0; i < fieldCount; ++i)
+                            {
+                                //f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                                if (csv_2[i].ToString() != "nan" && csv_2[i].ToString() != "inf")
+                                {
+                                    f3.dataGridView1.Rows[f3.dataGridView1.RowCount - 1].Cells[headers[i]].Value = csv_2[i];
+                                }
+                                else
+                                {
+                                    f3.dataGridView1.Rows[f3.dataGridView1.RowCount - 1].Cells[headers[i]].Value = "0.0";
+                                }
+
+                                //my_row.Cells.Add(new DataGridViewTextBoxCell());
+                            }
+
+
+                            //my_row.SetValues(csv[0]);
+                            //my_row.Cells[i].Value = csv[i];
+                            //}
+
+                        }
+                    }
+
+                }
+            }
+
+            List<string> CPD_ID = new List<string>();
+            deslected_data_descriptor = new List<string>();
+            status_ec_50_descritpor = new List<string>();
+            bounds_descriptor = new List<string>();
+            fixed_top_descriptor = new List<string>();
+            data_modified_descriptor = new List<string>();
+
+            if (f3.dataGridView1.ColumnCount < 3 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
+            {
+                System.Windows.Forms.MessageBox.Show("The file must contain at least these 3 columns : \n {[Plate, Well, Descr_0,...}", "Error",
+                    System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                return;
+            }
+
+            //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Well"], System.ComponentModel.ListSortDirection.Ascending);
+            f3.dataGridView1.Refresh();
+            f3.dataGridView1.Sort(new RowComparer_Plate_Well(SortOrder.Ascending));
+
+            f3.dataGridView1.ColumnCount += 3;
+            f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 3].HeaderText = "BATCH_ID";
+            f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 2].HeaderText = "CPD_ID";
+            f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 1].HeaderText = "Concentration";
+
+            f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 3].Name = "BATCH_ID";
+            f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 2].Name = "CPD_ID";
+            f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 1].Name = "Concentration";
+
+            List<string> plates = new List<string>();
+            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            {
+                plates.Add(row.Cells["Plate"].Value.ToString());
+            }
+
+            List<string> unique_plates = new HashSet<string>(CPD_ID).ToList<string>();
+
+            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            {
+                string well = row.Cells["Well"].Value.ToString();
+
+                if (row.Cells["Plate"].Value.ToString().Contains("1-1") || row.Cells["Plate"].Value.ToString().Contains("1-2"))
+                {
+                    row.Cells["CPD_ID"].Value = template_plate_1[well];
+                    row.Cells["BATCH_ID"].Value = template_plate_1[well];
+                }
+                else if (row.Cells["Plate"].Value.ToString().Contains("2-1") || row.Cells["Plate"].Value.ToString().Contains("2-2"))
+                {
+                    row.Cells["CPD_ID"].Value = template_plate_2[well];
+                    row.Cells["BATCH_ID"].Value = template_plate_2[well];
+                }
+
+                row.Cells["Concentration"].Value = template_plate_concentration[well];
+
+            }
+
+            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            {
+                CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString());
+            }
+
+            var unique_items = new HashSet<string>(CPD_ID);
+            comboBox1.DataSource = unique_items.ToList<string>();
+
+            foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
+            {
+                string col_name = col.HeaderText;
+
+                if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run"
+                    && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected") && col_name != "BATCH_ID"
+                    && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound") && !col_name.StartsWith("Fixed_Top")
+                    && !col_name.StartsWith("Data_Modified"))
+                {
+                    checkedListBox1.Items.Add(col_name);
+                }
+
+                /*
+                if (col_name.StartsWith("Deselected"))
+                {
+                    deslected_data_descriptor.Add(col_name);
+                }
+
+                if (col_name.StartsWith("Status"))
+                {
+                    status_ec_50_descritpor.Add(col_name);
+                }
+
+                if (col_name.StartsWith("Bound"))
+                {
+                    bounds_descriptor.Add(col_name);
+                }
+
+                if (col_name.StartsWith("Fixed_Top"))
+                {
+                    fixed_top_descriptor.Add(col_name);
+                }
+                if (col_name.StartsWith("Data_Modified"))
+                {
+                    data_modified_descriptor.Add(col_name);
+                }
+                */
+            }
+
+            list_cpd = unique_items.ToList<string>();
+
+            f3.Show();
+            //f3.Hide();
+
+        }
+
     }
 
     public class Chart_DRC_Overlap
@@ -4980,7 +5449,7 @@ namespace DRC
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
 
-                
+
             = true;
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
                 _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;

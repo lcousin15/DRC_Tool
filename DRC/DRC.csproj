@@ -199,6 +199,12 @@
     <Compile Include="DRC_Overlap_Tab.Designer.cs">
       <DependentUpon>DRC_Overlap_Tab.cs</DependentUpon>
     </Compile>
+    <Compile Include="Patient_Tab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Patient_Tab.Designer.cs">
+      <DependentUpon>Patient_Tab.cs</DependentUpon>
+    </Compile>
     <Compile Include="ViewList_CPD_Tab.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -290,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DRC_Overlap_Tab.resx">
       <DependentUpon>DRC_Overlap_Tab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Patient_Tab.resx">
+      <DependentUpon>Patient_Tab.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ViewList_CPD_Tab.resx">
       <DependentUpon>ViewList_CPD_Tab.cs</DependentUpon>

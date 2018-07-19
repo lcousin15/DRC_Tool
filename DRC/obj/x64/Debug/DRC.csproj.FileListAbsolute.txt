@@ -226,3 +226,4 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Curves_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Curve_Fit_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Descriptors_Fix_Top_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Descriptors_General_Options.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Patient_Tab.resources
