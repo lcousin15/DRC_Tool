@@ -4209,7 +4209,7 @@ namespace DRC
                 plates.Add(row.Cells["Plate"].Value.ToString());
             }
 
-            List<string> unique_plates = new HashSet<string>(CPD_ID).ToList<string>();
+            List<string> unique_plates = new HashSet<string>(plates).ToList<string>();
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -4279,10 +4279,91 @@ namespace DRC
 
             list_cpd = unique_items.ToList<string>();
 
-            f3.Show();
-            //f3.Hide();
+            Dictionary<string, Dictionary<string, List<double>>> DMSO_by_plate = new Dictionary<string, Dictionary<string, List<double>>>();
 
-        }
+            // Get DMSO values by plate and descriptors :
+
+            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            {
+                string current_plate = row.Cells["Plate"].Value.ToString();
+                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
+
+                foreach (string plate in unique_plates)
+                {
+                    if (plate == current_plate)
+                    {
+                        if (current_cpd == "DMSO")
+                        {
+                            foreach (var item in checkedListBox1.Items)
+                            {
+                                string descriptor_name = item.ToString();
+
+                                if (DMSO_by_plate.ContainsKey(plate))
+                                {
+                                    if (DMSO_by_plate[plate].ContainsKey(descriptor_name))
+                                    {
+                                        DMSO_by_plate[plate][descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+                                    }
+                                    else
+                                    {
+                                        DMSO_by_plate[plate][descriptor_name] = new List<double>();
+                                        DMSO_by_plate[plate][descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+                                    }
+                                }
+                                else
+                                {
+                                    Dictionary<string, List<double>> temp_dict = new Dictionary<string, List<double>>();
+                                    temp_dict[descriptor_name] = new List<double>();
+                                    temp_dict[descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+                                    DMSO_by_plate[plate] = temp_dict;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Average DMSO by plate and descritpors :
+
+            Dictionary<string, Dictionary<string, double>> DMSO_mean_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
+
+            foreach(KeyValuePair<string, Dictionary<string, List<double>>> elem in DMSO_by_plate)
+            {
+                string plate = elem.Key;
+                Dictionary<string, List<double>> descriptors_values = elem.Value;
+
+
+                foreach (KeyValuePair<string, List<double>> descriptor_DMSO in descriptors_values)
+                {
+                    double mean_DMSO_descriptor = descriptor_DMSO.Value.Average();
+
+                    Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                    temp_dict[descriptor_DMSO.Key] = mean_DMSO_descriptor;
+                    DMSO_mean_plate_descriptor[plate] = temp_dict;
+                }
+            }
+
+            // Normalization :
+
+            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            {
+                string current_plate = row.Cells["Plate"].Value.ToString();
+                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
+
+                foreach (string plate in unique_plates)
+                {
+                    if (plate == current_plate)
+                    {
+                        if (current_cpd == "DMSO")
+                        {
+                            foreach (var item in checkedListBox1.Items)
+                            {
+                                string descriptor_name = item.ToString();
+
+                                //f3.Show();
+                                //f3.Hide();
+
+                            }
 
     }
 
