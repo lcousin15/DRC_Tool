@@ -7243,11 +7243,15 @@ namespace DRC
 
         public double compute_AUC()
         {
-            double min_x_auc = MinA(drc_points_x_enable.ToArray());
-            double max_x_auc = MaxA(drc_points_x_enable.ToArray());
+            double min_x_fit_auc = x_fit[0];
+            double max_x_fit_auc = x_fit[x_fit.Count-1];
 
-            //double auc = top * (max_x_auc - min_x_auc) + (top-bottom)*(Math.Log(Math.Pow(10,slope*(ec_50-max_x_auc))+1) - Math.Log(Math.Pow(10, slope * (ec_50 - min_x_auc)) + 1))/(slope*Math.Log(10));
-            double abs_integral_auc = evaluate_DRC_integral(max_x_auc) - evaluate_DRC_integral(min_x_auc);
+            Console.WriteLine("AUC Min X Fit = " + min_x_fit_auc.ToString());
+            Console.WriteLine("AUC Max X Fit = " + max_x_fit_auc.ToString());
+
+            double abs_integral_auc = evaluate_DRC_integral(max_x_fit_auc) - evaluate_DRC_integral(min_x_fit_auc);
+
+            Console.WriteLine("AUC = " + abs_integral_auc.ToString());
 
             return abs_integral_auc;
         }
