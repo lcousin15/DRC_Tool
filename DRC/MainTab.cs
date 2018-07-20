@@ -4327,7 +4327,7 @@ namespace DRC
 
             Dictionary<string, Dictionary<string, double>> DMSO_mean_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
 
-            foreach(KeyValuePair<string, Dictionary<string, List<double>>> elem in DMSO_by_plate)
+            foreach (KeyValuePair<string, Dictionary<string, List<double>>> elem in DMSO_by_plate)
             {
                 string plate = elem.Key;
                 Dictionary<string, List<double>> descriptors_values = elem.Value;
@@ -4337,10 +4337,17 @@ namespace DRC
                 {
                     double mean_DMSO_descriptor = descriptor_DMSO.Value.Average();
 
-                    Dictionary<string, double> temp_dict = new Dictionary<string, double>();
-                    temp_dict[descriptor_DMSO.Key] = mean_DMSO_descriptor;
-                    DMSO_mean_plate_descriptor[plate] = temp_dict;
-                }
+                    if (DMSO_mean_plate_descriptor.ContainsKey(plate))
+                    {
+                        DMSO_mean_plate_descriptor[plate][descriptor_DMSO.Key] = mean_DMSO_descriptor;
+                    }
+                    else
+                    {
+                        Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                        temp_dict[descriptor_DMSO.Key] = mean_DMSO_descriptor;
+                        DMSO_mean_plate_descriptor[plate] = temp_dict;
+                    }
+                    }
             }
 
             // Normalization :
@@ -4354,17 +4361,28 @@ namespace DRC
                 {
                     if (plate == current_plate)
                     {
-                        if (current_cpd == "DMSO")
+                        foreach (string cpd in list_cpd)
                         {
-                            foreach (var item in checkedListBox1.Items)
+                            if (current_cpd == cpd)
                             {
-                                string descriptor_name = item.ToString();
+                                foreach (var item in checkedListBox1.Items)
+                                {
+                                    string descriptor_name = item.ToString();
 
-                                //f3.Show();
-                                //f3.Hide();
-
+                                    double current_value = double.Parse(row.Cells[descriptor_name].Value.ToString());
+                                    current_value /= DMSO_mean_plate_descriptor[plate][descriptor_name];
+                                    row.Cells[descriptor_name].Value = current_value;
+                                }
                             }
+                        }
+                    }
+                }
+            }
 
+            //f3.Show();
+            //f3.Hide();
+
+        }
     }
 
     public class Chart_DRC_Overlap
