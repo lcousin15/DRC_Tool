@@ -4387,6 +4387,60 @@ namespace DRC
         private void computeAUCToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // loop on charts to compute the AUC.
+            toolStripProgressBar1.Visible = true;
+
+            Dictionary<string, Dictionary<string, double>> auc_dict = new Dictionary<string, Dictionary<string, double>>();
+
+            for (var idx = 0; idx < list_cpd.Count; idx++)
+            {
+                this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+
+                string cpd_id = list_cpd[idx].ToString();
+
+                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                    continue;
+
+                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+
+                foreach (Chart_DRC current_chart in list_chart)
+                {
+                    string descriptor = current_chart.get_Descriptor_Name();
+                    double AUC = current_chart.compute_AUC();
+
+                    if (auc_dict.ContainsKey(cpd_id))
+                    {
+                        auc_dict[cpd_id][descriptor] = AUC;
+                    }
+                    else
+                    {
+                        Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                        temp_dict[descriptor] = AUC;
+                        auc_dict[cpd_id] = temp_dict;
+                    }
+                }
+            }
+
+            toolStripProgressBar1.Visible = false;
+
+
+            // Display the AUC values :
+
+            Console.WriteLine("CPD_ID" + "," + "Descriptor" + "," + "AUC");
+
+            foreach (KeyValuePair<string, Dictionary<string, double>> item in auc_dict)
+            {
+                //Console.WriteLine("CPD_ID : " + item.Key.ToString());
+
+                Dictionary<string, double> descriptor_auc = item.Value;
+
+                foreach(KeyValuePair<string, double> auc in descriptor_auc)
+                {
+                    //Console.WriteLine("------ Descriptor : " + auc.Key.ToString());
+                    //Console.WriteLine("-----------------  AUC : " + auc.Value.ToString());
+                    Console.WriteLine(item.Key.ToString()+","+ auc.Key.ToString()+","+ auc.Value.ToString())
+                }
+            }
+
         }
     }
 
@@ -7246,12 +7300,12 @@ namespace DRC
             double min_x_fit_auc = x_fit[0];
             double max_x_fit_auc = x_fit[x_fit.Count-1];
 
-            Console.WriteLine("AUC Min X Fit = " + min_x_fit_auc.ToString());
-            Console.WriteLine("AUC Max X Fit = " + max_x_fit_auc.ToString());
+            //Console.WriteLine("AUC Min X Fit = " + min_x_fit_auc.ToString());
+            //Console.WriteLine("AUC Max X Fit = " + max_x_fit_auc.ToString());
 
             double abs_integral_auc = evaluate_DRC_integral(max_x_fit_auc) - evaluate_DRC_integral(min_x_fit_auc);
 
-            Console.WriteLine("AUC = " + abs_integral_auc.ToString());
+            //Console.WriteLine("AUC = " + abs_integral_auc.ToString());
 
             return abs_integral_auc;
         }
