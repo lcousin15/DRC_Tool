@@ -39,6 +39,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadWithPlateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadPSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawDRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,7 +86,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btn_descriptors_options = new System.Windows.Forms.Button();
             this.btn_fix_top_bottom = new System.Windows.Forms.Button();
-            this.loadPSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.patientStratificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.computeAUCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -161,7 +163,8 @@
             this.correlationsToolStripMenuItem1,
             this.curvesSuperpositionToolStripMenuItem,
             this.hItsToolStripMenuItem,
-            this.dRCToolStripMenuItem});
+            this.dRCToolStripMenuItem,
+            this.patientStratificationToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1244, 24);
@@ -200,6 +203,13 @@
             this.loadWithPlateToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.loadWithPlateToolStripMenuItem.Text = "Load with plate";
             this.loadWithPlateToolStripMenuItem.Click += new System.EventHandler(this.loadWithPlateToolStripMenuItem_Click);
+            // 
+            // loadPSToolStripMenuItem
+            // 
+            this.loadPSToolStripMenuItem.Name = "loadPSToolStripMenuItem";
+            this.loadPSToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.loadPSToolStripMenuItem.Text = "Load PS";
+            this.loadPSToolStripMenuItem.Click += new System.EventHandler(this.loadPSToolStripMenuItem_Click);
             // 
             // drawDRCToolStripMenuItem
             // 
@@ -729,12 +739,20 @@
             this.btn_fix_top_bottom.UseVisualStyleBackColor = true;
             this.btn_fix_top_bottom.Click += new System.EventHandler(this.btn_fix_top_bottom_Click);
             // 
-            // loadPSToolStripMenuItem
+            // patientStratificationToolStripMenuItem
             // 
-            this.loadPSToolStripMenuItem.Name = "loadPSToolStripMenuItem";
-            this.loadPSToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.loadPSToolStripMenuItem.Text = "Load PS";
-            this.loadPSToolStripMenuItem.Click += new System.EventHandler(this.loadPSToolStripMenuItem_Click);
+            this.patientStratificationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.computeAUCToolStripMenuItem});
+            this.patientStratificationToolStripMenuItem.Name = "patientStratificationToolStripMenuItem";
+            this.patientStratificationToolStripMenuItem.Size = new System.Drawing.Size(126, 20);
+            this.patientStratificationToolStripMenuItem.Text = "Patient Stratification";
+            // 
+            // computeAUCToolStripMenuItem
+            // 
+            this.computeAUCToolStripMenuItem.Name = "computeAUCToolStripMenuItem";
+            this.computeAUCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.computeAUCToolStripMenuItem.Text = "Compute AUC";
+            this.computeAUCToolStripMenuItem.Click += new System.EventHandler(this.computeAUCToolStripMenuItem_Click);
             // 
             // MainTab
             // 
@@ -852,6 +870,8 @@
         private System.Windows.Forms.Button btn_descriptors_options;
         private System.Windows.Forms.Button btn_fix_top_bottom;
         private System.Windows.Forms.ToolStripMenuItem loadPSToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem patientStratificationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem computeAUCToolStripMenuItem;
     }
 }
 

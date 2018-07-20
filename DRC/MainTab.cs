@@ -4383,6 +4383,11 @@ namespace DRC
             //f3.Hide();
 
         }
+
+        private void computeAUCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // loop on charts to compute the AUC.
+        }
     }
 
     public class Chart_DRC_Overlap
@@ -7220,6 +7225,31 @@ namespace DRC
 
             draw_DRC(false, false);
 
+        }
+
+        private double evaluate_DRC_integral(double x)
+        {
+            double top = fit_parameters[1];
+            double bottom = fit_parameters[0];
+            double ec_50 = fit_parameters[2];
+            double slope = fit_parameters[3];
+
+            double numerator = Math.Sign(bottom * Math.Pow(10, slope * (ec_50 - x)) + top)*(top-bottom)*(Math.Pow(10,slope*(ec_50-x))+1)+slope*top*x*Math.Log(10);
+            double denominator = Math.Sign(Math.Pow(10, slope * (ec_50 - x)) + 1) * slope * Math.Log(10);
+            double integral_value = numerator / denominator;
+
+            return integral_value;
+        }
+
+        public double compute_AUC()
+        {
+            double min_x_auc = MinA(drc_points_x_enable.ToArray());
+            double max_x_auc = MaxA(drc_points_x_enable.ToArray());
+
+            //double auc = top * (max_x_auc - min_x_auc) + (top-bottom)*(Math.Log(Math.Pow(10,slope*(ec_50-max_x_auc))+1) - Math.Log(Math.Pow(10, slope * (ec_50 - min_x_auc)) + 1))/(slope*Math.Log(10));
+            double abs_integral_auc = evaluate_DRC_integral(max_x_auc) - evaluate_DRC_integral(min_x_auc);
+
+            return abs_integral_auc;
         }
 
     }
