@@ -4,6 +4,7 @@ using Accord.MachineLearning.Clustering;
 using Accord.Math;
 using Accord.Statistics.Analysis;
 using Accord.Statistics.Models.Regression.Linear;
+using Accord.Math.Integration;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using LumenWorks.Framework.IO.Csv;
@@ -139,6 +140,7 @@ namespace DRC
         public Correlations_Tab f7 = new Correlations_Tab();
 
         public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
+        public Patient_Tab form_patient = new Patient_Tab();
 
         public Descriptors_General_Options descriptors_general_options_form;
         public Descriptors_Fix_Top_Options descriptors_fix_top_form;
@@ -216,6 +218,8 @@ namespace DRC
         public bool set_param_cpd = false;
 
         List<Color> curve_color = new List<Color>();
+
+        private double norm_integral;
 
         //public Dictionary<string, List<string>> list_img_path_by_cpd = new Dictionary<string, List<string>>();
 
@@ -3871,6 +3875,8 @@ namespace DRC
             ps_concentrations.Add(0.029296875 * 1e-6);
             ps_concentrations.Add(0.00732421875 * 1e-6);
 
+            norm_integral = (Math.Log10(ps_concentrations[0]) - Math.Log10(ps_concentrations[ps_concentrations.Count - 1]));
+
             List<string> first_letter = new List<string>();
             first_letter.Add("B");
             first_letter.Add("C");
@@ -4347,7 +4353,7 @@ namespace DRC
                         temp_dict[descriptor_DMSO.Key] = mean_DMSO_descriptor;
                         DMSO_mean_plate_descriptor[plate] = temp_dict;
                     }
-                    }
+                }
             }
 
             // Normalization :
@@ -4384,9 +4390,8 @@ namespace DRC
 
         }
 
-        private void computeAUCToolStripMenuItem_Click(object sender, EventArgs e)
+        private void compute_auc()
         {
-            // loop on charts to compute the AUC.
             toolStripProgressBar1.Visible = true;
 
             Dictionary<string, Dictionary<string, double>> auc_dict = new Dictionary<string, Dictionary<string, double>>();
@@ -4406,16 +4411,17 @@ namespace DRC
                 {
                     string descriptor = current_chart.get_Descriptor_Name();
                     double AUC = current_chart.compute_AUC();
+                    AUC /= norm_integral;
 
-                    if (auc_dict.ContainsKey(cpd_id))
+                    if (auc_dict.ContainsKey(descriptor))
                     {
-                        auc_dict[cpd_id][descriptor] = AUC;
+                        auc_dict[descriptor][cpd_id] = AUC;
                     }
                     else
                     {
                         Dictionary<string, double> temp_dict = new Dictionary<string, double>();
-                        temp_dict[descriptor] = AUC;
-                        auc_dict[cpd_id] = temp_dict;
+                        temp_dict[cpd_id] = AUC;
+                        auc_dict[descriptor] = temp_dict;
                     }
                 }
             }
@@ -4425,7 +4431,9 @@ namespace DRC
 
             // Display the AUC values :
 
-            Console.WriteLine("CPD_ID" + "," + "Descriptor" + "," + "AUC");
+            //Console.WriteLine("CPD_ID" + "," + "Descriptor" + "," + "AUC");
+
+            form_patient.Reset();
 
             foreach (KeyValuePair<string, Dictionary<string, double>> item in auc_dict)
             {
@@ -4433,13 +4441,36 @@ namespace DRC
 
                 Dictionary<string, double> descriptor_auc = item.Value;
 
-                foreach(KeyValuePair<string, double> auc in descriptor_auc)
-                {
-                    //Console.WriteLine("------ Descriptor : " + auc.Key.ToString());
-                    //Console.WriteLine("-----------------  AUC : " + auc.Value.ToString());
-                    Console.WriteLine(item.Key.ToString()+","+ auc.Key.ToString()+","+ auc.Value.ToString())
-                }
+                Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient);
+
+                //foreach (KeyValuePair<string, double> auc in descriptor_auc)
+                //{
+                //    //Console.WriteLine("------ Descriptor : " + auc.Key.ToString());
+                //    //Console.WriteLine("-----------------  AUC : " + auc.Value.ToString());
+                //    //Console.WriteLine(item.Key.ToString() + "," + auc.Key.ToString() + "," + auc.Value.ToString());
+                //}
             }
+
+            form_patient.Show();
+        }
+
+
+        private void computeAUCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // loop on charts to compute the AUC.
+
+            Form fc = Application.OpenForms["Patient_Tab"];
+
+            if (fc != null)
+            {
+                compute_auc();
+            }
+            else
+            {
+                form_patient = new Patient_Tab();
+                compute_auc();
+            }
+
 
         }
     }
@@ -7288,30 +7319,63 @@ namespace DRC
             double ec_50 = fit_parameters[2];
             double slope = fit_parameters[3];
 
-            double numerator = Math.Sign(bottom * Math.Pow(10, slope * (ec_50 - x)) + top)*(top-bottom)*(Math.Pow(10,slope*(ec_50-x))+1)+slope*top*x*Math.Log(10);
+            double numerator = Math.Sign(bottom * Math.Pow(10, slope * (ec_50 - x)) + top) * (top - bottom) * (Math.Pow(10, slope * (ec_50 - x)) + 1) + slope * top * x * Math.Log(10);
             double denominator = Math.Sign(Math.Pow(10, slope * (ec_50 - x)) + 1) * slope * Math.Log(10);
             double integral_value = numerator / denominator;
 
             return integral_value;
         }
 
+        //private double eval_sigmoid(double x)
+        //{
+        //    double top = fit_parameters[1];
+        //    double bottom = fit_parameters[0];
+        //    double ec_50 = fit_parameters[2];
+        //    double slope = fit_parameters[3];
+
+        //    return bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - x) * slope)));
+        //}
+        //public static void int_function_1_func(double x, double xminusa, double bminusx, ref double y, object obj)
+        //{
+
+
+
+        //    //double top = c[1];
+        //    //double bottom = c[0];
+        //    //double ec_50 = c[2];
+        //    //double slope = c[3];
+
+        //    //y = bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - x) * slope)));
+        //}
+
+
         public double compute_AUC()
         {
-            double min_x_fit_auc = x_fit[0];
-            double max_x_fit_auc = x_fit[x_fit.Count-1];
+            double min_x_fit_auc = x_fit_log[0];
+            double max_x_fit_auc = x_fit_log[x_fit_log.Count - 1];
 
-            //Console.WriteLine("AUC Min X Fit = " + min_x_fit_auc.ToString());
-            //Console.WriteLine("AUC Max X Fit = " + max_x_fit_auc.ToString());
-
-            double abs_integral_auc = evaluate_DRC_integral(max_x_fit_auc) - evaluate_DRC_integral(min_x_fit_auc);
+            //double abs_integral_auc = evaluate_DRC_integral(max_x_fit_auc) - evaluate_DRC_integral(min_x_fit_auc);
 
             //Console.WriteLine("AUC = " + abs_integral_auc.ToString());
 
-            return abs_integral_auc;
+
+            double top = fit_parameters[1];
+            double bottom = fit_parameters[0];
+            double ec_50 = fit_parameters[2];
+            double slope = fit_parameters[3];
+
+            double integral_val = 0.0;
+
+            Func<double, double> g = (x) => bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - x) * slope)));
+
+            integral_val = TrapezoidalRule.Integrate(g, min_x_fit_auc, max_x_fit_auc, steps: 1000);
+
+            //Console.WriteLine("AUC = " + integral_val.ToString());
+
+            return integral_val;
         }
 
     }
-
 
     public class Chart_DRC_Time_Line
     {

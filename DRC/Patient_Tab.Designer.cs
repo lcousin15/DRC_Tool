@@ -33,9 +33,7 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-            this.btn_norm = new System.Windows.Forms.Button();
-            this.btn_draw_graph = new System.Windows.Forms.Button();
-            this.btn_save = new System.Windows.Forms.Button();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -46,7 +44,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(940, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1269, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -68,9 +66,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 533);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 659);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(940, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1269, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -79,41 +77,32 @@
             this.toolStripProgressBar1.Name = "toolStripProgressBar1";
             this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
             // 
-            // btn_norm
+            // tableLayoutPanel1
             // 
-            this.btn_norm.Location = new System.Drawing.Point(570, 464);
-            this.btn_norm.Name = "btn_norm";
-            this.btn_norm.Size = new System.Drawing.Size(105, 37);
-            this.btn_norm.TabIndex = 2;
-            this.btn_norm.Text = "Normalize";
-            this.btn_norm.UseVisualStyleBackColor = true;
-            // 
-            // btn_draw_graph
-            // 
-            this.btn_draw_graph.Location = new System.Drawing.Point(681, 464);
-            this.btn_draw_graph.Name = "btn_draw_graph";
-            this.btn_draw_graph.Size = new System.Drawing.Size(105, 37);
-            this.btn_draw_graph.TabIndex = 3;
-            this.btn_draw_graph.Text = "Draw Graph";
-            this.btn_draw_graph.UseVisualStyleBackColor = true;
-            // 
-            // btn_save
-            // 
-            this.btn_save.Location = new System.Drawing.Point(792, 464);
-            this.btn_save.Name = "btn_save";
-            this.btn_save.Size = new System.Drawing.Size(105, 37);
-            this.btn_save.TabIndex = 4;
-            this.btn_save.Text = "Save Report";
-            this.btn_save.UseVisualStyleBackColor = true;
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.AutoScroll = true;
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 27);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1250, 625);
+            this.tableLayoutPanel1.TabIndex = 1;
             // 
             // Patient_Tab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(940, 555);
-            this.Controls.Add(this.btn_save);
-            this.Controls.Add(this.btn_draw_graph);
-            this.Controls.Add(this.btn_norm);
+            this.AutoScroll = true;
+            this.ClientSize = new System.Drawing.Size(1269, 681);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -135,8 +124,6 @@
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
-        private System.Windows.Forms.Button btn_norm;
-        private System.Windows.Forms.Button btn_draw_graph;
-        private System.Windows.Forms.Button btn_save;
+        public System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }

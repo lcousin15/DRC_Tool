@@ -59,6 +59,8 @@
             this.loadHitsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dRCTimeLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.patientStratificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.computeAUCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -86,8 +88,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btn_descriptors_options = new System.Windows.Forms.Button();
             this.btn_fix_top_bottom = new System.Windows.Forms.Button();
-            this.patientStratificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.computeAUCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -354,6 +354,21 @@
             this.dRCTimeLineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.dRCTimeLineToolStripMenuItem.Text = "DRC Time Line";
             this.dRCTimeLineToolStripMenuItem.Click += new System.EventHandler(this.dRCTimeLineToolStripMenuItem_Click);
+            // 
+            // patientStratificationToolStripMenuItem
+            // 
+            this.patientStratificationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.computeAUCToolStripMenuItem});
+            this.patientStratificationToolStripMenuItem.Name = "patientStratificationToolStripMenuItem";
+            this.patientStratificationToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.patientStratificationToolStripMenuItem.Text = "AUC";
+            // 
+            // computeAUCToolStripMenuItem
+            // 
+            this.computeAUCToolStripMenuItem.Name = "computeAUCToolStripMenuItem";
+            this.computeAUCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.computeAUCToolStripMenuItem.Text = "Compute AUC";
+            this.computeAUCToolStripMenuItem.Click += new System.EventHandler(this.computeAUCToolStripMenuItem_Click);
             // 
             // comboBox1
             // 
@@ -738,21 +753,6 @@
             this.btn_fix_top_bottom.Text = "Fix Top/Bottom";
             this.btn_fix_top_bottom.UseVisualStyleBackColor = true;
             this.btn_fix_top_bottom.Click += new System.EventHandler(this.btn_fix_top_bottom_Click);
-            // 
-            // patientStratificationToolStripMenuItem
-            // 
-            this.patientStratificationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.computeAUCToolStripMenuItem});
-            this.patientStratificationToolStripMenuItem.Name = "patientStratificationToolStripMenuItem";
-            this.patientStratificationToolStripMenuItem.Size = new System.Drawing.Size(126, 20);
-            this.patientStratificationToolStripMenuItem.Text = "Patient Stratification";
-            // 
-            // computeAUCToolStripMenuItem
-            // 
-            this.computeAUCToolStripMenuItem.Name = "computeAUCToolStripMenuItem";
-            this.computeAUCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.computeAUCToolStripMenuItem.Text = "Compute AUC";
-            this.computeAUCToolStripMenuItem.Click += new System.EventHandler(this.computeAUCToolStripMenuItem_Click);
             // 
             // MainTab
             // 
