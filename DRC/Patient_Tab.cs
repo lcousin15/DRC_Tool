@@ -221,7 +221,7 @@ namespace DRC
                         var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
 
                         //Console.WriteLine(pos.X + " , " + pointXPixel);
-                        Console.WriteLine(pos.Y + " , " + pointYPixel);
+                        //Console.WriteLine(pos.Y + " , " + pointYPixel);
 
                         // check if the cursor is really close to the point (2 pixels around the point)
                         if (Math.Abs(pos.X - pointXPixel) < 10 && Math.Abs(pos.Y - pointYPixel) < 10)
