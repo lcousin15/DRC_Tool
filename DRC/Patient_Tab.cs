@@ -107,7 +107,7 @@ namespace DRC
             chartArea.Name = "AUC_" + descriptor;
 
             chart.ChartAreas.Add(chartArea);
-            chart.Name = "AUC_"+descriptor;
+            chart.Name = "AUC_" + descriptor;
 
             chart.Location = new System.Drawing.Point(250, 100);
 
@@ -117,7 +117,7 @@ namespace DRC
 
             chart.Series.Add(series1);
 
-            //chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
+            chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
 
             chart.Size = new System.Drawing.Size(1200, 600);
 
@@ -130,39 +130,14 @@ namespace DRC
         private void process_data()
         {
 
-            int counter = 1;
-
             foreach (KeyValuePair<string, double> item in dict_auc_cpds)
             {
-                
-
                 if (item.Value > 0.0)
                 {
                     cpd_labels.Add(item.Key);
-                    //x.Add(counter);
-                    //y.Add(Math.Log10(item.Value));
                     y.Add(item.Value);
-
-                    counter++;
                 }
             }
-
-            //min_x = x[0];
-            //max_x = x[x.Count - 1];
-
-
-            // In Log :
-            //min_y = MinA<double>(y.ToArray());
-            //max_y = MaxA<double>(y.ToArray());
-
-            //int fixed_min_y = (int)Math.Floor(Math.Log10(min_y));
-            //int fixed_max_y = (int)Math.Ceiling(Math.Log10(max_y));
-
-            //min_y = Math.Pow(10, fixed_min_y);
-            //max_y = Math.Pow(10, fixed_max_y);
-
-            //chart.ChartAreas[0].AxisY.Minimum = min_y;
-            //chart.ChartAreas[0].AxisY.Maximum = max_y;
 
             chart.ChartAreas[0].AxisX.MinorGrid.Enabled = true;
             chart.ChartAreas[0].AxisX.MinorGrid.Interval = 1;
@@ -170,15 +145,17 @@ namespace DRC
             chart.ChartAreas[0].AxisX.MinorGrid.LineColor = Color.LightGray;
             chart.ChartAreas[0].AxisX.LabelStyle.Angle = -90;
             chart.ChartAreas[0].AxisX.Interval = 1;
-            chart.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.Gray;
 
+            chart.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Dot;
+            chart.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.LightGray;
 
             chart.ChartAreas[0].AxisY.MinorGrid.Enabled = true;
             chart.ChartAreas[0].AxisY.MinorGrid.Interval = 1;
             chart.ChartAreas[0].AxisY.MinorGrid.LineDashStyle = ChartDashStyle.Dot;
             chart.ChartAreas[0].AxisY.MinorGrid.LineColor = Color.LightGray;
-            chart.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.Gray;
 
+            chart.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dot;
+            chart.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.LightGray;
 
         }
 
@@ -189,6 +166,7 @@ namespace DRC
             chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             chart.Series["Series1"].Points.DataBindXY(cpd_labels, y);
             chart.Series["Series1"].Color = chart_color;
+            chart.Series["Series1"].MarkerSize = 7;
 
             _form_patient.tableLayoutPanel1.RowCount += 1;
             _form_patient.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)0.50));
@@ -209,45 +187,48 @@ namespace DRC
             return output_image;
         }
 
-        //Point? prevPosition = null;
-        //ToolTip tooltip = new ToolTip();
-        
-        //void chart1_MouseMove(object sender, MouseEventArgs e)
-        //{
-        //    var pos = e.Location;
-        //    if (prevPosition.HasValue && pos == prevPosition.Value)
-        //        return;
+        Point? prevPosition = null;
+        ToolTip tooltip = new ToolTip();
 
-        //    tooltip.RemoveAll();
-        //    prevPosition = pos;
+        void chart1_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition.HasValue && pos == prevPosition.Value)
+                return;
 
-        //    var results = chart.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
+            tooltip.RemoveAll();
+            prevPosition = pos;
 
-        //    foreach (var result in results)
-        //    {
-        //        if (result.ChartElementType == ChartElementType.DataPoint)
-        //        {
-        //            var prop = result.Object as DataPoint;
-        //            if (prop != null)
-        //            {
-        //                var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-        //                var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+            var results = chart.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
 
-        //                // check if the cursor is really close to the point (2 pixels around the point)
-        //                if (Math.Abs(pos.X - pointXPixel) < 2 && Math.Abs(pos.Y - pointYPixel) < 2)
-        //                {
-        //                    double point_x = prop.XValue;
-        //                    double point_y = prop.YValues[0];
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
 
-        //                    int index = y.FindIndex(a => a < point_y + 1E-15 && a > point_y - 1E-15);
-        //                    string cpd = cpd_labels[index];
+                        Console.WriteLine(pos.X + " , " + pointXPixel);
+                        Console.WriteLine(pos.Y + " , " + pointYPixel);
 
-        //                    tooltip.Show("CPD = " + cpd + ", X=" + prop.XValue + ", Y=" + prop.YValues[0], this.chart, pos.X, pos.Y - 15);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 10 && Math.Abs(pos.Y - pointYPixel) < 10)
+                        {
+                            double point_x = prop.XValue;
+                            double point_y = prop.YValues[0];
+
+                            int index = y.FindIndex(a => a < point_y + 1E-8 && a > point_y - 1E-8);
+                            string cpd = cpd_labels[index];
+
+                            tooltip.Show("CPD = " + cpd + ", Y=" + prop.YValues[0], this.chart, pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

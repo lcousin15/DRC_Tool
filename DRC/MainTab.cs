@@ -4411,7 +4411,7 @@ namespace DRC
                 {
                     string descriptor = current_chart.get_Descriptor_Name();
                     double AUC = current_chart.compute_AUC();
-                    AUC /= norm_integral;
+                    //AUC /= norm_integral;
 
                     if (auc_dict.ContainsKey(descriptor))
                     {
@@ -4470,7 +4470,6 @@ namespace DRC
                 form_patient = new Patient_Tab();
                 compute_auc();
             }
-
 
         }
     }
@@ -7372,7 +7371,7 @@ namespace DRC
 
             //Console.WriteLine("AUC = " + integral_val.ToString());
 
-            return integral_val;
+            return 100.0*integral_val;
         }
 
     }
