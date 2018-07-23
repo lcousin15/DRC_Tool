@@ -47,6 +47,8 @@ namespace DRC
         private double min_y;
         private double max_y;
 
+        private int chart_number;
+
         private string descriptor;
 
         private T MinA<T>(T[] rest) where T : IComparable
@@ -74,11 +76,13 @@ namespace DRC
             return descriptor;
         }
 
-        public Chart_Patient(Dictionary<string, double> auc_descriptor, string descriptor_name, Color color, Patient_Tab f_patient)
+        public Chart_Patient(Dictionary<string, double> auc_descriptor, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts)
         {
             chart = new Chart();
 
             descriptor = descriptor_name;
+
+            chart_number = number_charts;
 
             _form_patient = f_patient;
 
@@ -119,7 +123,7 @@ namespace DRC
 
             chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
 
-            chart.Size = new System.Drawing.Size(1200, 600);
+            chart.Size = new System.Drawing.Size(1100, 500);
 
             chart.Titles.Add("AUC " + descriptor.ToString());
 
@@ -150,7 +154,7 @@ namespace DRC
             chart.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.LightGray;
 
             chart.ChartAreas[0].AxisY.MinorGrid.Enabled = true;
-            chart.ChartAreas[0].AxisY.MinorGrid.Interval = 1;
+            chart.ChartAreas[0].AxisY.MinorGrid.Interval = 25;
             chart.ChartAreas[0].AxisY.MinorGrid.LineDashStyle = ChartDashStyle.Dot;
             chart.ChartAreas[0].AxisY.MinorGrid.LineColor = Color.LightGray;
 
@@ -168,11 +172,11 @@ namespace DRC
             chart.Series["Series1"].Color = chart_color;
             chart.Series["Series1"].MarkerSize = 7;
 
-            _form_patient.tableLayoutPanel1.RowCount += 1;
-            _form_patient.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)0.50));
+            //_form_patient.tableLayoutPanel1.RowCount = chart_number;
+            //_form_patient.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, (float)(1.0/(double)chart_number)));
 
             _form_patient.tableLayoutPanel1.Controls.Add(chart);
-            chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top);
+            chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Top);
 
         }
 
@@ -208,10 +212,15 @@ namespace DRC
                     var prop = result.Object as DataPoint;
                     if (prop != null)
                     {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+
+                        var index_lbls = (prop != null) ? chart.Series[0].Points.IndexOf(prop) : -1;
+
+                        int pointXPixel = 0;
+                        if (index_lbls > -1) pointXPixel = (int)chart.ChartAreas[0].AxisX.ValueToPixelPosition(index_lbls + 1);
+                        //var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
                         var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
 
-                        Console.WriteLine(pos.X + " , " + pointXPixel);
+                        //Console.WriteLine(pos.X + " , " + pointXPixel);
                         Console.WriteLine(pos.Y + " , " + pointYPixel);
 
                         // check if the cursor is really close to the point (2 pixels around the point)
@@ -223,7 +232,7 @@ namespace DRC
                             int index = y.FindIndex(a => a < point_y + 1E-8 && a > point_y - 1E-8);
                             string cpd = cpd_labels[index];
 
-                            tooltip.Show("CPD = " + cpd + ", Y=" + prop.YValues[0], this.chart, pos.X, pos.Y - 15);
+                            tooltip.Show("CPD = " + cpd + " | AUC = " + prop.YValues[0].ToString("N2"), this.chart, pos.X, pos.Y - 15);
                         }
                     }
                 }

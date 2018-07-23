@@ -3856,6 +3856,13 @@ namespace DRC
 
         }
 
+        private double Median(List<double> xs)
+        {
+            var ys = xs.OrderBy(x => x).ToList();
+            double mid = (ys.Count - 1) / 2.0;
+            return (ys[(int)(mid)] + ys[(int)(mid + 0.5)]) / 2;
+        }
+
         private void loadPSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Patient Stratificaton :
@@ -4341,7 +4348,7 @@ namespace DRC
 
                 foreach (KeyValuePair<string, List<double>> descriptor_DMSO in descriptors_values)
                 {
-                    double mean_DMSO_descriptor = descriptor_DMSO.Value.Average();
+                    double mean_DMSO_descriptor = Median(descriptor_DMSO.Value); //Average();
 
                     if (DMSO_mean_plate_descriptor.ContainsKey(plate))
                     {
@@ -4441,7 +4448,7 @@ namespace DRC
 
                 Dictionary<string, double> descriptor_auc = item.Value;
 
-                Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient);
+                Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count);
 
                 //foreach (KeyValuePair<string, double> auc in descriptor_auc)
                 //{
