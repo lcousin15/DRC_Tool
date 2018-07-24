@@ -201,6 +201,9 @@ namespace DRC
 
         Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // cpd_id, descriptor, chart
 
+        Dictionary<string, Chart_Patient> chart_auc = new Dictionary<string, Chart_Patient>();
+        Dictionary<string, Chart_Patient> chart_auc_z_score = new Dictionary<string, Chart_Patient>();
+
         public bool view_images_per_concentration;
 
         public int cpd_low_thr_ch1 = -1;
@@ -223,6 +226,16 @@ namespace DRC
         private double norm_integral;
 
         //public Dictionary<string, List<string>> list_img_path_by_cpd = new Dictionary<string, List<string>>();
+
+        public Dictionary<string, Chart_Patient> get_charts_auc()
+        {
+            return chart_auc;
+        }
+
+        public Dictionary<string, Chart_Patient> get_charts_auc_z_score()
+        {
+            return chart_auc_z_score;
+        }
 
         public int get_descriptors_number()
         {
@@ -4466,6 +4479,7 @@ namespace DRC
                 //Console.WriteLine("CPD_ID" + "," + "Descriptor" + "," + "AUC");
 
                 form_patient.Reset();
+                chart_auc.Clear();
 
                 foreach (KeyValuePair<string, Dictionary<string, double>> item in auc_dict)
                 {
@@ -4474,6 +4488,7 @@ namespace DRC
                     Dictionary<string, double> descriptor_auc = item.Value;
 
                     Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+                    chart_auc.Add(item.Key.ToString(), chart);
 
                     //foreach (KeyValuePair<string, double> auc in descriptor_auc)
                     //{
@@ -4486,6 +4501,7 @@ namespace DRC
             else if (graph_type == "z-score")
             {
                 form_patient.Reset();
+                chart_auc_z_score.Clear();
 
                 Dictionary<string, Dictionary<string, double>> z_score_auc = new Dictionary<string, Dictionary<string, double>>();
 
@@ -4528,6 +4544,8 @@ namespace DRC
                     Dictionary<string, double> descriptor_auc = item.Value;
 
                     Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+                    chart_auc_z_score.Add(item.Key.ToString(), chart);
+
                 }
             }
 
