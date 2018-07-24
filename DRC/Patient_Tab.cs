@@ -16,21 +16,29 @@ namespace DRC
 {
     public partial class Patient_Tab : Form
     {
-        public Patient_Tab()
+        public Patient_Tab(MainTab main_tab)
         {
             InitializeComponent();
+            _main_tab = main_tab;
         }
+
+        MainTab _main_tab;
 
         public void Reset()
         {
             tableLayoutPanel1.Controls.Clear();
         }
 
+        public void draw_compound(string cpd_id)
+        {
+            _main_tab.draw_compound(cpd_id);
+        }
+
     }
 
     public class Chart_Patient
     {
-        Patient_Tab _form_patient = new Patient_Tab();
+        Patient_Tab _form_patient; //= new Patient_Tab();
 
         private Chart chart;
 
@@ -48,8 +56,8 @@ namespace DRC
         private double max_y;
 
         private int chart_number;
-
         private string descriptor;
+        private string graph_type;
 
         private T MinA<T>(T[] rest) where T : IComparable
         {
@@ -76,7 +84,7 @@ namespace DRC
             return descriptor;
         }
 
-        public Chart_Patient(Dictionary<string, double> auc_descriptor, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts)
+        public Chart_Patient(Dictionary<string, double> auc_descriptor, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
         {
             chart = new Chart();
 
@@ -89,6 +97,8 @@ namespace DRC
             chart_color = color;
 
             dict_auc_cpds = auc_descriptor;
+
+            graph_type = graph;
 
             ChartArea chartArea = new ChartArea();
             Series series1 = new Series();
@@ -121,6 +131,7 @@ namespace DRC
 
             chart.Series.Add(series1);
 
+            chart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDown);
             chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
 
             chart.Size = new System.Drawing.Size(1100, 500);
@@ -136,11 +147,8 @@ namespace DRC
 
             foreach (KeyValuePair<string, double> item in dict_auc_cpds)
             {
-                if (item.Value > 0.0)
-                {
-                    cpd_labels.Add(item.Key);
-                    y.Add(item.Value);
-                }
+                cpd_labels.Add(item.Key);
+                y.Add(item.Value);
             }
 
             chart.ChartAreas[0].AxisX.MinorGrid.Enabled = true;
@@ -165,7 +173,8 @@ namespace DRC
 
         private void draw_chart()
         {
-            chart.Titles[0].Text = "AUC " + descriptor.ToString();
+            if (graph_type == "auc") chart.Titles[0].Text = "AUC " + descriptor.ToString();
+            else if (graph_type == "z-score") chart.Titles[0].Text = "AUC Z-Score " + descriptor.ToString();
 
             chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             chart.Series["Series1"].Points.DataBindXY(cpd_labels, y);
@@ -177,7 +186,6 @@ namespace DRC
 
             _form_patient.tableLayoutPanel1.Controls.Add(chart);
             chart.Anchor = (AnchorStyles.Bottom | AnchorStyles.Top);
-
         }
 
         public string save_image(string path)
@@ -194,7 +202,7 @@ namespace DRC
         Point? prevPosition = null;
         ToolTip tooltip = new ToolTip();
 
-        void chart1_MouseMove(object sender, MouseEventArgs e)
+        private void chart1_MouseMove(object sender, MouseEventArgs e)
         {
             var pos = e.Location;
             if (prevPosition.HasValue && pos == prevPosition.Value)
@@ -232,7 +240,61 @@ namespace DRC
                             int index = y.FindIndex(a => a < point_y + 1E-8 && a > point_y - 1E-8);
                             string cpd = cpd_labels[index];
 
-                            tooltip.Show("CPD = " + cpd + " | AUC = " + prop.YValues[0].ToString("N2"), this.chart, pos.X, pos.Y - 15);
+                            Console.WriteLine("Survol");
+
+                            if (graph_type == "auc") tooltip.Show("CPD = " + cpd + " | AUC = " + prop.YValues[0].ToString("N2"), this.chart, pos.X, pos.Y - 15);
+                            else if (graph_type == "z-score") tooltip.Show("CPD = " + cpd + " | Z-Score = " + prop.YValues[0].ToString("N2"), this.chart, pos.X, pos.Y - 15);
+
+                            //if(Control.MouseButtons == MouseButtons.Left)
+                            //if (e.Button == MouseButtons.Left)
+                            //{
+                            //    Console.WriteLine(cpd);
+                            //    _form_patient.draw_compound(cpd);
+                            //}
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private void chart1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                Console.WriteLine("Click");
+
+                //var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+                var results = chart.HitTest(e.X, e.Y, false, ChartElementType.DataPoint);
+
+                foreach (var result in results)
+                {
+                    if (result.ChartElementType == ChartElementType.DataPoint)
+                    {
+                        var prop = result.Object as DataPoint;
+                        if (prop != null)
+                        {
+
+                            var index_lbls = (prop != null) ? chart.Series[0].Points.IndexOf(prop) : -1;
+
+                            int pointXPixel = 0;
+                            if (index_lbls > -1) pointXPixel = (int)chart.ChartAreas[0].AxisX.ValueToPixelPosition(index_lbls + 1);
+                            var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                            // check if the cursor is really close to the point (2 pixels around the point)
+                            if (Math.Abs(e.X - pointXPixel) < 10 && Math.Abs(e.Y - pointYPixel) < 10)
+                            {
+                                double point_x = prop.XValue;
+                                double point_y = prop.YValues[0];
+
+                                int index = y.FindIndex(a => a < point_y + 1E-8 && a > point_y - 1E-8);
+                                string cpd = cpd_labels[index];
+
+                                Console.WriteLine(cpd);
+
+                                _form_patient.draw_compound(cpd);
+
+                            }
                         }
                     }
                 }

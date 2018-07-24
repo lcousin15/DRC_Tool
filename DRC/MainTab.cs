@@ -124,6 +124,7 @@ namespace DRC
         public ViewImages_Options_Tab f13;
         public CPD_Time_Line TimeLine;
         public Export_Tab f5;
+        public Patient_Tab form_patient;
 
         public void SetForm()
         {
@@ -133,6 +134,7 @@ namespace DRC
             f11 = new ViewList_CPD_Tab(this);
             TimeLine = new CPD_Time_Line(this);
             f5 = new Export_Tab(this);
+            form_patient = new Patient_Tab(this);
         }
 
         public RawData_Tab f3 = new RawData_Tab();
@@ -140,7 +142,6 @@ namespace DRC
         public Correlations_Tab f7 = new Correlations_Tab();
 
         public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
-        public Patient_Tab form_patient = new Patient_Tab();
 
         public Descriptors_General_Options descriptors_general_options_form;
         public Descriptors_Fix_Top_Options descriptors_fix_top_form;
@@ -478,6 +479,21 @@ namespace DRC
             //    f2.dataGridView2.Rows[row_index].DefaultCellStyle.BackColor = Color.White;
             //}
 
+        }
+
+        public void draw_compound(string cpd_id)
+        {
+            if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                return;
+
+            tableLayoutPanel1.Controls.Clear();
+
+            List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+
+            foreach (Chart_DRC current_chart in list_chart)
+            {
+                current_chart.draw_DRC(false, true);
+            }
         }
 
         private static Image LoadImageNoLock(string path)
@@ -4397,7 +4413,13 @@ namespace DRC
 
         }
 
-        private void compute_auc()
+        private static double StandardDeviation(List<double> numberSet, double divisor)
+        {
+            double mean = numberSet.Average();
+            return Math.Sqrt(numberSet.Sum(x => Math.Pow(x - mean, 2)) / divisor);
+        }
+
+        private void compute_auc(string graph_type)
         {
             toolStripProgressBar1.Visible = true;
 
@@ -4435,27 +4457,76 @@ namespace DRC
 
             toolStripProgressBar1.Visible = false;
 
-
-            // Display the AUC values :
-
-            //Console.WriteLine("CPD_ID" + "," + "Descriptor" + "," + "AUC");
-
-            form_patient.Reset();
-
-            foreach (KeyValuePair<string, Dictionary<string, double>> item in auc_dict)
+            if (graph_type == "auc")
             {
-                //Console.WriteLine("CPD_ID : " + item.Key.ToString());
+                // Display the AUC values :
 
-                Dictionary<string, double> descriptor_auc = item.Value;
+                //Console.WriteLine("CPD_ID" + "," + "Descriptor" + "," + "AUC");
 
-                Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count);
+                form_patient.Reset();
 
-                //foreach (KeyValuePair<string, double> auc in descriptor_auc)
-                //{
-                //    //Console.WriteLine("------ Descriptor : " + auc.Key.ToString());
-                //    //Console.WriteLine("-----------------  AUC : " + auc.Value.ToString());
-                //    //Console.WriteLine(item.Key.ToString() + "," + auc.Key.ToString() + "," + auc.Value.ToString());
-                //}
+                foreach (KeyValuePair<string, Dictionary<string, double>> item in auc_dict)
+                {
+                    //Console.WriteLine("CPD_ID : " + item.Key.ToString());
+
+                    Dictionary<string, double> descriptor_auc = item.Value;
+
+                    Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+
+                    //foreach (KeyValuePair<string, double> auc in descriptor_auc)
+                    //{
+                    //    //Console.WriteLine("------ Descriptor : " + auc.Key.ToString());
+                    //    //Console.WriteLine("-----------------  AUC : " + auc.Value.ToString());
+                    //    //Console.WriteLine(item.Key.ToString() + "," + auc.Key.ToString() + "," + auc.Value.ToString());
+                    //}
+                }
+            }
+            else if (graph_type == "z-score")
+            {
+                form_patient.Reset();
+
+                Dictionary<string, Dictionary<string, double>> z_score_auc = new Dictionary<string, Dictionary<string, double>>();
+
+                foreach (KeyValuePair<string, Dictionary<string, double>> item in auc_dict)
+                {
+                    string descriptor = item.Key;
+                    Dictionary<string, double> auc_values_by_cpd = item.Value;
+
+                    List<double> auc_values = new List<double>();
+
+                    foreach (KeyValuePair<string, double> val in auc_values_by_cpd)
+                    {
+                        auc_values.Add(val.Value);
+                    }
+
+                    double mu = auc_values.Average();
+                    double sigma = StandardDeviation(auc_values, (double)auc_values.Count - 1);
+
+                    foreach (KeyValuePair<string, double> val in auc_values_by_cpd)
+                    {
+                        string cpd_id = val.Key;
+                        double z_score = (val.Value - mu) / sigma;
+
+                        if (z_score_auc.ContainsKey(descriptor))
+                        {
+                            z_score_auc[descriptor][cpd_id] = z_score;
+                        }
+                        else
+                        {
+                            Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                            temp_dict[cpd_id] = z_score;
+                            z_score_auc[descriptor] = temp_dict;
+                        }
+                    }
+
+                }
+
+                foreach (KeyValuePair<string, Dictionary<string, double>> item in z_score_auc)
+                {
+                    Dictionary<string, double> descriptor_auc = item.Value;
+
+                    Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+                }
             }
 
             form_patient.Show();
@@ -4470,12 +4541,30 @@ namespace DRC
 
             if (fc != null)
             {
-                compute_auc();
+                compute_auc("auc");
             }
             else
             {
-                form_patient = new Patient_Tab();
-                compute_auc();
+                form_patient = new Patient_Tab(this);
+                compute_auc("auc");
+            }
+
+        }
+
+        private void computeAUCZScoreToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // loop on charts to compute the AUC.
+
+            Form fc = Application.OpenForms["Patient_Tab"];
+
+            if (fc != null)
+            {
+                compute_auc("z-score");
+            }
+            else
+            {
+                form_patient = new Patient_Tab(this);
+                compute_auc("z-score");
             }
 
         }
@@ -7378,7 +7467,7 @@ namespace DRC
 
             //Console.WriteLine("AUC = " + integral_val.ToString());
 
-            return 100.0*integral_val;
+            return 100.0 * integral_val;
         }
 
     }

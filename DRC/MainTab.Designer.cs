@@ -88,6 +88,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btn_descriptors_options = new System.Windows.Forms.Button();
             this.btn_fix_top_bottom = new System.Windows.Forms.Button();
+            this.computeAUCZScoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -358,7 +359,8 @@
             // patientStratificationToolStripMenuItem
             // 
             this.patientStratificationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.computeAUCToolStripMenuItem});
+            this.computeAUCToolStripMenuItem,
+            this.computeAUCZScoreToolStripMenuItem});
             this.patientStratificationToolStripMenuItem.Name = "patientStratificationToolStripMenuItem";
             this.patientStratificationToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.patientStratificationToolStripMenuItem.Text = "AUC";
@@ -366,7 +368,7 @@
             // computeAUCToolStripMenuItem
             // 
             this.computeAUCToolStripMenuItem.Name = "computeAUCToolStripMenuItem";
-            this.computeAUCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.computeAUCToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.computeAUCToolStripMenuItem.Text = "Compute AUC";
             this.computeAUCToolStripMenuItem.Click += new System.EventHandler(this.computeAUCToolStripMenuItem_Click);
             // 
@@ -754,6 +756,13 @@
             this.btn_fix_top_bottom.UseVisualStyleBackColor = true;
             this.btn_fix_top_bottom.Click += new System.EventHandler(this.btn_fix_top_bottom_Click);
             // 
+            // computeAUCZScoreToolStripMenuItem
+            // 
+            this.computeAUCZScoreToolStripMenuItem.Name = "computeAUCZScoreToolStripMenuItem";
+            this.computeAUCZScoreToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.computeAUCZScoreToolStripMenuItem.Text = "Compute AUC Z-Score";
+            this.computeAUCZScoreToolStripMenuItem.Click += new System.EventHandler(this.computeAUCZScoreToolStripMenuItem_Click);
+            // 
             // MainTab
             // 
             this.AllowDrop = true;
@@ -872,6 +881,7 @@
         private System.Windows.Forms.ToolStripMenuItem loadPSToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem patientStratificationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computeAUCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem computeAUCZScoreToolStripMenuItem;
     }
 }
 
