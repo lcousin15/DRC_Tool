@@ -3884,6 +3884,8 @@ namespace DRC
             // Patient Stratificaton :
             // CPD_ID_List Table :
 
+            Reset();
+
             Dictionary<string, string> template_plate_1 = new Dictionary<string, string>();
             Dictionary<string, string> template_plate_2 = new Dictionary<string, string>();
 
