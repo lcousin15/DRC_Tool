@@ -4434,7 +4434,7 @@ namespace DRC
             return Math.Sqrt(numberSet.Sum(x => Math.Pow(x - mean, 2)) / divisor);
         }
 
-        private void compute_auc(string graph_type)
+        public void compute_auc(string graph_type)
         {
             toolStripProgressBar1.Visible = true;
 

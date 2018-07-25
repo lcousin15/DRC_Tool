@@ -101,6 +101,11 @@ namespace DRC
             return descriptor;
         }
 
+        public Dictionary<string, double> get_auc_values()
+        {
+            return dict_auc_cpds;
+        }
+
         public Chart_Patient(Dictionary<string, double> auc_descriptor, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
         {
             chart = new Chart();
@@ -163,6 +168,8 @@ namespace DRC
         private void process_data()
         {
 
+            dict_auc_cpds = dict_auc_cpds.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
             foreach (KeyValuePair<string, double> item in dict_auc_cpds)
             {
                 cpd_labels.Add(item.Key);
@@ -216,7 +223,10 @@ namespace DRC
             //draw_chart();
 
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "\\AUC_" + descriptor_name + ".png";
+            string output_image = path + "\\AUC_" + descriptor_name;
+
+            if (graph_type == "auc") output_image += ".png";
+            else if (graph_type == "z-score") output_image += "_z_score.png";
 
             // System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);me
             chart.SaveImage(output_image, ChartImageFormat.Png);
