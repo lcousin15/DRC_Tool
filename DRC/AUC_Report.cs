@@ -148,7 +148,6 @@ namespace DRC
                         if ((j-1) % 3 == 2) ws.Column(j).Width = 15;
                         if ((j-1) % 3 == 0) ws.Column(j).Width = 20;
                     }
-                    //else ws.Column(j).Width = 15;
                 }
 
                 int counter = 0;
@@ -224,10 +223,7 @@ namespace DRC
                     counter++;
                 }
 
-                //int cellRowIndex = (counter + 1) * img_rows + 2;
                 int cellRowIndex = rowBeginIndex-1;
-                //int cellColumnIndex = 1;
-
 
                 ws.Cells[cellRowIndex, 1].Value = "CPD_ID";
 
@@ -363,12 +359,7 @@ namespace DRC
                 foreach (string current_path in img_paths) File.Delete(current_path);
 
                 MessageBox.Show("Export Successful");
-
-
             }
-
         }
-
     }
-
 }
