@@ -11,6 +11,7 @@ using System.Collections;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Net;
 
 namespace DRC
 {
@@ -51,6 +52,118 @@ namespace DRC
             }
         }
 
+
+        private void Find_Pathways(List<string> CPDS)
+        {
+
+            this.toolStripProgressBar1.Visible = true;
+
+            //LocusID = 100133941;
+            List <string> ListPathway = new List<string>();
+            List<string> ListTarget = new List<string>();
+            Dictionary<string, List<string>> Path_target = new Dictionary<string, List<string>>();
+            int idx = 0;
+            foreach (var CPD in CPDS)
+            {
+
+                this.toolStripProgressBar1.Value = idx * 100 / (CPDS.Count - 1);
+                idx++;
+                Console.WriteLine("------ CPD : " + CPD);
+                string getvars = "/find/drug/" + CPD;
+                WebRequest req = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars)) as WebRequest;
+                req.Method = "GET";
+
+
+                HttpWebResponse response2 = req.GetResponse() as HttpWebResponse;
+                StreamReader reader = new StreamReader(response2.GetResponseStream());
+
+                string CPD_KEGG = "";
+
+                CPD_KEGG = reader.ReadLine().Split('\t')[0];
+
+                reader.Close();
+                response2.Close();
+
+                if (CPD_KEGG != "")
+                {
+
+                    Console.WriteLine("------ CPD : " + CPD + "------ CPD_ID : " + CPD_KEGG);
+
+                    string getvars3 = "/get/" + CPD_KEGG;
+                    WebRequest req3 = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars3)) as WebRequest;
+                    req3.Method = "GET";
+
+
+                    HttpWebResponse response3 = req3.GetResponse() as HttpWebResponse;
+                    StreamReader reader3 = new StreamReader(response3.GetResponseStream());
+
+                    List<string> toto = reader3.ReadToEnd().Split(' ').ToList();
+                    foreach (string item in toto)
+                    {
+
+                        if (item.Contains("hsa0"))
+                        {
+
+                            ListPathway.Add(item.Substring(0, 8));
+                            List<string> targetss = (item.Substring(9, item.Length - 10)).Split('+').ToList();
+                            if (Path_target.ContainsKey(item.Substring(0, 8)))
+                            {
+                                List<string> temp = Path_target[item.Substring(0, 8)];
+                                temp.AddRange(targetss.Distinct().ToList());
+                                Path_target[item.Substring(0, 8)] = temp.Distinct().ToList();
+                            }
+
+                            else
+                            {
+                                Path_target[item.Substring(0, 8)] = targetss.Distinct().ToList();
+
+                            }
+                        }
+                    }
+
+                    reader3.Close();
+                    response3.Close();
+
+                }
+
+            }
+
+            var ordered = Path_target.OrderByDescending(x => x.Value.Count);
+            int kl = 0;
+
+            foreach (KeyValuePair<string, List<string>> item in ordered)
+            {
+                Console.WriteLine("------ PATHWAYS : " + item.Key);
+
+                string hgf = "https://www.kegg.jp/kegg-bin/show_pathway?org_name=hsadd&map=" + item.Key + "&multi_query=";
+                foreach (string target in item.Value)
+                {
+                    hgf += target + "+red/";
+                }
+                System.Diagnostics.Process.Start(hgf);
+
+                kl++;
+            }
+
+            Console.WriteLine("------ NUMBER OF PATHWAYS : " + kl);
+
+            this.toolStripProgressBar1.Visible = false;
+
+        }
+
+        private void displayPathwaysToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<string> CPDS = new List<string>();
+
+            Dictionary<string, Chart_Patient> auc_by_descriptor = _main_tab.get_charts_auc();
+            Dictionary<string, double> cpd_auc = auc_by_descriptor[auc_by_descriptor.First().Key].get_auc_values();
+            foreach (KeyValuePair<string, double> elem in cpd_auc)
+            {
+                CPDS.Add(elem.Key);
+            }
+
+            Find_Pathways(CPDS);
+        }
     }
 
     public class Chart_Patient

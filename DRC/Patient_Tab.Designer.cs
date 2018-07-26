@@ -34,6 +34,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.displayPathwaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -51,7 +52,8 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportReportToolStripMenuItem});
+            this.exportReportToolStripMenuItem,
+            this.displayPathwaysToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -59,7 +61,7 @@
             // exportReportToolStripMenuItem
             // 
             this.exportReportToolStripMenuItem.Name = "exportReportToolStripMenuItem";
-            this.exportReportToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.exportReportToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.exportReportToolStripMenuItem.Text = "Export Report";
             this.exportReportToolStripMenuItem.Click += new System.EventHandler(this.exportReportToolStripMenuItem_Click);
             // 
@@ -119,6 +121,13 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1150, 640);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
+            // displayPathwaysToolStripMenuItem
+            // 
+            this.displayPathwaysToolStripMenuItem.Name = "displayPathwaysToolStripMenuItem";
+            this.displayPathwaysToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.displayPathwaysToolStripMenuItem.Text = "Display Pathways";
+            this.displayPathwaysToolStripMenuItem.Click += new System.EventHandler(this.displayPathwaysToolStripMenuItem_Click);
+            // 
             // Patient_Tab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -147,5 +156,6 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         public System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ToolStripMenuItem displayPathwaysToolStripMenuItem;
     }
 }
