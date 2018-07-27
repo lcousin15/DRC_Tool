@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Globalization;
 using System.Collections;
 using System.Data;
+using System.Net;
 
 namespace DRC
 {
@@ -3904,49 +3905,94 @@ namespace DRC
 
             Dictionary<string, string> cpd_position_1 = new Dictionary<string, string>();
 
+            //cpd_position_1["B02"] = "DMSO";
+            //cpd_position_1["B03"] = "Sunitinib Malate(Sutent)";
+            //cpd_position_1["B04"] = "Vismodegib (GDC-0449)";
+            //cpd_position_1["B05"] = "5-fu";
+            //cpd_position_1["B06"] = "Axitinib";
+            //cpd_position_1["B07"] = "Oxaliplatin";
+            //cpd_position_1["B08"] = "Dasatinib(BMS-354825)";
+            //cpd_position_1["B09"] = "Temsirolimus";
+            //cpd_position_1["B10"] = "Vemurafenib";
+            //cpd_position_1["B11"] = "Erlotinib HCl";
+            //cpd_position_1["B12"] = "Vandetanib";
+            //cpd_position_1["B13"] = "Ruxolitinib";
+            //cpd_position_1["B14"] = "Imatinib(Gleevec)";
+            //cpd_position_1["B15"] = "Gefitinib(Iressa)";
+            //cpd_position_1["B16"] = "ABT-888(Veliparib)";
+            //cpd_position_1["B17"] = "Dovitinib(TKI-258)";
+            //cpd_position_1["B18"] = "BGJ398(NVP-BGJ398)";
+            //cpd_position_1["B19"] = "AZD2014";
+            //cpd_position_1["B20"] = "LGK-974";
+            //cpd_position_1["B21"] = "AZD5363";
+            //cpd_position_1["B22"] = "CI-1033(Canertinib)";
+            //cpd_position_1["B23"] = "Tandutinib(MLN518)";
+            //cpd_position_1["I02"] = "Untreated";
+            //cpd_position_1["I03"] = "Everolimus(RAD001)";
+            //cpd_position_1["I04"] = "Dabrafenib";
+            //cpd_position_1["I05"] = "Bortezomib(Velcade)";
+            //cpd_position_1["I06"] = "Regorafenib";
+            //cpd_position_1["I07"] = "Lapatinib";
+            //cpd_position_1["I08"] = "Trametinib";
+            //cpd_position_1["I09"] = "Bosutinib";
+            //cpd_position_1["I10"] = "Nilotinib(AMN-107)";
+            //cpd_position_1["I11"] = "Crizotinib(PF-02341066)";
+            //cpd_position_1["I12"] = "Irinotecan";
+            //cpd_position_1["I13"] = "Ibrutinib";
+            //cpd_position_1["I14"] = "Carfilzomib";
+            //cpd_position_1["I15"] = "Pazopanib HCl";
+            //cpd_position_1["I16"] = "Foretinib(XL880)";
+            //cpd_position_1["I17"] = "AZD8931";
+            //cpd_position_1["I18"] = "INCB28060";
+            //cpd_position_1["I19"] = "LY2835219(Abemaciclib)";
+            //cpd_position_1["I20"] = "ABT-199(GDC-0199)";
+            //cpd_position_1["I21"] = "AZD6244(Selumetinib)";
+            //cpd_position_1["I22"] = "PD 0332991(Palbociclib) HCl";
+            //cpd_position_1["I23"] = "DMSO";
+
             cpd_position_1["B02"] = "DMSO";
-            cpd_position_1["B03"] = "Sunitinib Malate(Sutent)";
-            cpd_position_1["B04"] = "Vismodegib (GDC-0449)";
+            cpd_position_1["B03"] = "Sutent";
+            cpd_position_1["B04"] = "Vismodegib";
             cpd_position_1["B05"] = "5-fu";
             cpd_position_1["B06"] = "Axitinib";
             cpd_position_1["B07"] = "Oxaliplatin";
-            cpd_position_1["B08"] = "Dasatinib(BMS-354825)";
+            cpd_position_1["B08"] = "Dasatinib";
             cpd_position_1["B09"] = "Temsirolimus";
             cpd_position_1["B10"] = "Vemurafenib";
-            cpd_position_1["B11"] = "Erlotinib HCl";
+            cpd_position_1["B11"] = "Erlotinib hydrochlorid";
             cpd_position_1["B12"] = "Vandetanib";
             cpd_position_1["B13"] = "Ruxolitinib";
-            cpd_position_1["B14"] = "Imatinib(Gleevec)";
-            cpd_position_1["B15"] = "Gefitinib(Iressa)";
-            cpd_position_1["B16"] = "ABT-888(Veliparib)";
-            cpd_position_1["B17"] = "Dovitinib(TKI-258)";
-            cpd_position_1["B18"] = "BGJ398(NVP-BGJ398)";
-            cpd_position_1["B19"] = "AZD2014";
+            cpd_position_1["B14"] = "Imatinib";
+            cpd_position_1["B15"] = "Gefitinib";
+            cpd_position_1["B16"] = "Veliparib";
+            cpd_position_1["B17"] = "Dovitinib";
+            cpd_position_1["B18"] = "Infigratinib";
+            cpd_position_1["B19"] = "Vistusertib";
             cpd_position_1["B20"] = "LGK-974";
             cpd_position_1["B21"] = "AZD5363";
-            cpd_position_1["B22"] = "CI-1033(Canertinib)";
-            cpd_position_1["B23"] = "Tandutinib(MLN518)";
+            cpd_position_1["B22"] = "Canertinib";
+            cpd_position_1["B23"] = "Tandutinib";
             cpd_position_1["I02"] = "Untreated";
-            cpd_position_1["I03"] = "Everolimus(RAD001)";
+            cpd_position_1["I03"] = "Everolimus";
             cpd_position_1["I04"] = "Dabrafenib";
-            cpd_position_1["I05"] = "Bortezomib(Velcade)";
+            cpd_position_1["I05"] = "Bortezomib";
             cpd_position_1["I06"] = "Regorafenib";
             cpd_position_1["I07"] = "Lapatinib";
             cpd_position_1["I08"] = "Trametinib";
             cpd_position_1["I09"] = "Bosutinib";
-            cpd_position_1["I10"] = "Nilotinib(AMN-107)";
-            cpd_position_1["I11"] = "Crizotinib(PF-02341066)";
+            cpd_position_1["I10"] = "Nilotinib";
+            cpd_position_1["I11"] = "Crizotinib";
             cpd_position_1["I12"] = "Irinotecan";
             cpd_position_1["I13"] = "Ibrutinib";
             cpd_position_1["I14"] = "Carfilzomib";
-            cpd_position_1["I15"] = "Pazopanib HCl";
-            cpd_position_1["I16"] = "Foretinib(XL880)";
-            cpd_position_1["I17"] = "AZD8931";
-            cpd_position_1["I18"] = "INCB28060";
-            cpd_position_1["I19"] = "LY2835219(Abemaciclib)";
-            cpd_position_1["I20"] = "ABT-199(GDC-0199)";
-            cpd_position_1["I21"] = "AZD6244(Selumetinib)";
-            cpd_position_1["I22"] = "PD 0332991(Palbociclib) HCl";
+            cpd_position_1["I15"] = "Pazopanib hydrochlorid";
+            cpd_position_1["I16"] = "Foretinib";
+            cpd_position_1["I17"] = "Sapitinib";
+            cpd_position_1["I18"] = "Capmatinib";
+            cpd_position_1["I19"] = "Abemaciclib";
+            cpd_position_1["I20"] = "Venetoclax";
+            cpd_position_1["I21"] = "Selumetinib";
+            cpd_position_1["I22"] = "Palbociclib hydrochlorid";
             cpd_position_1["I23"] = "DMSO";
 
             foreach (KeyValuePair<string, string> elem in cpd_position_1)
@@ -4025,33 +4071,62 @@ namespace DRC
 
             Dictionary<string, string> cpd_position_2 = new Dictionary<string, string>();
 
+            //cpd_position_2["B02"] = "DMSO";
+            //cpd_position_2["B03"] = "BKM120(NVP-BKM120)";
+            //cpd_position_2["B04"] = "Sotrastaurin(AEB071)";
+            //cpd_position_2["B05"] = "PF-04449913";
+            //cpd_position_2["B06"] = "BEZ235";
+            //cpd_position_2["B07"] = "Cabozantinib(XL184)";
+            //cpd_position_2["B08"] = "AZD4547";
+            //cpd_position_2["B09"] = "CO 1686";
+            //cpd_position_2["B10"] = "Afatinib(BIBW2992)";
+            //cpd_position_2["B11"] = "BMS-599626(AC480)";
+            //cpd_position_2["B12"] = "AEE788(NVP-AEE788)";
+            //cpd_position_2["B13"] = "PF-05212384(PKI-587)";
+            //cpd_position_2["B14"] = "LEE011(Ribociclib)";
+            //cpd_position_2["B15"] = "Panobinostat(LBH589)";
+            //cpd_position_2["B16"] = "Olaparib(AZD2281)";
+            //cpd_position_2["B17"] = "BYL719";
+            //cpd_position_2["B18"] = "XL147(pilaralisib)";
+            //cpd_position_2["B19"] = "Neratinib(HKI-272)";
+            //cpd_position_2["B20"] = "XL765(SAR245409)";
+            //cpd_position_2["B21"] = "Cediranib(AZD2171)";
+            //cpd_position_2["B22"] = "AUY922(NVP-AUY922)";
+            //cpd_position_2["B23"] = "Tivozanib(AV-951)";
+            //cpd_position_2["I02"] = "Untreated";
+            //cpd_position_2["I03"] = "LDE225(NVP-LDE225 Erismodegib)";
+            //cpd_position_2["I04"] = "Dacomitinib(PF299804 PF-00299804)";
+            //cpd_position_2["I05"] = "LDK378(Ceritinib)";
+            //cpd_position_2["I06"] = "RXDX-101";
+            //cpd_position_2["I23"] = "DMSO";
+
             cpd_position_2["B02"] = "DMSO";
-            cpd_position_2["B03"] = "BKM120(NVP-BKM120)";
-            cpd_position_2["B04"] = "Sotrastaurin(AEB071)";
-            cpd_position_2["B05"] = "PF-04449913";
-            cpd_position_2["B06"] = "BEZ235";
-            cpd_position_2["B07"] = "Cabozantinib(XL184)";
+            cpd_position_2["B03"] = "Buparlisib";
+            cpd_position_2["B04"] = "Sotrastaurin";
+            cpd_position_2["B05"] = "Glasdegib";
+            cpd_position_2["B06"] = "Dactolisib";
+            cpd_position_2["B07"] = "Cabozantinib";
             cpd_position_2["B08"] = "AZD4547";
-            cpd_position_2["B09"] = "CO 1686";
-            cpd_position_2["B10"] = "Afatinib(BIBW2992)";
-            cpd_position_2["B11"] = "BMS-599626(AC480)";
-            cpd_position_2["B12"] = "AEE788(NVP-AEE788)";
-            cpd_position_2["B13"] = "PF-05212384(PKI-587)";
-            cpd_position_2["B14"] = "LEE011(Ribociclib)";
-            cpd_position_2["B15"] = "Panobinostat(LBH589)";
-            cpd_position_2["B16"] = "Olaparib(AZD2281)";
-            cpd_position_2["B17"] = "BYL719";
-            cpd_position_2["B18"] = "XL147(pilaralisib)";
-            cpd_position_2["B19"] = "Neratinib(HKI-272)";
-            cpd_position_2["B20"] = "XL765(SAR245409)";
-            cpd_position_2["B21"] = "Cediranib(AZD2171)";
-            cpd_position_2["B22"] = "AUY922(NVP-AUY922)";
-            cpd_position_2["B23"] = "Tivozanib(AV-951)";
+            cpd_position_2["B09"] = "Rociletinib";
+            cpd_position_2["B10"] = "Afatinib";
+            cpd_position_2["B11"] = "BMS-599626";
+            cpd_position_2["B12"] = "AEE788";
+            cpd_position_2["B13"] = "gedatolisib";
+            cpd_position_2["B14"] = "Ribociclib";
+            cpd_position_2["B15"] = "Panobinostat";
+            cpd_position_2["B16"] = "Olaparib";
+            cpd_position_2["B17"] = "Alpelisib";
+            cpd_position_2["B18"] = "pilaralisib";
+            cpd_position_2["B19"] = "Neratinib";
+            cpd_position_2["B20"] = "Voxtalisib";
+            cpd_position_2["B21"] = "Cediranib";
+            cpd_position_2["B22"] = "Luminespib ";
+            cpd_position_2["B23"] = "Tivozanib";
             cpd_position_2["I02"] = "Untreated";
-            cpd_position_2["I03"] = "LDE225(NVP-LDE225 Erismodegib)";
-            cpd_position_2["I04"] = "Dacomitinib(PF299804 PF-00299804)";
-            cpd_position_2["I05"] = "LDK378(Ceritinib)";
-            cpd_position_2["I06"] = "RXDX-101";
+            cpd_position_2["I03"] = "Erismodegib";
+            cpd_position_2["I04"] = "Dacomitinib";
+            cpd_position_2["I05"] = "Ceritinib";
+            cpd_position_2["I06"] = "Entrectinib";
             cpd_position_2["I23"] = "DMSO";
 
             foreach (KeyValuePair<string, string> elem in cpd_position_2)
@@ -4397,20 +4472,123 @@ namespace DRC
 
         }
 
+        
+       
+
+        public void Find_Pathways(List<string> CPDS)
+        {
+            //LocusID = 100133941;
+            List<string> ListPathway = new List<string>();
+            List<string> ListTarget = new List<string>();
+            Dictionary<string,  List<string>> Path_target = new Dictionary<string,  List<string>>();
+            int idx = 0;
+            foreach (var CPD in CPDS)
+            {
+                
+                this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+                idx++;
+                Console.WriteLine("------ CPD : " + CPD);
+                string getvars = "/find/drug/" + CPD;
+                WebRequest req = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars)) as WebRequest;
+                req.Method = "GET";
+
+
+                HttpWebResponse response2 = req.GetResponse() as HttpWebResponse;
+                StreamReader reader = new StreamReader(response2.GetResponseStream());
+
+                string CPD_KEGG = "";
+
+                CPD_KEGG = reader.ReadLine().Split('\t')[0];
+
+                reader.Close();
+                response2.Close();
+
+                if (CPD_KEGG != "")
+                {
+
+                    Console.WriteLine("------ CPD : " + CPD+ "------ CPD_ID : " + CPD_KEGG);
+
+                    string getvars3 = "/get/" + CPD_KEGG;
+                    WebRequest req3 = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars3)) as WebRequest;
+                    req3.Method = "GET";
+
+
+                    HttpWebResponse response3 = req3.GetResponse() as HttpWebResponse;
+                    StreamReader reader3 = new StreamReader(response3.GetResponseStream());
+
+                    List<string> toto = reader3.ReadToEnd().Split(' ').ToList();
+                    foreach (string item in toto)
+                    {
+                       
+                        if (item.Contains("hsa0"))
+                        {
+
+                            ListPathway.Add(item.Substring(0, 8));
+                            List<string> targetss = (item.Substring(9, item.Length - 10)).Split('+').ToList();
+                            if (Path_target.ContainsKey(item.Substring(0, 8)))
+                            {
+                                List<string> temp = Path_target[item.Substring(0, 8)];
+                                temp.AddRange(targetss.Distinct().ToList());
+                                Path_target[item.Substring(0, 8)] = temp.Distinct().ToList();
+                            }
+
+                            else
+                            {
+                                Path_target[item.Substring(0, 8)] = targetss.Distinct().ToList();
+
+                            }
+                        }
+                    }
+                  
+                    reader3.Close();
+                    response3.Close();
+
+                }
+               
+
+            }
+
+            var ordered = Path_target.OrderByDescending(x => x.Value.Count);
+            int kl = 0;
+            foreach (KeyValuePair<string,List<string>> item in ordered)
+
+            {
+                Console.WriteLine("------ PATHWAYS : " + item.Key);
+                if (kl<5)
+                {
+                    string hgf = "https://www.kegg.jp/kegg-bin/show_pathway?org_name=hsadd&map=" + item.Key + "&multi_query=";
+                    foreach (string target in item.Value)
+                    {
+                        hgf += target + "+red/";
+                    }
+                    System.Diagnostics.Process.Start(hgf);
+                }
+                kl++;
+            }
+            Console.WriteLine("------ NUMBER OF PATHWAYS : " + kl);
+
+        }
+
         private void compute_auc()
         {
             toolStripProgressBar1.Visible = true;
+            List<string> drugs = new List<string>();// { "Sunitinib Malate", "Lapatinib" };
 
+            Find_Pathways(list_cpd);
+            return;
             Dictionary<string, Dictionary<string, double>> auc_dict = new Dictionary<string, Dictionary<string, double>>();
+           
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
                 this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
 
                 string cpd_id = list_cpd[idx].ToString();
+                
 
                 if (cpd_id == "DMSO" || cpd_id == "Untreated")
                     continue;
+                //List<string> ListPathway = Find_Pathways(cpd_id);
 
                 List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
 

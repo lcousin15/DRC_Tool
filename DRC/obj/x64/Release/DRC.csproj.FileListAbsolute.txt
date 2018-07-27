@@ -284,7 +284,6 @@ D:\DRC_Tool\DRC\obj\x64\Release\DRC.Clustering_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Correlations_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.RawData_Correlations_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Export_Excel_Tab.resources
-D:\DRC_Tool\DRC\obj\x64\Release\DRC.csprojResolveAssemblyReference.cache
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Correlations_Exp_Name.resources
 F:\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.Correlations_Exp_Name.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Correlations_Exp_Name.resources
@@ -300,3 +299,6 @@ E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Descriptors_Fix_Top_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Descriptors_Fix_Top_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Descriptors_General_Options.resources
 D:\DRC_Tool\DRC\bin\x64\Release\x64\opencv_ffmpeg341_64.dll
+D:\DRC_Tool\DRC\obj\x64\Release\DRC.csprojAssemblyReference.cache
+D:\DRC_Tool\DRC\obj\x64\Release\DRC.Patient_Tab.resources
+D:\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.CopyComplete
