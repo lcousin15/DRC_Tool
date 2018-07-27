@@ -25,6 +25,9 @@ namespace DRC
 
         MainTab _main_tab;
         AUC_Report _auc_report_tab;
+        PathwayTab pathway_form;
+
+        private List<string> list_cpds = new List<string>();
 
         public void Reset()
         {
@@ -53,20 +56,19 @@ namespace DRC
         }
 
 
-        private void Find_Pathways(List<string> CPDS)
+        public void get_pathway(int first_cpd_number)
         {
-
             this.toolStripProgressBar1.Visible = true;
 
             //LocusID = 100133941;
-            List <string> ListPathway = new List<string>();
+            List<string> ListPathway = new List<string>();
             List<string> ListTarget = new List<string>();
             Dictionary<string, List<string>> Path_target = new Dictionary<string, List<string>>();
             int idx = 0;
-            foreach (var CPD in CPDS)
+            foreach (var CPD in list_cpds)
             {
 
-                this.toolStripProgressBar1.Value = idx * 100 / (CPDS.Count - 1);
+                this.toolStripProgressBar1.Value = idx * 100 / (list_cpds.Count - 1);
                 idx++;
                 Console.WriteLine("------ CPD : " + CPD);
                 string getvars = "/find/drug/" + CPD;
@@ -135,12 +137,15 @@ namespace DRC
             {
                 Console.WriteLine("------ PATHWAYS : " + item.Key);
 
-                string hgf = "https://www.kegg.jp/kegg-bin/show_pathway?org_name=hsadd&map=" + item.Key + "&multi_query=";
-                foreach (string target in item.Value)
+                if (kl < first_cpd_number)
                 {
-                    hgf += target + "+red/";
+                    string hgf = "https://www.kegg.jp/kegg-bin/show_pathway?org_name=hsadd&map=" + item.Key + "&multi_query=";
+                    foreach (string target in item.Value)
+                    {
+                        hgf += target + "+red/";
+                    }
+                    System.Diagnostics.Process.Start(hgf);
                 }
-                System.Diagnostics.Process.Start(hgf);
 
                 kl++;
             }
@@ -148,7 +153,19 @@ namespace DRC
             Console.WriteLine("------ NUMBER OF PATHWAYS : " + kl);
 
             this.toolStripProgressBar1.Visible = false;
+        }
 
+        private void Find_Pathways(List<string> CPDS)
+        {
+
+            list_cpds = CPDS;
+
+            Form fc = Application.OpenForms["PathwayTab"];
+
+            if (fc == null)
+                pathway_form = new PathwayTab(this);
+
+            pathway_form.Show();
         }
 
         private void displayPathwaysToolStripMenuItem_Click(object sender, EventArgs e)
@@ -249,8 +266,8 @@ namespace DRC
             //chartArea.AxisY.MajorGrid.LineWidth = 0;
 
             chartArea.AxisX.Title = "Compound";
-            if(graph_type == "auc") chartArea.AxisY.Title = "AUC";
-            else if(graph_type == "z-score") chartArea.AxisY.Title = "AUC (Z-Score)";
+            if (graph_type == "auc") chartArea.AxisY.Title = "AUC";
+            else if (graph_type == "z-score") chartArea.AxisY.Title = "AUC (Z-Score)";
 
             //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
 

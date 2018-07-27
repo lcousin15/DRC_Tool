@@ -157,6 +157,12 @@
     <Compile Include="Correlations_Exp_Name.Designer.cs">
       <DependentUpon>Correlations_Exp_Name.cs</DependentUpon>
     </Compile>
+    <Compile Include="cpd_pathway.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="cpd_pathway.Designer.cs">
+      <DependentUpon>cpd_pathway.cs</DependentUpon>
+    </Compile>
     <Compile Include="CPD_Time_Line.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -204,6 +210,12 @@
     </Compile>
     <Compile Include="DRC_Overlap_Tab.Designer.cs">
       <DependentUpon>DRC_Overlap_Tab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PathwayTab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PathwayTab.Designer.cs">
+      <DependentUpon>PathwayTab.cs</DependentUpon>
     </Compile>
     <Compile Include="Patient_Tab.cs">
       <SubType>Form</SubType>
@@ -305,6 +317,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DRC_Overlap_Tab.resx">
       <DependentUpon>DRC_Overlap_Tab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PathwayTab.resx">
+      <DependentUpon>PathwayTab.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Patient_Tab.resx">
       <DependentUpon>Patient_Tab.cs</DependentUpon>
