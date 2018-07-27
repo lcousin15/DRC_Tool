@@ -303,3 +303,4 @@ D:\DRC_Tool\DRC\obj\x64\Release\DRC.csprojAssemblyReference.cache
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Patient_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.CopyComplete
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.AUC_Report.resources
+D:\DRC_Tool\DRC\obj\x64\Release\DRC.PathwayTab.resources

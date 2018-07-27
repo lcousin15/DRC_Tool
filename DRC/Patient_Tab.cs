@@ -65,7 +65,7 @@ namespace DRC
             List<string> ListTarget = new List<string>();
             Dictionary<string, List<string>> Path_target = new Dictionary<string, List<string>>();
             int idx = 0;
-            foreach (var CPD in list_cpds)
+            foreach (var CPD in list_cpds.Take(first_cpd_number))
             {
 
                 this.toolStripProgressBar1.Value = idx * 100 / (list_cpds.Count - 1);
@@ -137,17 +137,16 @@ namespace DRC
             {
                 Console.WriteLine("------ PATHWAYS : " + item.Key);
 
-                if (kl < first_cpd_number)
-                {
+               
                     string hgf = "https://www.kegg.jp/kegg-bin/show_pathway?org_name=hsadd&map=" + item.Key + "&multi_query=";
                     foreach (string target in item.Value)
                     {
                         hgf += target + "+red/";
                     }
                     System.Diagnostics.Process.Start(hgf);
-                }
+               
 
-                kl++;
+               
             }
 
             Console.WriteLine("------ NUMBER OF PATHWAYS : " + kl);
