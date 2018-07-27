@@ -291,6 +291,13 @@ namespace DRC
 
                     foreach (Chart_DRC current_chart in list_chart)
                     {
+                        if (current_chart.get_window_y_max() < 1.5)
+                        {
+                            current_chart.set_general_params(true);
+                            current_chart.set_data_modified(true);
+                            current_chart.set_window_y_max(1.5);
+                        }
+
                         string image_path = current_chart.save_image(path);
                         list_images.Add(image_path);
                     }
