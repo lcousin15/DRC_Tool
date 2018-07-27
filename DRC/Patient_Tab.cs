@@ -141,7 +141,7 @@ namespace DRC
                     string hgf = "https://www.kegg.jp/kegg-bin/show_pathway?org_name=hsadd&map=" + item.Key + "&multi_query=";
                     foreach (string target in item.Value)
                     {
-                        hgf += target + "+red/";
+                        hgf += target + "+%23FF0000/";
                     }
                     System.Diagnostics.Process.Start(hgf);
                
