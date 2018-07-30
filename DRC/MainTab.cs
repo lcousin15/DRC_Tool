@@ -5275,6 +5275,8 @@ namespace DRC
         private bool not_fitted_init;
         private bool inactive_init;
 
+        private double auc;
+
         List<DataGridViewRow> raw_data;
         List<double> y_raw_data;
         List<double> x_raw_data;
@@ -5521,6 +5523,11 @@ namespace DRC
         public double get_R2()
         {
             return r2;
+        }
+
+        public double get_auc()
+        {
+            return auc;
         }
 
         public Chart_DRC()
@@ -6564,6 +6571,7 @@ namespace DRC
             if (patient)
             {
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
+                annotation_ec50.Text = "AUC = "+auc.ToString("N2");
             }
 
         }
@@ -6651,6 +6659,8 @@ namespace DRC
                 chart.Series["Fill_AUC"].Color = Color.FromArgb(25, chart_color);
 
             }
+
+            compute_AUC();
         }
 
 
@@ -6976,6 +6986,8 @@ namespace DRC
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
 
                 annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
+                if(patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2");
             }
         }
 
@@ -7732,6 +7744,8 @@ namespace DRC
 
                 area_geom += trapezoid_area;
             }
+
+            auc = 100.0* area_geom;
 
             return 100.0 * area_geom;
         }
