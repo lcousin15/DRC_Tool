@@ -297,7 +297,7 @@ namespace DRC
         private void process_data()
         {
 
-            dict_auc_cpds = dict_auc_cpds.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            //dict_auc_cpds = dict_auc_cpds.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
 
             foreach (KeyValuePair<string, double> item in dict_auc_cpds)
             {

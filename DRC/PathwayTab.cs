@@ -25,6 +25,8 @@ namespace DRC
         {
             int first_cpd_number = int.Parse(textBox1.Text);
             _form_patient.get_pathway(first_cpd_number);
+
+            this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)

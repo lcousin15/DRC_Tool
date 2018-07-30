@@ -3899,6 +3899,90 @@ namespace DRC
 
             Reset();
 
+            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
+            // Allow the user to select multiple images.
+            //openFileDialog1.Multiselect = true;
+            openFileDialog1.Title = "Files First Plate";
+
+            List<string> first_wells = new List<string>();
+            List<string> drugs = new List<string>();
+            List<string> drugs_kegg = new List<string>();
+
+            List<string> drug_plate = new List<string>();
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string file = openFileDialog1.FileName;
+
+                System.IO.StreamReader sr = new System.IO.StreamReader(file);
+                CachedCsvReader template_cpds_csv = new CachedCsvReader(sr, true);
+
+                int fieldCount = template_cpds_csv.FieldCount;
+                string[] headers = template_cpds_csv.GetFieldHeaders();
+
+                while (template_cpds_csv.ReadNextRecord())
+                {
+
+                    for (int i = 0; i < fieldCount; ++i)
+                    {
+                        string col_name = headers[i];
+                        string value = "";
+
+                        if (col_name == "Plate")
+                        {
+                            if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
+                            {
+                                value = template_cpds_csv[i].ToString();
+                                drug_plate.Add(value);
+                            }
+                        }
+
+                        if (col_name == "Well")
+                        {
+                            if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
+                            {
+                                value = template_cpds_csv[i].ToString();
+
+                                if (value.Length == 2)
+                                {
+                                    value = value[0] + "0" + value[1];
+                                }
+                                first_wells.Add(value);
+
+                                //int[] Pos = new int[2];
+
+                                //Pos[1] = Convert.ToInt16(value[0]) - 64;
+                                //Pos[0] = Convert.ToInt16(value.Remove(0, 1));
+
+                            }
+                        }
+
+                        if (col_name == "Drug")
+                        {
+                            if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
+                            {
+                                value = template_cpds_csv[i].ToString();
+                                drugs.Add(value);
+
+                            }
+                        }
+
+                        if (col_name == "Drug_Kegg")
+                        {
+                            if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
+                            {
+                                value = template_cpds_csv[i].ToString();
+                                drugs_kegg.Add(value);
+
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
             Dictionary<string, string> template_plate_1 = new Dictionary<string, string>();
             Dictionary<string, string> template_plate_2 = new Dictionary<string, string>();
 
@@ -3934,6 +4018,38 @@ namespace DRC
             second_letter.Add("O");
 
             Dictionary<string, string> cpd_position_1 = new Dictionary<string, string>();
+            Dictionary<string, string> cpd_position_2 = new Dictionary<string, string>();
+
+            for (int i =0; i<first_wells.Count; ++i)
+            {
+                int plate = int.Parse(drug_plate[i]);
+                string well = first_wells[i];
+                string drug = drugs_kegg[i];
+                   
+                if(plate==1)
+                {
+                    if (drug != "Blank")
+                    {
+                        cpd_position_1[well] = drug;
+                    }
+                    else
+                    {
+                        cpd_position_1[well] = "Untreated";
+                    }
+                }
+                if (plate == 2)
+                {
+                    if (drug != "Blank")
+                    {
+                        cpd_position_2[well] = drug;
+                    }
+                    else
+                    {
+                        cpd_position_2[well] = "Untreated";
+                    }
+                }
+
+            }
             /*
             cpd_position_1["B02"] = "DMSO";
             cpd_position_1["B03"] = "Sunitinib Malate(Sutent)";
@@ -3980,7 +4096,7 @@ namespace DRC
             cpd_position_1["I22"] = "PD 0332991(Palbociclib) HCl";
             cpd_position_1["I23"] = "DMSO";
             */
-
+            /*
             cpd_position_1["B02"] = "DMSO";
             cpd_position_1["B03"] = "Sutent";
             cpd_position_1["B04"] = "Vismodegib";
@@ -4025,6 +4141,7 @@ namespace DRC
             cpd_position_1["I21"] = "Selumetinib";
             cpd_position_1["I22"] = "Palbociclib hydrochlorid";
             cpd_position_1["I23"] = "DMSO";
+            */
 
             foreach (KeyValuePair<string, string> elem in cpd_position_1)
             {
@@ -4100,7 +4217,6 @@ namespace DRC
 
             }
 
-            Dictionary<string, string> cpd_position_2 = new Dictionary<string, string>();
             /*
             cpd_position_2["B02"] = "DMSO";
             cpd_position_2["B03"] = "BKM120(NVP-BKM120)";
@@ -4131,7 +4247,7 @@ namespace DRC
             cpd_position_2["I06"] = "RXDX-101";
             cpd_position_2["I23"] = "DMSO";
             */
-
+            /*
             cpd_position_2["B02"] = "DMSO";
             cpd_position_2["B03"] = "Buparlisib";
             cpd_position_2["B04"] = "Sotrastaurin";
@@ -4160,6 +4276,7 @@ namespace DRC
             cpd_position_2["I05"] = "Ceritinib";
             cpd_position_2["I06"] = "Entrectinib";
             cpd_position_2["I23"] = "DMSO";
+            */
 
             foreach (KeyValuePair<string, string> elem in cpd_position_2)
             {
