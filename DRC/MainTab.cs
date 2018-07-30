@@ -5659,8 +5659,7 @@ namespace DRC
             Series series1 = new Series();
             Series series2 = new Series();
             Series serie_mean = new Series();
-            Series serie_line_auc = new Series();
-            Series serie_fill_auc = new Series();
+
 
 
             Series serie_ec_50_line_x = new Series();
@@ -5689,8 +5688,6 @@ namespace DRC
             series1.ChartType = SeriesChartType.Point;
             series2.ChartType = SeriesChartType.Line;
             serie_mean.ChartType = SeriesChartType.Point;
-            serie_line_auc.ChartType = SeriesChartType.Line;
-            serie_fill_auc.ChartType = SeriesChartType.Area;
 
             serie_ec_50_line_x.ChartType = SeriesChartType.Line;
             serie_ec_50_line_y.ChartType = SeriesChartType.Line;
@@ -5701,8 +5698,6 @@ namespace DRC
             series1.Name = "Series1";
             series2.Name = "Series2";
             serie_mean.Name = "Serie_Mean";
-            serie_line_auc.Name = "Serie_AUC";
-            serie_fill_auc.Name = "Fill_AUC";
 
             serie_ec_50_line_x.Name = "line_ec_50_x";
             serie_ec_50_line_y.Name = "line_ec_50_y";
@@ -5710,8 +5705,6 @@ namespace DRC
             chart.Series.Add(series1);
             chart.Series.Add(series2);
             chart.Series.Add(serie_mean);
-            chart.Series.Add(serie_line_auc);
-            chart.Series.Add(serie_fill_auc);
 
             chart.Series.Add(serie_ec_50_line_x);
             chart.Series.Add(serie_ec_50_line_y);
@@ -6570,62 +6563,96 @@ namespace DRC
 
             if (patient)
             {
-                Console.WriteLine(drc_points_x_enable.Count);
-                Console.WriteLine(descriptor);
-                Console.WriteLine(cpd);
-
-                if (drc_points_x_enable.Count > 0)
-                {
-                    Dictionary<double, List<double>> points_dict = new Dictionary<double, List<double>>();
-
-                    for (int i = 0; i < drc_points_x_enable.Count; ++i)
-                    {
-                        double point_x = drc_points_x_enable[i];
-                        double point_y = drc_points_y_enable[i];
-
-                        if (points_dict.ContainsKey(point_x))
-                        {
-                            points_dict[point_x].Add(point_y);
-                        }
-                        else
-                        {
-                            List<double> my_list = new List<double>();
-                            my_list.Add(point_y);
-                            points_dict[point_x] = my_list;
-                        }
-                    }
-
-                    List<double> list_x = new List<double>();
-                    List<double> mean_y = new List<double>();
-
-                    foreach (KeyValuePair<double, List<double>> elem in points_dict)
-                    {
-                        list_x.Add(Math.Pow(10,elem.Key));
-                        mean_y.Add(elem.Value.Average());
-                    }
-
-                    chart.Series["Serie_Mean"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-                    chart.Series["Serie_Mean"].MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-                    chart.Series["Serie_Mean"].Points.DataBindXY(list_x, mean_y);
-                    chart.Series["Serie_Mean"].Color = Color.Black;
-
-                    chart.Series["Serie_AUC"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-                    chart.Series["Serie_AUC"].Points.DataBindXY(list_x, mean_y);
-                    chart.Series["Serie_AUC"].Color = Color.LightBlue;
-
-                    chart.Series["Fill_AUC"].Points.DataBindXY(list_x, mean_y);
-                    chart.Series["Fill_AUC"].Color = Color.FromArgb(100, Color.LightBlue);
-
-                }
+                draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
             }
 
         }
 
-        //private void chart1_Paint(object sender, PaintEventArgs e)
-        //{
+        private void draw_area_under_curve(List<double> drc_points_x_enable, List<double> drc_points_y_enable)
+        {
 
+            //Or if series is of Series type, you could:
 
-        //}
+            if(chart.Series.IndexOf("Serie_AUC") != -1)
+            {
+                chart.Series.RemoveAt(chart.Series.IndexOf("Serie_AUC"));
+
+                Series serie_line_auc = new Series();
+                serie_line_auc.ChartType = SeriesChartType.Line;
+                serie_line_auc.Name = "Serie_AUC";
+                chart.Series.Add(serie_line_auc);
+            }
+            else
+            {
+                Series serie_line_auc = new Series();
+                serie_line_auc.ChartType = SeriesChartType.Line;
+                serie_line_auc.Name = "Serie_AUC";
+                chart.Series.Add(serie_line_auc);
+            }
+
+            if (chart.Series.IndexOf("Fill_AUC") != -1)
+            {
+                chart.Series.RemoveAt(chart.Series.IndexOf("Fill_AUC"));
+
+                Series serie_fill_auc = new Series();
+                serie_fill_auc.ChartType = SeriesChartType.Area;
+                serie_fill_auc.Name = "Fill_AUC";
+                chart.Series.Add(serie_fill_auc);
+            }
+            else
+            {
+                Series serie_fill_auc = new Series();
+                serie_fill_auc.ChartType = SeriesChartType.Area;
+                serie_fill_auc.Name = "Fill_AUC";
+                chart.Series.Add(serie_fill_auc);
+            }
+
+            if (drc_points_x_enable.Count > 0)
+            {
+                SortedDictionary<double, List<double>> points_dict = new SortedDictionary<double, List<double>>();
+
+                for (int i = 0; i < drc_points_x_enable.Count; ++i)
+                {
+                    double point_x = drc_points_x_enable[i];
+                    double point_y = drc_points_y_enable[i];
+
+                    if (points_dict.ContainsKey(point_x))
+                    {
+                        points_dict[point_x].Add(point_y);
+                    }
+                    else
+                    {
+                        List<double> my_list = new List<double>();
+                        my_list.Add(point_y);
+                        points_dict[point_x] = my_list;
+                    }
+                }
+
+                List<double> list_x = new List<double>();
+                List<double> mean_y = new List<double>();
+
+                foreach (KeyValuePair<double, List<double>> elem in points_dict)
+                {
+                    list_x.Add(Math.Pow(10, elem.Key));
+                    mean_y.Add(elem.Value.Average());
+                }
+
+                chart.Series["Serie_Mean"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+                chart.Series["Serie_Mean"].MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+                chart.Series["Serie_Mean"].Points.DataBindXY(list_x, mean_y);
+                chart.Series["Serie_Mean"].Color = Color.FromArgb(50, chart_color);
+
+                chart.Series["Serie_AUC"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                chart.Series["Serie_AUC"].Points.DataBindXY(list_x, mean_y);
+                chart.Series["Serie_AUC"].Color = Color.FromArgb(50, chart_color);
+
+                chart.Series["Fill_AUC"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Area;
+                chart.Series["Fill_AUC"].Points.DataBindXY(list_x, mean_y);
+                chart.Series["Fill_AUC"].Color = Color.FromArgb(25, chart_color);
+
+            }
+        }
+
 
         private void chart1_PostPaint(object sender, System.Windows.Forms.DataVisualization.Charting.ChartPaintEventArgs e)
         {
@@ -6879,6 +6906,11 @@ namespace DRC
 
                 fit_DRC();
                 chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+
+                if (patient)
+                {
+                    draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
+                }
 
                 int k = 0;
                 foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
