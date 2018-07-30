@@ -443,7 +443,7 @@ namespace DRC
                                 int index = y.FindIndex(a => a < point_y + 1E-8 && a > point_y - 1E-8);
                                 string cpd = cpd_labels[index];
 
-                                Console.WriteLine(cpd);
+                                //Console.WriteLine(cpd);
 
                                 _form_patient.draw_compound(cpd);
 

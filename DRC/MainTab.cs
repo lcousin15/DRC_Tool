@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Globalization;
 using System.Collections;
 using System.Data;
+using System.Drawing.Drawing2D;
 
 namespace DRC
 {
@@ -224,6 +225,7 @@ namespace DRC
         List<Color> curve_color = new List<Color>();
 
         private double norm_integral;
+        private bool is_patient = false;
 
         //public Dictionary<string, List<string>> list_img_path_by_cpd = new Dictionary<string, List<string>>();
 
@@ -969,7 +971,7 @@ namespace DRC
                     else is_data_modified = "FALSE";
 
                     Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 250, ref concentrations, ref concentrations_log, ref data, color,
-                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, is_data_modified, this);
+                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, is_data_modified, this, is_patient);
 
                     chart_drc.set_Raw_Data(raw_data_rows);
 
@@ -3899,6 +3901,8 @@ namespace DRC
 
             Reset();
 
+            is_patient = true;
+
             openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
             // Allow the user to select multiple images.
             //openFileDialog1.Multiselect = true;
@@ -4020,13 +4024,13 @@ namespace DRC
             Dictionary<string, string> cpd_position_1 = new Dictionary<string, string>();
             Dictionary<string, string> cpd_position_2 = new Dictionary<string, string>();
 
-            for (int i =0; i<first_wells.Count; ++i)
+            for (int i = 0; i < first_wells.Count; ++i)
             {
                 int plate = int.Parse(drug_plate[i]);
                 string well = first_wells[i];
                 string drug = drugs_kegg[i];
-                   
-                if(plate==1)
+
+                if (plate == 1)
                 {
                     if (drug != "Blank")
                     {
@@ -4452,19 +4456,18 @@ namespace DRC
             {
                 string well = row.Cells["Well"].Value.ToString();
 
-                if (row.Cells["Plate"].Value.ToString().Contains("1-1") || row.Cells["Plate"].Value.ToString().Contains("1-2"))
+                if ((row.Cells["Plate"].Value.ToString().Contains("1-1") || row.Cells["Plate"].Value.ToString().Contains("1-2")))
                 {
                     row.Cells["CPD_ID"].Value = template_plate_1[well];
                     row.Cells["BATCH_ID"].Value = template_plate_1[well];
                 }
-                else if (row.Cells["Plate"].Value.ToString().Contains("2-1") || row.Cells["Plate"].Value.ToString().Contains("2-2"))
+                else if ((row.Cells["Plate"].Value.ToString().Contains("2-1") || row.Cells["Plate"].Value.ToString().Contains("2-2")))
                 {
                     row.Cells["CPD_ID"].Value = template_plate_2[well];
                     row.Cells["BATCH_ID"].Value = template_plate_2[well];
                 }
 
                 row.Cells["Concentration"].Value = template_plate_concentration[well];
-
             }
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
@@ -5302,6 +5305,8 @@ namespace DRC
 
         private bool is_top_fixed = false;
 
+        private bool patient = false;
+
         public bool top_fixed()
         {
             return is_top_fixed;
@@ -5523,9 +5528,11 @@ namespace DRC
         }
 
         public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
-            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, string if_modified, MainTab form)
+            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, string if_modified, MainTab form, bool if_patient)
         {
             _form1 = form;
+
+            patient = if_patient;
 
             descriptor_index = index;
 
@@ -5651,6 +5658,10 @@ namespace DRC
             ChartArea chartArea = new ChartArea();
             Series series1 = new Series();
             Series series2 = new Series();
+            Series serie_mean = new Series();
+            Series serie_line_auc = new Series();
+            Series serie_fill_auc = new Series();
+
 
             Series serie_ec_50_line_x = new Series();
             Series serie_ec_50_line_y = new Series();
@@ -5677,20 +5688,30 @@ namespace DRC
 
             series1.ChartType = SeriesChartType.Point;
             series2.ChartType = SeriesChartType.Line;
+            serie_mean.ChartType = SeriesChartType.Point;
+            serie_line_auc.ChartType = SeriesChartType.Line;
+            serie_fill_auc.ChartType = SeriesChartType.Area;
 
             serie_ec_50_line_x.ChartType = SeriesChartType.Line;
             serie_ec_50_line_y.ChartType = SeriesChartType.Line;
 
             series1.MarkerStyle = MarkerStyle.Circle;
+            serie_mean.MarkerStyle = MarkerStyle.Circle;
 
             series1.Name = "Series1";
             series2.Name = "Series2";
+            serie_mean.Name = "Serie_Mean";
+            serie_line_auc.Name = "Serie_AUC";
+            serie_fill_auc.Name = "Fill_AUC";
 
             serie_ec_50_line_x.Name = "line_ec_50_x";
             serie_ec_50_line_y.Name = "line_ec_50_y";
 
             chart.Series.Add(series1);
             chart.Series.Add(series2);
+            chart.Series.Add(serie_mean);
+            chart.Series.Add(serie_line_auc);
+            chart.Series.Add(serie_fill_auc);
 
             chart.Series.Add(serie_ec_50_line_x);
             chart.Series.Add(serie_ec_50_line_y);
@@ -5715,6 +5736,7 @@ namespace DRC
             //chart.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.chart1_KeyPress);
             //chart.PrePaint += new System.Windows.Forms.chart ChartPaintEventArgs(this.Chart1_PrePaint);
             chart.PostPaint += new EventHandler<ChartPaintEventArgs>(this.chart1_PostPaint);
+            //chart.Paint += new PaintEventHandler(this.chart1_Paint);
 
             //Create a rectangle annotation
 
@@ -5866,104 +5888,11 @@ namespace DRC
                 y_fit_log.Add(Sigmoid(c, x_fit_log[IdxConc]));
             }
 
-            //draw_ec_50_lines();
         }
 
         public void Is_Modified()
         {
             draw_DRC(false, false);
-            /*
-            int k = 0;
-            foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
-            {
-                string compound = row2.Cells[0].Value.ToString();
-                if (compound_id == compound) break;
-                k++;
-            }
-            int row_index = k;
-
-            // Redraw value in table
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
-            if (fit_parameters[0] < fit_parameters[1])
-            {
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
-            }
-            else
-            {
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
-            }
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
-            _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
-
-            if (drc_points_x_disable.Count() > 0)
-            {
-                data_modified = true;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
-            }
-            else
-            {
-                data_modified = false;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
-            }
-
-            if (not_fitted)
-            {
-
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Not Fitted";
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Not Fitted";
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Not Fitted";
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Not Fitted";
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Not Fitted";
-
-                data_modified = true;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Tomato;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Tomato;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Tomato;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Tomato;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Tomato;
-
-                annotation_ec50.Text = "EC_50 = Not Fitted";
-
-                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
-                ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
-            }
-
-            if (inactive)
-            {
-
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
-
-
-            = true;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
-                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
-
-                annotation_ec50.Text = "EC_50 = Inactive";
-
-                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
-                ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
-            }
-            */
-            //if(is_ec50_exact == true) ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
-            //else ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
-
         }
 
         public void threshold_r2(double thr)
@@ -6639,10 +6568,65 @@ namespace DRC
                 }
             }
 
+            if (patient)
+            {
+                Console.WriteLine(drc_points_x_enable.Count);
+                Console.WriteLine(descriptor);
+                Console.WriteLine(cpd);
+
+                if (drc_points_x_enable.Count > 0)
+                {
+                    Dictionary<double, List<double>> points_dict = new Dictionary<double, List<double>>();
+
+                    for (int i = 0; i < drc_points_x_enable.Count; ++i)
+                    {
+                        double point_x = drc_points_x_enable[i];
+                        double point_y = drc_points_y_enable[i];
+
+                        if (points_dict.ContainsKey(point_x))
+                        {
+                            points_dict[point_x].Add(point_y);
+                        }
+                        else
+                        {
+                            List<double> my_list = new List<double>();
+                            my_list.Add(point_y);
+                            points_dict[point_x] = my_list;
+                        }
+                    }
+
+                    List<double> list_x = new List<double>();
+                    List<double> mean_y = new List<double>();
+
+                    foreach (KeyValuePair<double, List<double>> elem in points_dict)
+                    {
+                        list_x.Add(Math.Pow(10,elem.Key));
+                        mean_y.Add(elem.Value.Average());
+                    }
+
+                    chart.Series["Serie_Mean"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+                    chart.Series["Serie_Mean"].MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+                    chart.Series["Serie_Mean"].Points.DataBindXY(list_x, mean_y);
+                    chart.Series["Serie_Mean"].Color = Color.Black;
+
+                    chart.Series["Serie_AUC"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                    chart.Series["Serie_AUC"].Points.DataBindXY(list_x, mean_y);
+                    chart.Series["Serie_AUC"].Color = Color.LightBlue;
+
+                    chart.Series["Fill_AUC"].Points.DataBindXY(list_x, mean_y);
+                    chart.Series["Fill_AUC"].Color = Color.FromArgb(100, Color.LightBlue);
+
+                }
+            }
+
         }
 
-        //private void draw_ec_50_lines()
+        //private void chart1_Paint(object sender, PaintEventArgs e)
         //{
+
+
+        //}
+
         private void chart1_PostPaint(object sender, System.Windows.Forms.DataVisualization.Charting.ChartPaintEventArgs e)
         {
             Chart my_chart = (Chart)sender;
@@ -7660,28 +7644,64 @@ namespace DRC
 
         public double compute_AUC()
         {
-            double min_x_fit_auc = x_fit_log[0];
-            double max_x_fit_auc = x_fit_log[x_fit_log.Count - 1];
+            // AUC with fitted curve :
+            //double min_x_fit_auc = x_fit_log[0];
+            //double max_x_fit_auc = x_fit_log[x_fit_log.Count - 1];
 
-            //double abs_integral_auc = evaluate_DRC_integral(max_x_fit_auc) - evaluate_DRC_integral(min_x_fit_auc);
+            //double top = fit_parameters[1];
+            //double bottom = fit_parameters[0];
+            //double ec_50 = fit_parameters[2];
+            //double slope = fit_parameters[3];
 
-            //Console.WriteLine("AUC = " + abs_integral_auc.ToString());
+            //double integral_val = 0.0;
 
+            //Func<double, double> g = (x) => bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - x) * slope)));
 
-            double top = fit_parameters[1];
-            double bottom = fit_parameters[0];
-            double ec_50 = fit_parameters[2];
-            double slope = fit_parameters[3];
+            //integral_val = TrapezoidalRule.Integrate(g, min_x_fit_auc, max_x_fit_auc, steps: 1000);
 
-            double integral_val = 0.0;
+            // AUC with points : (Prism method)
+            Dictionary<double, List<double>> points_dict = new Dictionary<double, List<double>>();
 
-            Func<double, double> g = (x) => bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - x) * slope)));
+            for (int i = 0; i < drc_points_x_enable.Count; ++i)
+            {
+                double point_x = drc_points_x_enable[i];
+                double point_y = drc_points_y_enable[i];
 
-            integral_val = TrapezoidalRule.Integrate(g, min_x_fit_auc, max_x_fit_auc, steps: 1000);
+                if (points_dict.ContainsKey(point_x))
+                {
+                    points_dict[point_x].Add(point_y);
+                }
+                else
+                {
+                    List<double> my_list = new List<double>();
+                    my_list.Add(point_y);
+                    points_dict[point_x] = my_list;
+                }
+            }
 
-            //Console.WriteLine("AUC = " + integral_val.ToString());
+            List<double> list_x = new List<double>();
+            List<double> mean_y = new List<double>();
 
-            return 100.0 * integral_val;
+            foreach (KeyValuePair<double, List<double>> elem in points_dict)
+            {
+                list_x.Add(elem.Key);
+                mean_y.Add(elem.Value.Average());
+            }
+
+            double area_geom = 0.0;
+
+            for (int i = 0; i < list_x.Count - 1; ++i)
+            {
+                double delta_x = Math.Abs(list_x[i + 1] - list_x[i]);
+
+                double y_mean = (mean_y[i] + mean_y[i + 1]) / 2.0;
+
+                double trapezoid_area = y_mean * delta_x;
+
+                area_geom += trapezoid_area;
+            }
+
+            return 100.0 * area_geom;
         }
 
     }
