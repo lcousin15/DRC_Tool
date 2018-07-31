@@ -141,7 +141,6 @@ E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.Blob.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.Extensions.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.UserInterface.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\Emgu.CV.UI.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Release\Emgu.CV.World.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.pdb
@@ -304,3 +303,6 @@ D:\DRC_Tool\DRC\obj\x64\Release\DRC.Patient_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.CopyComplete
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.AUC_Report.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.PathwayTab.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.AUC_Report.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.PathwayTab.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Patient_Tab.resources

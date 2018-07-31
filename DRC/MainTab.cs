@@ -5276,6 +5276,7 @@ namespace DRC
         private bool inactive_init;
 
         private double auc;
+        private double error_auc;
 
         List<DataGridViewRow> raw_data;
         List<double> y_raw_data;
@@ -5528,6 +5529,11 @@ namespace DRC
         public double get_auc()
         {
             return auc;
+        }
+
+        public double get_error_auc()
+        {
+            return error_auc;
         }
 
         public Chart_DRC()
@@ -6571,7 +6577,7 @@ namespace DRC
             if (patient)
             {
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
-                annotation_ec50.Text = "AUC = "+auc.ToString("N2");
+                annotation_ec50.Text = "AUC = "+auc.ToString("N2") + " +/- "+ error_auc.ToString("N2");
             }
 
         }
@@ -6987,7 +6993,7 @@ namespace DRC
 
                 annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
-                if(patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2");
+                if(patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
             }
         }
 
@@ -7704,7 +7710,7 @@ namespace DRC
             //integral_val = TrapezoidalRule.Integrate(g, min_x_fit_auc, max_x_fit_auc, steps: 1000);
 
             // AUC with points : (Prism method)
-            Dictionary<double, List<double>> points_dict = new Dictionary<double, List<double>>();
+            SortedDictionary<double, List<double>> points_dict = new SortedDictionary<double, List<double>>();
 
             for (int i = 0; i < drc_points_x_enable.Count; ++i)
             {
@@ -7726,11 +7732,57 @@ namespace DRC
             List<double> list_x = new List<double>();
             List<double> mean_y = new List<double>();
 
+            List<double> variances = new List<double>();
+            List<double> derivatives = new List<double>();
+
             foreach (KeyValuePair<double, List<double>> elem in points_dict)
             {
                 list_x.Add(elem.Key);
                 mean_y.Add(elem.Value.Average());
             }
+
+            // Compute the variance of each concentration sample :
+            foreach (KeyValuePair<double, List<double>> elem in points_dict)
+            {
+                List<double> y_values = elem.Value;
+                double mean_y_value = y_values.Average();
+                double current_variance = 0.0;
+
+                for (int i=0; i<y_values.Count(); ++i)
+                {
+                    double current_y = y_values[i];
+                    current_variance += 100.0*(current_y - mean_y_value) * 100.0*(current_y - mean_y_value);
+                }
+
+                current_variance /= 2.0;
+
+                variances.Add(current_variance);
+            }
+
+            // Compute the derivative of the auc :
+            for(int i=0; i<list_x.Count; ++i)
+            {
+                if (i == 0) derivatives.Add((list_x[1]-list_x[0]) / 2.0);
+                else if (i==list_x.Count-1) derivatives.Add((list_x[list_x.Count - 1]- list_x[list_x.Count - 2]) / 2.0);
+                else
+                {
+                    derivatives.Add((list_x[i]- list_x[i - 1]) / 2.0 + (list_x[i+1]- list_x[i]) / 2.0);
+                }
+            }
+
+            double variance_auc = 0.0;
+
+            for(int i=0; i<list_x.Count; ++i)
+            {
+                variance_auc += derivatives[i] * derivatives[i] * variances[i];
+            }
+
+            error_auc = 1.96*Math.Sqrt(variance_auc);
+
+            Console.WriteLine(compound_id.ToString());
+            for (int i = 0; i < variances.Count; ++i) Console.WriteLine(variances[i].ToString());
+            for (int i = 0; i < derivatives.Count; ++i) Console.WriteLine(derivatives[i].ToString());
+            Console.WriteLine(error_auc.ToString());
 
             double area_geom = 0.0;
 

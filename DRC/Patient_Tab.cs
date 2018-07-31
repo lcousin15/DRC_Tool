@@ -253,6 +253,7 @@ namespace DRC
 
             ChartArea chartArea = new ChartArea();
             Series series1 = new Series();
+            Series serie_error_bars = new Series();
 
             //chartArea.Position.Auto = false;
             Axis yAxis = new Axis(chartArea, AxisName.Y);
@@ -281,7 +282,12 @@ namespace DRC
             series1.MarkerStyle = MarkerStyle.Circle;
             series1.Name = "Series1";
 
+            serie_error_bars.ChartType = SeriesChartType.Point;
+            serie_error_bars.MarkerStyle = MarkerStyle.Circle;
+            serie_error_bars.Name = "Error_Bars";
+
             chart.Series.Add(series1);
+            chart.Series.Add(serie_error_bars);
 
             chart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDown);
             chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
