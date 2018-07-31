@@ -191,6 +191,7 @@ namespace DRC
         private Color chart_color;
 
         Dictionary<string, double> dict_auc_cpds = new Dictionary<string, double>();
+        Dictionary<string, double> dict_auc_errors_cpds = new Dictionary<string, double>();
 
         //private List<double> x = new List<double>();
         private List<double> y = new List<double>();
@@ -235,7 +236,7 @@ namespace DRC
             return dict_auc_cpds;
         }
 
-        public Chart_Patient(Dictionary<string, double> auc_descriptor, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
+        public Chart_Patient(Dictionary<string, double> auc_descriptor, Dictionary<string, double> auc_descriptor_error, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
         {
             chart = new Chart();
 
@@ -248,6 +249,7 @@ namespace DRC
             chart_color = color;
 
             dict_auc_cpds = auc_descriptor;
+            dict_auc_errors_cpds = auc_descriptor_error;
 
             graph_type = graph;
 

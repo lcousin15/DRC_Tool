@@ -4635,6 +4635,7 @@ namespace DRC
             toolStripProgressBar1.Visible = true;
 
             Dictionary<string, Dictionary<string, double>> auc_dict = new Dictionary<string, Dictionary<string, double>>();
+            Dictionary<string, Dictionary<string, double>> auc_error_dict = new Dictionary<string, Dictionary<string, double>>();
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
@@ -4651,7 +4652,7 @@ namespace DRC
                 {
                     string descriptor = current_chart.get_Descriptor_Name();
                     double AUC = current_chart.compute_AUC();
-                    //AUC /= norm_integral;
+                    double error_auc = current_chart.get_error_auc();
 
                     if (auc_dict.ContainsKey(descriptor))
                     {
@@ -4662,6 +4663,17 @@ namespace DRC
                         Dictionary<string, double> temp_dict = new Dictionary<string, double>();
                         temp_dict[cpd_id] = AUC;
                         auc_dict[descriptor] = temp_dict;
+                    }
+
+                    if (auc_error_dict.ContainsKey(descriptor))
+                    {
+                        auc_error_dict[descriptor][cpd_id] = error_auc;
+                    }
+                    else
+                    {
+                        Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                        temp_dict[cpd_id] = error_auc;
+                        auc_error_dict[descriptor] = temp_dict;
                     }
                 }
             }
@@ -4682,8 +4694,9 @@ namespace DRC
                     //Console.WriteLine("CPD_ID : " + item.Key.ToString());
 
                     Dictionary<string, double> descriptor_auc = item.Value;
+                    Dictionary<string, double> descriptor_auc_error = auc_error_dict[item.Key];
 
-                    Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+                    Chart_Patient chart = new Chart_Patient(descriptor_auc, descriptor_auc_error, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
                     chart_auc.Add(item.Key.ToString(), chart);
 
                     //foreach (KeyValuePair<string, double> auc in descriptor_auc)
@@ -4700,6 +4713,8 @@ namespace DRC
                 chart_auc_z_score.Clear();
 
                 Dictionary<string, Dictionary<string, double>> z_score_auc = new Dictionary<string, Dictionary<string, double>>();
+                Dictionary<string, Dictionary<string, double>> z_score_auc_error = new Dictionary<string, Dictionary<string, double>>();
+
 
                 foreach (KeyValuePair<string, Dictionary<string, double>> item in auc_dict)
                 {
@@ -4716,10 +4731,13 @@ namespace DRC
                     double mu = auc_values.Average();
                     double sigma = StandardDeviation(auc_values, (double)auc_values.Count - 1);
 
+                    Dictionary<string, double> auc_errors = auc_error_dict[item.Key];
+
                     foreach (KeyValuePair<string, double> val in auc_values_by_cpd)
                     {
                         string cpd_id = val.Key;
                         double z_score = (val.Value - mu) / sigma;
+                        double error_z_score = auc_errors[val.Key] / sigma;
 
                         if (z_score_auc.ContainsKey(descriptor))
                         {
@@ -4731,6 +4749,18 @@ namespace DRC
                             temp_dict[cpd_id] = z_score;
                             z_score_auc[descriptor] = temp_dict;
                         }
+
+                        if (z_score_auc_error.ContainsKey(descriptor))
+                        {
+                            z_score_auc_error[descriptor][cpd_id] = error_z_score;
+                        }
+                        else
+                        {
+                            Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                            temp_dict[cpd_id] = error_z_score;
+                            z_score_auc_error[descriptor] = temp_dict;
+                        }
+
                     }
 
                 }
@@ -4739,7 +4769,7 @@ namespace DRC
                 {
                     Dictionary<string, double> descriptor_auc = item.Value;
 
-                    Chart_Patient chart = new Chart_Patient(descriptor_auc, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+                    Chart_Patient chart = new Chart_Patient(descriptor_auc, z_score_auc_error, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
                     chart_auc_z_score.Add(item.Key.ToString(), chart);
 
                 }
