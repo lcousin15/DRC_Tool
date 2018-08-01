@@ -196,6 +196,7 @@ namespace DRC
         //private List<double> x = new List<double>();
         private List<double> y = new List<double>();
         private List<string> cpd_labels = new List<string>();
+        private List<double> error_y = new List<double>();
 
         private double min_x;
         private double max_x;
@@ -284,7 +285,7 @@ namespace DRC
             series1.MarkerStyle = MarkerStyle.Circle;
             series1.Name = "Series1";
 
-            serie_error_bars.ChartType = SeriesChartType.Point;
+            serie_error_bars.ChartType = SeriesChartType.ErrorBar;
             serie_error_bars.MarkerStyle = MarkerStyle.Circle;
             serie_error_bars.Name = "Error_Bars";
 
@@ -311,6 +312,7 @@ namespace DRC
             {
                 cpd_labels.Add(item.Key);
                 y.Add(item.Value);
+                error_y.Add(dict_auc_errors_cpds[item.Key]);
             }
 
             chart.ChartAreas[0].AxisX.MinorGrid.Enabled = true;
@@ -342,6 +344,27 @@ namespace DRC
             chart.Series["Series1"].Points.DataBindXY(cpd_labels, y);
             chart.Series["Series1"].Color = chart_color;
             chart.Series["Series1"].MarkerSize = 7;
+
+            chart.Series["Error_Bars"].ChartType = SeriesChartType.ErrorBar;
+            chart.Series["Error_Bars"].MarkerBorderColor = Color.Black;
+            chart.Series["Error_Bars"].MarkerSize = 7;
+            chart.Series["Error_Bars"].YValuesPerPoint = 3;
+            chart.Series["Error_Bars"].BorderColor = Color.Black;
+            chart.Series["Error_Bars"].Color = Color.Black;
+            chart.Series["Error_Bars"].ShadowOffset = 1;
+            chart.Series["Error_Bars"].MarkerStyle = MarkerStyle.None;
+            chart.Series["Error_Bars"]["PointWidth"] = "0.25";
+
+            double error = 100;
+
+            for(int i = 0; i< y.Count; ++i)
+            {
+                double centerY = y[i];
+                double lowerErrorY = centerY - error_y[i];
+                double upperErrorY = centerY + error_y[i];
+                chart.Series["Error_Bars"].Points.AddXY(cpd_labels[i], centerY, lowerErrorY, upperErrorY);
+            }
+
 
             //System.Drawing.Font chtFont = new System.Drawing.Font("Arial", 9, FontStyle.Regular);
             //chart.ChartAreas[0].AxisX.LabelStyle.Font = chtFont;

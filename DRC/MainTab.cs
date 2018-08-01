@@ -190,20 +190,23 @@ namespace DRC
 
         private Random rnd = new Random();
 
-        List<List<string>> CPD_ID_List = new List<List<string>>();
+        private List<List<string>> CPD_ID_List = new List<List<string>>();
         //List<List<int>> Exp_ID_List = new List<List<int>>();
 
-        SortedDictionary<string, SortedDictionary<string, List<string>>> dict_plate_well_files = new SortedDictionary<string, SortedDictionary<string, List<string>>>();
+        private SortedDictionary<string, SortedDictionary<string, List<string>>> dict_plate_well_files = new SortedDictionary<string, SortedDictionary<string, List<string>>>();
         // plate, well path
 
-        Dictionary<string, DataTable> data_dict = new Dictionary<string, DataTable>(); // file --> DataTable
-        Dictionary<string, HashSet<string>> cpd_link = new Dictionary<string, HashSet<string>>(); // cpd id --> file
-        List<string> time_line_selected_descriptors = new List<string>();
+        private Dictionary<string, DataTable> data_dict = new Dictionary<string, DataTable>(); // file --> DataTable
+        private Dictionary<string, HashSet<string>> cpd_link = new Dictionary<string, HashSet<string>>(); // cpd id --> file
+        private List<string> time_line_selected_descriptors = new List<string>();
 
-        Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // cpd_id, descriptor, chart
+        private Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // cpd_id, descriptor, chart
 
-        Dictionary<string, Chart_Patient> chart_auc = new Dictionary<string, Chart_Patient>();
-        Dictionary<string, Chart_Patient> chart_auc_z_score = new Dictionary<string, Chart_Patient>();
+        private Dictionary<string, Chart_Patient> chart_auc = new Dictionary<string, Chart_Patient>();
+        private Dictionary<string, Chart_Patient> chart_auc_z_score = new Dictionary<string, Chart_Patient>();
+
+        private List<string> unique_plates = new List<string>();
+        private List<double> ps_concentrations = new List<double>();
 
         public bool view_images_per_concentration;
 
@@ -222,7 +225,7 @@ namespace DRC
         public int cpd_segm_method = -1;
         public bool set_param_cpd = false;
 
-        List<Color> curve_color = new List<Color>();
+        private List<Color> curve_color = new List<Color>();
 
         private double norm_integral;
         private bool is_patient = false;
@@ -3992,7 +3995,6 @@ namespace DRC
 
             Dictionary<string, double> template_plate_concentration = new Dictionary<string, double>();
 
-            List<double> ps_concentrations = new List<double>();
             ps_concentrations.Add(30 * 1e-6);
             ps_concentrations.Add(7.5 * 1e-6);
             ps_concentrations.Add(1.875 * 1e-6);
@@ -4450,7 +4452,7 @@ namespace DRC
                 plates.Add(row.Cells["Plate"].Value.ToString());
             }
 
-            List<string> unique_plates = new HashSet<string>(plates).ToList<string>();
+            unique_plates = new HashSet<string>(plates).ToList<string>();
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -4490,38 +4492,66 @@ namespace DRC
                     checkedListBox1.Items.Add(col_name);
                 }
 
-                /*
-                if (col_name.StartsWith("Deselected"))
-                {
-                    deslected_data_descriptor.Add(col_name);
-                }
-
-                if (col_name.StartsWith("Status"))
-                {
-                    status_ec_50_descritpor.Add(col_name);
-                }
-
-                if (col_name.StartsWith("Bound"))
-                {
-                    bounds_descriptor.Add(col_name);
-                }
-
-                if (col_name.StartsWith("Fixed_Top"))
-                {
-                    fixed_top_descriptor.Add(col_name);
-                }
-                if (col_name.StartsWith("Data_Modified"))
-                {
-                    data_modified_descriptor.Add(col_name);
-                }
-                */
             }
 
             list_cpd = unique_items.ToList<string>();
+            bool fill_concentrations = true;
 
-            Dictionary<string, Dictionary<string, List<double>>> DMSO_by_plate = new Dictionary<string, Dictionary<string, List<double>>>();
+        }
+
+        private void normalize_by_DMSO()
+        {
+
+            if (f3.dataGridView1.RowCount < 1)
+            {
+                MessageBox.Show("Data is empty.");
+                return;
+            }
+
+            SetForm();
+            //f2.Show();
+
+            f2.Text = this.Text;
+
+            //comboBox1.SelectionChanged += new SelectionChangedEventHandler(comboBox1_SelectionChanged);
+
+            int checked_items = checkedListBox1.CheckedItems.Count;
+
+            descritpor_number = checked_items;
+
+            output_parameter_number = 5;
+
+            f2.dataGridView2.ColumnCount = 2 + output_parameter_number * checked_items;
+
+            f2.dataGridView2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+
+            f2.dataGridView2.Columns[0].Name = "CPD_ID";
+
+            descriptor_list = new List<string>();
+
+            Dictionary<string, List<double>> data_descriptor = new Dictionary<string, List<double>>();
+            Dictionary<string, List<string>> deselected_data_descriptor = new Dictionary<string, List<string>>();
+
+            int j = 0;
+            foreach (var item in checkedListBox1.CheckedItems)
+            {
+                f2.dataGridView2.Columns[j * output_parameter_number + 1].Name = "EC_50 " + item.ToString();
+                f2.dataGridView2.Columns[j * output_parameter_number + 2].Name = "Bottom " + item.ToString();
+                f2.dataGridView2.Columns[j * output_parameter_number + 3].Name = "Top " + item.ToString();
+                f2.dataGridView2.Columns[j * output_parameter_number + 4].Name = "Slope " + item.ToString();
+                f2.dataGridView2.Columns[j * output_parameter_number + 5].Name = "R2 " + item.ToString();
+
+                //descriptor_dict.Add(j, item.ToString());
+                descriptor_list.Add(item.ToString());
+
+                data_descriptor[item.ToString()] = new List<double>();
+
+                j++;
+            }
 
             // Get DMSO values by plate and descriptors :
+
+            Dictionary<string, Dictionary<string, List<double>>> DMSO_by_plate = new Dictionary<string, Dictionary<string, List<double>>>();
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -4566,62 +4596,143 @@ namespace DRC
             // Average DMSO by plate and descritpors :
 
             Dictionary<string, Dictionary<string, double>> DMSO_mean_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
+            Dictionary<string, List<Chart_DRC>> dmso_charts = new Dictionary<string, List<Chart_DRC>>();
 
             foreach (KeyValuePair<string, Dictionary<string, List<double>>> elem in DMSO_by_plate)
             {
                 string plate = elem.Key;
                 Dictionary<string, List<double>> descriptors_values = elem.Value;
 
+                List<double> ps_concentrations_bis = new List<double>();
+                List<double> ps_concentrations_log = new List<double>();
+                List<string> deselected = new List<string>();
 
-                foreach (KeyValuePair<string, List<double>> descriptor_DMSO in descriptors_values)
+
+                int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / ps_concentrations.Count;
+
+                for (int i = 0; i < replicates; ++i)
                 {
-                    double mean_DMSO_descriptor = Median(descriptor_DMSO.Value); //Average();
-
-                    if (DMSO_mean_plate_descriptor.ContainsKey(plate))
+                    foreach (double item in ps_concentrations)
                     {
-                        DMSO_mean_plate_descriptor[plate][descriptor_DMSO.Key] = mean_DMSO_descriptor;
+                        ps_concentrations_bis.Add(item);
+                        ps_concentrations_log.Add(Math.Log10(item));
+                        deselected.Add("FALSE");
+                    }
+                }
+
+                List<double> row_params = new List<double>();
+
+                int descriptor_index = 0;
+
+                List<Chart_DRC> list_charts_one_dmso = new List<Chart_DRC>();
+
+                foreach (string item in checkedListBox1.CheckedItems)
+                //foreach (KeyValuePair<string, List<double>> descriptor_DMSO in descriptors_values)
+                {
+                    string chart_ec_50_status = "=";
+                    string fixed_top = "Not Fixed";
+                    Dictionary<string, double> bounds = new Dictionary<string, double>();
+
+                    List<double> dmso_value_per_descriptor = descriptors_values[item];
+
+                    Chart_DRC chart_DMSO_per_plate = new Chart_DRC("DMSO", item, 250, ref ps_concentrations_bis, ref ps_concentrations_log,
+                        ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this, false);
+
+                    double[] parameters = chart_DMSO_per_plate.get_Fit_Parameters();
+                    double r2 = chart_DMSO_per_plate.get_R2();
+
+
+                    row_params.Add(double.Parse(Math.Pow(10, parameters[2]).ToString("E2")));
+                    if (parameters[1] > parameters[0])
+                    {
+                        row_params.Add(double.Parse(parameters[0].ToString("E2")));
+                        row_params.Add(double.Parse(parameters[1].ToString("E2")));
                     }
                     else
                     {
-                        Dictionary<string, double> temp_dict = new Dictionary<string, double>();
-                        temp_dict[descriptor_DMSO.Key] = mean_DMSO_descriptor;
-                        DMSO_mean_plate_descriptor[plate] = temp_dict;
+                        row_params.Add(double.Parse(parameters[1].ToString("E2")));
+                        row_params.Add(double.Parse(parameters[0].ToString("E2")));
+                    }
+                    row_params.Add(double.Parse(parameters[3].ToString("E2")));
+                    row_params.Add(double.Parse(r2.ToString("E2")));
+
+
+                    descriptor_index++;
+
+
+                    list_charts_one_dmso.Add(chart_DMSO_per_plate);
+
+                }
+
+                dmso_charts.Add(plate, list_charts_one_dmso);
+
+                DataGridViewRow current_row = (DataGridViewRow)f2.dataGridView2.Rows[0].Clone();
+
+                for (int i = 0; i < row_params.Count() + 1; i++)
+                {
+                    if (i == 0) current_row.Cells[i].Value = "DMSO";
+                    if (i > 0) current_row.Cells[i].Value = row_params[i - 1];
+                }
+
+                f2.dataGridView2.Rows.Add(current_row);
+
+                foreach (KeyValuePair<string, List<Chart_DRC>> item in dmso_charts)
+                {
+
+                    List<Chart_DRC> list_charts = item.Value;
+                    foreach (Chart_DRC chart in list_charts)
+                    {
+                        chart.draw_DRC(false, true);
                     }
                 }
+
+                //double mean_DMSO_descriptor = Median(descriptor_DMSO.Value); //Average();
+
+                //if (DMSO_mean_plate_descriptor.ContainsKey(plate))
+                //{
+                //    DMSO_mean_plate_descriptor[plate][descriptor_DMSO.Key] = mean_DMSO_descriptor;
+                //}
+                //else
+                //{
+                //    Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                //    temp_dict[descriptor_DMSO.Key] = mean_DMSO_descriptor;
+                //    DMSO_mean_plate_descriptor[plate] = temp_dict;
+                //}
+
             }
 
             // Normalization :
-
-            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
-            {
-                string current_plate = row.Cells["Plate"].Value.ToString();
-                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
-
-                foreach (string plate in unique_plates)
-                {
-                    if (plate == current_plate)
-                    {
-                        foreach (string cpd in list_cpd)
+            /*
+                        foreach (DataGridViewRow row in f3.dataGridView1.Rows)
                         {
-                            if (current_cpd == cpd)
-                            {
-                                foreach (var item in checkedListBox1.Items)
-                                {
-                                    string descriptor_name = item.ToString();
+                            string current_plate = row.Cells["Plate"].Value.ToString();
+                            string current_cpd = row.Cells["CPD_ID"].Value.ToString();
 
-                                    double current_value = double.Parse(row.Cells[descriptor_name].Value.ToString());
-                                    current_value /= DMSO_mean_plate_descriptor[plate][descriptor_name];
-                                    row.Cells[descriptor_name].Value = current_value;
+                            foreach (string plate in unique_plates)
+                            {
+                                if (plate == current_plate)
+                                {
+                                    foreach (string cpd in list_cpd)
+                                    {
+                                        if (current_cpd == cpd)
+                                        {
+                                            foreach (var item in checkedListBox1.Items)
+                                            {
+                                                string descriptor_name = item.ToString();
+
+                                                double current_value = double.Parse(row.Cells[descriptor_name].Value.ToString());
+                                                current_value /= DMSO_mean_plate_descriptor[plate][descriptor_name];
+                                                row.Cells[descriptor_name].Value = current_value;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
-                }
-            }
 
-            //f3.Show();
-            //f3.Hide();
-
+                        //f3.Show();
+                        //f3.Hide();
+            */
         }
 
         private static double StandardDeviation(List<double> numberSet, double divisor)
@@ -4768,8 +4879,8 @@ namespace DRC
                 foreach (KeyValuePair<string, Dictionary<string, double>> item in z_score_auc)
                 {
                     Dictionary<string, double> descriptor_auc = item.Value;
-
-                    Chart_Patient chart = new Chart_Patient(descriptor_auc, z_score_auc_error, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+                    Dictionary<string, double> descriptor_au_error = z_score_auc_error[item.Key];
+                    Chart_Patient chart = new Chart_Patient(descriptor_auc, descriptor_au_error, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
                     chart_auc_z_score.Add(item.Key.ToString(), chart);
 
                 }
@@ -4815,6 +4926,10 @@ namespace DRC
 
         }
 
+        private void normalizeDMSOToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            normalize_by_DMSO();
+        }
     }
 
     public class Chart_DRC_Overlap
@@ -6607,7 +6722,7 @@ namespace DRC
             if (patient)
             {
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
-                annotation_ec50.Text = "AUC = "+auc.ToString("N2") + " +/- "+ error_auc.ToString("N2");
+                annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N4");
             }
 
         }
@@ -6617,7 +6732,7 @@ namespace DRC
 
             //Or if series is of Series type, you could:
 
-            if(chart.Series.IndexOf("Serie_AUC") != -1)
+            if (chart.Series.IndexOf("Serie_AUC") != -1)
             {
                 chart.Series.RemoveAt(chart.Series.IndexOf("Serie_AUC"));
 
@@ -7023,7 +7138,7 @@ namespace DRC
 
                 annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
-                if(patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
+                if (patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N4");
             }
         }
 
@@ -7778,10 +7893,10 @@ namespace DRC
                 double mean_y_value = y_values.Average();
                 double current_variance = 0.0;
 
-                for (int i=0; i<y_values.Count(); ++i)
+                for (int i = 0; i < y_values.Count(); ++i)
                 {
                     double current_y = y_values[i];
-                    current_variance += 100.0*(current_y - mean_y_value) * 100.0*(current_y - mean_y_value);
+                    current_variance += 100.0 * (current_y - mean_y_value) * 100.0 * (current_y - mean_y_value);
                 }
 
                 current_variance /= 2.0;
@@ -7790,24 +7905,24 @@ namespace DRC
             }
 
             // Compute the derivative of the auc :
-            for(int i=0; i<list_x.Count; ++i)
+            for (int i = 0; i < list_x.Count; ++i)
             {
-                if (i == 0) derivatives.Add((list_x[1]-list_x[0]) / 2.0);
-                else if (i==list_x.Count-1) derivatives.Add((list_x[list_x.Count - 1]- list_x[list_x.Count - 2]) / 2.0);
+                if (i == 0) derivatives.Add((list_x[1] - list_x[0]) / 2.0);
+                else if (i == list_x.Count - 1) derivatives.Add((list_x[list_x.Count - 1] - list_x[list_x.Count - 2]) / 2.0);
                 else
                 {
-                    derivatives.Add((list_x[i]- list_x[i - 1]) / 2.0 + (list_x[i+1]- list_x[i]) / 2.0);
+                    derivatives.Add((list_x[i] - list_x[i - 1]) / 2.0 + (list_x[i + 1] - list_x[i]) / 2.0);
                 }
             }
 
             double variance_auc = 0.0;
 
-            for(int i=0; i<list_x.Count; ++i)
+            for (int i = 0; i < list_x.Count; ++i)
             {
                 variance_auc += derivatives[i] * derivatives[i] * variances[i];
             }
 
-            error_auc = 1.96*Math.Sqrt(variance_auc);
+            error_auc = 1.96 * Math.Sqrt(variance_auc);
 
             Console.WriteLine(compound_id.ToString());
             for (int i = 0; i < variances.Count; ++i) Console.WriteLine(variances[i].ToString());
@@ -7827,7 +7942,7 @@ namespace DRC
                 area_geom += trapezoid_area;
             }
 
-            auc = 100.0* area_geom;
+            auc = 100.0 * area_geom;
 
             return 100.0 * area_geom;
         }

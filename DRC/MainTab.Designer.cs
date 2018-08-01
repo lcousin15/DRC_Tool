@@ -61,6 +61,7 @@
             this.dRCTimeLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patientStratificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.computeAUCZScoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -88,7 +89,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btn_descriptors_options = new System.Windows.Forms.Button();
             this.btn_fix_top_bottom = new System.Windows.Forms.Button();
-            this.computeAUCZScoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.normalizeDMSOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -359,6 +360,7 @@
             // patientStratificationToolStripMenuItem
             // 
             this.patientStratificationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.normalizeDMSOToolStripMenuItem,
             this.computeAUCToolStripMenuItem,
             this.computeAUCZScoreToolStripMenuItem});
             this.patientStratificationToolStripMenuItem.Name = "patientStratificationToolStripMenuItem";
@@ -371,6 +373,13 @@
             this.computeAUCToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.computeAUCToolStripMenuItem.Text = "Compute AUC";
             this.computeAUCToolStripMenuItem.Click += new System.EventHandler(this.computeAUCToolStripMenuItem_Click);
+            // 
+            // computeAUCZScoreToolStripMenuItem
+            // 
+            this.computeAUCZScoreToolStripMenuItem.Name = "computeAUCZScoreToolStripMenuItem";
+            this.computeAUCZScoreToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.computeAUCZScoreToolStripMenuItem.Text = "Compute AUC Z-Score";
+            this.computeAUCZScoreToolStripMenuItem.Click += new System.EventHandler(this.computeAUCZScoreToolStripMenuItem_Click);
             // 
             // comboBox1
             // 
@@ -756,12 +765,12 @@
             this.btn_fix_top_bottom.UseVisualStyleBackColor = true;
             this.btn_fix_top_bottom.Click += new System.EventHandler(this.btn_fix_top_bottom_Click);
             // 
-            // computeAUCZScoreToolStripMenuItem
+            // normalizeDMSOToolStripMenuItem
             // 
-            this.computeAUCZScoreToolStripMenuItem.Name = "computeAUCZScoreToolStripMenuItem";
-            this.computeAUCZScoreToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.computeAUCZScoreToolStripMenuItem.Text = "Compute AUC Z-Score";
-            this.computeAUCZScoreToolStripMenuItem.Click += new System.EventHandler(this.computeAUCZScoreToolStripMenuItem_Click);
+            this.normalizeDMSOToolStripMenuItem.Name = "normalizeDMSOToolStripMenuItem";
+            this.normalizeDMSOToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.normalizeDMSOToolStripMenuItem.Text = "Normalize DMSO";
+            this.normalizeDMSOToolStripMenuItem.Click += new System.EventHandler(this.normalizeDMSOToolStripMenuItem_Click);
             // 
             // MainTab
             // 
@@ -882,6 +891,7 @@
         private System.Windows.Forms.ToolStripMenuItem patientStratificationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computeAUCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computeAUCZScoreToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem normalizeDMSOToolStripMenuItem;
     }
 }
 
