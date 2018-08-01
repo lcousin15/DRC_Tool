@@ -4556,6 +4556,7 @@ namespace DRC
             // Get DMSO values by plate and descriptors :
 
             Dictionary<string, Dictionary<string, List<double>>> DMSO_by_plate = new Dictionary<string, Dictionary<string, List<double>>>();
+            Dictionary<string, Dictionary<string, List<DataGridViewRow>>> raw_data_rows = new Dictionary<string, Dictionary<string, List<DataGridViewRow>>>();
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
@@ -4591,6 +4592,28 @@ namespace DRC
                                     temp_dict[descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
                                     DMSO_by_plate[plate] = temp_dict;
                                 }
+
+                                // raw data :
+                                if (raw_data_rows.ContainsKey(plate))
+                                {
+                                    if (raw_data_rows[plate].ContainsKey(descriptor_name))
+                                    {
+                                        raw_data_rows[plate][descriptor_name].Add(row);
+                                    }
+                                    else
+                                    {
+                                        raw_data_rows[plate][descriptor_name] = new List<DataGridViewRow>();
+                                        raw_data_rows[plate][descriptor_name].Add(row);
+                                    }
+                                }
+                                else
+                                {
+                                    Dictionary<string, List<DataGridViewRow>> temp_dict = new Dictionary<string, List<DataGridViewRow>>();
+                                    temp_dict[descriptor_name] = new List<DataGridViewRow>();
+                                    temp_dict[descriptor_name].Add(row);
+                                    raw_data_rows[plate] = temp_dict;
+                                }
+
                             }
                         }
                     }
@@ -4641,6 +4664,8 @@ namespace DRC
 
                     Chart_DRC chart_DMSO_per_plate = new Chart_DRC(plate + " DMSO", item, 50, ref ps_concentrations_bis, ref ps_concentrations_log,
                         ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this, false);
+
+                    chart_DMSO_per_plate.set_Raw_Data(raw_data_rows[plate][item]);
 
                     double[] parameters = chart_DMSO_per_plate.get_Fit_Parameters();
                     double r2 = chart_DMSO_per_plate.get_R2();
@@ -5803,7 +5828,7 @@ namespace DRC
 
                     List<int> indices = new List<int>();
                     for (int i = 0; i < drc_points_y_enable.Count(); i++)
-                        if (drc_points_y_enable[i] < point_y + 1e-12 && drc_points_y_enable[i] > point_y - 1e-12)
+                        if (drc_points_y_enable[i] < point_y + 1e-6 && drc_points_y_enable[i] > point_y - 1e-6)
                             indices.Add(i);
 
                     foreach (int idx in indices)
@@ -6324,12 +6349,12 @@ namespace DRC
 
                             List<int> indices = new List<int>();
                             for (int i = 0; i < drc_points_y_enable.Count(); i++)
-                                if (drc_points_y_enable[i] < y_val + 1e-12 && drc_points_y_enable[i] > y_val - 1e-12)
+                                if (drc_points_y_enable[i] < y_val + 1e-6 && drc_points_y_enable[i] > y_val - 1e-6)
                                     indices.Add(i);
 
                             foreach (int idx in indices)
                             {
-                                if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
+                                if (drc_points_x_enable[idx] < (point_x + 1e-6) && drc_points_x_enable[idx] > (point_x - 1e-6))
                                 {
                                     index = idx;
                                     break;
@@ -6349,7 +6374,7 @@ namespace DRC
                             List<int> indices_raw = new List<int>();
 
                             for (int i = 0; i < y_raw_data.Count(); i++)
-                                if (y_raw_data[i] < y_val + 1e-12 && y_raw_data[i] > y_val - 1e-12)
+                                if (y_raw_data[i] < y_val + 1e-6 && y_raw_data[i] > y_val - 1e-6)
                                     indices_raw.Add(i);
 
                             foreach (int idx in indices_raw)
@@ -6978,12 +7003,12 @@ namespace DRC
 
                             List<int> indices = new List<int>();
                             for (int i = 0; i < drc_points_y_disable.Count(); i++)
-                                if (drc_points_y_disable[i] < point_y + 1e-12 && drc_points_y_disable[i] > point_y - 1e-12)
+                                if (drc_points_y_disable[i] < point_y + 1e-6 && drc_points_y_disable[i] > point_y - 1e-6)
                                     indices.Add(i);
 
                             foreach (int idx in indices)
                             {
-                                if (drc_points_x_disable[idx] < (point_x + 1e-12) && drc_points_x_disable[idx] > (point_x - 1e-12))
+                                if (drc_points_x_disable[idx] < (point_x + 1e-6) && drc_points_x_disable[idx] > (point_x - 1e-6))
                                 {
                                     index = idx;
                                     break;
@@ -7008,7 +7033,7 @@ namespace DRC
                             List<int> indices_raw = new List<int>();
 
                             for (int i = 0; i < y_raw_data.Count(); i++)
-                                if (y_raw_data[i] < point_y + 1e-12 && y_raw_data[i] > point_y - 1e-12)
+                                if (y_raw_data[i] < point_y + 1e-6 && y_raw_data[i] > point_y - 1e-6)
                                     indices_raw.Add(i);
 
                             foreach (int idx in indices_raw)
@@ -7044,12 +7069,12 @@ namespace DRC
 
                             List<int> indices = new List<int>();
                             for (int i = 0; i < drc_points_y_enable.Count(); i++)
-                                if (drc_points_y_enable[i] < point_y + 1e-12 && drc_points_y_enable[i] > point_y - 1e-12)
+                                if (drc_points_y_enable[i] < point_y + 1e-6 && drc_points_y_enable[i] > point_y - 1e-6)
                                     indices.Add(i);
 
                             foreach (int idx in indices)
                             {
-                                if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
+                                if (drc_points_x_enable[idx] < (point_x + 1e-6) && drc_points_x_enable[idx] > (point_x - 1e-6))
                                 {
                                     index = idx;
                                     break;
@@ -7068,7 +7093,7 @@ namespace DRC
                             List<int> indices_raw = new List<int>();
 
                             for (int i = 0; i < y_raw_data.Count(); i++)
-                                if (y_raw_data[i] < point_y + 1e-12 && y_raw_data[i] > point_y - 1e-12)
+                                if (y_raw_data[i] < point_y + 1e-6 && y_raw_data[i] > point_y - 1e-6)
                                     indices_raw.Add(i);
 
                             foreach (int idx in indices_raw)
@@ -7717,12 +7742,12 @@ namespace DRC
 
                         List<int> indices = new List<int>();
                         for (int j = 0; j < drc_points_y_enable.Count(); j++)
-                            if (drc_points_y_enable[j] < current_y + 1e-12 && drc_points_y_enable[j] > current_y - 1e-12)
+                            if (drc_points_y_enable[j] < current_y + 1e-6 && drc_points_y_enable[j] > current_y - 1e-6)
                                 indices.Add(j);
 
                         foreach (int idx in indices)
                         {
-                            if (drc_points_x_enable[idx] < (x_points + 1e-12) && drc_points_x_enable[idx] > (x_points - 1e-12))
+                            if (drc_points_x_enable[idx] < (x_points + 1e-6) && drc_points_x_enable[idx] > (x_points - 1e-6))
                             {
                                 index = idx;
                                 break;
@@ -7742,7 +7767,7 @@ namespace DRC
                         List<int> indices_raw = new List<int>();
 
                         for (int j = 0; j < y_raw_data.Count(); j++)
-                            if (y_raw_data[j] < current_y + 1e-12 && y_raw_data[j] > current_y - 1e-12)
+                            if (y_raw_data[j] < current_y + 1e-6 && y_raw_data[j] > current_y - 1e-6)
                                 indices_raw.Add(j);
 
                         foreach (int idx in indices_raw)
@@ -7764,12 +7789,12 @@ namespace DRC
 
                         List<int> indices = new List<int>();
                         for (int j = 0; j < drc_points_y_disable.Count(); j++)
-                            if (drc_points_y_disable[j] < current_y + 1e-12 && drc_points_y_disable[j] > current_y - 1e-12)
+                            if (drc_points_y_disable[j] < current_y + 1e-6 && drc_points_y_disable[j] > current_y - 1e-6)
                                 indices.Add(j);
 
                         foreach (int idx in indices)
                         {
-                            if (drc_points_x_disable[idx] < (x_points + 1e-12) && drc_points_x_disable[idx] > (x_points - 1e-12))
+                            if (drc_points_x_disable[idx] < (x_points + 1e-6) && drc_points_x_disable[idx] > (x_points - 1e-6))
                             {
                                 index = idx;
                                 break;
@@ -7789,7 +7814,7 @@ namespace DRC
                         List<int> indices_raw = new List<int>();
 
                         for (int j = 0; j < y_raw_data.Count(); j++)
-                            if (y_raw_data[j] < current_y + 1e-12 && y_raw_data[j] > current_y - 1e-12)
+                            if (y_raw_data[j] < current_y + 1e-6 && y_raw_data[j] > current_y - 1e-6)
                                 indices_raw.Add(j);
 
                         foreach (int idx in indices_raw)
