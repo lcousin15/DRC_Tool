@@ -776,6 +776,7 @@
             // btn_normalize
             // 
             this.btn_normalize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_normalize.Enabled = false;
             this.btn_normalize.Location = new System.Drawing.Point(1074, 287);
             this.btn_normalize.Name = "btn_normalize";
             this.btn_normalize.Size = new System.Drawing.Size(120, 35);

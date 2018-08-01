@@ -978,7 +978,7 @@ namespace DRC
                     else is_data_modified = "FALSE";
 
                     Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 250, ref concentrations, ref concentrations_log, ref data, color,
-                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, is_data_modified, this, is_patient);
+                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, is_data_modified, this, is_patient, true, true);
 
                     chart_drc.set_Raw_Data(raw_data_rows);
 
@@ -3908,6 +3908,7 @@ namespace DRC
 
             Reset();
 
+            btn_normalize.Enabled = true;
             is_patient = true;
 
             openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
@@ -4663,7 +4664,7 @@ namespace DRC
                     List<double> dmso_value_per_descriptor = descriptors_values[item];
 
                     Chart_DRC chart_DMSO_per_plate = new Chart_DRC(plate + " DMSO", item, 50, ref ps_concentrations_bis, ref ps_concentrations_log,
-                        ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this, false);
+                        ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this, false, false, false);
 
                     chart_DMSO_per_plate.set_Raw_Data(raw_data_rows[plate][item]);
 
@@ -5501,6 +5502,8 @@ namespace DRC
         private bool is_top_fixed = false;
 
         private bool patient = false;
+        private bool display_fit = true;
+        private bool display_post_paint = true;
 
         public string get_compound_id()
         {
@@ -5743,11 +5746,14 @@ namespace DRC
         }
 
         public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
-            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, string if_modified, MainTab form, bool if_patient)
+            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, string if_modified, MainTab form, 
+            bool if_patient, bool if_fit, bool if_post_paint)
         {
             _form1 = form;
 
             patient = if_patient;
+            display_fit = if_fit;
+            display_post_paint = if_post_paint;
 
             descriptor_index = index;
 
@@ -6448,10 +6454,12 @@ namespace DRC
             chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
             chart.Series["Series1"].Color = chart_color;
 
-            chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
-            chart.Series["Series2"].Color = chart_color;
-
+            if (display_fit)
+            {
+                chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+                chart.Series["Series2"].Color = chart_color;
+            }
             //----------------------------- Axis Labels ---------------------------//
 
             chart.ChartAreas[0].RecalculateAxesScale();
@@ -6779,7 +6787,12 @@ namespace DRC
             if (patient)
             {
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
-                annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N4");
+                annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
+            }
+
+            if(display_fit==false)
+            {
+                annotation_ec50.Text = "Mean Value = " + drc_points_y_enable.Average().ToString("N2");
             }
 
         }
@@ -6874,6 +6887,8 @@ namespace DRC
 
         private void chart1_PostPaint(object sender, System.Windows.Forms.DataVisualization.Charting.ChartPaintEventArgs e)
         {
+            if (display_post_paint == false) return;
+
             Chart my_chart = (Chart)sender;
             ChartArea area = my_chart.ChartAreas[0];
             if (area.Name == descriptor)
@@ -7123,7 +7138,8 @@ namespace DRC
                 }
 
                 fit_DRC();
-                chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+
+                if(display_fit) chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
 
                 if (patient)
                 {
@@ -7195,7 +7211,8 @@ namespace DRC
 
                 annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
-                if (patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N4");
+                if (patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
+                if(display_fit==false) annotation_ec50.Text = "Mean Value = " + drc_points_y_enable.Average().ToString("N2");
             }
         }
 
