@@ -978,7 +978,7 @@ namespace DRC
                     else is_data_modified = "FALSE";
 
                     Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 250, ref concentrations, ref concentrations_log, ref data, color,
-                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, is_data_modified, this, is_patient, true, true);
+                        descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, is_data_modified, this, is_patient, true, true, true);
 
                     chart_drc.set_Raw_Data(raw_data_rows);
 
@@ -4664,7 +4664,8 @@ namespace DRC
                     List<double> dmso_value_per_descriptor = descriptors_values[item];
 
                     Chart_DRC chart_DMSO_per_plate = new Chart_DRC(plate + " DMSO", item, 50, ref ps_concentrations_bis, ref ps_concentrations_log,
-                        ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this, false, false, false);
+                        ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this, 
+                        false, false, false, false);
 
                     chart_DMSO_per_plate.set_Raw_Data(raw_data_rows[plate][item]);
 
@@ -5428,8 +5429,8 @@ namespace DRC
         private List<double> drc_points_x_enable = new List<double>();
         private List<double> drc_points_y_enable = new List<double>();
 
-        List<double> drc_points_x_disable = new List<double>();
-        List<double> drc_points_y_disable = new List<double>();
+        private List<double> drc_points_x_disable = new List<double>();
+        private List<double> drc_points_y_disable = new List<double>();
 
         private RectangleAnnotation annotation_ec50 = new RectangleAnnotation();
         private Color chart_color;
@@ -5445,6 +5446,11 @@ namespace DRC
 
         //private List<double> y_fit;
         private List<double> y_fit_log;
+
+        private List<double> x_log_unique = new List<double>();
+
+        private List<double> y_conf_int_born_sup = new List<double>();
+        private List<double> y_conf_int_born_inf = new List<double>();
 
         private int step_curve;
 
@@ -5504,6 +5510,7 @@ namespace DRC
         private bool patient = false;
         private bool display_fit = true;
         private bool display_post_paint = true;
+        private bool confidence_interval = true;
 
         public string get_compound_id()
         {
@@ -5746,14 +5753,15 @@ namespace DRC
         }
 
         public Chart_DRC(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> resp, Color color,
-            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, string if_modified, MainTab form, 
-            bool if_patient, bool if_fit, bool if_post_paint)
+            int index, List<string> deselected, string ec_50_status, Dictionary<string, double> bounds, string fix_top, string if_modified, MainTab form,
+            bool if_patient, bool if_fit, bool if_post_paint, bool confidence)
         {
             _form1 = form;
 
             patient = if_patient;
             display_fit = if_fit;
             display_post_paint = if_post_paint;
+            confidence_interval = confidence;
 
             descriptor_index = index;
 
@@ -5881,10 +5889,11 @@ namespace DRC
             Series series2 = new Series();
             Series serie_mean = new Series();
 
-
-
             Series serie_ec_50_line_x = new Series();
             Series serie_ec_50_line_y = new Series();
+
+            Series serie_born_inf = new Series();
+            Series serie_born_sup = new Series();
 
             //chartArea.Position.Auto = false;
             Axis yAxis = new Axis(chartArea, AxisName.Y);
@@ -5916,6 +5925,9 @@ namespace DRC
             series1.MarkerStyle = MarkerStyle.Circle;
             serie_mean.MarkerStyle = MarkerStyle.Circle;
 
+            serie_born_inf.ChartType = SeriesChartType.Line;
+            serie_born_sup.ChartType = SeriesChartType.Line;
+
             series1.Name = "Series1";
             series2.Name = "Series2";
             serie_mean.Name = "Serie_Mean";
@@ -5923,12 +5935,18 @@ namespace DRC
             serie_ec_50_line_x.Name = "line_ec_50_x";
             serie_ec_50_line_y.Name = "line_ec_50_y";
 
+            serie_born_inf.Name = "Born_Inf";
+            serie_born_sup.Name = "Born_Sup";
+
             chart.Series.Add(series1);
             chart.Series.Add(series2);
             chart.Series.Add(serie_mean);
 
             chart.Series.Add(serie_ec_50_line_x);
             chart.Series.Add(serie_ec_50_line_y);
+
+            chart.Series.Add(serie_born_inf);
+            chart.Series.Add(serie_born_sup);
 
             chart.Size = new System.Drawing.Size(550, 350);
             //chart.Visible = true;
@@ -5950,7 +5968,7 @@ namespace DRC
             //chart.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.chart1_KeyPress);
             //chart.PrePaint += new System.Windows.Forms.chart ChartPaintEventArgs(this.Chart1_PrePaint);
             chart.PostPaint += new EventHandler<ChartPaintEventArgs>(this.chart1_PostPaint);
-            //chart.Paint += new PaintEventHandler(this.chart1_Paint);
+            chart.Paint += new PaintEventHandler(this.chart1_Paint);
 
             //Create a rectangle annotation
 
@@ -5977,6 +5995,41 @@ namespace DRC
             //draw_DRC(false, false);
         }
 
+        private void chart1_Paint(object sender, PaintEventArgs e)
+        {
+            // we assume two series variables are set..:
+            if (chart.Series["Born_Inf"] == null || chart.Series["Born_Sup"] == null) return;
+
+            // short references:
+            Axis ax = chart.ChartAreas[0].AxisX;
+            Axis ay = chart.ChartAreas[0].AxisY;
+
+            // now we convert all values to pixels
+            List<PointF> points1 = chart.Series["Born_Inf"].Points.Select(x =>
+               new PointF((float)ax.ValueToPixelPosition(x.XValue),
+                          (float)ay.ValueToPixelPosition(x.YValues[0]))).ToList();
+
+            List<PointF> points2 = chart.Series["Born_Sup"].Points.Select(x =>
+               new PointF((float)ax.ValueToPixelPosition(x.XValue),
+                          (float)ay.ValueToPixelPosition(x.YValues[0]))).ToList();
+
+            // one list forward, the other backward:
+            points2.Reverse();
+
+            GraphicsPath gp = new GraphicsPath();
+            gp.FillMode = FillMode.Winding;  // the right fillmode
+
+            // it will work fine with either Splines or Lines:
+            if (chart.Series["Born_Inf"].ChartType == SeriesChartType.Spline) gp.AddCurve(points1.ToArray());
+            else gp.AddLines(points1.ToArray());
+            if (chart.Series["Born_Sup"].ChartType == SeriesChartType.Spline) gp.AddCurve(points2.ToArray());
+            else gp.AddLines(points2.ToArray());
+
+            // pick your own color, maybe a mix of the Series colors..
+            using (SolidBrush brush = new SolidBrush(Color.FromArgb(25, chart_color)))
+                e.Graphics.FillPath(brush, gp);
+            gp.Dispose();
+        }
 
         //protected void Chart1_PrePaint(object sender, ChartPaintEventArgs e)
         //{
@@ -6008,6 +6061,64 @@ namespace DRC
         {
             double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
             return y;
+        }
+
+        private double compute_jacobian_param_0(double a0, double a1, double a2, double a3, double x)
+        {
+            return 1.0 - 1.0 / (1 + Math.Pow(10, a3 * (a2 - x)));
+        }
+
+        private double compute_jacobian_param_1(double a0, double a1, double a2, double a3, double x)
+        {
+            return 1.0 / (1 + Math.Pow(10, a3 * (a2 - x)));
+        }
+
+        private double compute_jacobian_param_2(double a0, double a1, double a2, double a3, double x)
+        {
+            return -1.0 * (a3 * Math.Log(10) * (a1 - a0) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1 + Math.Pow(10, a3 * (a2 - x))));
+        }
+
+        private double compute_jacobian_param_3(double a0, double a1, double a2, double a3, double x)
+        {
+            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1 + Math.Pow(10, a3 * (a2 - x))));
+        }
+
+        private double compute_least_square_error(double[,] cov, double a0, double a1, double a2, double a3, double x)
+        {
+
+            double[,] jacobian = {
+                {compute_jacobian_param_0(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_1(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_2(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_3(a0, a1, a2, a3, x)},
+                                 };
+
+            double[,] jacobianT = jacobian.Transpose();
+
+            double[,] A = cov.Dot(jacobian);
+
+            double[,] B = jacobianT.Dot(A);
+
+            double c = B[0, 0];
+
+            return c;
+        }
+
+        private double sum_sqaure_residuals(List<double> drc_points_x_enable, List<double> drc_points_y_enable, double[] c)
+        {
+            double sum_square_residuals = 0.0;
+
+            for (int i = 0; i < drc_points_x_enable.Count; ++i)
+            {
+                double x = drc_points_x_enable[i];
+                double y_fit_curve = Sigmoid(c, x);
+
+                double residual_square = (drc_points_y_enable[i] - y_fit_curve) * (drc_points_y_enable[i] - y_fit_curve);
+
+                sum_square_residuals += residual_square;
+            }
+
+            return sum_square_residuals;
         }
 
         public void fit_DRC()
@@ -6094,6 +6205,51 @@ namespace DRC
             fit_parameters = c;
             RelativeError = rep.avgrelerror;
             r2 = rep.r2;
+
+            if (confidence_interval)
+            {
+                double err_par_0 = rep.errpar[0];
+                double err_par_1 = rep.errpar[1];
+                double err_par_2 = rep.errpar[2];
+                double err_par_3 = rep.errpar[3];
+
+                double[,] covariance_matrix = rep.covpar;
+
+                int dof = drc_points_y_enable.Count - 4;
+
+                double t_test_val = chart.DataManipulator.Statistics.InverseTDistribution(.025, dof);
+
+                double sum_square_residuals = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, fit_parameters);
+
+                y_conf_int_born_sup.Clear();
+                y_conf_int_born_inf.Clear();
+                x_log_unique.Clear();
+
+                SortedDictionary<double, double> born_sup = new SortedDictionary<double, double>();
+                SortedDictionary<double, double> born_inf = new SortedDictionary<double, double>();
+
+                for (int i = 0; i < drc_points_x_enable.Count; ++i)
+                {
+                    double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], drc_points_x_enable[i]);
+                    double sigma_confidence_interval = t_test_val * Math.Sqrt(a) * Math.Sqrt(sum_square_residuals / (double)dof);
+
+                    //if (sigma_confidence_interval > 1) sigma_confidence_interval = 1.0;
+
+                    born_sup[drc_points_x_enable[i]] = Sigmoid(c, drc_points_x_enable[i]) + sigma_confidence_interval;
+                    born_inf[drc_points_x_enable[i]] = Sigmoid(c, drc_points_x_enable[i]) - sigma_confidence_interval;
+                }
+
+                foreach (KeyValuePair<double, double> elem in born_sup)
+                {
+                    y_conf_int_born_sup.Add(elem.Value);
+                }
+
+                foreach (KeyValuePair<double, double> elem in born_inf)
+                {
+                    y_conf_int_born_inf.Add(elem.Value);
+                    x_log_unique.Add(Math.Pow(10, elem.Key));
+                }
+            }
 
             y_fit_log.Clear();
 
@@ -6459,7 +6615,19 @@ namespace DRC
                 chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
                 chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
                 chart.Series["Series2"].Color = chart_color;
+
+                if (confidence_interval)
+                {
+                    chart.Series["Born_Inf"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                    chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
+                    chart.Series["Born_Inf"].Color = Color.FromArgb(50, chart_color);
+
+                    chart.Series["Born_Sup"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                    chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
+                    chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
+                }
             }
+
             //----------------------------- Axis Labels ---------------------------//
 
             chart.ChartAreas[0].RecalculateAxesScale();
@@ -6790,7 +6958,7 @@ namespace DRC
                 annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
             }
 
-            if(display_fit==false)
+            if (display_fit == false)
             {
                 annotation_ec50.Text = "Mean Value = " + drc_points_y_enable.Average().ToString("N2");
             }
@@ -7139,7 +7307,16 @@ namespace DRC
 
                 fit_DRC();
 
-                if(display_fit) chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+                if (display_fit)
+                {
+                    chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+
+                    if (confidence_interval)
+                    {
+                        chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
+                        chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
+                    }
+                }
 
                 if (patient)
                 {
@@ -7212,7 +7389,7 @@ namespace DRC
                 annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
                 if (patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
-                if(display_fit==false) annotation_ec50.Text = "Mean Value = " + drc_points_y_enable.Average().ToString("N2");
+                if (display_fit == false) annotation_ec50.Text = "Mean Value = " + drc_points_y_enable.Average().ToString("N2");
             }
         }
 
