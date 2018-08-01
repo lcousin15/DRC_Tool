@@ -60,6 +60,7 @@
             this.dRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dRCTimeLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patientStratificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.normalizeDMSOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCZScoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -89,7 +90,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btn_descriptors_options = new System.Windows.Forms.Button();
             this.btn_fix_top_bottom = new System.Windows.Forms.Button();
-            this.normalizeDMSOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btn_normalize = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -367,6 +368,13 @@
             this.patientStratificationToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.patientStratificationToolStripMenuItem.Text = "AUC";
             // 
+            // normalizeDMSOToolStripMenuItem
+            // 
+            this.normalizeDMSOToolStripMenuItem.Name = "normalizeDMSOToolStripMenuItem";
+            this.normalizeDMSOToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.normalizeDMSOToolStripMenuItem.Text = "Normalize DMSO";
+            this.normalizeDMSOToolStripMenuItem.Click += new System.EventHandler(this.normalizeDMSOToolStripMenuItem_Click);
+            // 
             // computeAUCToolStripMenuItem
             // 
             this.computeAUCToolStripMenuItem.Name = "computeAUCToolStripMenuItem";
@@ -385,7 +393,7 @@
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(1048, 477);
+            this.comboBox1.Location = new System.Drawing.Point(1040, 510);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(173, 21);
             this.comboBox1.TabIndex = 13;
@@ -412,7 +420,7 @@
             0,
             0,
             65536});
-            this.numericUpDown1.Location = new System.Drawing.Point(1077, 806);
+            this.numericUpDown1.Location = new System.Drawing.Point(1076, 819);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             1,
             0,
@@ -432,7 +440,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1098, 787);
+            this.label1.Location = new System.Drawing.Point(1097, 800);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 13);
             this.label1.TabIndex = 16;
@@ -445,7 +453,7 @@
             this.button1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.button1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(1077, 831);
+            this.button1.Location = new System.Drawing.Point(1076, 844);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 23);
             this.button1.TabIndex = 17;
@@ -459,7 +467,7 @@
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Location = new System.Drawing.Point(1079, 752);
+            this.button2.Location = new System.Drawing.Point(1076, 772);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 23);
             this.button2.TabIndex = 20;
@@ -472,7 +480,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1091, 707);
+            this.label2.Location = new System.Drawing.Point(1088, 727);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(88, 13);
             this.label2.TabIndex = 19;
@@ -488,7 +496,7 @@
             0,
             0,
             65536});
-            this.numericUpDown2.Location = new System.Drawing.Point(1079, 726);
+            this.numericUpDown2.Location = new System.Drawing.Point(1076, 746);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             1,
             0,
@@ -508,7 +516,7 @@
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Location = new System.Drawing.Point(1072, 295);
+            this.button3.Location = new System.Drawing.Point(1074, 328);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(120, 34);
             this.button3.TabIndex = 21;
@@ -537,7 +545,7 @@
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.button4.Location = new System.Drawing.Point(1072, 335);
+            this.button4.Location = new System.Drawing.Point(1074, 368);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(120, 35);
             this.button4.TabIndex = 25;
@@ -549,7 +557,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(1098, 461);
+            this.label4.Location = new System.Drawing.Point(1090, 494);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(72, 13);
             this.label4.TabIndex = 26;
@@ -560,7 +568,7 @@
             this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button5.Location = new System.Drawing.Point(1079, 595);
+            this.button5.Location = new System.Drawing.Point(1074, 625);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(120, 23);
             this.button5.TabIndex = 29;
@@ -573,7 +581,7 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(1091, 509);
+            this.label5.Location = new System.Drawing.Point(1086, 539);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(92, 13);
             this.label5.TabIndex = 28;
@@ -589,7 +597,7 @@
             0,
             0,
             65536});
-            this.numericUpDown4.Location = new System.Drawing.Point(1081, 528);
+            this.numericUpDown4.Location = new System.Drawing.Point(1076, 558);
             this.numericUpDown4.Maximum = new decimal(new int[] {
             10,
             0,
@@ -660,7 +668,7 @@
             this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button7.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button7.Location = new System.Drawing.Point(1079, 668);
+            this.button7.Location = new System.Drawing.Point(1074, 698);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(120, 23);
             this.button7.TabIndex = 35;
@@ -673,7 +681,7 @@
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(1093, 626);
+            this.label7.Location = new System.Drawing.Point(1088, 656);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(74, 13);
             this.label7.TabIndex = 34;
@@ -689,7 +697,7 @@
             0,
             0,
             131072});
-            this.numericUpDown6.Location = new System.Drawing.Point(1079, 642);
+            this.numericUpDown6.Location = new System.Drawing.Point(1074, 672);
             this.numericUpDown6.Maximum = new decimal(new int[] {
             1,
             0,
@@ -714,7 +722,7 @@
             0,
             0,
             131072});
-            this.numericUpDown3.Location = new System.Drawing.Point(1081, 569);
+            this.numericUpDown3.Location = new System.Drawing.Point(1076, 599);
             this.numericUpDown3.Maximum = new decimal(new int[] {
             2,
             0,
@@ -734,7 +742,7 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(1091, 551);
+            this.label3.Location = new System.Drawing.Point(1086, 581);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 13);
             this.label3.TabIndex = 37;
@@ -745,7 +753,7 @@
             // 
             this.btn_descriptors_options.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_descriptors_options.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btn_descriptors_options.Location = new System.Drawing.Point(1072, 376);
+            this.btn_descriptors_options.Location = new System.Drawing.Point(1074, 409);
             this.btn_descriptors_options.Name = "btn_descriptors_options";
             this.btn_descriptors_options.Size = new System.Drawing.Size(120, 35);
             this.btn_descriptors_options.TabIndex = 38;
@@ -757,7 +765,7 @@
             // 
             this.btn_fix_top_bottom.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_fix_top_bottom.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btn_fix_top_bottom.Location = new System.Drawing.Point(1072, 417);
+            this.btn_fix_top_bottom.Location = new System.Drawing.Point(1074, 450);
             this.btn_fix_top_bottom.Name = "btn_fix_top_bottom";
             this.btn_fix_top_bottom.Size = new System.Drawing.Size(120, 35);
             this.btn_fix_top_bottom.TabIndex = 39;
@@ -765,12 +773,15 @@
             this.btn_fix_top_bottom.UseVisualStyleBackColor = true;
             this.btn_fix_top_bottom.Click += new System.EventHandler(this.btn_fix_top_bottom_Click);
             // 
-            // normalizeDMSOToolStripMenuItem
+            // btn_normalize
             // 
-            this.normalizeDMSOToolStripMenuItem.Name = "normalizeDMSOToolStripMenuItem";
-            this.normalizeDMSOToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.normalizeDMSOToolStripMenuItem.Text = "Normalize DMSO";
-            this.normalizeDMSOToolStripMenuItem.Click += new System.EventHandler(this.normalizeDMSOToolStripMenuItem_Click);
+            this.btn_normalize.Location = new System.Drawing.Point(1074, 287);
+            this.btn_normalize.Name = "btn_normalize";
+            this.btn_normalize.Size = new System.Drawing.Size(120, 35);
+            this.btn_normalize.TabIndex = 40;
+            this.btn_normalize.Text = "Normalize by DMSO";
+            this.btn_normalize.UseVisualStyleBackColor = true;
+            this.btn_normalize.Click += new System.EventHandler(this.btn_normalize_Click);
             // 
             // MainTab
             // 
@@ -780,6 +791,7 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1244, 961);
+            this.Controls.Add(this.btn_normalize);
             this.Controls.Add(this.btn_fix_top_bottom);
             this.Controls.Add(this.btn_descriptors_options);
             this.Controls.Add(this.label3);
@@ -892,6 +904,7 @@
         private System.Windows.Forms.ToolStripMenuItem computeAUCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computeAUCZScoreToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem normalizeDMSOToolStripMenuItem;
+        private System.Windows.Forms.Button btn_normalize;
     }
 }
 

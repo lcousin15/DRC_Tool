@@ -207,6 +207,7 @@ namespace DRC
 
         private List<string> unique_plates = new List<string>();
         private List<double> ps_concentrations = new List<double>();
+        private Dictionary<string, List<Chart_DRC>> dmso_charts = new Dictionary<string, List<Chart_DRC>>();
 
         public bool view_images_per_concentration;
 
@@ -696,6 +697,9 @@ namespace DRC
 
         private void draw_drc()
         {
+
+            if (is_patient) normalize_by_DMSO();
+
             descriptors_chart.Clear();
 
             if (f3.dataGridView1.RowCount < 1)
@@ -4499,7 +4503,7 @@ namespace DRC
 
         }
 
-        private void normalize_by_DMSO()
+        private void select_DMSO()
         {
 
             if (f3.dataGridView1.RowCount < 1)
@@ -4596,7 +4600,7 @@ namespace DRC
             // Average DMSO by plate and descritpors :
 
             Dictionary<string, Dictionary<string, double>> DMSO_mean_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
-            Dictionary<string, List<Chart_DRC>> dmso_charts = new Dictionary<string, List<Chart_DRC>>();
+            //dmso_charts = new Dictionary<string, List<Chart_DRC>>();
 
             foreach (KeyValuePair<string, Dictionary<string, List<double>>> elem in DMSO_by_plate)
             {
@@ -4635,7 +4639,7 @@ namespace DRC
 
                     List<double> dmso_value_per_descriptor = descriptors_values[item];
 
-                    Chart_DRC chart_DMSO_per_plate = new Chart_DRC("DMSO", item, 250, ref ps_concentrations_bis, ref ps_concentrations_log,
+                    Chart_DRC chart_DMSO_per_plate = new Chart_DRC(plate + " DMSO", item, 50, ref ps_concentrations_bis, ref ps_concentrations_log,
                         ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this, false);
 
                     double[] parameters = chart_DMSO_per_plate.get_Fit_Parameters();
@@ -4670,7 +4674,7 @@ namespace DRC
 
                 for (int i = 0; i < row_params.Count() + 1; i++)
                 {
-                    if (i == 0) current_row.Cells[i].Value = "DMSO";
+                    if (i == 0) current_row.Cells[i].Value = plate + " DMSO";
                     if (i > 0) current_row.Cells[i].Value = row_params[i - 1];
                 }
 
@@ -4678,7 +4682,6 @@ namespace DRC
 
                 foreach (KeyValuePair<string, List<Chart_DRC>> item in dmso_charts)
                 {
-
                     List<Chart_DRC> list_charts = item.Value;
                     foreach (Chart_DRC chart in list_charts)
                     {
@@ -4686,53 +4689,67 @@ namespace DRC
                     }
                 }
 
-                //double mean_DMSO_descriptor = Median(descriptor_DMSO.Value); //Average();
+            }
+        }
 
-                //if (DMSO_mean_plate_descriptor.ContainsKey(plate))
-                //{
-                //    DMSO_mean_plate_descriptor[plate][descriptor_DMSO.Key] = mean_DMSO_descriptor;
-                //}
-                //else
-                //{
-                //    Dictionary<string, double> temp_dict = new Dictionary<string, double>();
-                //    temp_dict[descriptor_DMSO.Key] = mean_DMSO_descriptor;
-                //    DMSO_mean_plate_descriptor[plate] = temp_dict;
-                //}
+        private void normalize_by_DMSO()
+        {
 
+            Dictionary<string, Dictionary<string, double>> DMSO_mean_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
+
+            foreach (KeyValuePair<string, List<Chart_DRC>> item in dmso_charts)
+            {
+                List<Chart_DRC> list_charts = item.Value;
+                foreach (Chart_DRC chart in list_charts)
+                {
+                    List<double> y_values_dmso = chart.get_enable_y_values();
+                    string plate = chart.get_compound_id().ToString();
+                    plate = plate.Substring(0, plate.Length - 5);
+                    string descriptor = chart.get_Descriptor_Name();
+
+                    double mean_DMSO_descriptor = y_values_dmso.Average(); // Median(y_values_dmso); //Median;
+
+                    if (DMSO_mean_plate_descriptor.ContainsKey(plate))
+                    {
+                        DMSO_mean_plate_descriptor[plate][descriptor] = mean_DMSO_descriptor;
+                    }
+                    else
+                    {
+                        Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                        temp_dict[descriptor] = mean_DMSO_descriptor;
+                        DMSO_mean_plate_descriptor[plate] = temp_dict;
+                    }
+
+                }
             }
 
-            // Normalization :
-            /*
-                        foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            {
+                string current_plate = row.Cells["Plate"].Value.ToString();
+                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
+
+                foreach (string plate in unique_plates)
+                {
+                    if (plate == current_plate)
+                    {
+                        foreach (string cpd in list_cpd)
                         {
-                            string current_plate = row.Cells["Plate"].Value.ToString();
-                            string current_cpd = row.Cells["CPD_ID"].Value.ToString();
-
-                            foreach (string plate in unique_plates)
+                            if (current_cpd == cpd)
                             {
-                                if (plate == current_plate)
+                                foreach (string item in checkedListBox1.CheckedItems)
                                 {
-                                    foreach (string cpd in list_cpd)
-                                    {
-                                        if (current_cpd == cpd)
-                                        {
-                                            foreach (var item in checkedListBox1.Items)
-                                            {
-                                                string descriptor_name = item.ToString();
 
-                                                double current_value = double.Parse(row.Cells[descriptor_name].Value.ToString());
-                                                current_value /= DMSO_mean_plate_descriptor[plate][descriptor_name];
-                                                row.Cells[descriptor_name].Value = current_value;
-                                            }
-                                        }
-                                    }
+                                    double current_value = double.Parse(row.Cells[item].Value.ToString());
+                                    current_value /= DMSO_mean_plate_descriptor[plate][item];
+                                    row.Cells[item].Value = current_value;
                                 }
                             }
                         }
+                    }
+                }
+            }
 
-                        //f3.Show();
-                        //f3.Hide();
-            */
+
         }
 
         private static double StandardDeviation(List<double> numberSet, double divisor)
@@ -4928,7 +4945,12 @@ namespace DRC
 
         private void normalizeDMSOToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            normalize_by_DMSO();
+            select_DMSO();
+        }
+
+        private void btn_normalize_Click(object sender, EventArgs e)
+        {
+            select_DMSO();
         }
     }
 
@@ -5455,6 +5477,11 @@ namespace DRC
 
         private bool patient = false;
 
+        public string get_compound_id()
+        {
+            return compound_id;
+        }
+
         public bool top_fixed()
         {
             return is_top_fixed;
@@ -5646,6 +5673,11 @@ namespace DRC
         public string get_Descriptor_Name()
         {
             return descriptor;
+        }
+
+        public List<double> get_enable_y_values()
+        {
+            return drc_points_y_enable;
         }
 
         //private bool chart_already_loaded;
