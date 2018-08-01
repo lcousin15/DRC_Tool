@@ -203,16 +203,16 @@ namespace DRC
                     }
                 }
 
-                int max_col_nb = 1 + 3 * _main_tab.get_descriptors_chart()[list_cpds[index_cpd]].Count;
+                int max_col_nb = 1 + 5 * _main_tab.get_descriptors_chart()[list_cpds[index_cpd]].Count;
 
                 for (int j = 1; j <= max_col_nb; j++)
                 {
                     if (j == 1) ws_table.Column(j).Width = 35;
                     else
                     {
-                        if (j % 3 == 2) ws_table.Column(j).Width = width_excel_drc;
-                        if ((j - 1) % 3 == 2) ws_table.Column(j).Width = 15;
-                        if ((j - 1) % 3 == 0) ws_table.Column(j).Width = 20;
+                        if (j % 5 == 2) ws_table.Column(j).Width = width_excel_drc;
+                        if ((j - 1) % 5 == 2 || (j - 1) % 5 == 3 || (j - 1) % 5 == 4) ws_table.Column(j).Width = 18;
+                        if ((j - 1) % 5 == 0) ws_table.Column(j).Width = 20;
                     }
                 }
 
@@ -238,33 +238,51 @@ namespace DRC
 
                 for (int k = 0; k < img_paths.Count/2; ++k)
                 {
-                    ws_table.Cells[cellRowIndex, 3 * k + 2].Value = "DRC  Curve";
-                    ws_table.Cells[cellRowIndex, 3 * k + 3].Value = "AUC";
-                    ws_table.Cells[cellRowIndex, 3 * k + 4].Value = "AUC (Z-Score)";
+                    ws_table.Cells[cellRowIndex, 5 * k + 2].Value = "DRC  Curve";
+                    ws_table.Cells[cellRowIndex, 5 * k + 3].Value = "AUC";
+                    ws_table.Cells[cellRowIndex, 5 * k + 4].Value = "AUC Error";
+                    ws_table.Cells[cellRowIndex, 5 * k + 5].Value = "AUC (Z-Score)";
+                    ws_table.Cells[cellRowIndex, 5 * k + 6].Value = "AUC Error (Z-Score)";
 
-                    ws_table.Cells[cellRowIndex, 3 * k + 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                    ws_table.Cells[cellRowIndex, 3 * k + 2].Style.Fill.BackgroundColor.SetColor(Color.Gray);
-                    ws_table.Cells[cellRowIndex, 3 * k + 2].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    ws_table.Cells[cellRowIndex, 3 * k + 2].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                    ws_table.Cells[cellRowIndex, 3 * k + 2].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                    ws_table.Cells[cellRowIndex, 3 * k + 2].Style.Font.Color.SetColor(Color.White);
-                    ws_table.Cells[cellRowIndex, 3 * k + 2].Style.Font.Bold = true;
+                    ws_table.Cells[cellRowIndex, 5 * k + 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    ws_table.Cells[cellRowIndex, 5 * k + 2].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+                    ws_table.Cells[cellRowIndex, 5 * k + 2].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 2].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 2].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                    ws_table.Cells[cellRowIndex, 5 * k + 2].Style.Font.Color.SetColor(Color.White);
+                    ws_table.Cells[cellRowIndex, 5 * k + 2].Style.Font.Bold = true;
 
-                    ws_table.Cells[cellRowIndex, 3 * k + 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                    ws_table.Cells[cellRowIndex, 3 * k + 3].Style.Fill.BackgroundColor.SetColor(Color.Gray);
-                    ws_table.Cells[cellRowIndex, 3 * k + 3].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    ws_table.Cells[cellRowIndex, 3 * k + 3].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                    ws_table.Cells[cellRowIndex, 3 * k + 3].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                    ws_table.Cells[cellRowIndex, 3 * k + 3].Style.Font.Color.SetColor(Color.White);
-                    ws_table.Cells[cellRowIndex, 3 * k + 3].Style.Font.Bold = true;
+                    ws_table.Cells[cellRowIndex, 5 * k + 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    ws_table.Cells[cellRowIndex, 5 * k + 3].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+                    ws_table.Cells[cellRowIndex, 5 * k + 3].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 3].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 3].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                    ws_table.Cells[cellRowIndex, 5 * k + 3].Style.Font.Color.SetColor(Color.White);
+                    ws_table.Cells[cellRowIndex, 5 * k + 3].Style.Font.Bold = true;
 
-                    ws_table.Cells[cellRowIndex, 3 * k + 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                    ws_table.Cells[cellRowIndex, 3 * k + 4].Style.Fill.BackgroundColor.SetColor(Color.Gray);
-                    ws_table.Cells[cellRowIndex, 3 * k + 4].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    ws_table.Cells[cellRowIndex, 3 * k + 4].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                    ws_table.Cells[cellRowIndex, 3 * k + 4].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                    ws_table.Cells[cellRowIndex, 3 * k + 4].Style.Font.Color.SetColor(Color.White);
-                    ws_table.Cells[cellRowIndex, 3 * k + 4].Style.Font.Bold = true;
+                    ws_table.Cells[cellRowIndex, 5 * k + 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    ws_table.Cells[cellRowIndex, 5 * k + 4].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+                    ws_table.Cells[cellRowIndex, 5 * k + 4].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 4].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 4].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                    ws_table.Cells[cellRowIndex, 5 * k + 4].Style.Font.Color.SetColor(Color.White);
+                    ws_table.Cells[cellRowIndex, 5 * k + 4].Style.Font.Bold = true;
+
+                    ws_table.Cells[cellRowIndex, 5 * k + 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    ws_table.Cells[cellRowIndex, 5 * k + 5].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+                    ws_table.Cells[cellRowIndex, 5 * k + 5].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 5].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 5].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                    ws_table.Cells[cellRowIndex, 5 * k + 5].Style.Font.Color.SetColor(Color.White);
+                    ws_table.Cells[cellRowIndex, 5 * k + 5].Style.Font.Bold = true;
+
+                    ws_table.Cells[cellRowIndex, 5 * k + 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    ws_table.Cells[cellRowIndex, 5 * k + 6].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+                    ws_table.Cells[cellRowIndex, 5 * k + 6].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 6].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    ws_table.Cells[cellRowIndex, 5 * k + 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                    ws_table.Cells[cellRowIndex, 5 * k + 6].Style.Font.Color.SetColor(Color.White);
+                    ws_table.Cells[cellRowIndex, 5 * k + 6].Style.Font.Bold = true;
                 }
 
                 cellRowIndex++;
@@ -322,32 +340,48 @@ namespace DRC
                         ExcelPicture excelImage = null;
 
                         excelImage = ws_table.Drawings.AddPicture(name_idx, img);
-                        excelImage.From.Column = 3 * i_img + 1;
+                        excelImage.From.Column = 5 * i_img + 1;
                         excelImage.From.Row = cellRowIndex-1;
                         excelImage.SetSize(485, 350);
 
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 3].Value = auc_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_values()[cpd_id];
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 4].Value = auc_z_score_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_values()[cpd_id];
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Value = auc_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_values()[cpd_id];
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Value = auc_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_error_values()[cpd_id];
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Value = auc_z_score_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_values()[cpd_id];
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Value = auc_z_score_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_error_values()[cpd_id];
 
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 2].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 2].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 2].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Hair);
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 2].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 2].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 2].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Hair);
 
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 3].Style.Numberformat.Format = "0.00";
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 3].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 3].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 3].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 3].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Hair);
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Style.Numberformat.Format = "0.00";
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Hair);
 
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 4].Style.Numberformat.Format = "0.00";
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 4].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 4].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 4].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                        ws_table.Cells[cellRowIndex, 3 * i_img + 4].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Hair);
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Style.Numberformat.Format = "0.00";
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Hair);
+
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Style.Numberformat.Format = "0.00";
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Hair);
+
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Style.Numberformat.Format = "0.00";
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Hair);
 
                         i_img++;
                     }

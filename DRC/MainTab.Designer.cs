@@ -361,9 +361,9 @@
             // patientStratificationToolStripMenuItem
             // 
             this.patientStratificationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.normalizeDMSOToolStripMenuItem,
             this.computeAUCToolStripMenuItem,
-            this.computeAUCZScoreToolStripMenuItem});
+            this.computeAUCZScoreToolStripMenuItem,
+            this.normalizeDMSOToolStripMenuItem});
             this.patientStratificationToolStripMenuItem.Name = "patientStratificationToolStripMenuItem";
             this.patientStratificationToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.patientStratificationToolStripMenuItem.Text = "AUC";
@@ -775,6 +775,7 @@
             // 
             // btn_normalize
             // 
+            this.btn_normalize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_normalize.Location = new System.Drawing.Point(1074, 287);
             this.btn_normalize.Name = "btn_normalize";
             this.btn_normalize.Size = new System.Drawing.Size(120, 35);

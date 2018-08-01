@@ -237,6 +237,11 @@ namespace DRC
             return dict_auc_cpds;
         }
 
+        public Dictionary<string, double> get_auc_error_values()
+        {
+            return dict_auc_errors_cpds;
+        }
+
         public Chart_Patient(Dictionary<string, double> auc_descriptor, Dictionary<string, double> auc_descriptor_error, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
         {
             chart = new Chart();
