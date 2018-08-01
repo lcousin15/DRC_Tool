@@ -4690,9 +4690,7 @@ namespace DRC
 
                     descriptor_index++;
 
-
                     list_charts_one_dmso.Add(chart_DMSO_per_plate);
-
                 }
 
                 dmso_charts.Add(plate, list_charts_one_dmso);
@@ -6228,15 +6226,15 @@ namespace DRC
                 SortedDictionary<double, double> born_sup = new SortedDictionary<double, double>();
                 SortedDictionary<double, double> born_inf = new SortedDictionary<double, double>();
 
-                for (int i = 0; i < drc_points_x_enable.Count; ++i)
+                for (int i = 0; i < x_fit_log.Count; ++i)
                 {
-                    double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], drc_points_x_enable[i]);
+                    double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
                     double sigma_confidence_interval = t_test_val * Math.Sqrt(a) * Math.Sqrt(sum_square_residuals / (double)dof);
 
                     //if (sigma_confidence_interval > 1) sigma_confidence_interval = 1.0;
 
-                    born_sup[drc_points_x_enable[i]] = Sigmoid(c, drc_points_x_enable[i]) + sigma_confidence_interval;
-                    born_inf[drc_points_x_enable[i]] = Sigmoid(c, drc_points_x_enable[i]) - sigma_confidence_interval;
+                    born_sup[x_fit_log[i]] = Sigmoid(c, x_fit_log[i]) + sigma_confidence_interval;
+                    born_inf[x_fit_log[i]] = Sigmoid(c, x_fit_log[i]) - sigma_confidence_interval;
                 }
 
                 foreach (KeyValuePair<double, double> elem in born_sup)
