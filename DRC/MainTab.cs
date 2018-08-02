@@ -6057,15 +6057,23 @@ namespace DRC
         {
             func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
         }
-        /*
-        private static void function_SigmoidInhibition_top_Fixed( double[] c, double[] x, ref double func, object obj)
+        
+        private static void function_SigmoidInhibition_3_params( double[] c, double[] x, ref double func, object obj)
         {
-            func = c[0] + ((fixed_top - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
+            double fixed_top = (double)obj;
+
+            func = c[0] + (( fixed_top - c[0]) / (1 + Math.Pow(10, (c[1] - x[0]) * c[2])));
         }
-        */
+        
         private double Sigmoid(double[] c, double x)
         {
             double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
+            return y;
+        }
+
+        private double Sigmoid_3_params(double[] c, double x, double top)
+        {
+            double y = c[0] + ((top - c[0]) / (1 + Math.Pow(10, (c[1] - x) * c[2])));
             return y;
         }
 
@@ -6110,6 +6118,26 @@ namespace DRC
             return c;
         }
 
+        private double compute_least_square_error_3_params(double[,] cov, double a0, double a1, double a2, double a3, double x)
+        {
+
+            double[,] jacobian = {
+                {compute_jacobian_param_0(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_2(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_3(a0, a1, a2, a3, x)},
+                                 };
+
+            double[,] jacobianT = jacobian.Transpose();
+
+            double[,] A = cov.Dot(jacobian);
+
+            double[,] B = jacobianT.Dot(A);
+
+            double c = B[0, 0];
+
+            return c;
+        }
+
         private double sum_sqaure_residuals(List<double> drc_points_x_enable, List<double> drc_points_y_enable, double[] c)
         {
             double sum_square_residuals = 0.0;
@@ -6139,14 +6167,7 @@ namespace DRC
 
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
-            //if ((double)_form1.numericUpDown3.Value != 0)
-            //{
-            //    max_bound_y = (double)_form1.numericUpDown3.Value;
-            //}
-
-            double epsf = 0;
             double epsx = 0;
-
             int maxits = 0;
             int info;
 
@@ -6168,110 +6189,232 @@ namespace DRC
                 max_bound_x = fit_bounds["max_x"];
             }
 
-            double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
-            double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
-
-            double[] bndl = null;
-            double[] bndu = null;
-
-            // boundaries
-            bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +10.0 };
-            bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -10.0 };
-
+            // Top Fixed = fit with 3 params
             if (is_top_fixed)
             {
-                //c[1] = fixed_top;
-                bndu[1] = fixed_top;
-                bndl[1] = fixed_top;
-            }
+                double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
+                double[] c = new double[] { min_bound_y, BaseEC50, 1 };
 
-            alglib.lsfitstate state;
-            alglib.lsfitreport rep;
-            double diffstep = 1e-12;
+                double[] bndl = null;
+                double[] bndu = null;
 
-            // Fitting without weights
-            //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
+                // boundaries
+                bndu = new double[] { max_bound_y, min_bound_x, +10.0 };
+                bndl = new double[] { min_bound_y, max_bound_x, -10.0 };
 
-            double[,] Concentration = new double[drc_points_x_enable.Count(), 1];
-            for (var i = 0; i < drc_points_x_enable.Count(); ++i)
-            {
-                Concentration[i, 0] = drc_points_x_enable[i];
-            }
+                alglib.lsfitstate state;
+                alglib.lsfitreport rep;
+                double diffstep = 1e-12;
 
-            int NumDimension = 1;
+                // Fitting without weights
+                //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
 
-            alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
-            alglib.lsfitsetcond(state, epsx, maxits);
-            alglib.lsfitsetbc(state, bndl, bndu);
-            // alglib.lsfitsetscale(state, s);
-
-            alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
-            alglib.lsfitresults(state, out info, out c, out rep);
-
-            Console.WriteLine(info);
-
-            fit_parameters = c;
-            RelativeError = rep.avgrelerror;
-            r2 = rep.r2;
-
-            if (r2 >= 0.85) confidence_interval = true;
-            else confidence_interval = false;
-
-            err_bottom = rep.errpar[0];
-            err_top = rep.errpar[1];
-            err_ec_50 = rep.errpar[2];
-            err_slope = rep.errpar[3];
-
-            if (confidence_interval)
-            {
-
-                double[,] covariance_matrix = rep.covpar;
-
-                int dof = drc_points_y_enable.Count - 4;
-
-                double t_test_val = chart.DataManipulator.Statistics.InverseTDistribution(.05, dof);
-
-                //double sum_square_residuals = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, fit_parameters);
-
-                y_conf_int_born_sup.Clear();
-                y_conf_int_born_inf.Clear();
-                x_log_unique.Clear();
-
-                SortedDictionary<double, double> born_sup = new SortedDictionary<double, double>();
-                SortedDictionary<double, double> born_inf = new SortedDictionary<double, double>();
-
-                for (int i = 0; i < x_fit_log.Count; ++i)
+                double[,] Concentration = new double[drc_points_x_enable.Count(), 1];
+                for (var i = 0; i < drc_points_x_enable.Count(); ++i)
                 {
-                    double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
-                    double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
-
-                    //if (sigma_confidence_interval > 1) sigma_confidence_interval = 1.0;
-
-                    born_sup[x_fit_log[i]] = Sigmoid(c, x_fit_log[i]) + sigma_confidence_interval;
-                    born_inf[x_fit_log[i]] = Sigmoid(c, x_fit_log[i]) - sigma_confidence_interval;
+                    Concentration[i, 0] = drc_points_x_enable[i];
                 }
 
-                foreach (KeyValuePair<double, double> elem in born_sup)
+                alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
+                alglib.lsfitsetcond(state, epsx, maxits);
+                alglib.lsfitsetbc(state, bndl, bndu);
+                // alglib.lsfitsetscale(state, s);
+
+                alglib.lsfitfit(state, function_SigmoidInhibition_3_params, null, fixed_top);
+                alglib.lsfitresults(state, out info, out c, out rep);
+
+                Console.WriteLine(info);
+
+                fit_parameters[0] = c[0];
+                fit_parameters[1] = fixed_top;
+                fit_parameters[2] = c[1];
+                fit_parameters[3] = c[2];
+
+                RelativeError = rep.avgrelerror;
+                r2 = rep.r2;
+
+                if (r2 >= 0.85) confidence_interval = true;
+                else confidence_interval = false;
+
+                err_bottom = rep.errpar[0];
+                err_ec_50 = rep.errpar[1];
+                err_slope = rep.errpar[2];
+
+                if (confidence_interval)
                 {
-                    y_conf_int_born_sup.Add(elem.Value);
+                    double[,] covariance_matrix = rep.covpar;
+
+                    int dof = drc_points_y_enable.Count - 3;
+
+                    double t_test_val = chart.DataManipulator.Statistics.InverseTDistribution(.05, dof);
+
+                    //double sum_square_residuals = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
+
+                    y_conf_int_born_sup.Clear();
+                    y_conf_int_born_inf.Clear();
+                    x_log_unique.Clear();
+
+                    SortedDictionary<double, double> born_sup = new SortedDictionary<double, double>();
+                    SortedDictionary<double, double> born_inf = new SortedDictionary<double, double>();
+
+                    for (int i = 0; i < x_fit_log.Count; ++i)
+                    {
+                        double a = compute_least_square_error_3_params(covariance_matrix, c[0], fixed_top, c[1], c[2], x_fit_log[i]);
+                        double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
+
+                        double CI_max = Sigmoid_3_params(c, x_fit_log[i], fixed_top) + sigma_confidence_interval;
+                        double CI_min = Sigmoid_3_params(c, x_fit_log[i], fixed_top) - sigma_confidence_interval;
+
+                        if (CI_max > (get_window_y_max() + 0.1))
+                        {
+                            born_sup[x_fit_log[i]] = get_window_y_max();
+                        }
+                        else
+                        {
+                            born_sup[x_fit_log[i]] = CI_max;
+                        }
+
+                        if (CI_min < (get_window_y_min() - 0.1))
+                        {
+                            born_inf[x_fit_log[i]] = get_window_y_min();
+                        }
+                        else
+                        {
+                            born_inf[x_fit_log[i]] = CI_min;
+                        }
+                    }
+
+                    foreach (KeyValuePair<double, double> elem in born_sup)
+                    {
+                        y_conf_int_born_sup.Add(elem.Value);
+                    }
+
+                    foreach (KeyValuePair<double, double> elem in born_inf)
+                    {
+                        y_conf_int_born_inf.Add(elem.Value);
+                        x_log_unique.Add(Math.Pow(10, elem.Key));
+                    }
+
                 }
 
-                foreach (KeyValuePair<double, double> elem in born_inf)
+                y_fit_log.Clear();
+
+                for (int IdxConc = 0; IdxConc < x_fit.Count; IdxConc++)
                 {
-                    y_conf_int_born_inf.Add(elem.Value);
-                    x_log_unique.Add(Math.Pow(10, elem.Key));
+                    y_fit_log.Add(Sigmoid_3_params(c, x_fit_log[IdxConc], fixed_top));
                 }
 
             }
-
-
-            y_fit_log.Clear();
-
-            for (int IdxConc = 0; IdxConc < x_fit.Count; IdxConc++)
+            else // top not fixed, fit with 4 params.
             {
-                y_fit_log.Add(Sigmoid(c, x_fit_log[IdxConc]));
-            }
+                double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
+                double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
 
+                double[] bndl = null;
+                double[] bndu = null;
+
+                // boundaries
+                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +10.0 };
+                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -10.0 };
+
+                alglib.lsfitstate state;
+                alglib.lsfitreport rep;
+                double diffstep = 1e-12;
+
+                // Fitting without weights
+                //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
+
+                double[,] Concentration = new double[drc_points_x_enable.Count(), 1];
+                for (var i = 0; i < drc_points_x_enable.Count(); ++i)
+                {
+                    Concentration[i, 0] = drc_points_x_enable[i];
+                }
+
+                alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
+                alglib.lsfitsetcond(state, epsx, maxits);
+                alglib.lsfitsetbc(state, bndl, bndu);
+                // alglib.lsfitsetscale(state, s);
+
+                alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
+                alglib.lsfitresults(state, out info, out c, out rep);
+
+                fit_parameters = c;
+                RelativeError = rep.avgrelerror;
+                r2 = rep.r2;
+
+                if (r2 >= 0.85) confidence_interval = true;
+                else confidence_interval = false;
+
+                err_bottom = rep.errpar[0];
+                err_top = rep.errpar[1];
+                err_ec_50 = rep.errpar[2];
+                err_slope = rep.errpar[3];
+
+                if (confidence_interval)
+                {
+
+                    double[,] covariance_matrix = rep.covpar;
+
+                    int dof = drc_points_y_enable.Count - 4;
+
+                    double t_test_val = chart.DataManipulator.Statistics.InverseTDistribution(.05, dof);
+
+                    //double sum_square_residuals = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, fit_parameters);
+
+                    y_conf_int_born_sup.Clear();
+                    y_conf_int_born_inf.Clear();
+                    x_log_unique.Clear();
+
+                    SortedDictionary<double, double> born_sup = new SortedDictionary<double, double>();
+                    SortedDictionary<double, double> born_inf = new SortedDictionary<double, double>();
+
+                    for (int i = 0; i < x_fit_log.Count; ++i)
+                    {
+                        double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
+                        double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
+
+                        double CI_max = Sigmoid(c, x_fit_log[i]) + sigma_confidence_interval;
+                        double CI_min = Sigmoid(c, x_fit_log[i]) - sigma_confidence_interval;
+
+                        if (CI_max > (get_window_y_max() + 0.1))
+                        {
+                            born_sup[x_fit_log[i]] = get_window_y_max();
+                        }
+                        else
+                        {
+                            born_sup[x_fit_log[i]] = CI_max;
+                        }
+
+                        if (CI_min < (get_window_y_min() - 0.1))
+                        {
+                            born_inf[x_fit_log[i]] = get_window_y_min();
+                        }
+                        else
+                        {
+                            born_inf[x_fit_log[i]] = CI_min;
+                        }
+                    }
+
+                    foreach (KeyValuePair<double, double> elem in born_sup)
+                    {
+                        y_conf_int_born_sup.Add(elem.Value);
+                    }
+
+                    foreach (KeyValuePair<double, double> elem in born_inf)
+                    {
+                        y_conf_int_born_inf.Add(elem.Value);
+                        x_log_unique.Add(Math.Pow(10, elem.Key));
+                    }
+
+                }
+
+                y_fit_log.Clear();
+
+                for (int IdxConc = 0; IdxConc < x_fit.Count; IdxConc++)
+                {
+                    y_fit_log.Add(Sigmoid(c, x_fit_log[IdxConc]));
+                }
+            }
         }
 
         public void Is_Modified()
