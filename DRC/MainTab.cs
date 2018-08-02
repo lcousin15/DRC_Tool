@@ -5458,6 +5458,11 @@ namespace DRC
         private double r2;
         private double RelativeError;
 
+        private double err_bottom;
+        private double err_top;
+        private double err_ec_50;
+        private double err_slope;
+
         private string compound_id;
         private string descriptor;
 
@@ -5995,38 +6000,41 @@ namespace DRC
 
         private void chart1_Paint(object sender, PaintEventArgs e)
         {
-            // we assume two series variables are set..:
-            if (chart.Series["Born_Inf"] == null || chart.Series["Born_Sup"] == null) return;
+            if (confidence_interval)
+            {
+                // we assume two series variables are set..:
+                if (chart.Series["Born_Inf"] == null || chart.Series["Born_Sup"] == null) return;
 
-            // short references:
-            Axis ax = chart.ChartAreas[0].AxisX;
-            Axis ay = chart.ChartAreas[0].AxisY;
+                // short references:
+                Axis ax = chart.ChartAreas[0].AxisX;
+                Axis ay = chart.ChartAreas[0].AxisY;
 
-            // now we convert all values to pixels
-            List<PointF> points1 = chart.Series["Born_Inf"].Points.Select(x =>
-               new PointF((float)ax.ValueToPixelPosition(x.XValue),
-                          (float)ay.ValueToPixelPosition(x.YValues[0]))).ToList();
+                // now we convert all values to pixels
+                List<PointF> points1 = chart.Series["Born_Inf"].Points.Select(x =>
+                   new PointF((float)ax.ValueToPixelPosition(x.XValue),
+                              (float)ay.ValueToPixelPosition(x.YValues[0]))).ToList();
 
-            List<PointF> points2 = chart.Series["Born_Sup"].Points.Select(x =>
-               new PointF((float)ax.ValueToPixelPosition(x.XValue),
-                          (float)ay.ValueToPixelPosition(x.YValues[0]))).ToList();
+                List<PointF> points2 = chart.Series["Born_Sup"].Points.Select(x =>
+                   new PointF((float)ax.ValueToPixelPosition(x.XValue),
+                              (float)ay.ValueToPixelPosition(x.YValues[0]))).ToList();
 
-            // one list forward, the other backward:
-            points2.Reverse();
+                // one list forward, the other backward:
+                points2.Reverse();
 
-            GraphicsPath gp = new GraphicsPath();
-            gp.FillMode = FillMode.Winding;  // the right fillmode
+                GraphicsPath gp = new GraphicsPath();
+                gp.FillMode = FillMode.Winding;  // the right fillmode
 
-            // it will work fine with either Splines or Lines:
-            if (chart.Series["Born_Inf"].ChartType == SeriesChartType.Spline) gp.AddCurve(points1.ToArray());
-            else gp.AddLines(points1.ToArray());
-            if (chart.Series["Born_Sup"].ChartType == SeriesChartType.Spline) gp.AddCurve(points2.ToArray());
-            else gp.AddLines(points2.ToArray());
+                // it will work fine with either Splines or Lines:
+                if (chart.Series["Born_Inf"].ChartType == SeriesChartType.Spline) gp.AddCurve(points1.ToArray());
+                else gp.AddLines(points1.ToArray());
+                if (chart.Series["Born_Sup"].ChartType == SeriesChartType.Spline) gp.AddCurve(points2.ToArray());
+                else gp.AddLines(points2.ToArray());
 
-            // pick your own color, maybe a mix of the Series colors..
-            using (SolidBrush brush = new SolidBrush(Color.FromArgb(25, chart_color)))
-                e.Graphics.FillPath(brush, gp);
-            gp.Dispose();
+                // pick your own color, maybe a mix of the Series colors..
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(25, chart_color)))
+                    e.Graphics.FillPath(brush, gp);
+                gp.Dispose();
+            }
         }
 
         //protected void Chart1_PrePaint(object sender, ChartPaintEventArgs e)
@@ -6167,8 +6175,8 @@ namespace DRC
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +100.0 };
-            bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -100.0 };
+            bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +10.0 };
+            bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -10.0 };
 
             if (is_top_fixed)
             {
@@ -6200,24 +6208,30 @@ namespace DRC
             alglib.lsfitfit(state, function_SigmoidInhibition, null, null);
             alglib.lsfitresults(state, out info, out c, out rep);
 
+            Console.WriteLine(info);
+
             fit_parameters = c;
             RelativeError = rep.avgrelerror;
             r2 = rep.r2;
 
+            if (r2 >= 0.85) confidence_interval = true;
+            else confidence_interval = false;
+
+            err_bottom = rep.errpar[0];
+            err_top = rep.errpar[1];
+            err_ec_50 = rep.errpar[2];
+            err_slope = rep.errpar[3];
+
             if (confidence_interval)
             {
-                double err_par_0 = rep.errpar[0];
-                double err_par_1 = rep.errpar[1];
-                double err_par_2 = rep.errpar[2];
-                double err_par_3 = rep.errpar[3];
 
                 double[,] covariance_matrix = rep.covpar;
 
                 int dof = drc_points_y_enable.Count - 4;
 
-                double t_test_val = chart.DataManipulator.Statistics.InverseTDistribution(.025, dof);
+                double t_test_val = chart.DataManipulator.Statistics.InverseTDistribution(.05, dof);
 
-                double sum_square_residuals = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, fit_parameters);
+                //double sum_square_residuals = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, fit_parameters);
 
                 y_conf_int_born_sup.Clear();
                 y_conf_int_born_inf.Clear();
@@ -6229,7 +6243,7 @@ namespace DRC
                 for (int i = 0; i < x_fit_log.Count; ++i)
                 {
                     double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
-                    double sigma_confidence_interval = t_test_val * Math.Sqrt(a) * Math.Sqrt(sum_square_residuals / (double)dof);
+                    double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
 
                     //if (sigma_confidence_interval > 1) sigma_confidence_interval = 1.0;
 
@@ -6247,7 +6261,9 @@ namespace DRC
                     y_conf_int_born_inf.Add(elem.Value);
                     x_log_unique.Add(Math.Pow(10, elem.Key));
                 }
+
             }
+
 
             y_fit_log.Clear();
 
