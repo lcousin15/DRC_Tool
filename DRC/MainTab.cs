@@ -7328,7 +7328,10 @@ namespace DRC
                     if (confidence_interval)
                     {
                         chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
+                        chart.Series["Born_Inf"].Color = Color.FromArgb(50, chart_color);
+
                         chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
+                        chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
                     }
                 }
 
