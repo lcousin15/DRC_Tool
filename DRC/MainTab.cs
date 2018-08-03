@@ -5995,7 +5995,7 @@ namespace DRC
             general_params = false;
 
             //chart.ChartAreas[0].RecalculateAxesScale();
-
+            
             if (minY < -1e10 + 1)
             {
                 minY = chart.ChartAreas[0].AxisY.Minimum;
@@ -6005,8 +6005,17 @@ namespace DRC
             {
                 maxY = chart.ChartAreas[0].AxisY.Maximum;
             }
+           
 
             fit_DRC();
+
+            double min_curve = Math.Min(y_fit_log[0], y_fit_log[y_fit_log.Count - 1]);
+            double max_curve = Math.Max(y_fit_log[0], y_fit_log[y_fit_log.Count - 1]);
+            double amplitude = max_curve - min_curve;
+
+            minY = min_curve - amplitude * 0.5;
+            maxY = max_curve + amplitude * 0.5;
+
             //draw_DRC(false, false);
         }
 
