@@ -6005,7 +6005,6 @@ namespace DRC
             {
                 maxY = chart.ChartAreas[0].AxisY.Maximum;
             }
-           
 
             fit_DRC();
 
@@ -6254,7 +6253,7 @@ namespace DRC
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
 
-                if (r2 >= 0.85) confidence_interval = true;
+                if (r2 >= 0.85 && patient==false) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
@@ -6368,7 +6367,7 @@ namespace DRC
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
 
-                if (r2 >= 0.85) confidence_interval = true;
+                if (r2 >= 0.85 && patient==false) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
