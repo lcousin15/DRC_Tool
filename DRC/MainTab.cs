@@ -6789,6 +6789,11 @@ namespace DRC
                     chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
                     chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
                 }
+                else
+                {
+                    chart.Series["Born_Inf"].Points.Clear();
+                    chart.Series["Born_Sup"].Points.Clear();
+                }
             }
 
             //----------------------------- Axis Labels ---------------------------//
@@ -7485,6 +7490,11 @@ namespace DRC
 
                         chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
                         chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
+                    }
+                    else
+                    {
+                        chart.Series["Born_Inf"].Points.Clear();
+                        chart.Series["Born_Sup"].Points.Clear();
                     }
                 }
 
