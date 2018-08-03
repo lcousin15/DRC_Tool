@@ -4635,7 +4635,6 @@ namespace DRC
                 List<double> ps_concentrations_log = new List<double>();
                 List<string> deselected = new List<string>();
 
-
                 int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / ps_concentrations.Count;
 
                 for (int i = 0; i < replicates; ++i)
@@ -4662,11 +4661,23 @@ namespace DRC
                     Dictionary<string, double> bounds = new Dictionary<string, double>();
 
                     List<double> dmso_value_per_descriptor = descriptors_values[item];
+                    List<string> list_wells = new List<string>();
+
+                    List<DataGridViewRow> raw_data = raw_data_rows[plate][item];
+
+                    foreach(DataGridViewRow row in raw_data)
+                    {
+                        list_wells.Add(row.Cells["Well"].Value.ToString());
+                    }
+
+                    // ps_concentrations_log
+                    // ps_concentrations
 
                     Chart_DRC chart_DMSO_per_plate = new Chart_DRC(plate + " DMSO", item, 50, ref ps_concentrations_bis, ref ps_concentrations_log,
                         ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this,
                         false, false, false, false);
 
+                    chart_DMSO_per_plate.set_dmso_wells(list_wells);
                     chart_DMSO_per_plate.set_Raw_Data(raw_data_rows[plate][item]);
 
                     double[] parameters = chart_DMSO_per_plate.get_Fit_Parameters();
@@ -5514,6 +5525,9 @@ namespace DRC
         private bool display_fit = true;
         private bool display_post_paint = true;
         private bool confidence_interval = true;
+        private bool dmso = false;
+
+        private List<string> list_wells = new List<string>();
 
         public string get_compound_id()
         {
@@ -5696,6 +5710,12 @@ namespace DRC
                 y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
                 x_raw_data.Add(double.Parse(item.Cells["Concentration"].Value.ToString()));
             }
+        }
+
+        public void set_dmso_wells(List<string> wells)
+        {
+            dmso = true;
+            list_wells = wells;
         }
 
         public List<DataGridViewRow> get_Raw_Data()
@@ -6870,6 +6890,15 @@ namespace DRC
             chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
             chart.Series["Series1"].Color = chart_color;
+
+            if(dmso)
+            {
+                for (int i = 0; i < list_wells.Count; ++i)
+                {
+                    chart.Series["Series1"].Points[i].AxisLabel = list_wells[i].Substring(1, list_wells[i].Length-1);
+                    chart.Series["Series1"].Points[i].Label = list_wells[i];
+                }
+            }
 
             if (display_fit)
             {
