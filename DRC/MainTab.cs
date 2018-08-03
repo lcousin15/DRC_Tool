@@ -4664,7 +4664,7 @@ namespace DRC
                     List<double> dmso_value_per_descriptor = descriptors_values[item];
 
                     Chart_DRC chart_DMSO_per_plate = new Chart_DRC(plate + " DMSO", item, 50, ref ps_concentrations_bis, ref ps_concentrations_log,
-                        ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this, 
+                        ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this,
                         false, false, false, false);
 
                     chart_DMSO_per_plate.set_Raw_Data(raw_data_rows[plate][item]);
@@ -5491,8 +5491,8 @@ namespace DRC
 
         private double minX = -1;
         private double maxX = -1;
-        private double minY = -10;
-        private double maxY = -10;
+        private double minY = -1e10;
+        private double maxY = -1e10;
 
         private double min_bound_x = 0.0;
         private double max_bound_x = 0.0;
@@ -5994,6 +5994,18 @@ namespace DRC
 
             general_params = false;
 
+            //chart.ChartAreas[0].RecalculateAxesScale();
+
+            if (minY < -1e10 + 1)
+            {
+                minY = chart.ChartAreas[0].AxisY.Minimum;
+            }
+
+            if (maxY < -1e10 + 1)
+            {
+                maxY = chart.ChartAreas[0].AxisY.Maximum;
+            }
+
             fit_DRC();
             //draw_DRC(false, false);
         }
@@ -6057,14 +6069,14 @@ namespace DRC
         {
             func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
         }
-        
-        private static void function_SigmoidInhibition_3_params( double[] c, double[] x, ref double func, object obj)
+
+        private static void function_SigmoidInhibition_3_params(double[] c, double[] x, ref double func, object obj)
         {
             double fixed_top = (double)obj;
 
-            func = c[0] + (( fixed_top - c[0]) / (1 + Math.Pow(10, (c[1] - x[0]) * c[2])));
+            func = c[0] + ((fixed_top - c[0]) / (1 + Math.Pow(10, (c[1] - x[0]) * c[2])));
         }
-        
+
         private double Sigmoid(double[] c, double x)
         {
             double y = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x) * c[3])));
@@ -6199,8 +6211,8 @@ namespace DRC
                 double[] bndu = null;
 
                 // boundaries
-                bndu = new double[] { max_bound_y, min_bound_x, +10.0 };
-                bndl = new double[] { min_bound_y, max_bound_x, -10.0 };
+                bndu = new double[] { max_bound_y, min_bound_x, +100.0 };
+                bndl = new double[] { min_bound_y, max_bound_x, -100.0 };
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
@@ -6254,6 +6266,11 @@ namespace DRC
                     y_conf_int_born_inf.Clear();
                     x_log_unique.Clear();
 
+                    double amplitude = Math.Abs(Sigmoid_3_params(c, x_fit_log[0], fixed_top) - Sigmoid_3_params(c, x_fit_log[x_fit_log.Count - 1], fixed_top));
+
+                    double min_curve = Math.Min(Sigmoid_3_params(c, x_fit_log[0], fixed_top), Sigmoid_3_params(c, x_fit_log[x_fit_log.Count - 1], fixed_top));
+                    double max_curve = Math.Max(Sigmoid_3_params(c, x_fit_log[0], fixed_top), Sigmoid_3_params(c, x_fit_log[x_fit_log.Count - 1], fixed_top));
+
                     SortedDictionary<double, double> born_sup = new SortedDictionary<double, double>();
                     SortedDictionary<double, double> born_inf = new SortedDictionary<double, double>();
 
@@ -6265,18 +6282,18 @@ namespace DRC
                         double CI_max = Sigmoid_3_params(c, x_fit_log[i], fixed_top) + sigma_confidence_interval;
                         double CI_min = Sigmoid_3_params(c, x_fit_log[i], fixed_top) - sigma_confidence_interval;
 
-                        if (CI_max > (get_window_y_max() + 0.1))
+                        if (CI_max > max_curve+0.4*amplitude) //|| sigma_confidence_interval > amplitude)
                         {
-                            born_sup[x_fit_log[i]] = get_window_y_max()+0.1;
+                            born_sup[x_fit_log[i]] = max_curve + 0.4 * amplitude;
                         }
                         else
                         {
                             born_sup[x_fit_log[i]] = CI_max;
                         }
 
-                        if (CI_min < (get_window_y_min() - 0.1))
+                        if (CI_min < min_curve-0.4*amplitude) //|| sigma_confidence_interval > amplitude)
                         {
-                            born_inf[x_fit_log[i]] = get_window_y_min()-0.1;
+                            born_inf[x_fit_log[i]] = min_curve - 0.4 * amplitude;
                         }
                         else
                         {
@@ -6314,8 +6331,8 @@ namespace DRC
                 double[] bndu = null;
 
                 // boundaries
-                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +10.0 };
-                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -10.0 };
+                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +100.0 };
+                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -100.0 };
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
@@ -6365,8 +6382,17 @@ namespace DRC
                     y_conf_int_born_inf.Clear();
                     x_log_unique.Clear();
 
+                    //double amplitude = Math.Abs(Sigmoid(c, x_fit_log[0]) - Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
+
+                    //double min_curve = Math.Min(Sigmoid(c, x_fit_log[0]), Sigmoid(c, x_fit_log[x_fit_log.Count - 1],));
+                    //double max_curve = Math.Max(Sigmoid(c, x_fit_log[0]), Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
+
                     SortedDictionary<double, double> born_sup = new SortedDictionary<double, double>();
                     SortedDictionary<double, double> born_inf = new SortedDictionary<double, double>();
+
+                    double min_curve = Math.Min(Sigmoid(c, x_fit_log[0]), Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
+                    double max_curve = Math.Max(Sigmoid(c, x_fit_log[0]), Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
+                    double amplitude = Math.Abs(Sigmoid(c, x_fit_log[0]) - Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
 
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
@@ -6376,18 +6402,18 @@ namespace DRC
                         double CI_max = Sigmoid(c, x_fit_log[i]) + sigma_confidence_interval;
                         double CI_min = Sigmoid(c, x_fit_log[i]) - sigma_confidence_interval;
 
-                        if (CI_max > (get_window_y_max() + 0.1))
+                        if (CI_max > max_curve + 0.4 * amplitude) //|| sigma_confidence_interval > amplitude)
                         {
-                            born_sup[x_fit_log[i]] = get_window_y_max()+0.1;
+                            born_sup[x_fit_log[i]] = max_curve + 0.4 * amplitude;
                         }
                         else
                         {
                             born_sup[x_fit_log[i]] = CI_max;
                         }
 
-                        if (CI_min < (get_window_y_min() - 0.1))
+                        if (CI_min < min_curve - 0.4 * amplitude) //|| sigma_confidence_interval > amplitude)
                         {
-                            born_inf[x_fit_log[i]] = get_window_y_min()-0.1;
+                            born_inf[x_fit_log[i]] = min_curve - 0.4 * amplitude;
                         }
                         else
                         {
@@ -6763,40 +6789,11 @@ namespace DRC
         {
             string cpd = compound_id;
 
-            fit_DRC();
-
             chart.Titles["Title1"].Text = descriptor + " CPD = " + compound_id;
 
-            // Draw the first graph
-
-            chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
-            chart.Series["Series1"].Color = chart_color;
-
-            if (display_fit)
-            {
-                chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-                chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
-                chart.Series["Series2"].Color = chart_color;
-
-                if (confidence_interval)
-                {
-                    chart.Series["Born_Inf"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-                    chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
-                    chart.Series["Born_Inf"].Color = Color.FromArgb(50, chart_color);
-
-                    chart.Series["Born_Sup"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-                    chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
-                    chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
-                }
-                else
-                {
-                    chart.Series["Born_Inf"].Points.Clear();
-                    chart.Series["Born_Sup"].Points.Clear();
-                }
-            }
-
             //----------------------------- Axis Labels ---------------------------//
+
+            fit_DRC();
 
             chart.ChartAreas[0].RecalculateAxesScale();
 
@@ -6834,15 +6831,13 @@ namespace DRC
                     maxX = chart.ChartAreas[0].AxisX.Maximum;
                 }
 
-                if (minY < -9.99)
-                {
-                    minY = chart.ChartAreas[0].AxisY.Minimum;
-                }
+                double min_curve = Math.Min(y_fit_log[0], y_fit_log[y_fit_log.Count - 1]);
+                double max_curve = Math.Max(y_fit_log[0], y_fit_log[y_fit_log.Count - 1]);
+                double amplitude = max_curve - min_curve;
 
-                if (maxY < -9.99)
-                {
-                    maxY = chart.ChartAreas[0].AxisY.Maximum;
-                }
+                minY = min_curve - amplitude * 0.5;
+                maxY = max_curve + amplitude * 0.5;
+
             }
             else
             {
@@ -6861,6 +6856,35 @@ namespace DRC
             //chart.ChartAreas[0].AxisY.ScaleView.Zoomable = false;
 
             // End Axis Labels.
+
+            // Draw the first graph
+
+            chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
+            chart.Series["Series1"].Color = chart_color;
+
+            if (display_fit)
+            {
+                chart.Series["Series2"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
+                chart.Series["Series2"].Color = chart_color;
+
+                if (confidence_interval)
+                {
+                    chart.Series["Born_Inf"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                    chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
+                    chart.Series["Born_Inf"].Color = Color.FromArgb(50, chart_color);
+
+                    chart.Series["Born_Sup"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                    chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
+                    chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
+                }
+                else
+                {
+                    chart.Series["Born_Inf"].Points.Clear();
+                    chart.Series["Born_Sup"].Points.Clear();
+                }
+            }
 
             foreach (DataPoint dp in chart.Series["Series1"].Points)
             {
@@ -7121,7 +7145,7 @@ namespace DRC
 
             annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
                                                 Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = " 
+                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
                                                 + r2.ToString("N2");
 
             if (patient)
