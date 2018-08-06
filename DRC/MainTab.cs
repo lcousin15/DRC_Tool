@@ -5716,6 +5716,7 @@ namespace DRC
         {
             dmso = true;
             list_wells = wells;
+            chart.ChartAreas[0].AxisX.Title = "Controls";
         }
 
         public List<DataGridViewRow> get_Raw_Data()
