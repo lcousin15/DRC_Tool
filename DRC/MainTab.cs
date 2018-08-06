@@ -127,6 +127,7 @@ namespace DRC
         public Export_Tab f5;
         public Patient_Tab form_patient;
         public Load_PS_Options Load_PS;
+        public WellPlate_Viewer well_plate;
 
         public void SetForm()
         {
@@ -138,6 +139,7 @@ namespace DRC
             f5 = new Export_Tab(this);
             form_patient = new Patient_Tab(this);
             Load_PS = new Load_PS_Options(this);
+            well_plate = new WellPlate_Viewer(this);
         }
 
         public RawData_Tab f3 = new RawData_Tab();
@@ -247,6 +249,15 @@ namespace DRC
         public Dictionary<string, Chart_Patient> get_charts_auc_z_score()
         {
             return chart_auc_z_score;
+        }
+
+        public Dictionary<string, string> get_ps_template_plate_1()
+        {
+            return template_plate_1;
+        }
+        public Dictionary<string, string> get_ps_template_plate_2()
+        {
+            return template_plate_2;
         }
 
         public int get_descriptors_number()
@@ -4347,7 +4358,6 @@ namespace DRC
 
         public void process_data_PS(List<string> plate_paths)
         {
-
             comboBox1.Visible = true;
 
             for (int k = 0; k < 4; ++k)
@@ -5017,6 +5027,23 @@ namespace DRC
         private void btn_normalize_Click(object sender, EventArgs e)
         {
             select_DMSO();
+        }
+
+        private void showToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form fc = Application.OpenForms["WellPlate_Viewer"];
+
+            if (fc != null)
+            {
+                well_plate.Show();
+            }
+            else
+            {
+                well_plate = new WellPlate_Viewer(this);
+                well_plate.Show();
+            }
+
+
         }
     }
 
@@ -8464,10 +8491,10 @@ namespace DRC
 
             error_auc = 1.96 * Math.Sqrt(variance_auc);
 
-            Console.WriteLine(compound_id.ToString());
-            for (int i = 0; i < variances.Count; ++i) Console.WriteLine(variances[i].ToString());
-            for (int i = 0; i < derivatives.Count; ++i) Console.WriteLine(derivatives[i].ToString());
-            Console.WriteLine(error_auc.ToString());
+            //Console.WriteLine(compound_id.ToString());
+            //for (int i = 0; i < variances.Count; ++i) Console.WriteLine(variances[i].ToString());
+            //for (int i = 0; i < derivatives.Count; ++i) Console.WriteLine(derivatives[i].ToString());
+            //Console.WriteLine(error_auc.ToString());
 
             double area_geom = 0.0;
 
