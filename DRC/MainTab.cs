@@ -126,6 +126,7 @@ namespace DRC
         public CPD_Time_Line TimeLine;
         public Export_Tab f5;
         public Patient_Tab form_patient;
+        public Load_PS_Options Load_PS;
 
         public void SetForm()
         {
@@ -136,6 +137,7 @@ namespace DRC
             TimeLine = new CPD_Time_Line(this);
             f5 = new Export_Tab(this);
             form_patient = new Patient_Tab(this);
+            Load_PS = new Load_PS_Options(this);
         }
 
         public RawData_Tab f3 = new RawData_Tab();
@@ -199,6 +201,10 @@ namespace DRC
         private Dictionary<string, DataTable> data_dict = new Dictionary<string, DataTable>(); // file --> DataTable
         private Dictionary<string, HashSet<string>> cpd_link = new Dictionary<string, HashSet<string>>(); // cpd id --> file
         private List<string> time_line_selected_descriptors = new List<string>();
+
+        private Dictionary<string, string> template_plate_1 = new Dictionary<string, string>();
+        private Dictionary<string, string> template_plate_2 = new Dictionary<string, string>();
+        private Dictionary<string, double> template_plate_concentration = new Dictionary<string, double>();
 
         private Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // cpd_id, descriptor, chart
 
@@ -3907,14 +3913,46 @@ namespace DRC
             // CPD_ID_List Table :
 
             Reset();
+            SetForm();
 
+            //string path_template = "";
+            //string path_plate_1_1 = "";
+            //string path_plate_1_2 = "";
+            //string path_plate_2_1 = "";
+            //string path_plate_2_2 = "";
+
+            Form fc = Application.OpenForms["Load_PS_Options"];
+
+            if (fc != null)
+            {
+                Load_PS.Show();
+
+                //path_template = Load_PS.get_template_path();
+
+                //path_plate_1_1 = Load_PS.get_plate_1_1_path();
+                //path_plate_1_2 = Load_PS.get_plate_1_2_path();
+                //path_plate_2_1 = Load_PS.get_plate_2_1_path();
+                //path_plate_2_2 = Load_PS.get_plate_2_2_path();
+            }
+            else
+            {
+                Load_PS = new Load_PS_Options(this);
+                Load_PS.Show();
+
+                //path_template = Load_PS.get_template_path();
+
+                //path_plate_1_1 = Load_PS.get_plate_1_1_path();
+                //path_plate_1_2 = Load_PS.get_plate_1_2_path();
+                //path_plate_2_1 = Load_PS.get_plate_2_1_path();
+                //path_plate_2_2 = Load_PS.get_plate_2_2_path();
+            }
+
+        }
+
+        public void process_template(string file)
+        {
             btn_normalize.Enabled = true;
             is_patient = true;
-
-            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
-            // Allow the user to select multiple images.
-            //openFileDialog1.Multiselect = true;
-            openFileDialog1.Title = "Files First Plate";
 
             List<string> first_wells = new List<string>();
             List<string> drugs = new List<string>();
@@ -3922,83 +3960,77 @@ namespace DRC
 
             List<string> drug_plate = new List<string>();
 
-            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            System.IO.StreamReader sr = new System.IO.StreamReader(file);
+            CachedCsvReader template_cpds_csv = new CachedCsvReader(sr, true);
+
+            int fieldCount = template_cpds_csv.FieldCount;
+            string[] headers = template_cpds_csv.GetFieldHeaders();
+
+            while (template_cpds_csv.ReadNextRecord())
             {
-                string file = openFileDialog1.FileName;
 
-                System.IO.StreamReader sr = new System.IO.StreamReader(file);
-                CachedCsvReader template_cpds_csv = new CachedCsvReader(sr, true);
-
-                int fieldCount = template_cpds_csv.FieldCount;
-                string[] headers = template_cpds_csv.GetFieldHeaders();
-
-                while (template_cpds_csv.ReadNextRecord())
+                for (int i = 0; i < fieldCount; ++i)
                 {
+                    string col_name = headers[i];
+                    string value = "";
 
-                    for (int i = 0; i < fieldCount; ++i)
+                    if (col_name == "Plate")
                     {
-                        string col_name = headers[i];
-                        string value = "";
-
-                        if (col_name == "Plate")
+                        if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
                         {
-                            if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
-                            {
-                                value = template_cpds_csv[i].ToString();
-                                drug_plate.Add(value);
-                            }
+                            value = template_cpds_csv[i].ToString();
+                            drug_plate.Add(value);
                         }
+                    }
 
-                        if (col_name == "Well")
+                    if (col_name == "Well")
+                    {
+                        if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
                         {
-                            if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
+                            value = template_cpds_csv[i].ToString();
+
+                            if (value.Length == 2)
                             {
-                                value = template_cpds_csv[i].ToString();
-
-                                if (value.Length == 2)
-                                {
-                                    value = value[0] + "0" + value[1];
-                                }
-                                first_wells.Add(value);
-
-                                //int[] Pos = new int[2];
-
-                                //Pos[1] = Convert.ToInt16(value[0]) - 64;
-                                //Pos[0] = Convert.ToInt16(value.Remove(0, 1));
-
+                                value = value[0] + "0" + value[1];
                             }
-                        }
+                            first_wells.Add(value);
 
-                        if (col_name == "Drug")
+                            //int[] Pos = new int[2];
+
+                            //Pos[1] = Convert.ToInt16(value[0]) - 64;
+                            //Pos[0] = Convert.ToInt16(value.Remove(0, 1));
+
+                        }
+                    }
+
+                    if (col_name == "Drug")
+                    {
+                        if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
                         {
-                            if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
-                            {
-                                value = template_cpds_csv[i].ToString();
-                                drugs.Add(value);
+                            value = template_cpds_csv[i].ToString();
+                            drugs.Add(value);
 
-                            }
                         }
+                    }
 
-                        if (col_name == "Drug_Kegg")
+                    if (col_name == "Drug_Kegg")
+                    {
+                        if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
                         {
-                            if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
-                            {
-                                value = template_cpds_csv[i].ToString();
-                                drugs_kegg.Add(value);
+                            value = template_cpds_csv[i].ToString();
+                            drugs_kegg.Add(value);
 
-                            }
                         }
-
                     }
 
                 }
 
             }
 
-            Dictionary<string, string> template_plate_1 = new Dictionary<string, string>();
-            Dictionary<string, string> template_plate_2 = new Dictionary<string, string>();
+            template_plate_1 = new Dictionary<string, string>();
+            template_plate_2 = new Dictionary<string, string>();
 
-            Dictionary<string, double> template_plate_concentration = new Dictionary<string, double>();
+            template_plate_concentration = new Dictionary<string, double>();
 
             ps_concentrations.Add(30 * 1e-6);
             ps_concentrations.Add(7.5 * 1e-6);
@@ -4311,117 +4343,115 @@ namespace DRC
                 }
             }
 
-            comboBox1.Visible = true;
+        }
 
-            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
-            // Allow the user to select multiple images.
-            //openFileDialog1.Multiselect = true;
-            openFileDialog1.Title = "Files First Plate";
+        public void process_data_PS(List<string> plate_paths)
+        {
+
+            comboBox1.Visible = true;
 
             for (int k = 0; k < 4; ++k)
             {
-                if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+
+                Reset();
+                is_with_plate = false;
+
+                string file = plate_paths[k];
+
+                if (k == 0)
                 {
-                    Reset();
-                    is_with_plate = false;
+                    System.IO.StreamReader sr = new System.IO.StreamReader(file);
+                    csv = new CachedCsvReader(sr, true);
 
-                    string file = openFileDialog1.FileName;
+                    int fieldCount = csv.FieldCount;
 
-                    if (k == 0)
+                    string[] headers = csv.GetFieldHeaders();
+
+                    //for(int i=0 ; i<fieldCount ; ++i)
+                    //{
+                    //    f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                    //}
+
+                    while (csv.ReadNextRecord())
                     {
-                        System.IO.StreamReader sr = new System.IO.StreamReader(file);
-                        csv = new CachedCsvReader(sr, true);
+                        DataGridViewRow my_row = new DataGridViewRow();
 
-                        int fieldCount = csv.FieldCount;
-
-                        string[] headers = csv.GetFieldHeaders();
-
-                        //for(int i=0 ; i<fieldCount ; ++i)
+                        //for (int i = 0; i < fieldCount; i++)
                         //{
-                        //    f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                        f3.dataGridView1.ColumnCount = headers.Count();
+
+                        for (int i = 0; i < fieldCount; ++i)
+                        {
+                            f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                            f3.dataGridView1.Columns[i].Name = headers[i];
+
+                            if (csv[i].ToString() != "nan" && csv[i].ToString() != "inf")
+                            {
+                                my_row.Cells.Add(new DataGridViewTextBoxCell { Value = csv[i] });
+                            }
+                            else
+                            {
+                                my_row.Cells.Add(new DataGridViewTextBoxCell { Value = "0.0" });
+                            }
+                        }
+
+                        //my_row.SetValues(csv[0]);
+                        //my_row.Cells[i].Value = csv[i];
                         //}
 
-                        while (csv.ReadNextRecord())
-                        {
-                            DataGridViewRow my_row = new DataGridViewRow();
-
-                            //for (int i = 0; i < fieldCount; i++)
-                            //{
-                            f3.dataGridView1.ColumnCount = headers.Count();
-
-                            for (int i = 0; i < fieldCount; ++i)
-                            {
-                                f3.dataGridView1.Columns[i].HeaderText = headers[i];
-                                f3.dataGridView1.Columns[i].Name = headers[i];
-
-                                if (csv[i].ToString() != "nan" && csv[i].ToString() != "inf")
-                                {
-                                    my_row.Cells.Add(new DataGridViewTextBoxCell { Value = csv[i] });
-                                }
-                                else
-                                {
-                                    my_row.Cells.Add(new DataGridViewTextBoxCell { Value = "0.0" });
-                                }
-                            }
-
-                            //my_row.SetValues(csv[0]);
-                            //my_row.Cells[i].Value = csv[i];
-                            //}
-
-                            f3.dataGridView1.Rows.Add(my_row);
-                        }
-
-
+                        f3.dataGridView1.Rows.Add(my_row);
                     }
-                    else if (k > 0)
-                    {
-                        System.IO.StreamReader sr_2 = new System.IO.StreamReader(file);
-                        CachedCsvReader csv_2 = new CachedCsvReader(sr_2, true);
 
-                        int fieldCount = csv_2.FieldCount;
-
-                        string[] headers = csv_2.GetFieldHeaders();
-
-                        while (csv_2.ReadNextRecord())
-                        {
-                            DataGridViewRow my_row = new DataGridViewRow(); // (DataGridViewRow)f3.dataGridView1.Rows[0].Clone();
-                                                                            //for (int i = 0; i < fieldCount; i++)
-                                                                            //{
-                                                                            //f3.dataGridView1.ColumnCount = headers.Count();
-
-                            for (int i = 0; i < fieldCount; ++i)
-                            {
-                                //f3.dataGridView1.Columns[i].HeaderText = headers[i];
-                                //my_row.Cells[headers[i]].Value = csv_2[i];
-                                my_row.Cells.Add(new DataGridViewTextBoxCell());
-                            }
-
-                            f3.dataGridView1.Rows.Add(my_row);
-
-                            for (int i = 0; i < fieldCount; ++i)
-                            {
-                                //f3.dataGridView1.Columns[i].HeaderText = headers[i];
-                                if (csv_2[i].ToString() != "nan" && csv_2[i].ToString() != "inf")
-                                {
-                                    f3.dataGridView1.Rows[f3.dataGridView1.RowCount - 1].Cells[headers[i]].Value = csv_2[i];
-                                }
-                                else
-                                {
-                                    f3.dataGridView1.Rows[f3.dataGridView1.RowCount - 1].Cells[headers[i]].Value = "0.0";
-                                }
-
-                                //my_row.Cells.Add(new DataGridViewTextBoxCell());
-                            }
-
-
-                            //my_row.SetValues(csv[0]);
-                            //my_row.Cells[i].Value = csv[i];
-                            //}
-
-                        }
-                    }
 
                 }
+                else if (k > 0)
+                {
+                    System.IO.StreamReader sr_2 = new System.IO.StreamReader(file);
+                    CachedCsvReader csv_2 = new CachedCsvReader(sr_2, true);
+
+                    int fieldCount = csv_2.FieldCount;
+
+                    string[] headers = csv_2.GetFieldHeaders();
+
+                    while (csv_2.ReadNextRecord())
+                    {
+                        DataGridViewRow my_row = new DataGridViewRow(); // (DataGridViewRow)f3.dataGridView1.Rows[0].Clone();
+                                                                        //for (int i = 0; i < fieldCount; i++)
+                                                                        //{
+                                                                        //f3.dataGridView1.ColumnCount = headers.Count();
+
+                        for (int i = 0; i < fieldCount; ++i)
+                        {
+                            //f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                            //my_row.Cells[headers[i]].Value = csv_2[i];
+                            my_row.Cells.Add(new DataGridViewTextBoxCell());
+                        }
+
+                        f3.dataGridView1.Rows.Add(my_row);
+
+                        for (int i = 0; i < fieldCount; ++i)
+                        {
+                            //f3.dataGridView1.Columns[i].HeaderText = headers[i];
+                            if (csv_2[i].ToString() != "nan" && csv_2[i].ToString() != "inf")
+                            {
+                                f3.dataGridView1.Rows[f3.dataGridView1.RowCount - 1].Cells[headers[i]].Value = csv_2[i];
+                            }
+                            else
+                            {
+                                f3.dataGridView1.Rows[f3.dataGridView1.RowCount - 1].Cells[headers[i]].Value = "0.0";
+                            }
+
+                            //my_row.Cells.Add(new DataGridViewTextBoxCell());
+                        }
+
+
+                        //my_row.SetValues(csv[0]);
+                        //my_row.Cells[i].Value = csv[i];
+                        //}
+
+                    }
+                }
+
             }
 
             List<string> CPD_ID = new List<string>();
@@ -4665,7 +4695,7 @@ namespace DRC
 
                     List<DataGridViewRow> raw_data = raw_data_rows[plate][item];
 
-                    foreach(DataGridViewRow row in raw_data)
+                    foreach (DataGridViewRow row in raw_data)
                     {
                         list_wells.Add(row.Cells["Well"].Value.ToString());
                     }
@@ -6016,7 +6046,7 @@ namespace DRC
             general_params = false;
 
             //chart.ChartAreas[0].RecalculateAxesScale();
-            
+
             if (minY < -1e10 + 1)
             {
                 minY = chart.ChartAreas[0].AxisY.Minimum;
@@ -6274,7 +6304,7 @@ namespace DRC
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
 
-                if (r2 >= 0.85 && patient==false) confidence_interval = true;
+                if (r2 >= 0.85 && patient == false) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
@@ -6311,7 +6341,7 @@ namespace DRC
                         double CI_max = Sigmoid_3_params(c, x_fit_log[i], fixed_top) + sigma_confidence_interval;
                         double CI_min = Sigmoid_3_params(c, x_fit_log[i], fixed_top) - sigma_confidence_interval;
 
-                        if (CI_max > max_curve+0.4*amplitude) //|| sigma_confidence_interval > amplitude)
+                        if (CI_max > max_curve + 0.4 * amplitude) //|| sigma_confidence_interval > amplitude)
                         {
                             born_sup[x_fit_log[i]] = max_curve + 0.4 * amplitude;
                         }
@@ -6320,7 +6350,7 @@ namespace DRC
                             born_sup[x_fit_log[i]] = CI_max;
                         }
 
-                        if (CI_min < min_curve-0.4*amplitude) //|| sigma_confidence_interval > amplitude)
+                        if (CI_min < min_curve - 0.4 * amplitude) //|| sigma_confidence_interval > amplitude)
                         {
                             born_inf[x_fit_log[i]] = min_curve - 0.4 * amplitude;
                         }
@@ -6388,7 +6418,7 @@ namespace DRC
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
 
-                if (r2 >= 0.85 && patient==false) confidence_interval = true;
+                if (r2 >= 0.85 && patient == false) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
@@ -6892,11 +6922,11 @@ namespace DRC
             chart.Series["Series1"].Points.DataBindXY(x_concentrations, y_response);
             chart.Series["Series1"].Color = chart_color;
 
-            if(dmso)
+            if (dmso)
             {
                 for (int i = 0; i < list_wells.Count; ++i)
                 {
-                    chart.Series["Series1"].Points[i].AxisLabel = list_wells[i].Substring(1, list_wells[i].Length-1);
+                    chart.Series["Series1"].Points[i].AxisLabel = list_wells[i].Substring(1, list_wells[i].Length - 1);
                     chart.Series["Series1"].Points[i].Label = list_wells[i];
                 }
             }

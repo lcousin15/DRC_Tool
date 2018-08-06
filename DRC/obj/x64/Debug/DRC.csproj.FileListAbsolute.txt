@@ -227,3 +227,4 @@ E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.exe
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.pdb
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csprojResolveAssemblyReference.cache
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.PathwayTab.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Load_PS_Options.resources
