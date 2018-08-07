@@ -65,6 +65,12 @@ namespace DRC
 
         private MainTab _main_tab;
 
+        private Dictionary<string, Dictionary<string, Dictionary<string, double>>> cpd_values_by_plate_well 
+            = new Dictionary<string, Dictionary<string, Dictionary<string, double>>>();
+
+        private Dictionary<string, Dictionary<string, double>> value_max_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
+        private Dictionary<string, Dictionary<string, double>> value_min_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
+
 
         public WellPlate_Viewer(MainTab main_tab)
         {
@@ -236,12 +242,13 @@ namespace DRC
 
         private void get_cpd_values_colormap()
         {
-            Dictionary<string, Dictionary<string, Dictionary<string, double>>> cpd_values_by_plate_well = new Dictionary<string, Dictionary<string, Dictionary<string, double>>>();
+            cpd_values_by_plate_well = new Dictionary<string, Dictionary<string, Dictionary<string, double>>>();
 
             // plate, cpd_id, descriptor, well, value
 
             Dictionary<string, List<Chart_DRC>> list_cpd_chart = _main_tab.get_descriptors_chart();
-            Dictionary<string, Dictionary<string, double>> value_max_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
+            value_max_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
+            value_min_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
 
             //Dictionary<string, Dictionary<string, double>> cpd_values_by_well = new Dictionary<string, Dictionary<string, double>>();
 
@@ -251,8 +258,6 @@ namespace DRC
                 List<Chart_DRC> charts = elem.Value;
 
                 string plate = "";
-                int descriptor_index = 0;
-
 
                 foreach (Chart_DRC current_chart in charts)
                 {
@@ -284,6 +289,25 @@ namespace DRC
                             Dictionary<string, double> temp = new Dictionary<string, double>();
                             temp[descriptor_name] = value;
                             value_max_per_plate_descriptor[plate] = temp;
+                        }
+
+                        if (value_min_per_plate_descriptor.ContainsKey(plate))
+                        {
+                            if (value_min_per_plate_descriptor[plate].ContainsKey(descriptor_name))
+                            {
+                                if (value < value_min_per_plate_descriptor[plate][descriptor_name]) value_min_per_plate_descriptor[plate][descriptor_name] = value;
+                            }
+                            else
+                            {
+                                value_min_per_plate_descriptor[plate][descriptor_name] = value;
+                            }
+
+                        }
+                        else
+                        {
+                            Dictionary<string, double> temp = new Dictionary<string, double>();
+                            temp[descriptor_name] = value;
+                            value_min_per_plate_descriptor[plate] = temp;
                         }
 
                         //descritptor_wells_values[well] = value;
@@ -319,16 +343,26 @@ namespace DRC
                 }
             }
 
+            
             foreach(KeyValuePair<string, Dictionary<string, Dictionary<string, double>>> elem in cpd_values_by_plate_well)
             {
                 string plate_name = elem.Key;
+
+                if (!comboBox2.Items.Contains(plate_name)) comboBox2.Items.Add(plate_name);
+                comboBox2.SelectedItem = plate_name;
+
+
                 Dictionary<string, Dictionary<string, double>> plate = elem.Value;
 
                 foreach(KeyValuePair<string, Dictionary<string, double>> descriptor_well_value in plate)
                 {
                     string descriptor = descriptor_well_value.Key;
 
+                    if(!comboBox1.Items.Contains(descriptor)) comboBox1.Items.Add(descriptor);
+                    comboBox1.SelectedItem = descriptor;
+
                     double max_value_current_plate_descriptor = value_max_per_plate_descriptor[plate_name][descriptor];
+                    double min_value_current_plate_descriptor = value_min_per_plate_descriptor[plate_name][descriptor];
 
                     Dictionary<string, double> well_value = descriptor_well_value.Value;
 
@@ -338,7 +372,7 @@ namespace DRC
                     {
                         string well = value_by_well.Key;
 
-                        double normalized_value = value_by_well.Value / max_value_current_plate_descriptor;
+                        double normalized_value = (value_by_well.Value - min_value_current_plate_descriptor) / (max_value_current_plate_descriptor - min_value_current_plate_descriptor);
                         well_normalized_value[well] = normalized_value;
 
                         Color my_color = get_color_colormap(normalized_value);
@@ -349,19 +383,56 @@ namespace DRC
 
                         fill_well_colors(row, col, my_color);
                     }
-
                 }
-
-
             }
-
-            double a = 0.0;
-
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            get_wells_color();
+            initialize_well_plate_colors(Color.DarkBlue);
+
+            foreach (KeyValuePair<string, Dictionary<string, Dictionary<string, double>>> elem in cpd_values_by_plate_well)
+            {
+                string plate_name = elem.Key;
+
+                if (comboBox2.SelectedItem.ToString() == plate_name)
+                {
+                    Dictionary<string, Dictionary<string, double>> plate = elem.Value;
+
+                    foreach (KeyValuePair<string, Dictionary<string, double>> descriptor_well_value in plate)
+                    {
+                        string descriptor = descriptor_well_value.Key;
+
+                        if (comboBox1.SelectedItem.ToString() == descriptor)
+                        {
+                            double max_value_current_plate_descriptor = value_max_per_plate_descriptor[plate_name][descriptor];
+                            double min_value_current_plate_descriptor = value_min_per_plate_descriptor[plate_name][descriptor];
+
+                            Dictionary<string, double> well_value = descriptor_well_value.Value;
+
+                            Dictionary<string, double> well_normalized_value = new Dictionary<string, double>();
+
+                            foreach (KeyValuePair<string, double> value_by_well in well_value)
+                            {
+                                string well = value_by_well.Key;
+
+                                double normalized_value = (value_by_well.Value - min_value_current_plate_descriptor) / (max_value_current_plate_descriptor - min_value_current_plate_descriptor);
+                                well_normalized_value[well] = normalized_value;
+
+                                Color my_color = get_color_colormap(normalized_value);
+
+                                byte[] asciiBytes = Encoding.ASCII.GetBytes(well.Substring(0, 1));
+                                int row = asciiBytes[0] - 65;
+                                int col = int.Parse(well.Substring(1, 2)) - 1;
+
+                                fill_well_colors(row, col, my_color);
+                            }
+                        }
+                    }
+                }
+            }
+
             draw_well_plate();
         }
 
