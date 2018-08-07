@@ -4360,7 +4360,7 @@ namespace DRC
         {
             comboBox1.Visible = true;
 
-            for (int k = 0; k < 4; ++k)
+            for (int k = 0; k < plate_paths.Count; ++k)
             {
 
                 Reset();
@@ -5583,6 +5583,7 @@ namespace DRC
         private bool display_post_paint = true;
         private bool confidence_interval = true;
         private bool dmso = false;
+        private bool fixed_y_max = false;
 
         private List<string> list_wells = new List<string>();
 
@@ -5696,12 +5697,13 @@ namespace DRC
 
         public double get_window_y_min()
         {
-            return minY;
+            return chart.ChartAreas[0].AxisY.Minimum;
+            //minY;
         }
 
         public double get_window_y_max()
         {
-            return maxY;
+            return chart.ChartAreas[0].AxisY.Maximum;
         }
 
         public void set_window_x_min(double min_x)
@@ -5717,11 +5719,14 @@ namespace DRC
         public void set_window_y_min(double min_y)
         {
             minY = min_y;
+            chart.ChartAreas[0].AxisY.Minimum = minY;
         }
 
         public void set_window_y_max(double max_y)
         {
+            fixed_y_max = true;
             maxY = max_y;
+            chart.ChartAreas[0].AxisY.Maximum = max_y;
         }
 
         public bool check_ec50_exact()
@@ -6074,15 +6079,15 @@ namespace DRC
 
             //chart.ChartAreas[0].RecalculateAxesScale();
 
-            if (minY < -1e10 + 1)
-            {
-                minY = chart.ChartAreas[0].AxisY.Minimum;
-            }
+            //if (minY < -1e10 + 1)
+            //{
+            minY = chart.ChartAreas[0].AxisY.Minimum;
+            //}
 
-            if (maxY < -1e10 + 1)
-            {
-                maxY = chart.ChartAreas[0].AxisY.Maximum;
-            }
+            //if (maxY < -1e10 + 1)
+            //{
+            maxY = chart.ChartAreas[0].AxisY.Maximum;
+            //}
 
             fit_DRC();
 
@@ -6090,8 +6095,11 @@ namespace DRC
             double max_curve = Math.Max(y_fit_log[0], y_fit_log[y_fit_log.Count - 1]);
             double amplitude = max_curve - min_curve;
 
-            minY = min_curve - amplitude * 0.5;
-            maxY = max_curve + amplitude * 0.5;
+            if (fixed_y_max == false)
+            {
+                minY = min_curve - amplitude * 0.5;
+                maxY = max_curve + amplitude * 0.5;
+            }
 
             //draw_DRC(false, false);
         }
@@ -6921,12 +6929,21 @@ namespace DRC
                 double max_curve = Math.Max(y_fit_log[0], y_fit_log[y_fit_log.Count - 1]);
                 double amplitude = max_curve - min_curve;
 
-                minY = min_curve - amplitude * 0.5;
-                maxY = max_curve + amplitude * 0.5;
+                if (fixed_y_max == false)
+                {
+                    minY = min_curve - amplitude * 0.5;
+                    maxY = max_curve + amplitude * 0.5;
+                }
+
+                //maxY = Math.Ceiling((maxY / 10.0) * 10.0);
+                //minY = Math.Floor((minY / 10.0) * 10.0);
 
             }
             else
             {
+                //maxY = Math.Ceiling((maxY / 10.0) * 10.0);
+                //minY = Math.Floor((minY / 10.0) * 10.0);
+
                 chart.ChartAreas[0].AxisY.Minimum = minY;
                 chart.ChartAreas[0].AxisY.Maximum = maxY;
             }
@@ -7416,6 +7433,11 @@ namespace DRC
                 //chart.ChartAreas[0].AxisX.Minimum = minimum_x;
                 //chart.ChartAreas[0].AxisY.Minimum = minimum_y;
             }
+
+            //if (fixed_y_max)
+            //{
+            //    chart.ChartAreas[0].AxisY.Maximum = maxY;
+            //}
         }
 
         Point mdown = Point.Empty;

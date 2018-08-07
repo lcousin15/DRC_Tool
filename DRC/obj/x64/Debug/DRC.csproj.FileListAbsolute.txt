@@ -207,8 +207,10 @@ E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Curve_Fit_Options.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Descriptors_Fix_Top_Options.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Descriptors_General_Options.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.AUC_Report.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Load_PS_Options.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.MainTab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.DRC_Overlap_Tab.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.PathwayTab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Patient_Tab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.ViewList_CPD_Tab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.ViewCPD_Images_Tab.resources
@@ -222,10 +224,7 @@ E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Correlations_Tab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.RawData_Correlations_Tab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Export_Excel_Tab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Properties.Resources.resources
+E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.WellPlate_Viewer.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csproj.GenerateResource.Cache
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.exe
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.pdb
-E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csprojResolveAssemblyReference.cache
-E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.PathwayTab.resources
-E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Load_PS_Options.resources
-E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.WellPlate_Viewer.resources

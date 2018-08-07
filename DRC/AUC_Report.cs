@@ -309,10 +309,13 @@ namespace DRC
 
                     foreach (Chart_DRC current_chart in list_chart)
                     {
+                        current_chart.draw_DRC(false, false);
+
                         if (current_chart.get_window_y_max() < 1.5)
                         {
                             current_chart.set_general_params(true);
                             current_chart.set_data_modified(true);
+                            current_chart.set_window_y_min(0.0);
                             current_chart.set_window_y_max(1.5);
                         }
 
