@@ -44,14 +44,14 @@ namespace DRC
 
         private Color get_color_colormap(double val) // beetween 0 and 1
         {
-            Console.WriteLine(val.ToString());
+            //Console.WriteLine(val.ToString());
             //Console.WriteLine(red((val-0.5)*2.0).ToString());
             //Console.WriteLine(green((val-0.5)*2.0).ToString());
             //Console.WriteLine(blue((val-0.5)*2.0).ToString());
 
-            val = (val-0.5)*2.0;
+            val = (val - 0.5) * 2.0;
 
-            Color color = Color.FromArgb((int)(255.0*red(val)), (int)(255.0*green(val)), (int)(255.0*blue(val)));
+            Color color = Color.FromArgb((int)(255.0 * red(val)), (int)(255.0 * green(val)), (int)(255.0 * blue(val)));
             return color;
         }
 
@@ -65,31 +65,20 @@ namespace DRC
 
         private MainTab _main_tab;
 
-        //private List<Color> colors = new List<Color>();
 
         public WellPlate_Viewer(MainTab main_tab)
         {
             InitializeComponent();
 
             _main_tab = main_tab;
-            //init_colors();
 
             initialize_well_plate_colors(Color.DarkBlue);
             draw_well_plate();
+
+            get_cpd_values_colormap();
+            draw_well_plate();
         }
 
-        //private void init_colors()
-        //{
-        //    Type colorType = typeof(System.Drawing.Color);
-        //    // We take only static property to avoid properties like Name, IsSystemColor ...
-        //    PropertyInfo[] propInfos = colorType.GetProperties(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public);
-        //    foreach (PropertyInfo propInfo in propInfos)
-        //    {
-        //        Color color = (Color)propInfo.GetValue(null, null);
-        //        colors.Add(color);
-
-        //    }
-        //}
 
         public void draw_well_plate()
         {
@@ -198,12 +187,15 @@ namespace DRC
                 if (cpd_colors.ContainsKey(cpd)) continue;
                 else
                 {
-                    cpd_colors[cpd] = get_color_colormap((double)counter_color / (double)compound_number);
+                    cpd_colors[cpd] = get_color_colormap((double)counter_color / (double)compound_number); // between 0 and 1.
                     counter_color++;
                 }
             }
 
+        }
 
+        private void draw_well_plate_colors(Dictionary<string, Color> cpd_colors, Dictionary<string, string> cpd_position)
+        {
             for (int row = 0; row < 16; ++row)
             {
                 for (int col = 0; col < 24; ++col)
@@ -221,6 +213,149 @@ namespace DRC
                     }
                 }
             }
+        }
+
+        private void draw_well_plate_colors(Dictionary<string, Color> cpd_colors) // well, color
+        {
+            for (int row = 0; row < 16; ++row)
+            {
+                for (int col = 0; col < 24; ++col)
+                {
+                    string well = "";
+                    if (number[col].ToString().Length == 2) well = letter[row] + number[col].ToString();
+                    else well = letter[row] + "0" + number[col].ToString();
+
+                    if (cpd_colors.ContainsKey(well))
+                    {
+                        Color my_color = cpd_colors[well];
+                        fill_well_colors(row, col, my_color);
+                    }
+                }
+            }
+        }
+
+        private void get_cpd_values_colormap()
+        {
+            Dictionary<string, Dictionary<string, Dictionary<string, double>>> cpd_values_by_plate_well = new Dictionary<string, Dictionary<string, Dictionary<string, double>>>();
+
+            // plate, cpd_id, descriptor, well, value
+
+            Dictionary<string, List<Chart_DRC>> list_cpd_chart = _main_tab.get_descriptors_chart();
+            Dictionary<string, Dictionary<string, double>> value_max_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
+
+            //Dictionary<string, Dictionary<string, double>> cpd_values_by_well = new Dictionary<string, Dictionary<string, double>>();
+
+            foreach (KeyValuePair<string, List<Chart_DRC>> elem in list_cpd_chart)
+            {
+                string cpd_id = elem.Key;
+                List<Chart_DRC> charts = elem.Value;
+
+                string plate = "";
+                int descriptor_index = 0;
+
+
+                foreach (Chart_DRC current_chart in charts)
+                {
+                    string descriptor_name = current_chart.get_Descriptor_Name();
+                    List<DataGridViewRow> raw_data_descriptor = current_chart.get_Raw_Data();
+
+                    //Dictionary<string, double> descritptor_wells_values = new Dictionary<string, double>();
+
+                    foreach (DataGridViewRow row in raw_data_descriptor)
+                    {
+                        string well = row.Cells["Well"].Value.ToString();
+                        double value = Double.Parse(row.Cells[descriptor_name].Value.ToString());
+                        plate = row.Cells["Plate"].Value.ToString();
+
+                        if (value_max_per_plate_descriptor.ContainsKey(plate))
+                        {
+                            if (value_max_per_plate_descriptor[plate].ContainsKey(descriptor_name))
+                            {
+                                if (value > value_max_per_plate_descriptor[plate][descriptor_name]) value_max_per_plate_descriptor[plate][descriptor_name] = value;
+                            }
+                            else
+                            {
+                                value_max_per_plate_descriptor[plate][descriptor_name] = value;
+                            }
+
+                        }
+                        else
+                        {
+                            Dictionary<string, double> temp = new Dictionary<string, double>();
+                            temp[descriptor_name] = value;
+                            value_max_per_plate_descriptor[plate] = temp;
+                        }
+
+                        //descritptor_wells_values[well] = value;
+
+                        // <well, value>
+                        // decriptor_name
+                        // plate
+
+                        if (cpd_values_by_plate_well.ContainsKey(plate))
+                        {
+                            if (cpd_values_by_plate_well[plate].ContainsKey(descriptor_name))
+                            {
+                                cpd_values_by_plate_well[plate][descriptor_name][well] = value;
+                            }
+                            else
+                            {
+                                Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                                temp_dict[well] = value;
+                                cpd_values_by_plate_well[plate][descriptor_name] = temp_dict;
+                            }
+                        }
+                        else
+                        {
+                            Dictionary<string, double> temp_dict = new Dictionary<string, double>();
+                            temp_dict[well] = value;
+
+                            Dictionary<string, Dictionary<string, double>> descriptor_values_by_well = new Dictionary<string, Dictionary<string, double>>();
+
+                            descriptor_values_by_well[descriptor_name] = temp_dict;
+                            cpd_values_by_plate_well[plate] = descriptor_values_by_well;
+                        }
+                    }
+                }
+            }
+
+            foreach(KeyValuePair<string, Dictionary<string, Dictionary<string, double>>> elem in cpd_values_by_plate_well)
+            {
+                string plate_name = elem.Key;
+                Dictionary<string, Dictionary<string, double>> plate = elem.Value;
+
+                foreach(KeyValuePair<string, Dictionary<string, double>> descriptor_well_value in plate)
+                {
+                    string descriptor = descriptor_well_value.Key;
+
+                    double max_value_current_plate_descriptor = value_max_per_plate_descriptor[plate_name][descriptor];
+
+                    Dictionary<string, double> well_value = descriptor_well_value.Value;
+
+                    Dictionary<string, double> well_normalized_value = new Dictionary<string, double>();
+
+                    foreach(KeyValuePair<string, double> value_by_well in well_value)
+                    {
+                        string well = value_by_well.Key;
+
+                        double normalized_value = value_by_well.Value / max_value_current_plate_descriptor;
+                        well_normalized_value[well] = normalized_value;
+
+                        Color my_color = get_color_colormap(normalized_value);
+
+                        byte[] asciiBytes = Encoding.ASCII.GetBytes(well.Substring(0,1));
+                        int row = asciiBytes[0]-65;
+                        int col = int.Parse(well.Substring(1, 2))-1;
+
+                        fill_well_colors(row, col, my_color);
+                    }
+
+                }
+
+
+            }
+
+            double a = 0.0;
 
         }
 
