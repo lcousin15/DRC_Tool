@@ -137,16 +137,16 @@ namespace DRC
             {
                 Console.WriteLine("------ PATHWAYS : " + item.Key);
 
-               
-                    string hgf = "https://www.kegg.jp/kegg-bin/show_pathway?org_name=hsadd&map=" + item.Key + "&multi_query=";
-                    foreach (string target in item.Value)
-                    {
-                        hgf += target + "+%23FF0000/";
-                    }
-                    System.Diagnostics.Process.Start(hgf);
-               
 
-               
+                string hgf = "https://www.kegg.jp/kegg-bin/show_pathway?org_name=hsadd&map=" + item.Key + "&multi_query=";
+                foreach (string target in item.Value)
+                {
+                    hgf += target + "+%23FF0000/";
+                }
+                System.Diagnostics.Process.Start(hgf);
+
+
+
             }
 
             Console.WriteLine("------ NUMBER OF PATHWAYS : " + kl);
@@ -299,6 +299,7 @@ namespace DRC
 
             chart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseDown);
             chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart1_MouseMove);
+            chart.PostPaint += new EventHandler<ChartPaintEventArgs>(this.chart1_PostPaint);
 
             chart.Size = new System.Drawing.Size(1100, 500);
 
@@ -340,6 +341,34 @@ namespace DRC
 
         }
 
+        private void chart1_PostPaint(object sender, System.Windows.Forms.DataVisualization.Charting.ChartPaintEventArgs e)
+        {
+            if (graph_type == "z-score")
+            {
+                Chart my_chart = (Chart)sender;
+                ChartArea area = my_chart.ChartAreas[0];
+
+                Axis ax = chart.ChartAreas[0].AxisX;
+                Axis ay = chart.ChartAreas[0].AxisY;
+
+                Graphics graph = e.ChartGraphics.Graphics;
+
+                PointF point1 = PointF.Empty;
+                PointF point2 = PointF.Empty;
+
+                point1.X = (float)ax.ValueToPixelPosition(chart.ChartAreas[0].AxisX.Minimum);
+                point1.Y = (float)ay.ValueToPixelPosition(-1.0);
+                point2.X = (float)ax.ValueToPixelPosition(chart.ChartAreas[0].AxisX.Maximum);
+                point2.Y = (float)ay.ValueToPixelPosition(-1.0);
+
+                float[] dashValues = { 2, 2, 2, 2 };
+                Pen blackPen = new Pen(Color.DimGray, 0.25f);
+                blackPen.DashPattern = dashValues;
+
+                graph.DrawLine(blackPen, point1, point2);
+            }
+        }
+
         private void draw_chart()
         {
             if (graph_type == "auc") chart.Titles[0].Text = "AUC | " + descriptor.ToString();
@@ -360,9 +389,9 @@ namespace DRC
             chart.Series["Error_Bars"].MarkerStyle = MarkerStyle.None;
             chart.Series["Error_Bars"]["PointWidth"] = "0.25";
 
-            double error = 100;
+            //double error = 100;
 
-            for(int i = 0; i< y.Count; ++i)
+            for (int i = 0; i < y.Count; ++i)
             {
                 double centerY = y[i];
                 double lowerErrorY = centerY - error_y[i];

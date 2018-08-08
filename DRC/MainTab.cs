@@ -4930,7 +4930,8 @@ namespace DRC
 
                     foreach (KeyValuePair<string, double> val in auc_values_by_cpd)
                     {
-                        auc_values.Add(val.Value);
+                        string cpd = val.Key;
+                        if(cpd != "carfilzomib" && cpd != "Bortezomib") auc_values.Add(val.Value);
                     }
 
                     double mu = auc_values.Average();
@@ -5020,10 +5021,6 @@ namespace DRC
 
         }
 
-        private void normalizeDMSOToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            select_DMSO();
-        }
 
         private void btn_normalize_Click(object sender, EventArgs e)
         {
