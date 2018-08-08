@@ -62,7 +62,8 @@
             this.patientStratificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCZScoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.normalizeDMSOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wellPlateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -91,8 +92,6 @@
             this.btn_descriptors_options = new System.Windows.Forms.Button();
             this.btn_fix_top_bottom = new System.Windows.Forms.Button();
             this.btn_normalize = new System.Windows.Forms.Button();
-            this.wellPlateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -365,8 +364,7 @@
             // 
             this.patientStratificationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.computeAUCToolStripMenuItem,
-            this.computeAUCZScoreToolStripMenuItem,
-            this.normalizeDMSOToolStripMenuItem});
+            this.computeAUCZScoreToolStripMenuItem});
             this.patientStratificationToolStripMenuItem.Name = "patientStratificationToolStripMenuItem";
             this.patientStratificationToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.patientStratificationToolStripMenuItem.Text = "AUC";
@@ -385,12 +383,20 @@
             this.computeAUCZScoreToolStripMenuItem.Text = "Compute AUC Z-Score";
             this.computeAUCZScoreToolStripMenuItem.Click += new System.EventHandler(this.computeAUCZScoreToolStripMenuItem_Click);
             // 
-            // normalizeDMSOToolStripMenuItem
+            // wellPlateToolStripMenuItem
             // 
-            this.normalizeDMSOToolStripMenuItem.Name = "normalizeDMSOToolStripMenuItem";
-            this.normalizeDMSOToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.normalizeDMSOToolStripMenuItem.Text = "Normalize DMSO";
-            this.normalizeDMSOToolStripMenuItem.Click += new System.EventHandler(this.normalizeDMSOToolStripMenuItem_Click);
+            this.wellPlateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showToolStripMenuItem});
+            this.wellPlateToolStripMenuItem.Name = "wellPlateToolStripMenuItem";
+            this.wellPlateToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            this.wellPlateToolStripMenuItem.Text = "Well Plate";
+            // 
+            // showToolStripMenuItem
+            // 
+            this.showToolStripMenuItem.Name = "showToolStripMenuItem";
+            this.showToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.showToolStripMenuItem.Text = "Show";
+            this.showToolStripMenuItem.Click += new System.EventHandler(this.showToolStripMenuItem_Click);
             // 
             // comboBox1
             // 
@@ -788,21 +794,6 @@
             this.btn_normalize.UseVisualStyleBackColor = true;
             this.btn_normalize.Click += new System.EventHandler(this.btn_normalize_Click);
             // 
-            // wellPlateToolStripMenuItem
-            // 
-            this.wellPlateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showToolStripMenuItem});
-            this.wellPlateToolStripMenuItem.Name = "wellPlateToolStripMenuItem";
-            this.wellPlateToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
-            this.wellPlateToolStripMenuItem.Text = "Well Plate";
-            // 
-            // showToolStripMenuItem
-            // 
-            this.showToolStripMenuItem.Name = "showToolStripMenuItem";
-            this.showToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.showToolStripMenuItem.Text = "Show";
-            this.showToolStripMenuItem.Click += new System.EventHandler(this.showToolStripMenuItem_Click);
-            // 
             // MainTab
             // 
             this.AllowDrop = true;
@@ -923,7 +914,6 @@
         private System.Windows.Forms.ToolStripMenuItem patientStratificationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computeAUCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computeAUCZScoreToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem normalizeDMSOToolStripMenuItem;
         private System.Windows.Forms.Button btn_normalize;
         private System.Windows.Forms.ToolStripMenuItem wellPlateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;

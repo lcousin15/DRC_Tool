@@ -61,13 +61,31 @@ namespace DRC
         private void button5_Click(object sender, EventArgs e)
         {
             List<string> list_paths = new List<string>();
-            if (checkBox1.Checked && path_plate_1_1.Length > 1) list_paths.Add(path_plate_1_1);
-            if (checkBox2.Checked && path_plate_1_2.Length > 1) list_paths.Add(path_plate_1_2);
-            if (checkBox3.Checked && path_plate_2_1.Length > 1) list_paths.Add(path_plate_2_1);
-            if (checkBox4.Checked && path_plate_2_2.Length > 1) list_paths.Add(path_plate_2_2);
+            List<string> plate_names = new List<string>();
+
+            if (checkBox1.Checked && path_plate_1_1.Length > 1)
+            {
+                list_paths.Add(path_plate_1_1);
+                plate_names.Add("Plate 1-1");
+            }
+            if (checkBox2.Checked && path_plate_1_2.Length > 1)
+            {
+                list_paths.Add(path_plate_1_2);
+                plate_names.Add("Plate 1-2");
+            }
+            if (checkBox3.Checked && path_plate_2_1.Length > 1)
+            {
+                list_paths.Add(path_plate_2_1);
+                plate_names.Add("Plate 2-1");
+            }
+            if (checkBox4.Checked && path_plate_2_2.Length > 1)
+            {
+                list_paths.Add(path_plate_2_2);
+                plate_names.Add("Plate 2-2");
+            }
 
             if (path_template.Length > 1) _main_tab.process_template(path_template);
-            if (list_paths.Count > 0) _main_tab.process_data_PS(list_paths);
+            if (list_paths.Count > 0) _main_tab.process_data_PS(list_paths, plate_names);
             this.Close();
         }
 

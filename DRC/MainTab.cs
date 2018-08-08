@@ -4356,7 +4356,7 @@ namespace DRC
 
         }
 
-        public void process_data_PS(List<string> plate_paths)
+        public void process_data_PS(List<string> plate_paths, List<string> plate_names)
         {
             comboBox1.Visible = true;
 
@@ -4367,6 +4367,7 @@ namespace DRC
                 is_with_plate = false;
 
                 string file = plate_paths[k];
+                string plate_name = plate_names[k]; // option : rename the plate names (not implemented yet)
 
                 if (k == 0)
                 {
