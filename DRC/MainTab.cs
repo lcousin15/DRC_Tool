@@ -217,6 +217,8 @@ namespace DRC
         private List<double> ps_concentrations = new List<double>();
         private Dictionary<string, List<Chart_DRC>> dmso_charts = new Dictionary<string, List<Chart_DRC>>();
 
+        private Dictionary<string, string> cpd_target = new Dictionary<string, string>();
+
         public bool view_images_per_concentration;
 
         public int cpd_low_thr_ch1 = -1;
@@ -3969,6 +3971,8 @@ namespace DRC
             List<string> drugs = new List<string>();
             List<string> drugs_kegg = new List<string>();
 
+            List<string> targets = new List<string>();
+
             List<string> drug_plate = new List<string>();
 
             System.IO.StreamReader sr = new System.IO.StreamReader(file);
@@ -4034,6 +4038,17 @@ namespace DRC
                         }
                     }
 
+                    if (col_name == "Target")
+                    {
+                        if (template_cpds_csv[i].ToString() != "nan" && template_cpds_csv[i].ToString() != "inf")
+                        {
+                            value = template_cpds_csv[i].ToString();
+                            targets.Add(value);
+
+                        }
+                    }
+
+
                 }
 
             }
@@ -4073,18 +4088,21 @@ namespace DRC
 
             Dictionary<string, string> cpd_position_1 = new Dictionary<string, string>();
             Dictionary<string, string> cpd_position_2 = new Dictionary<string, string>();
-
+            cpd_target = new Dictionary<string, string>();
+            
             for (int i = 0; i < first_wells.Count; ++i)
             {
                 int plate = int.Parse(drug_plate[i]);
                 string well = first_wells[i];
                 string drug = drugs_kegg[i];
+                string target = targets[i];
 
                 if (plate == 1)
                 {
                     if (drug != "Blank")
                     {
                         cpd_position_1[well] = drug;
+                        cpd_target[drug] = target;
                     }
                     else
                     {
@@ -4096,6 +4114,7 @@ namespace DRC
                     if (drug != "Blank")
                     {
                         cpd_position_2[well] = drug;
+                        cpd_target[drug] = target;
                     }
                     else
                     {
@@ -4915,7 +4934,7 @@ namespace DRC
                     Dictionary<string, double> descriptor_auc = item.Value;
                     Dictionary<string, double> descriptor_auc_error = auc_error_dict[item.Key];
 
-                    Chart_Patient chart = new Chart_Patient(descriptor_auc, descriptor_auc_error, raw_data_dict[item.Key], item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+                    Chart_Patient chart = new Chart_Patient(descriptor_auc, descriptor_auc_error, raw_data_dict[item.Key], cpd_target, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
                     chart_auc.Add(item.Key.ToString(), chart);
 
                     //foreach (KeyValuePair<string, double> auc in descriptor_auc)
@@ -4989,7 +5008,7 @@ namespace DRC
                 {
                     Dictionary<string, double> descriptor_auc = item.Value;
                     Dictionary<string, double> descriptor_au_error = z_score_auc_error[item.Key];
-                    Chart_Patient chart = new Chart_Patient(descriptor_auc, descriptor_au_error, raw_data_dict[item.Key], item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
+                    Chart_Patient chart = new Chart_Patient(descriptor_auc, descriptor_au_error, raw_data_dict[item.Key], cpd_target, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
                     chart_auc_z_score.Add(item.Key.ToString(), chart);
 
                 }

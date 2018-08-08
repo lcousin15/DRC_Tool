@@ -63,6 +63,7 @@ namespace DRC
             //LocusID = 100133941;
             List<string> ListPathway = new List<string>();
             List<string> ListTarget = new List<string>();
+
             Dictionary<string, List<string>> Path_target = new Dictionary<string, List<string>>();
             int idx = 0;
             foreach (var CPD in list_cpds.Take(first_cpd_number))
@@ -180,6 +181,7 @@ namespace DRC
 
             Find_Pathways(CPDS);
         }
+
     }
 
     public class Chart_Patient
@@ -194,6 +196,7 @@ namespace DRC
         private Dictionary<string, double> dict_auc_errors_cpds = new Dictionary<string, double>();
 
         private Dictionary<string, List<DataGridViewRow>> raw_data = new Dictionary<string, List<DataGridViewRow>>();
+        private Dictionary<string, string> cpd_target = new Dictionary<string, string>();
 
         //private List<double> x = new List<double>();
         private List<double> y = new List<double>();
@@ -244,7 +247,7 @@ namespace DRC
             return dict_auc_errors_cpds;
         }
 
-        public Chart_Patient(Dictionary<string, double> auc_descriptor, Dictionary<string, double> auc_descriptor_error, Dictionary<string, List<DataGridViewRow>> raw_data_dict, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
+        public Chart_Patient(Dictionary<string, double> auc_descriptor, Dictionary<string, double> auc_descriptor_error, Dictionary<string, List<DataGridViewRow>> raw_data_dict, Dictionary<string, string> target, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
         {
             chart = new Chart();
 
@@ -260,6 +263,7 @@ namespace DRC
             dict_auc_errors_cpds = auc_descriptor_error;
 
             raw_data = raw_data_dict;
+            cpd_target = target;
 
             graph_type = graph;
 
@@ -487,14 +491,18 @@ namespace DRC
 
                             string list_wells = "Wells = ";
 
-                            for(int i=0; i<wells.Count; ++i)
+                            for (int i = 0; i < wells.Count; ++i)
                             {
                                 if (i < wells.Count - 1) list_wells += wells[i] + " , ";
                                 else list_wells += wells[i];
                             }
 
-                            if (graph_type == "auc") tooltip.Show("CPD = " + cpd + " | AUC = " + prop.YValues[0].ToString("N2") + "\n" + list_wells, this.chart, pos.X, pos.Y - 15);
-                            else if (graph_type == "z-score") tooltip.Show("CPD = " + cpd + " | Z-Score = " + prop.YValues[0].ToString("N2") + "\n" + list_wells, this.chart, pos.X, pos.Y - 15);
+                            //List<string> targets = get_targets(cpd);
+                            string targets = "";
+                            if(cpd_target.ContainsKey(cpd)) targets = cpd_target[cpd];
+
+                            if (graph_type == "auc") tooltip.Show("CPD = " + cpd + " | AUC = " + prop.YValues[0].ToString("N2") + "\n" + list_wells + "\n" + "Targets = " + targets, this.chart, pos.X, pos.Y - 15);
+                            else if (graph_type == "z-score") tooltip.Show("CPD = " + cpd + " | Z-Score = " + prop.YValues[0].ToString("N2") + "\n" + list_wells + "\n" + "Targets = " + targets, this.chart, pos.X, pos.Y - 15);
 
                         }
                     }
@@ -542,6 +550,81 @@ namespace DRC
                 }
             }
         }
+        /*
+        private List<string> get_targets(string cpd_id)
+        {
+            Dictionary<string, List<string>> Path_target = new Dictionary<string, List<string>>();
+
+            Console.WriteLine("------ CPD : " + cpd_id);
+            string getvars = "/find/drug/" + cpd_id;
+            WebRequest req = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars)) as WebRequest;
+            req.Method = "GET";
+
+
+            HttpWebResponse response2 = req.GetResponse() as HttpWebResponse;
+            StreamReader reader = new StreamReader(response2.GetResponseStream());
+
+            string CPD_KEGG = "";
+
+            CPD_KEGG = reader.ReadLine().Split('\t')[0];
+
+            reader.Close();
+            response2.Close();
+
+            if (CPD_KEGG != "")
+            {
+
+                Console.WriteLine("------ CPD : " + cpd_id + "------ CPD_ID : " + CPD_KEGG);
+
+                string getvars3 = "/get/" + CPD_KEGG;
+                WebRequest req3 = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars3)) as WebRequest;
+                req3.Method = "GET";
+
+
+                HttpWebResponse response3 = req3.GetResponse() as HttpWebResponse;
+                StreamReader reader3 = new StreamReader(response3.GetResponseStream());
+
+                List<string> toto = reader3.ReadToEnd().Split(' ').ToList();
+                foreach (string item in toto)
+                {
+
+                    if (item.Contains("hsa0"))
+                    {
+                        List<string> targetss = (item.Substring(9, item.Length - 10)).Split('+').ToList();
+                        if (Path_target.ContainsKey(item.Substring(0, 8)))
+                        {
+                            List<string> temp = Path_target[item.Substring(0, 8)];
+                            temp.AddRange(targetss.Distinct().ToList());
+                            Path_target[item.Substring(0, 8)] = temp.Distinct().ToList();
+                        }
+
+                        else
+                        {
+                            Path_target[item.Substring(0, 8)] = targetss.Distinct().ToList();
+
+                        }
+                    }
+                }
+
+                reader3.Close();
+                response3.Close();
+
+            }
+
+
+            Dictionary<string, List<string>> orderedDict = Path_target; //.OrderByDescending(x => x.Value.Count);
+            List<string> str = new List<string>();
+
+            foreach (KeyValuePair<string, List<string>> elem in orderedDict)
+            {
+                Console.WriteLine(elem.Key);
+                str = elem.Value;
+                foreach (string current_str in str) Console.WriteLine("..... " + current_str);
+            }
+
+            return str; // Not yet the good value, just a test
+        }
+        */
     }
 }
 
