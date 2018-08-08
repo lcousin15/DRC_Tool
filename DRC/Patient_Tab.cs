@@ -190,8 +190,10 @@ namespace DRC
 
         private Color chart_color;
 
-        Dictionary<string, double> dict_auc_cpds = new Dictionary<string, double>();
-        Dictionary<string, double> dict_auc_errors_cpds = new Dictionary<string, double>();
+        private Dictionary<string, double> dict_auc_cpds = new Dictionary<string, double>();
+        private Dictionary<string, double> dict_auc_errors_cpds = new Dictionary<string, double>();
+
+        private Dictionary<string, List<DataGridViewRow>> raw_data = new Dictionary<string, List<DataGridViewRow>>();
 
         //private List<double> x = new List<double>();
         private List<double> y = new List<double>();
@@ -242,7 +244,7 @@ namespace DRC
             return dict_auc_errors_cpds;
         }
 
-        public Chart_Patient(Dictionary<string, double> auc_descriptor, Dictionary<string, double> auc_descriptor_error, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
+        public Chart_Patient(Dictionary<string, double> auc_descriptor, Dictionary<string, double> auc_descriptor_error, Dictionary<string, List<DataGridViewRow>> raw_data_dict, string descriptor_name, Color color, Patient_Tab f_patient, int number_charts, string graph)
         {
             chart = new Chart();
 
@@ -256,6 +258,8 @@ namespace DRC
 
             dict_auc_cpds = auc_descriptor;
             dict_auc_errors_cpds = auc_descriptor_error;
+
+            raw_data = raw_data_dict;
 
             graph_type = graph;
 
@@ -399,7 +403,6 @@ namespace DRC
                 chart.Series["Error_Bars"].Points.AddXY(cpd_labels[i], centerY, lowerErrorY, upperErrorY);
             }
 
-
             //System.Drawing.Font chtFont = new System.Drawing.Font("Arial", 9, FontStyle.Regular);
             //chart.ChartAreas[0].AxisX.LabelStyle.Font = chtFont;
 
@@ -429,6 +432,18 @@ namespace DRC
             //chart.Height = 500;
 
             return output_image;
+        }
+
+        private List<string> get_cpd_wells(string cpd_id)
+        {
+            HashSet<string> wells_id = new HashSet<string>();
+
+            foreach (DataGridViewRow row in raw_data[cpd_id])
+            {
+                wells_id.Add(row.Cells["Well"].Value.ToString());
+            }
+
+            return wells_id.ToList();
         }
 
         Point? prevPosition = null;
@@ -468,9 +483,18 @@ namespace DRC
                             int index = y.FindIndex(a => a < point_y + 1E-8 && a > point_y - 1E-8);
                             string cpd = cpd_labels[index];
 
+                            List<string> wells = get_cpd_wells(cpd);
 
-                            if (graph_type == "auc") tooltip.Show("CPD = " + cpd + " | AUC = " + prop.YValues[0].ToString("N2"), this.chart, pos.X, pos.Y - 15);
-                            else if (graph_type == "z-score") tooltip.Show("CPD = " + cpd + " | Z-Score = " + prop.YValues[0].ToString("N2"), this.chart, pos.X, pos.Y - 15);
+                            string list_wells = "Wells = ";
+
+                            for(int i=0; i<wells.Count; ++i)
+                            {
+                                if (i < wells.Count - 1) list_wells += wells[i] + " , ";
+                                else list_wells += wells[i];
+                            }
+
+                            if (graph_type == "auc") tooltip.Show("CPD = " + cpd + " | AUC = " + prop.YValues[0].ToString("N2") + "\n" + list_wells, this.chart, pos.X, pos.Y - 15);
+                            else if (graph_type == "z-score") tooltip.Show("CPD = " + cpd + " | Z-Score = " + prop.YValues[0].ToString("N2") + "\n" + list_wells, this.chart, pos.X, pos.Y - 15);
 
                         }
                     }
