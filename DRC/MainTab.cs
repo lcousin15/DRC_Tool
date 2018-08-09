@@ -6336,8 +6336,8 @@ namespace DRC
                 double[] bndu = null;
 
                 // boundaries
-                bndu = new double[] { max_bound_y, min_bound_x, +100.0 };
-                bndl = new double[] { min_bound_y, max_bound_x, -100.0 };
+                bndu = new double[] { max_bound_y, min_bound_x, +1000.0 };
+                bndl = new double[] { min_bound_y, max_bound_x, -1000.0 };
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
@@ -6456,8 +6456,8 @@ namespace DRC
                 double[] bndu = null;
 
                 // boundaries
-                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +100.0 };
-                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -100.0 };
+                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +1000.0 };
+                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -1000.0 };
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;

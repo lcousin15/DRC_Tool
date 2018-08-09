@@ -440,5 +440,21 @@ namespace DRC
         {
             this.Close();
         }
+
+        private void wellplate_panel_MouseMove(object sender, MouseEventArgs e)
+        {
+            //double pointer_x = e.X;
+            //double pointer_y = e.Y;
+
+            //if (pointer_x >= 443 && pointer_x < 462 && pointer_y <= 18)
+            //{
+            //    Form fc = Application.OpenForms["Curves_Fit_Options"];
+
+            //    if (fc == null)
+            //        options_fit_form = new Curve_Fit_Options(this);
+
+            //    options_fit_form.Visible = true;
+            //}
+        }
     }
 }
