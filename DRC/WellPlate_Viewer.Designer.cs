@@ -44,6 +44,7 @@
             this.wellplate_panel.Name = "wellplate_panel";
             this.wellplate_panel.Size = new System.Drawing.Size(912, 482);
             this.wellplate_panel.TabIndex = 0;
+            this.wellplate_panel.MouseHover += new System.EventHandler(this.wellplate_panel_MouseHover);
             this.wellplate_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.wellplate_panel_MouseMove);
             // 
             // button1

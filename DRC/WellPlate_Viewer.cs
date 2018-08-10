@@ -12,6 +12,122 @@ using System.Windows.Forms;
 namespace DRC
 {
 
+    public class well_infos
+    {
+        Dictionary<string, Dictionary<string, Dictionary<string, double>>> data_descriptors 
+            = new Dictionary<string, Dictionary<string, Dictionary<string, double>>>();
+
+        Dictionary<string,Dictionary<string, string>> cpd_descriptors
+            = new Dictionary<string, Dictionary<string, string>>();
+
+        public well_infos()
+        {
+        }
+
+        public void add_value(string plate, string well, string descriptor, double value, string cpd)
+        {
+
+            // dict values :
+            if (data_descriptors.ContainsKey(plate))
+            {
+                Dictionary<string, Dictionary<string, double>> dict_well_descriptor = data_descriptors[plate];
+
+                if(dict_well_descriptor.ContainsKey(well))
+                {
+                    Dictionary<string, double> dict_descriptor_value = dict_well_descriptor[well];
+
+                    if (dict_descriptor_value.ContainsKey(descriptor))
+                    {
+                        data_descriptors[plate][well][descriptor] = value;
+                    }
+                    else
+                    {
+                        dict_descriptor_value[descriptor] = value;
+                        dict_well_descriptor[well] = dict_descriptor_value;
+                    }
+                }
+                else
+                {
+                    Dictionary<string, double> dict_temp = new Dictionary<string, double>();
+                    dict_temp[descriptor] = value;
+
+                    dict_well_descriptor[well] = dict_temp;
+                    data_descriptors[plate] = dict_well_descriptor;
+                }
+            }
+            else
+            {
+                Dictionary<string, Dictionary<string, double>> dict_temp_0 = new Dictionary<string, Dictionary<string, double>>();
+                Dictionary<string, double> dict_temp = new Dictionary<string, double>();
+                dict_temp[descriptor] = value;
+
+                dict_temp_0[well] = dict_temp;
+                data_descriptors[plate] = dict_temp_0;
+            }
+
+            // dict cpds :
+
+            if (cpd_descriptors.ContainsKey(plate))
+            {
+                Dictionary<string, string> dict_well_descriptor = cpd_descriptors[plate];
+
+                if (dict_well_descriptor.ContainsKey(well))
+                {
+                    dict_well_descriptor[well] = cpd;
+
+                }
+                else
+                {
+                    Dictionary<string, string> dict_temp = new Dictionary<string, string>();
+
+                    dict_well_descriptor[well] = cpd;
+                    cpd_descriptors[plate] = dict_well_descriptor;
+                }
+            }
+            else
+            {
+                Dictionary<string, string> dict_temp = new Dictionary<string, string>();
+                dict_temp[well] = cpd;
+
+                cpd_descriptors[plate] = dict_temp;
+            }
+
+        }
+
+        public string get_cpd_id(string plate, string well)
+        {
+            string cpd = "";
+            if(cpd_descriptors.ContainsKey(plate))
+            {
+                if(cpd_descriptors[plate].ContainsKey(well))
+                {
+                    cpd = cpd_descriptors[plate][well];
+                }
+            }
+
+            return cpd;
+        }
+
+        public double get_data(string plate, string well, string descriptor)
+        {
+            double value = 0.0;
+
+            if (data_descriptors.ContainsKey(plate))
+            {
+                if (data_descriptors[plate].ContainsKey(well))
+                {
+                    if (data_descriptors[plate][well].ContainsKey(descriptor))
+                    {
+                        value = data_descriptors[plate][well][descriptor];
+                    }
+                }
+            }
+
+            return value;
+        }
+
+    };
+
     public partial class WellPlate_Viewer : Form
     {
 
@@ -71,6 +187,10 @@ namespace DRC
         private Dictionary<string, Dictionary<string, double>> value_max_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
         private Dictionary<string, Dictionary<string, double>> value_min_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
 
+        well_infos wells_infos = new well_infos();
+
+        private int mouse_position_x;
+        private int mouse_position_y;
 
         public WellPlate_Viewer(MainTab main_tab)
         {
@@ -83,8 +203,8 @@ namespace DRC
 
             get_cpd_values_colormap();
             draw_well_plate();
-        }
 
+        }
 
         public void draw_well_plate()
         {
@@ -262,6 +382,7 @@ namespace DRC
                 foreach (Chart_DRC current_chart in charts)
                 {
                     string descriptor_name = current_chart.get_Descriptor_Name();
+
                     List<DataGridViewRow> raw_data_descriptor = current_chart.get_Raw_Data();
 
                     //Dictionary<string, double> descritptor_wells_values = new Dictionary<string, double>();
@@ -271,6 +392,8 @@ namespace DRC
                         string well = row.Cells["Well"].Value.ToString();
                         double value = Double.Parse(row.Cells[descriptor_name].Value.ToString());
                         plate = row.Cells["Plate"].Value.ToString();
+
+                        wells_infos.add_value(plate, well, descriptor_name, value, cpd_id);
 
                         if (value_max_per_plate_descriptor.ContainsKey(plate))
                         {
@@ -441,20 +564,51 @@ namespace DRC
             this.Close();
         }
 
+
+        ToolTip tooltip = new ToolTip();
+
         private void wellplate_panel_MouseMove(object sender, MouseEventArgs e)
         {
-            //double pointer_x = e.X;
-            //double pointer_y = e.Y;
+            mouse_position_x = e.X;
+            mouse_position_y = e.Y;
+        }
 
-            //if (pointer_x >= 443 && pointer_x < 462 && pointer_y <= 18)
-            //{
-            //    Form fc = Application.OpenForms["Curves_Fit_Options"];
+        private void wellplate_panel_MouseHover(object sender, EventArgs e)
+        {
 
-            //    if (fc == null)
-            //        options_fit_form = new Curve_Fit_Options(this);
+            tooltip.RemoveAll();
 
-            //    options_fit_form.Visible = true;
-            //}
+            // Idea : do a class per well with the info : cpd, values, ...
+
+            int col = (mouse_position_x - shift + 1) / (30 + offset);
+            int row = (mouse_position_y - shift + 1) / (20 + offset);
+
+            if (col > -1 && col < 24 && row > -1 && row < 16)
+            {
+                string well = letter[row];
+
+                if (number[col] < 10) well += "0" + number[col];
+                else well += number[col];
+
+                string current_well = "Well = " + well;
+
+                string current_plate = comboBox2.SelectedItem.ToString();
+
+                current_well += "\n";
+                current_well += "CPD = " + wells_infos.get_cpd_id(current_plate, well);
+
+                foreach(var item in comboBox1.Items)
+                {
+                    string descriptor = item.ToString();
+                    double descriptor_value = wells_infos.get_data(current_plate, well, descriptor);
+
+                    current_well += "\n";
+                    current_well += descriptor + " = " + descriptor_value.ToString();
+                }
+
+                tooltip.Show(current_well, this.wellplate_panel, mouse_position_x, mouse_position_y - 15);
+            }
+
         }
     }
 }
