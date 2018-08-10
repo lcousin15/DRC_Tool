@@ -12,122 +12,6 @@ using System.Windows.Forms;
 namespace DRC
 {
 
-    public class well_infos
-    {
-        Dictionary<string, Dictionary<string, Dictionary<string, double>>> data_descriptors 
-            = new Dictionary<string, Dictionary<string, Dictionary<string, double>>>();
-
-        Dictionary<string,Dictionary<string, string>> cpd_descriptors
-            = new Dictionary<string, Dictionary<string, string>>();
-
-        public well_infos()
-        {
-        }
-
-        public void add_value(string plate, string well, string descriptor, double value, string cpd)
-        {
-
-            // dict values :
-            if (data_descriptors.ContainsKey(plate))
-            {
-                Dictionary<string, Dictionary<string, double>> dict_well_descriptor = data_descriptors[plate];
-
-                if(dict_well_descriptor.ContainsKey(well))
-                {
-                    Dictionary<string, double> dict_descriptor_value = dict_well_descriptor[well];
-
-                    if (dict_descriptor_value.ContainsKey(descriptor))
-                    {
-                        data_descriptors[plate][well][descriptor] = value;
-                    }
-                    else
-                    {
-                        dict_descriptor_value[descriptor] = value;
-                        dict_well_descriptor[well] = dict_descriptor_value;
-                    }
-                }
-                else
-                {
-                    Dictionary<string, double> dict_temp = new Dictionary<string, double>();
-                    dict_temp[descriptor] = value;
-
-                    dict_well_descriptor[well] = dict_temp;
-                    data_descriptors[plate] = dict_well_descriptor;
-                }
-            }
-            else
-            {
-                Dictionary<string, Dictionary<string, double>> dict_temp_0 = new Dictionary<string, Dictionary<string, double>>();
-                Dictionary<string, double> dict_temp = new Dictionary<string, double>();
-                dict_temp[descriptor] = value;
-
-                dict_temp_0[well] = dict_temp;
-                data_descriptors[plate] = dict_temp_0;
-            }
-
-            // dict cpds :
-
-            if (cpd_descriptors.ContainsKey(plate))
-            {
-                Dictionary<string, string> dict_well_descriptor = cpd_descriptors[plate];
-
-                if (dict_well_descriptor.ContainsKey(well))
-                {
-                    dict_well_descriptor[well] = cpd;
-
-                }
-                else
-                {
-                    Dictionary<string, string> dict_temp = new Dictionary<string, string>();
-
-                    dict_well_descriptor[well] = cpd;
-                    cpd_descriptors[plate] = dict_well_descriptor;
-                }
-            }
-            else
-            {
-                Dictionary<string, string> dict_temp = new Dictionary<string, string>();
-                dict_temp[well] = cpd;
-
-                cpd_descriptors[plate] = dict_temp;
-            }
-
-        }
-
-        public string get_cpd_id(string plate, string well)
-        {
-            string cpd = "";
-            if(cpd_descriptors.ContainsKey(plate))
-            {
-                if(cpd_descriptors[plate].ContainsKey(well))
-                {
-                    cpd = cpd_descriptors[plate][well];
-                }
-            }
-
-            return cpd;
-        }
-
-        public double get_data(string plate, string well, string descriptor)
-        {
-            double value = 0.0;
-
-            if (data_descriptors.ContainsKey(plate))
-            {
-                if (data_descriptors[plate].ContainsKey(well))
-                {
-                    if (data_descriptors[plate][well].ContainsKey(descriptor))
-                    {
-                        value = data_descriptors[plate][well][descriptor];
-                    }
-                }
-            }
-
-            return value;
-        }
-
-    };
-
     public partial class WellPlate_Viewer : Form
     {
 
@@ -511,7 +395,7 @@ namespace DRC
             
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        public void draw()
         {
             initialize_well_plate_colors(Color.DarkBlue);
 
@@ -559,6 +443,11 @@ namespace DRC
             draw_well_plate();
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            draw();
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -603,7 +492,7 @@ namespace DRC
                     double descriptor_value = wells_infos.get_data(current_plate, well, descriptor);
 
                     current_well += "\n";
-                    current_well += descriptor + " = " + descriptor_value.ToString();
+                    current_well += descriptor + " = " + descriptor_value.ToString("N2");
                 }
 
                 tooltip.Show(current_well, this.wellplate_panel, mouse_position_x, mouse_position_y - 15);
@@ -611,4 +500,120 @@ namespace DRC
 
         }
     }
+
+    public class well_infos
+    {
+        Dictionary<string, Dictionary<string, Dictionary<string, double>>> data_descriptors
+            = new Dictionary<string, Dictionary<string, Dictionary<string, double>>>();
+
+        Dictionary<string, Dictionary<string, string>> cpd_descriptors
+            = new Dictionary<string, Dictionary<string, string>>();
+
+        public well_infos()
+        {
+        }
+
+        public void add_value(string plate, string well, string descriptor, double value, string cpd)
+        {
+
+            // dict values :
+            if (data_descriptors.ContainsKey(plate))
+            {
+                Dictionary<string, Dictionary<string, double>> dict_well_descriptor = data_descriptors[plate];
+
+                if (dict_well_descriptor.ContainsKey(well))
+                {
+                    Dictionary<string, double> dict_descriptor_value = dict_well_descriptor[well];
+
+                    if (dict_descriptor_value.ContainsKey(descriptor))
+                    {
+                        data_descriptors[plate][well][descriptor] = value;
+                    }
+                    else
+                    {
+                        dict_descriptor_value[descriptor] = value;
+                        dict_well_descriptor[well] = dict_descriptor_value;
+                    }
+                }
+                else
+                {
+                    Dictionary<string, double> dict_temp = new Dictionary<string, double>();
+                    dict_temp[descriptor] = value;
+
+                    dict_well_descriptor[well] = dict_temp;
+                    data_descriptors[plate] = dict_well_descriptor;
+                }
+            }
+            else
+            {
+                Dictionary<string, Dictionary<string, double>> dict_temp_0 = new Dictionary<string, Dictionary<string, double>>();
+                Dictionary<string, double> dict_temp = new Dictionary<string, double>();
+                dict_temp[descriptor] = value;
+
+                dict_temp_0[well] = dict_temp;
+                data_descriptors[plate] = dict_temp_0;
+            }
+
+            // dict cpds :
+
+            if (cpd_descriptors.ContainsKey(plate))
+            {
+                Dictionary<string, string> dict_well_descriptor = cpd_descriptors[plate];
+
+                if (dict_well_descriptor.ContainsKey(well))
+                {
+                    dict_well_descriptor[well] = cpd;
+
+                }
+                else
+                {
+                    Dictionary<string, string> dict_temp = new Dictionary<string, string>();
+
+                    dict_well_descriptor[well] = cpd;
+                    cpd_descriptors[plate] = dict_well_descriptor;
+                }
+            }
+            else
+            {
+                Dictionary<string, string> dict_temp = new Dictionary<string, string>();
+                dict_temp[well] = cpd;
+
+                cpd_descriptors[plate] = dict_temp;
+            }
+
+        }
+
+        public string get_cpd_id(string plate, string well)
+        {
+            string cpd = "";
+            if (cpd_descriptors.ContainsKey(plate))
+            {
+                if (cpd_descriptors[plate].ContainsKey(well))
+                {
+                    cpd = cpd_descriptors[plate][well];
+                }
+            }
+
+            return cpd;
+        }
+
+        public double get_data(string plate, string well, string descriptor)
+        {
+            double value = 0.0;
+
+            if (data_descriptors.ContainsKey(plate))
+            {
+                if (data_descriptors[plate].ContainsKey(well))
+                {
+                    if (data_descriptors[plate][well].ContainsKey(descriptor))
+                    {
+                        value = data_descriptors[plate][well][descriptor];
+                    }
+                }
+            }
+
+            return value;
+        }
+
+    };
 }

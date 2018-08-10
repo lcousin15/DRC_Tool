@@ -5067,11 +5067,13 @@ namespace DRC
             if (fc != null)
             {
                 well_plate.Show();
+                well_plate.draw();
             }
             else
             {
                 well_plate = new WellPlate_Viewer(this);
                 well_plate.Show();
+                well_plate.draw();
             }
 
 
