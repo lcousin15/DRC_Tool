@@ -5075,7 +5075,6 @@ namespace DRC
                 well_plate.Show();
                 well_plate.draw();
             }
-
         }
     }
 

@@ -499,6 +499,18 @@ namespace DRC
             }
 
         }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.Items.Count > 0 && comboBox1.SelectedItem != null 
+                && comboBox2.Items.Count > 0 && comboBox2.SelectedItem != null) draw();
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.Items.Count > 0 && comboBox1.SelectedItem != null 
+                && comboBox2.Items.Count > 0 && comboBox2.SelectedItem != null) draw();
+        }
     }
 
     public class well_infos
