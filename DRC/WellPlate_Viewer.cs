@@ -456,14 +456,18 @@ namespace DRC
 
         ToolTip tooltip = new ToolTip();
 
-        private void wellplate_panel_MouseMove(object sender, MouseEventArgs e)
-        {
-            mouse_position_x = e.X;
-            mouse_position_y = e.Y;
-        }
+        //private void wellplate_panel_MouseMove(object sender, MouseEventArgs e)
+        //{
+        //    //mouse_position_x = e.X;
+        //    //mouse_position_y = e.Y;
+        //}
 
         private void wellplate_panel_MouseHover(object sender, EventArgs e)
         {
+            var pos = wellplate_panel.PointToClient(Cursor.Position);
+
+            mouse_position_x = pos.X;
+            mouse_position_y = pos.Y;
 
             tooltip.RemoveAll();
 
