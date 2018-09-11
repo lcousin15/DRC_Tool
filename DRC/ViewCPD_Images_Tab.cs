@@ -20,9 +20,13 @@ namespace DRC
 {
     public partial class ViewCPD_Images_Tab : Form
     {
-        public ViewCPD_Images_Tab()
+
+        MainTab _main_tab;
+
+        public ViewCPD_Images_Tab(MainTab main_tab)
         {
             InitializeComponent();
+            _main_tab = main_tab;
         }
 
         public bool view_images_per_concentration;
@@ -166,6 +170,28 @@ namespace DRC
                     cellColumnIndex = 1;
                     cellRowIndex++;
                 }
+
+                ExcelWorksheet ws_params = pck.Workbook.Worksheets.Add("Parameters");
+
+                ws_params.Cells[2, 2].Value = "Low Thr Ch1";
+                ws_params.Cells[2, 3].Value = "Low Thr Ch2";
+                ws_params.Cells[2, 4].Value = "Low Thr Ch3";
+                ws_params.Cells[2, 5].Value = "Low Thr Ch4";
+
+                ws_params.Cells[3, 2].Value = _main_tab.cpd_low_thr_ch1;
+                ws_params.Cells[3, 3].Value = _main_tab.cpd_low_thr_ch2;
+                ws_params.Cells[3, 4].Value = _main_tab.cpd_low_thr_ch3;
+                ws_params.Cells[3, 5].Value = _main_tab.cpd_low_thr_ch4;
+
+                ws_params.Cells[5, 2].Value = "High Thr Ch1";
+                ws_params.Cells[5, 3].Value = "High Thr Ch2";
+                ws_params.Cells[5, 4].Value = "High Thr Ch3";
+                ws_params.Cells[5, 5].Value = "High Thr Ch4";
+
+                ws_params.Cells[6, 2].Value = _main_tab.cpd_high_thr_ch1;
+                ws_params.Cells[6, 3].Value = _main_tab.cpd_high_thr_ch2;
+                ws_params.Cells[6, 4].Value = _main_tab.cpd_high_thr_ch3;
+                ws_params.Cells[6, 5].Value = _main_tab.cpd_high_thr_ch4;
 
                 toolStripProgressBar1.Visible = false;
                 pck.SaveAs(new FileInfo(@"" + sfd.FileName));

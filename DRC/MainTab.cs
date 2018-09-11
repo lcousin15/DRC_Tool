@@ -128,6 +128,7 @@ namespace DRC
         public Patient_Tab form_patient;
         public Load_PS_Options Load_PS;
         public WellPlate_Viewer well_plate;
+        public ViewCPD_Images_Tab f12;
 
         public void SetForm()
         {
@@ -140,13 +141,12 @@ namespace DRC
             form_patient = new Patient_Tab(this);
             Load_PS = new Load_PS_Options(this);
             well_plate = new WellPlate_Viewer(this);
+            f12 = new ViewCPD_Images_Tab(this);
         }
 
         public RawData_Tab f3 = new RawData_Tab();
         public RawDataDRC_Tab f4 = new RawDataDRC_Tab();
         public Correlations_Tab f7 = new Correlations_Tab();
-
-        public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
 
         public Descriptors_General_Options descriptors_general_options_form;
         public Descriptors_Fix_Top_Options descriptors_fix_top_form;
@@ -230,10 +230,13 @@ namespace DRC
         public int cpd_high_thr_ch2 = -1;
         public int cpd_high_thr_ch3 = -1;
         public int cpd_high_thr_ch4 = -1;
+
         public int cpd_img_scale = -1;
         public int cpd_replicate = -1;
+
         public int cpd_color_format = -1;
         public int cpd_segm_method = -1;
+
         public bool set_param_cpd = false;
 
         private List<Color> curve_color = new List<Color>();
@@ -2428,7 +2431,7 @@ namespace DRC
             Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
 
             if (fc == null)
-                f12 = new ViewCPD_Images_Tab();
+                f12 = new ViewCPD_Images_Tab(this);
 
             if (view_images_per_concentration == true)
             {
@@ -2462,7 +2465,7 @@ namespace DRC
             Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
 
             if (fc == null)
-                f12 = new ViewCPD_Images_Tab();
+                f12 = new ViewCPD_Images_Tab(this);
 
             f12.Text = cpd_id;
 
@@ -2489,7 +2492,7 @@ namespace DRC
             Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
 
             if (fc == null)
-                f12 = new ViewCPD_Images_Tab();
+                f12 = new ViewCPD_Images_Tab(this);
 
             f12.Text = "Compounds Hits";
 
