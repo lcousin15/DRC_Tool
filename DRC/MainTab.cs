@@ -6198,6 +6198,17 @@ namespace DRC
             func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
         }
 
+        //public static void function1_grad(double[] c, double[] x, ref double func, double[] grad, object obj)
+        //{
+        //    func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
+
+        //    grad[0] = 1.0 - 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - x[0])));
+        //    grad[1] = 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - x[0])));
+        //    grad[2] = -1.0 * (c[3] * Math.Log(10) * (c[1] - c[0]) * Math.Pow(10, c[3] * (c[2] - x[0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - x[0]))) * (1 + Math.Pow(10, c[3] * (c[2] - x[0]))));
+        //    grad[3] = -1.0 * (Math.Log(10) * (c[1] - c[0]) * (c[2] - x[0]) * Math.Pow(10, c[3] * (c[2] - x[0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - x[0]))) * (1 + Math.Pow(10, c[3] * (c[2] - x[0]))));
+        //}
+
+
         private static void function_SigmoidInhibition_3_params(double[] c, double[] x, ref double func, object obj)
         {
             double fixed_top = (double)obj;
@@ -6285,7 +6296,26 @@ namespace DRC
             for (int i = 0; i < drc_points_x_enable.Count; ++i)
             {
                 double x = drc_points_x_enable[i];
+
                 double y_fit_curve = Sigmoid(c, x);
+
+                double residual_square = (drc_points_y_enable[i] - y_fit_curve) * (drc_points_y_enable[i] - y_fit_curve);
+
+                sum_square_residuals += residual_square;
+            }
+
+            return sum_square_residuals;
+        }
+
+        private double sum_sqaure_residuals_3_params(List<double> drc_points_x_enable, List<double> drc_points_y_enable, double[] c, double top)
+        {
+            double sum_square_residuals = 0.0;
+
+            for (int i = 0; i < drc_points_x_enable.Count; ++i)
+            {
+                double x = drc_points_x_enable[i];
+
+                double y_fit_curve = Sigmoid_3_params(c, x, top);
 
                 double residual_square = (drc_points_y_enable[i] - y_fit_curve) * (drc_points_y_enable[i] - y_fit_curve);
 
@@ -6307,7 +6337,7 @@ namespace DRC
 
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
-            double epsx = 0;
+            double epsx = 1e-6;
             int maxits = 0;
             int info;
 
@@ -6372,6 +6402,7 @@ namespace DRC
 
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
+                double mse = sum_sqaure_residuals_3_params(drc_points_x_enable, drc_points_y_enable, c, fixed_top);
 
                 if (r2 >= 0.85 && patient == false) confidence_interval = true;
                 else confidence_interval = false;
@@ -6405,7 +6436,7 @@ namespace DRC
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
                         double a = compute_least_square_error_3_params(covariance_matrix, c[0], fixed_top, c[1], c[2], x_fit_log[i]);
-                        double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
+                        double sigma_confidence_interval = t_test_val * /*Math.Sqrt(mse/dof) */ Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
 
                         double CI_max = Sigmoid_3_params(c, x_fit_log[i], fixed_top) + sigma_confidence_interval;
                         double CI_min = Sigmoid_3_params(c, x_fit_log[i], fixed_top) - sigma_confidence_interval;
@@ -6470,9 +6501,12 @@ namespace DRC
                 //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
 
                 double[,] Concentration = new double[drc_points_x_enable.Count(), 1];
+                double[] conc_0 = new double[drc_points_x_enable.Count()];
+
                 for (var i = 0; i < drc_points_x_enable.Count(); ++i)
                 {
                     Concentration[i, 0] = drc_points_x_enable[i];
+                    conc_0[i] = drc_points_x_enable[i];
                 }
 
                 alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
@@ -6486,6 +6520,7 @@ namespace DRC
                 fit_parameters = c;
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
+                double mse = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
 
                 if (r2 >= 0.85 && patient == false) confidence_interval = true;
                 else confidence_interval = false;
@@ -6493,12 +6528,15 @@ namespace DRC
                 err_bottom = rep.errpar[0];
                 err_top = rep.errpar[1];
                 err_ec_50 = rep.errpar[2];
+                //err_ec_50 = 0.0;
                 err_slope = rep.errpar[3];
 
                 if (confidence_interval)
                 {
 
                     double[,] covariance_matrix = rep.covpar;
+
+                    //covariance_matrix[3,3] = 0.2;
 
                     int dof = drc_points_y_enable.Count - 4;
 
@@ -6525,7 +6563,7 @@ namespace DRC
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
                         double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
-                        double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
+                        double sigma_confidence_interval = t_test_val * /*Math.Sqrt(mse/dof) */ Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
 
                         double CI_max = Sigmoid(c, x_fit_log[i]) + sigma_confidence_interval;
                         double CI_min = Sigmoid(c, x_fit_log[i]) - sigma_confidence_interval;
