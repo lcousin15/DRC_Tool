@@ -6248,6 +6248,32 @@ namespace DRC
             return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1 + Math.Pow(10, a3 * (a2 - x))));
         }
 
+
+        private static void function1_grad(double[] c, ref double func, double[] grad, object obj)
+        {
+            double[,] data = (double[,])obj;
+
+            grad = new double[4];
+
+            func = 0.0;
+
+            // Compute the cost function and the exact gradient
+
+            for (int i = 0; i < data.GetLength(0); ++i)
+            {
+
+                double y_pred = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - data[i, 0]) * c[3])));
+
+                grad[0] += 1.0 - 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
+                grad[1] += 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
+                grad[2] += -1.0 * (c[3] * Math.Log(10) * (c[1] - c[0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
+                grad[3] += -1.0 * (Math.Log(10) * (c[1] - c[0]) * (c[2] - data[i, 0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
+
+                func += Math.Pow(y_pred - data[i, 1], 2)/ (double)(data.GetLength(0)-4);
+            }
+
+        }
+
         private double compute_least_square_error(double[,] cov, double a0, double a1, double a2, double a3, double x)
         {
 
@@ -6337,7 +6363,11 @@ namespace DRC
 
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
-            double epsx = 1e-6;
+            double epsf = 0;
+            double epsx = 0;//0.000000001;
+            double diffstep = 1e-12;
+
+            //double epsx = 1e-6;
             int maxits = 0;
             int info;
 
@@ -6374,7 +6404,6 @@ namespace DRC
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
-                double diffstep = 1e-12;
 
                 // Fitting without weights
                 //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
@@ -6485,6 +6514,7 @@ namespace DRC
             {
                 double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
                 double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
+                double[] c2 = new double[] {min_bound_y, max_bound_y, BaseEC50, 1 };
 
                 double[] bndl = null;
                 double[] bndu = null;
@@ -6495,7 +6525,6 @@ namespace DRC
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
-                double diffstep = 1e-12;
 
                 // Fitting without weights
                 //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
@@ -6520,6 +6549,33 @@ namespace DRC
                 fit_parameters = c;
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
+
+                //double[,] data = new double[drc_points_x_enable.Count(),2];
+
+                //for (int i = 0; i < drc_points_x_enable.Count(); ++i)
+                //{
+                //    data[i, 0] = drc_points_x_enable[i];
+                //    data[i, 1] = drc_points_y_enable[i];
+                //}
+
+                //double epsg2 = 1e-9;
+                //double epsf2 = 0;
+                //double epsx2 = 0;
+                //int maxits2 = 0;
+                //alglib.minlbfgsstate state2;
+                //alglib.minlbfgsreport rep2;
+
+                ////double[] s2 = new double[] { 1 / c[0], 1 / c[1], 1 / c[2], 1 / c[3] };
+
+                //alglib.minlbfgscreate(1, c2, out state2);
+                //alglib.minlbfgssetcond(state2, epsg2, epsf2, epsx2, maxits2);
+                ////alglib.minlbfgssetscale(state2, s2);
+                //alglib.minlbfgsoptimize(state2, function1_grad, null, data);
+                //alglib.minlbfgsresults(state2, out c2, out rep2);
+
+                //c = c2;
+                //fit_parameters = c2;
+
                 double mse = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
 
                 if (r2 >= 0.85 && patient == false) confidence_interval = true;
