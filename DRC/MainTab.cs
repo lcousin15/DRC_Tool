@@ -6256,20 +6256,33 @@ namespace DRC
             grad = new double[4];
 
             func = 0.0;
+            grad[0] = 0.0;
+            grad[1] = 0.0;
+            grad[2] = 0.0;
+            grad[3] = 0.0;
 
             // Compute the cost function and the exact gradient
+
+            double dof = data.GetLength(0) - 4;
 
             for (int i = 0; i < data.GetLength(0); ++i)
             {
 
                 double y_pred = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - data[i, 0]) * c[3])));
 
-                grad[0] += 1.0 - 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
-                grad[1] += 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
-                grad[2] += -1.0 * (c[3] * Math.Log(10) * (c[1] - c[0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
-                grad[3] += -1.0 * (Math.Log(10) * (c[1] - c[0]) * (c[2] - data[i, 0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
+                //grad[0] += 1.0 - 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
+                //grad[1] += 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
+                //grad[2] += -1.0 * (c[3] * Math.Log(10) * (c[1] - c[0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
+                //grad[3] += -1.0 * (Math.Log(10) * (c[1] - c[0]) * (c[2] - data[i, 0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
 
-                func += Math.Pow(y_pred - data[i, 1], 2)/ (double)(data.GetLength(0)-4);
+                double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
+
+                grad[0] += 2 * dof * (-1 - 1 / (denom)) * ((c[1] - c[0]) / denom + y_pred - c[0]);
+                grad[1] += 2 * dof * ((c[1] - c[0]) / denom - c[0] + y_pred) / denom;
+                grad[2] += (c[3] * dof * Math.Log(10) * (c[1] - c[0]) * Math.Pow(2, c[3] * (c[2] - data[i, 0]) + 1) * Math.Pow(5, c[3] * (c[2] - data[i, 0])) * (y_pred - c[0] + (c[1] - c[0]) / denom)) / (denom * denom);
+                grad[3] += -1.0 * dof * ((c[2]-data[i,0])*Math.Log(10)*(c[1]-c[0])*Math.Pow(2, 1+c[2]*c[3]-c[3]*data[i,0])*Math.Pow(5,(c[2]-data[i,0])*c[3])*(y_pred-c[0]+ (c[1]-c[0])/denom))/ (denom * denom);
+
+                func += Math.Pow(y_pred - data[i, 1], 2)/ dof;
             }
 
         }
@@ -6550,28 +6563,30 @@ namespace DRC
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
 
-                //double[,] data = new double[drc_points_x_enable.Count(),2];
+                double[,] data = new double[drc_points_x_enable.Count(), 2];
 
-                //for (int i = 0; i < drc_points_x_enable.Count(); ++i)
-                //{
-                //    data[i, 0] = drc_points_x_enable[i];
-                //    data[i, 1] = drc_points_y_enable[i];
-                //}
+                for (int i = 0; i < drc_points_x_enable.Count(); ++i)
+                {
+                    data[i, 0] = drc_points_x_enable[i];
+                    data[i, 1] = drc_points_y_enable[i];
+                }
 
-                //double epsg2 = 1e-9;
-                //double epsf2 = 0;
-                //double epsx2 = 0;
-                //int maxits2 = 0;
-                //alglib.minlbfgsstate state2;
-                //alglib.minlbfgsreport rep2;
+                double epsg2 = 1e-6;
+                double epsf2 = 0;
+                double epsx2 = 0;
+                int maxits2 = 0;
+                alglib.minlbfgsstate state2;
+                alglib.minlbfgsreport rep2;
 
-                ////double[] s2 = new double[] { 1 / c[0], 1 / c[1], 1 / c[2], 1 / c[3] };
+                //double[] s2 = new double[] { 1 / c[0], 1 / c[1], 1 / c[2], 1 / c[3] };
 
-                //alglib.minlbfgscreate(1, c2, out state2);
-                //alglib.minlbfgssetcond(state2, epsg2, epsf2, epsx2, maxits2);
-                ////alglib.minlbfgssetscale(state2, s2);
-                //alglib.minlbfgsoptimize(state2, function1_grad, null, data);
-                //alglib.minlbfgsresults(state2, out c2, out rep2);
+                alglib.minlbfgscreate(1, c2, out state2);
+                alglib.minlbfgssetcond(state2, epsg2, epsf2, epsx2, maxits2);
+                //alglib.minlbfgssetscale(state2, s2);
+                alglib.minlbfgsoptimize(state2, function1_grad, null, data);
+                alglib.minlbfgsresults(state2, out c2, out rep2);
+
+                int code = rep2.terminationtype;
 
                 //c = c2;
                 //fit_parameters = c2;
