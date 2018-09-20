@@ -6249,11 +6249,11 @@ namespace DRC
         }
 
 
-        private static void function1_grad(double[] c, ref double func, double[] grad, object obj)
+        public static void compute_chi_square(double[] c, ref double func, double[] grad, object obj)
         {
             double[,] data = (double[,])obj;
 
-            grad = new double[4];
+            //grad = new double[4];
 
             func = 0.0;
             grad[0] = 0.0;
@@ -6263,28 +6263,71 @@ namespace DRC
 
             // Compute the cost function and the exact gradient
 
-            double dof = data.GetLength(0) - 4;
+            double dof = 1.0 / (data.GetLength(0) - 4);
 
             for (int i = 0; i < data.GetLength(0); ++i)
             {
 
-                double y_pred = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - data[i, 0]) * c[3])));
+                double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
+
+                double y_pred = c[0] + (c[1] - c[0]) / denom;
 
                 //grad[0] += 1.0 - 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
                 //grad[1] += 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
                 //grad[2] += -1.0 * (c[3] * Math.Log(10) * (c[1] - c[0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
                 //grad[3] += -1.0 * (Math.Log(10) * (c[1] - c[0]) * (c[2] - data[i, 0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
 
-                double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
+                //grad[0] += 2 * dof * (-1 - 1 / (denom)) * ((c[1] - c[0]) / denom + y_pred - c[0]);
+                //grad[1] += 2 * dof * ((c[1] - c[0]) / denom - c[0] + y_pred) / denom;
+                //grad[2] += (c[3] * dof * Math.Log(10) * (c[1] - c[0]) * Math.Pow(2, c[3] * (c[2] - data[i, 0]) + 1) * Math.Pow(5, c[3] * (c[2] - data[i, 0])) * (y_pred - c[0] + (c[1] - c[0]) / denom)) / (denom * denom);
+                //grad[3] += -1.0 * dof * ((c[2]-data[i,0])*Math.Log(10)*(c[1]-c[0])*Math.Pow(2, 1+c[2]*c[3]-c[3]*data[i,0])*Math.Pow(5,(c[2]-data[i,0])*c[3])*(y_pred-c[0]+ (c[1]-c[0])/denom))/ (denom * denom);
 
-                grad[0] += 2 * dof * (-1 - 1 / (denom)) * ((c[1] - c[0]) / denom + y_pred - c[0]);
-                grad[1] += 2 * dof * ((c[1] - c[0]) / denom - c[0] + y_pred) / denom;
-                grad[2] += (c[3] * dof * Math.Log(10) * (c[1] - c[0]) * Math.Pow(2, c[3] * (c[2] - data[i, 0]) + 1) * Math.Pow(5, c[3] * (c[2] - data[i, 0])) * (y_pred - c[0] + (c[1] - c[0]) / denom)) / (denom * denom);
-                grad[3] += -1.0 * dof * ((c[2]-data[i,0])*Math.Log(10)*(c[1]-c[0])*Math.Pow(2, 1+c[2]*c[3]-c[3]*data[i,0])*Math.Pow(5,(c[2]-data[i,0])*c[3])*(y_pred-c[0]+ (c[1]-c[0])/denom))/ (denom * denom);
+                double b2 = c[0]; // 0.0; //c[0];
+                double t2 = c[1]; // 1.0; // c[1];
+                double e2 = c[2]; // -7.10568394; // c[2];
+                double s2 = c[3];
+                double y2 = data[i,1];
+                double w2 = data[i,0];
 
-                func += Math.Pow(y_pred - data[i, 1], 2)/ dof;
+                //double a = (2 - 2 / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
+
+                grad[0] += (2 - 2 / (Math.Pow(10,(s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
+                grad[1] += 2 * (b2 - y2 + (-b2 + t2) / (Math.Pow(10,(s2 * (e2 - w2))) + 1)) / (Math.Pow(10, (s2 * (e2 - w2))) + 1);
+                grad[2] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * s2 * (-b2 + t2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10,(s2 * (e2 - w2))) + 1) ,2);
+                grad[3] += -2 * Math.Pow(10 ,(s2 * (e2 - w2))) * (-b2 + t2) * (e2 - w2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10,(s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+
+                func += Math.Pow(y2 - y_pred, 2);
             }
 
+            grad[0] *= dof;
+            grad[1] *= dof;
+            grad[2] *= dof;
+            grad[3] *= dof;
+            func *= dof;
+        }
+
+        public static void compute_chi_square2(double[] c, ref double func, object obj)
+        {
+            double[,] data = (double[,])obj;
+
+            // Compute the cost function and the exact gradient
+
+            double dof = 1.0 / (data.GetLength(0) - 4);
+
+            //c[0] = 0.0;
+            //c[1] = 1.0;
+            //c[2] = -7.10568394;
+            //c[3] = 1.0;
+
+            for (int i = 0; i < data.GetLength(0); ++i)
+            {
+                double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
+                double y_pred = c[0] + (c[1] - c[0]) / denom;
+
+                func += Math.Pow(data[i,1] - y_pred, 2);
+            }
+
+            func *= dof;
         }
 
         private double compute_least_square_error(double[,] cov, double a0, double a1, double a2, double a3, double x)
@@ -6528,6 +6571,7 @@ namespace DRC
                 double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
                 double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
                 double[] c2 = new double[] {min_bound_y, max_bound_y, BaseEC50, 1 };
+                double[] c3 = new double[] {min_bound_y, max_bound_y, BaseEC50, 1 };
 
                 double[] bndl = null;
                 double[] bndu = null;
@@ -6571,25 +6615,43 @@ namespace DRC
                     data[i, 1] = drc_points_y_enable[i];
                 }
 
-                double epsg2 = 1e-6;
+                double epsg2 = 1e-10;
                 double epsf2 = 0;
                 double epsx2 = 0;
-                int maxits2 = 0;
+                int maxits2 = 10000; //10000;
+
                 alglib.minlbfgsstate state2;
                 alglib.minlbfgsreport rep2;
-
+                //double diffstep2 = 1.0e-6;
                 //double[] s2 = new double[] { 1 / c[0], 1 / c[1], 1 / c[2], 1 / c[3] };
 
-                alglib.minlbfgscreate(1, c2, out state2);
+                //alglib.minlbfgscreatef(4, c2, diffstep2, out state2);
+                alglib.minlbfgscreate(4, c2, out state2);
                 alglib.minlbfgssetcond(state2, epsg2, epsf2, epsx2, maxits2);
-                //alglib.minlbfgssetscale(state2, s2);
-                alglib.minlbfgsoptimize(state2, function1_grad, null, data);
+                //alglib.mincgsetscale(state2, s2);
+                alglib.minlbfgsoptimize(state2, compute_chi_square, null, data);
                 alglib.minlbfgsresults(state2, out c2, out rep2);
 
-                int code = rep2.terminationtype;
+                //double epsg3 = .00001;
+                //double epsf3 = 0;
+                //double epsx3 = 0;
+                //int maxits3 = 10000;
+                //alglib.minlmstate state3;
+                //alglib.minlmreport rep3;
+                ////double[] scaling = new double[] { 1E6, 1, 1 };
 
-                //c = c2;
-                //fit_parameters = c2;
+                //alglib.minlmcreatev(3, c3, 0.001, out state3);
+                //alglib.minlmsetcond(state3, epsx3, maxits3);
+                //alglib.minlmsetgradientcheck(state3, 1);
+                ////alglib.minlmsetscale(state, scaling);
+                //alglib.minlmoptimize(state3, compute_chi_square, null, data);
+                //alglib.minlmresults(state3, out c3, out rep3);
+
+                int code = rep2.terminationtype;
+                //int code3 = rep3.terminationtype;
+                //c = c3;
+                c = c2;
+                fit_parameters = c2;
 
                 double mse = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
 
