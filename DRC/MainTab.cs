@@ -4092,7 +4092,7 @@ namespace DRC
             Dictionary<string, string> cpd_position_1 = new Dictionary<string, string>();
             Dictionary<string, string> cpd_position_2 = new Dictionary<string, string>();
             cpd_target = new Dictionary<string, string>();
-            
+
             for (int i = 0; i < first_wells.Count; ++i)
             {
                 int plate = int.Parse(drug_plate[i]);
@@ -4967,7 +4967,7 @@ namespace DRC
                     foreach (KeyValuePair<string, double> val in auc_values_by_cpd)
                     {
                         string cpd = val.Key;
-                        if(cpd != "carfilzomib" && cpd != "Bortezomib") auc_values.Add(val.Value);
+                        if (cpd != "carfilzomib" && cpd != "Bortezomib") auc_values.Add(val.Value);
                     }
 
                     double mu = auc_values.Average();
@@ -6286,15 +6286,15 @@ namespace DRC
                 double t2 = c[1]; // 1.0; // c[1];
                 double e2 = c[2]; // -7.10568394; // c[2];
                 double s2 = c[3];
-                double y2 = data[i,1];
-                double w2 = data[i,0];
+                double y2 = data[i, 1];
+                double w2 = data[i, 0];
 
                 //double a = (2 - 2 / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
 
-                grad[0] += (2 - 2 / (Math.Pow(10,(s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
-                grad[1] += 2 * (b2 - y2 + (-b2 + t2) / (Math.Pow(10,(s2 * (e2 - w2))) + 1)) / (Math.Pow(10, (s2 * (e2 - w2))) + 1);
-                grad[2] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * s2 * (-b2 + t2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10,(s2 * (e2 - w2))) + 1) ,2);
-                grad[3] += -2 * Math.Pow(10 ,(s2 * (e2 - w2))) * (-b2 + t2) * (e2 - w2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10,(s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+                grad[0] += (2 - 2 / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
+                grad[1] += 2 * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) / (Math.Pow(10, (s2 * (e2 - w2))) + 1);
+                grad[2] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * s2 * (-b2 + t2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+                grad[3] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * (-b2 + t2) * (e2 - w2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
 
                 func += Math.Pow(y2 - y_pred, 2);
             }
@@ -6324,11 +6324,134 @@ namespace DRC
                 double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
                 double y_pred = c[0] + (c[1] - c[0]) / denom;
 
-                func += Math.Pow(data[i,1] - y_pred, 2);
+                func += Math.Pow(data[i, 1] - y_pred, 2);
             }
 
             func *= dof;
         }
+
+        private double[,] compute_hessian(double[] c, double[,] data)
+        {
+
+            double[,] H = new double[4, 4];
+
+            for (int i = 0; i < H.GetLength(0); i++)
+            {
+                for (int j = 0; j < H.GetLength(1); ++j)
+                {
+                    H[i, j] = 0.0;
+                }
+            }
+
+
+            double dof = 1.0 / (data.GetLength(0) - 4.0);
+
+            for (int i = 0; i < data.GetLength(0); ++i)
+            {
+
+                double w = data[i, 0];
+                double y_obs = data[i, 1];
+
+                double b = c[0];
+                double t = c[1];
+                double e = c[2];
+                double s = c[3];
+
+                H[0, 0] += (1 - 1 / (Math.Pow(10, (s * (e - w))) + 1)) * (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1));
+
+                H[0, 1] += (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1)) / (Math.Pow(10, (s * (e - w))) + 1);
+
+                H[0, 2] += -Math.Pow(10, (s * (e - w))) * s * (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1)) * (-b + t) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) + 2 * Math.Pow(10, (s * (e - w))) * s * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[0, 3] += -Math.Pow(10, (s * (e - w))) * (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1)) * (-b + t) * (e - w) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) + 2 * Math.Pow(10, (s * (e - w))) * (e - w) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[1, 0] += (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1)) / (Math.Pow(10, (s * (e - w))) + 1);
+
+                H[1, 1] += 2 / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[1, 2] += -Math.Pow(10, (s * (e - w))) * s * (2 * b - 2 * y_obs + 2 * (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - Math.Pow(10, (s * (e - w))) * s * (-2 * b + 2 * t) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3);
+
+                H[1, 3] += -Math.Pow(10, (s * (e - w))) * (e - w) * (2 * b - 2 * y_obs + 2 * (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - Math.Pow(10, (s * (e - w))) * (-2 * b + 2 * t) * (e - w) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3);
+
+                H[2, 0] += -2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (1 - 1 / (Math.Pow(10, (s * (e - w))) + 1)) * (-b + t) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) + 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[2, 1] += -2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (-b + t) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3);
+
+                H[2, 2] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * Math.Pow(s, 2) * (-b + t) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3) + 2 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * Math.Pow(s, 2) * Math.Pow((
+                    -b + t), 2) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, (
+                    s * (e - w))) * Math.Pow(s, 2) * (-b + t) * (b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(
+                    10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[2, 3] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * s * (-b + t) * (e - w) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3) + 2 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * s * Math.Pow((-b + t), 2) * (
+                    e - w) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (
+                    -b + t) * (e - w) * (b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * (-b + t) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[3, 0] += -2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * (1 - 1 / (Math.Pow(10, (s * (e - w))) + 1)) * (-b + t) * (e - w) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) + 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * (e - w) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[3, 1] += -2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * (e - w) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * (-b + t) * (e - w) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3);
+
+                H[3, 2] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * s * (-b + t) * (e - w) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3) + 2 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * s * Math.Pow((-b + t), 2) * (
+                    e - w) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (
+                    -b + t) * (e - w) * (b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * (-b + t) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[3, 3] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * (-b + t) * Math.Pow((e - w), 2) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3) + 2 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * Math.Pow((-b + t), 2) * Math.Pow((
+                    e - w), 2) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * (
+                    -b + t) * Math.Pow((e - w), 2) * (b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2);
+
+            }
+
+            H[0, 0] *= dof;
+            H[0, 1] *= dof;
+            H[0, 2] *= dof;
+            H[0, 3] *= dof;
+
+            H[1, 0] *= dof;
+            H[1, 1] *= dof;
+            H[1, 2] *= dof;
+            H[1, 3] *= dof;
+
+            H[2, 0] *= dof;
+            H[2, 1] *= dof;
+            H[2, 2] *= dof;
+            H[2, 3] *= dof;
+
+            H[3, 0] *= dof;
+            H[3, 1] *= dof;
+            H[3, 2] *= dof;
+            H[3, 3] *= dof;
+
+            return H;
+    }
 
         private double compute_least_square_error(double[,] cov, double a0, double a1, double a2, double a3, double x)
         {
@@ -6570,8 +6693,8 @@ namespace DRC
             {
                 double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
                 double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
-                double[] c2 = new double[] {min_bound_y, max_bound_y, BaseEC50, 1 };
-                double[] c3 = new double[] {min_bound_y, max_bound_y, BaseEC50, 1 };
+                double[] c2 = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
+                double[] c3 = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
 
                 double[] bndl = null;
                 double[] bndu = null;
@@ -6618,10 +6741,11 @@ namespace DRC
                 double epsg2 = 1e-10;
                 double epsf2 = 0;
                 double epsx2 = 0;
-                int maxits2 = 10000; //10000;
+                int maxits2 = 0; //10000;
 
                 alglib.minlbfgsstate state2;
                 alglib.minlbfgsreport rep2;
+
                 //double diffstep2 = 1.0e-6;
                 //double[] s2 = new double[] { 1 / c[0], 1 / c[1], 1 / c[2], 1 / c[3] };
 
@@ -6648,6 +6772,7 @@ namespace DRC
                 //alglib.minlmresults(state3, out c3, out rep3);
 
                 int code = rep2.terminationtype;
+                //rep2.varidx
                 //int code3 = rep3.terminationtype;
                 //c = c3;
                 c = c2;
@@ -6666,6 +6791,10 @@ namespace DRC
 
                 if (confidence_interval)
                 {
+
+                    //double[] bfgs_estimate_hessian = new double[4];
+                    //bfgs_estimate_hessian = Dot(jacobian_bfgs, jacobian_bfgs.T)
+
 
                     double[,] covariance_matrix = rep.covpar;
 
