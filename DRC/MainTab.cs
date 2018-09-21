@@ -6879,12 +6879,16 @@ namespace DRC
 
                 if (confidence_interval)
                 {
-
                     //double[] c4 = new double[4] { -1.75831442e-05, 9.50573544e-01, -5.09114109e+00, 8.45927391e+00 };
 
                     //double[] bfgs_estimate_hessian = new double[4];
                     //bfgs_estimate_hessian = Dot(jacobian_bfgs, jacobian_bfgs.T)
                     double[,] hessian = compute_hessian(c, data);
+
+                    alglib.matinvreport rep_mat;
+                    int info_mat;
+
+                    alglib.rmatrixinverse(ref hessian, out info_mat, out rep_mat);
 
                     for (int i = 0; i < 4; i++)
                     {
@@ -6893,11 +6897,6 @@ namespace DRC
                             hessian[i, j] = 0.5 * hessian[i, j];
                         }
                     }
-
-                    alglib.matinvreport rep_mat;
-                    int info_mat;
-
-                    alglib.rmatrixinverse(ref hessian, out info_mat, out rep_mat);
 
                     double[,] covariance_matrix2 = hessian;
 
