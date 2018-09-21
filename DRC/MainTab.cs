@@ -6235,18 +6235,17 @@ namespace DRC
 
         private double compute_jacobian_param_1(double a0, double a1, double a2, double a3, double x)
         {
-            return 1.0 / (1 + Math.Pow(10, a3 * (a2 - x)));
+            return 1.0 / (1.0 + Math.Pow(10, a3 * (a2 - x)));
         }
 
         private double compute_jacobian_param_2(double a0, double a1, double a2, double a3, double x)
         {
-            return -1.0 * (a3 * Math.Log(10) * (a1 - a0) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1 + Math.Pow(10, a3 * (a2 - x))));
+            return -1.0 * (a3 * Math.Log(10) * (a1 - a0) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1.0 + Math.Pow(10, a3 * (a2 - x))));
         }
 
         private double compute_jacobian_param_3(double a0, double a1, double a2, double a3, double x)
         {
-            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1 + Math.Pow(10, a3 * (a2 - x))));
-        }
+            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1.0 + Math.Pow(10, a3 * (a2 - x))) * (1.0 + Math.Pow(10, a3 * (a2 - x))));        }
 
 
         public static void compute_chi_square(double[] c, ref double func, double[] grad, object obj)
@@ -6304,6 +6303,50 @@ namespace DRC
             grad[2] *= dof;
             grad[3] *= dof;
             func *= dof;
+        }
+
+        private double[] compute_jacobian_chi_square(double[] c, double[,] data)
+        {
+
+            double[] grad = new double[4];
+
+            grad[0] = 0.0;
+            grad[1] = 0.0;
+            grad[2] = 0.0;
+            grad[3] = 0.0;
+
+            // Compute the cost function and the exact gradient
+
+            double dof = 1.0 / (data.GetLength(0) - 4);
+
+            for (int i = 0; i < data.GetLength(0); ++i)
+            {
+
+                double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
+
+                double y_pred = c[0] + (c[1] - c[0]) / denom;
+
+                double b2 = c[0]; // 0.0; //c[0];
+                double t2 = c[1]; // 1.0; // c[1];
+                double e2 = c[2]; // -7.10568394; // c[2];
+                double s2 = c[3];
+                double y2 = data[i, 1];
+                double w2 = data[i, 0];
+
+                grad[0] += (2 - 2 / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
+                grad[1] += 2 * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) / (Math.Pow(10, (s2 * (e2 - w2))) + 1);
+                grad[2] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * s2 * (-b2 + t2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+                grad[3] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * (-b2 + t2) * (e2 - w2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+
+            }
+
+            grad[0] *= dof;
+            grad[1] *= dof;
+            grad[2] *= dof;
+            grad[3] *= dof;
+
+            return grad;
+
         }
 
         public static void compute_chi_square2(double[] c, ref double func, object obj)
@@ -6472,6 +6515,51 @@ namespace DRC
             double c = B[0, 0];
 
             return c;
+        }
+
+        private double compute_least_square_error2(double[,] cov, double a0, double a1, double a2, double a3, double x)
+        {
+
+            double[,] jacobian = {
+                {compute_jacobian_param_0(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_1(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_2(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_3(a0, a1, a2, a3, x)},
+                                 };
+
+            double[,] jacobianT = jacobian.Transpose();
+
+            double[,] A = cov.Dot(jacobian);
+
+            double[,] B = jacobianT.Dot(A);
+
+            double c = B[0, 0];
+
+            return c;
+        }
+
+
+        private double compute_least_square_error_chi_square(double[,] cov, double[] c, double[,] data)
+        {
+
+            double[] jac = compute_jacobian_chi_square(c, data);
+
+            double[,] jacobian = {
+                                   {jac[0]},
+                                   {jac[1]},
+                                   {jac[2]},
+                                   {jac[3]}
+                                  };
+        
+            double[,] jacobianT = jacobian.Transpose();
+
+            double[,] A = cov.Dot(jacobian);
+
+            double[,] B = jacobianT.Dot(A);
+
+            double val = B[0, 0];
+
+            return val;
         }
 
         private double compute_least_square_error_3_params(double[,] cov, double a0, double a1, double a2, double a3, double x)
@@ -6738,7 +6826,7 @@ namespace DRC
                     data[i, 1] = drc_points_y_enable[i];
                 }
 
-                double epsg2 = 1e-8;
+                double epsg2 = 1e-30;
                 double epsf2 = 0;
                 double epsx2 = 0;
                 int maxits2 = 0; //10000;
@@ -6775,8 +6863,8 @@ namespace DRC
                 //rep2.varidx
                 //int code3 = rep3.terminationtype;
                 //c = c3;
-                c = c2;
-                fit_parameters = c2;
+                //c = c2;
+                fit_parameters = c;
 
                 double mse = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
 
@@ -6802,7 +6890,7 @@ namespace DRC
                     {
                         for (int j = 0; j < 4; j++)
                         {
-                            hessian[i, j] = 2.0 * hessian[i, j];
+                            hessian[i, j] = 0.5 * hessian[i, j];
                         }
                     }
 
@@ -6811,9 +6899,9 @@ namespace DRC
 
                     alglib.rmatrixinverse(ref hessian, out info_mat, out rep_mat);
 
-                    double[,] covariance_matrix = hessian;
+                    double[,] covariance_matrix2 = hessian;
 
-                    //double[,] covariance_matrix = rep.covpar;
+                    double[,] covariance_matrix = rep.covpar;
 
                     //covariance_matrix[3,3] = 0.2;
 
@@ -6839,10 +6927,27 @@ namespace DRC
                     double max_curve = Math.Max(Sigmoid(c, x_fit_log[0]), Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
                     double amplitude = Math.Abs(Sigmoid(c, x_fit_log[0]) - Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
 
+
+                    for (int i = 0; i < covariance_matrix2.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < covariance_matrix2.GetLength(1); ++j)
+                        {
+                            covariance_matrix2[i, j] = (double)(mse/dof) * covariance_matrix2[i, j];
+                        }
+                    }
+
+                    double max_c = 0.0;
+
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
                         double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
-                        double sigma_confidence_interval = t_test_val * /*Math.Sqrt(mse/dof) */ Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
+                        double a3 = compute_least_square_error2(covariance_matrix2, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
+                        //double a2 = compute_least_square_error_chi_square(covariance_matrix2, fit_parameters, data);
+
+                        if (max_c < a3) max_c = a3;
+
+                        //double sigma_confidence_interval = t_test_val * Math.Sqrt(mse / dof) * Math.Sqrt(a3); // * Math.Sqrt(sum_square_residuals / (double)dof);
+                        double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
 
                         double CI_max = Sigmoid(c, x_fit_log[i]) + sigma_confidence_interval;
                         double CI_min = Sigmoid(c, x_fit_log[i]) - sigma_confidence_interval;
