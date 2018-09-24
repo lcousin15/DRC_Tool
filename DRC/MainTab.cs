@@ -5616,6 +5616,7 @@ namespace DRC
         private bool display_fit = true;
         private bool display_post_paint = true;
         private bool confidence_interval = true;
+        private bool display_confidence_interval = true;
         private bool dmso = false;
         private bool fixed_y_max = false;
 
@@ -6140,7 +6141,7 @@ namespace DRC
 
         private void chart1_Paint(object sender, PaintEventArgs e)
         {
-            if (confidence_interval)
+            if (confidence_interval && display_confidence_interval)
             {
                 // we assume two series variables are set..:
                 if (chart.Series["Born_Inf"] == null || chart.Series["Born_Sup"] == null) return;
@@ -6174,6 +6175,11 @@ namespace DRC
                 using (SolidBrush brush = new SolidBrush(Color.FromArgb(25, chart_color)))
                     e.Graphics.FillPath(brush, gp);
                 gp.Dispose();
+            }
+            else
+            {
+                chart.Series["Born_Inf"].Points.Clear();
+                chart.Series["Born_Sup"].Points.Clear();
             }
         }
 
@@ -6700,7 +6706,7 @@ namespace DRC
                 r2 = rep.r2;
                 double mse = sum_sqaure_residuals_3_params(drc_points_x_enable, drc_points_y_enable, c, fixed_top);
 
-                if (r2 >= 0.85 && patient == false) confidence_interval = true;
+                if (r2 >= 0.85 && patient == false && display_confidence_interval) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
@@ -6856,7 +6862,7 @@ namespace DRC
 
                 double mse = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
 
-                if (r2 >= 0.85 && patient == false) confidence_interval = true;
+                if (r2 >= 0.85 && patient == false && display_confidence_interval) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
@@ -7426,7 +7432,7 @@ namespace DRC
                 chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
                 chart.Series["Series2"].Color = chart_color;
 
-                if (confidence_interval)
+                if (confidence_interval && display_confidence_interval)
                 {
                     chart.Series["Born_Inf"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
                     chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
@@ -7687,6 +7693,18 @@ namespace DRC
                 menu_inactive.Visible = true;
                 chart.Annotations.Add(menu_inactive);
 
+                RectangleAnnotation menu_CI = new RectangleAnnotation();
+                menu_CI.Name = "menu_CI";
+                menu_CI.Text = "CI";
+                menu_CI.AnchorX = 11.5;
+                menu_CI.AnchorY = 5;
+                menu_CI.Height = 5;
+                menu_CI.Width = 4;
+                menu_CI.ForeColor = Color.Green;
+                menu_CI.Font = new Font(menu_CI.Font.FontFamily, menu_CI.Font.Size, FontStyle.Bold);
+                menu_CI.Visible = true;
+                chart.Annotations.Add(menu_CI);
+
                 if (inactive)
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
@@ -7697,6 +7715,15 @@ namespace DRC
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
                     ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                }
+
+                if(confidence_interval && display_confidence_interval)
+                {
+                    ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.Green;
+                }
+                else
+                { 
+                    ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
                 }
             }
 
@@ -8069,16 +8096,20 @@ namespace DRC
                 {
                     chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
 
-                    if (confidence_interval)
+                    if (confidence_interval && display_confidence_interval)
                     {
                         chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
                         chart.Series["Born_Inf"].Color = Color.FromArgb(50, chart_color);
 
                         chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
                         chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
+
+                        ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.Green;
                     }
                     else
                     {
+                        ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
+
                         chart.Series["Born_Inf"].Points.Clear();
                         chart.Series["Born_Sup"].Points.Clear();
                     }
@@ -8361,6 +8392,34 @@ namespace DRC
                                                 Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
                                                 + r2.ToString("N2");
                     }
+                }
+
+                if (pointer_x >= 48 && pointer_x < 73 && pointer_y <= 18)
+                {
+
+                    ((RectangleAnnotation)chart.Annotations["menu_CI"]).Text = "CI";
+
+                    if (display_confidence_interval == true)
+                    {
+                        display_confidence_interval = false;
+                        ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
+
+                        //chart.Series["Born_Inf"].Points.Clear();
+                        //chart.Series["Born_Sup"].Points.Clear();
+                    }
+                    else
+                    {
+                        display_confidence_interval = true;
+                        ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.Green;
+
+                        //chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
+                        //chart.Series["Born_Inf"].Color = Color.FromArgb(50, chart_color);
+
+                        //chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
+                        //chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
+                    }
+
+                    draw_DRC(false, false);
                 }
 
                 if (pointer_x >= 2 && pointer_x < 27 && pointer_y <= 18)
