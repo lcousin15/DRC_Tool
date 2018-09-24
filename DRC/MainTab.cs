@@ -6826,6 +6826,8 @@ namespace DRC
                     data[i, 1] = drc_points_y_enable[i];
                 }
 
+                // Method minimization chi2
+                /*
                 double epsg2 = 1e-30;
                 double epsf2 = 0;
                 double epsx2 = 0;
@@ -6844,26 +6846,12 @@ namespace DRC
                 alglib.minlbfgsoptimize(state2, compute_chi_square, null, data);
                 alglib.minlbfgsresults(state2, out c2, out rep2);
 
-                //double epsg3 = .00001;
-                //double epsf3 = 0;
-                //double epsx3 = 0;
-                //int maxits3 = 10000;
-                //alglib.minlmstate state3;
-                //alglib.minlmreport rep3;
-                ////double[] scaling = new double[] { 1E6, 1, 1 };
-
-                //alglib.minlmcreatev(3, c3, 0.001, out state3);
-                //alglib.minlmsetcond(state3, epsx3, maxits3);
-                //alglib.minlmsetgradientcheck(state3, 1);
-                ////alglib.minlmsetscale(state, scaling);
-                //alglib.minlmoptimize(state3, compute_chi_square, null, data);
-                //alglib.minlmresults(state3, out c3, out rep3);
-
                 int code = rep2.terminationtype;
                 //rep2.varidx
                 //int code3 = rep3.terminationtype;
                 //c = c3;
                 //c = c2;
+                */
                 fit_parameters = c;
 
                 double mse = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
@@ -6879,10 +6867,7 @@ namespace DRC
 
                 if (confidence_interval)
                 {
-                    //double[] c4 = new double[4] { -1.75831442e-05, 9.50573544e-01, -5.09114109e+00, 8.45927391e+00 };
-
-                    //double[] bfgs_estimate_hessian = new double[4];
-                    //bfgs_estimate_hessian = Dot(jacobian_bfgs, jacobian_bfgs.T)
+                    /*
                     double[,] hessian = compute_hessian(c, data);
 
                     alglib.matinvreport rep_mat;
@@ -6899,6 +6884,7 @@ namespace DRC
                     }
 
                     double[,] covariance_matrix2 = hessian;
+                    */
 
                     double[,] covariance_matrix = rep.covpar;
 
@@ -6926,7 +6912,7 @@ namespace DRC
                     double max_curve = Math.Max(Sigmoid(c, x_fit_log[0]), Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
                     double amplitude = Math.Abs(Sigmoid(c, x_fit_log[0]) - Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
 
-
+                    /*
                     for (int i = 0; i < covariance_matrix2.GetLength(0); i++)
                     {
                         for (int j = 0; j < covariance_matrix2.GetLength(1); ++j)
@@ -6934,18 +6920,22 @@ namespace DRC
                             covariance_matrix2[i, j] = (double)(mse/dof) * covariance_matrix2[i, j];
                         }
                     }
+                    */
 
                     double max_c = 0.0;
 
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
                         double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
+                        
+                        /*
                         double a3 = compute_least_square_error2(covariance_matrix2, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
-                        //double a2 = compute_least_square_error_chi_square(covariance_matrix2, fit_parameters, data);
 
                         if (max_c < a3) max_c = a3;
+                       
+                        double sigma_confidence_interval = t_test_val * Math.Sqrt(mse / dof) * Math.Sqrt(a3); // * Math.Sqrt(sum_square_residuals / (double)dof);
+                        */
 
-                        //double sigma_confidence_interval = t_test_val * Math.Sqrt(mse / dof) * Math.Sqrt(a3); // * Math.Sqrt(sum_square_residuals / (double)dof);
                         double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
 
                         double CI_max = Sigmoid(c, x_fit_log[i]) + sigma_confidence_interval;
@@ -6981,7 +6971,7 @@ namespace DRC
                         x_log_unique.Add(Math.Pow(10, elem.Key));
                     }
 
-                }
+                }          
 
                 y_fit_log.Clear();
 
