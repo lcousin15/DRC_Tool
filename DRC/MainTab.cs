@@ -6176,11 +6176,12 @@ namespace DRC
                     e.Graphics.FillPath(brush, gp);
                 gp.Dispose();
             }
-            else
-            {
-                chart.Series["Born_Inf"].Points.Clear();
-                chart.Series["Born_Sup"].Points.Clear();
-            }
+            // Don't uncomment this : infinity looping
+            //else
+            //{
+            //    chart.Series["Born_Inf"].Points.Clear();
+            //    chart.Series["Born_Sup"].Points.Clear();
+            //}
         }
 
         //protected void Chart1_PrePaint(object sender, ChartPaintEventArgs e)
@@ -6637,7 +6638,7 @@ namespace DRC
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
             double epsf = 0;
-            double epsx = 0;//0.000000001;
+            double epsx = 0; // 0.000000001;
             double diffstep = 1e-12;
 
             //double epsx = 1e-6;
@@ -6706,14 +6707,14 @@ namespace DRC
                 r2 = rep.r2;
                 double mse = sum_sqaure_residuals_3_params(drc_points_x_enable, drc_points_y_enable, c, fixed_top);
 
-                if (r2 >= 0.85 && patient == false && display_confidence_interval) confidence_interval = true;
+                if (r2 >= 0.85 && patient == false) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
                 err_ec_50 = rep.errpar[1];
                 err_slope = rep.errpar[2];
 
-                if (confidence_interval)
+                if (confidence_interval && display_confidence_interval)
                 {
                     double[,] covariance_matrix = rep.covpar;
 
@@ -6862,7 +6863,7 @@ namespace DRC
 
                 double mse = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
 
-                if (r2 >= 0.85 && patient == false && display_confidence_interval) confidence_interval = true;
+                if (r2 >= 0.85 && patient == false) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
@@ -6871,7 +6872,7 @@ namespace DRC
                 //err_ec_50 = 0.0;
                 err_slope = rep.errpar[3];
 
-                if (confidence_interval)
+                if (confidence_interval && display_confidence_interval)
                 {
                     /*
                     double[,] hessian = compute_hessian(c, data);
@@ -8417,9 +8418,11 @@ namespace DRC
 
                         //chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
                         //chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
+
                     }
 
                     draw_DRC(false, false);
+
                 }
 
                 if (pointer_x >= 2 && pointer_x < 27 && pointer_y <= 18)
