@@ -117,3 +117,5 @@ C:\Users\arno\Source\Repos\DRC_Tool\DRC\obj\Release\DRC.exe
 C:\Users\arno\Source\Repos\DRC_Tool\DRC\obj\Release\DRC.pdb
 D:\DRC_Tool\DRC\obj\Release\DRC.exe
 D:\DRC_Tool\DRC\obj\Release\DRC.pdb
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\Release\DRC.exe
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\Release\DRC.pdb
