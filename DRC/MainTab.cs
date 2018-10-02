@@ -128,6 +128,7 @@ namespace DRC
         public Patient_Tab form_patient;
         public Load_PS_Options Load_PS;
         public WellPlate_Viewer well_plate;
+        public ViewCPD_Images_Tab f12;
 
         public void SetForm()
         {
@@ -140,13 +141,12 @@ namespace DRC
             form_patient = new Patient_Tab(this);
             Load_PS = new Load_PS_Options(this);
             well_plate = new WellPlate_Viewer(this);
+            f12 = new ViewCPD_Images_Tab(this);
         }
 
         public RawData_Tab f3 = new RawData_Tab();
         public RawDataDRC_Tab f4 = new RawDataDRC_Tab();
         public Correlations_Tab f7 = new Correlations_Tab();
-
-        public ViewCPD_Images_Tab f12 = new ViewCPD_Images_Tab();
 
         public Descriptors_General_Options descriptors_general_options_form;
         public Descriptors_Fix_Top_Options descriptors_fix_top_form;
@@ -230,10 +230,13 @@ namespace DRC
         public int cpd_high_thr_ch2 = -1;
         public int cpd_high_thr_ch3 = -1;
         public int cpd_high_thr_ch4 = -1;
+
         public int cpd_img_scale = -1;
         public int cpd_replicate = -1;
+
         public int cpd_color_format = -1;
         public int cpd_segm_method = -1;
+
         public bool set_param_cpd = false;
 
         private List<Color> curve_color = new List<Color>();
@@ -2428,7 +2431,7 @@ namespace DRC
             Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
 
             if (fc == null)
-                f12 = new ViewCPD_Images_Tab();
+                f12 = new ViewCPD_Images_Tab(this);
 
             if (view_images_per_concentration == true)
             {
@@ -2462,7 +2465,7 @@ namespace DRC
             Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
 
             if (fc == null)
-                f12 = new ViewCPD_Images_Tab();
+                f12 = new ViewCPD_Images_Tab(this);
 
             f12.Text = cpd_id;
 
@@ -2489,7 +2492,7 @@ namespace DRC
             Form fc = Application.OpenForms["ViewCPD_Images_Tab"];
 
             if (fc == null)
-                f12 = new ViewCPD_Images_Tab();
+                f12 = new ViewCPD_Images_Tab(this);
 
             f12.Text = "Compounds Hits";
 
@@ -4089,7 +4092,7 @@ namespace DRC
             Dictionary<string, string> cpd_position_1 = new Dictionary<string, string>();
             Dictionary<string, string> cpd_position_2 = new Dictionary<string, string>();
             cpd_target = new Dictionary<string, string>();
-            
+
             for (int i = 0; i < first_wells.Count; ++i)
             {
                 int plate = int.Parse(drug_plate[i]);
@@ -4964,7 +4967,7 @@ namespace DRC
                     foreach (KeyValuePair<string, double> val in auc_values_by_cpd)
                     {
                         string cpd = val.Key;
-                        if(cpd != "carfilzomib" && cpd != "Bortezomib") auc_values.Add(val.Value);
+                        if (cpd != "carfilzomib" && cpd != "Bortezomib") auc_values.Add(val.Value);
                     }
 
                     double mu = auc_values.Average();
@@ -5613,6 +5616,7 @@ namespace DRC
         private bool display_fit = true;
         private bool display_post_paint = true;
         private bool confidence_interval = true;
+        private bool display_confidence_interval = true;
         private bool dmso = false;
         private bool fixed_y_max = false;
 
@@ -6137,7 +6141,7 @@ namespace DRC
 
         private void chart1_Paint(object sender, PaintEventArgs e)
         {
-            if (confidence_interval)
+            if (confidence_interval && display_confidence_interval)
             {
                 // we assume two series variables are set..:
                 if (chart.Series["Born_Inf"] == null || chart.Series["Born_Sup"] == null) return;
@@ -6172,6 +6176,12 @@ namespace DRC
                     e.Graphics.FillPath(brush, gp);
                 gp.Dispose();
             }
+            // Don't uncomment this : infinity looping
+            //else
+            //{
+            //    chart.Series["Born_Inf"].Points.Clear();
+            //    chart.Series["Born_Sup"].Points.Clear();
+            //}
         }
 
         //protected void Chart1_PrePaint(object sender, ChartPaintEventArgs e)
@@ -6194,6 +6204,17 @@ namespace DRC
         {
             func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
         }
+
+        //public static void function1_grad(double[] c, double[] x, ref double func, double[] grad, object obj)
+        //{
+        //    func = c[0] + ((c[1] - c[0]) / (1 + Math.Pow(10, (c[2] - x[0]) * c[3])));
+
+        //    grad[0] = 1.0 - 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - x[0])));
+        //    grad[1] = 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - x[0])));
+        //    grad[2] = -1.0 * (c[3] * Math.Log(10) * (c[1] - c[0]) * Math.Pow(10, c[3] * (c[2] - x[0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - x[0]))) * (1 + Math.Pow(10, c[3] * (c[2] - x[0]))));
+        //    grad[3] = -1.0 * (Math.Log(10) * (c[1] - c[0]) * (c[2] - x[0]) * Math.Pow(10, c[3] * (c[2] - x[0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - x[0]))) * (1 + Math.Pow(10, c[3] * (c[2] - x[0]))));
+        //}
+
 
         private static void function_SigmoidInhibition_3_params(double[] c, double[] x, ref double func, object obj)
         {
@@ -6221,18 +6242,266 @@ namespace DRC
 
         private double compute_jacobian_param_1(double a0, double a1, double a2, double a3, double x)
         {
-            return 1.0 / (1 + Math.Pow(10, a3 * (a2 - x)));
+            return 1.0 / (1.0 + Math.Pow(10, a3 * (a2 - x)));
         }
 
         private double compute_jacobian_param_2(double a0, double a1, double a2, double a3, double x)
         {
-            return -1.0 * (a3 * Math.Log(10) * (a1 - a0) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1 + Math.Pow(10, a3 * (a2 - x))));
+            return -1.0 * (a3 * Math.Log(10) * (a1 - a0) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1.0 + Math.Pow(10, a3 * (a2 - x))));
         }
 
         private double compute_jacobian_param_3(double a0, double a1, double a2, double a3, double x)
         {
-            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1 + Math.Pow(10, a3 * (a2 - x))) * (1 + Math.Pow(10, a3 * (a2 - x))));
+            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1.0 + Math.Pow(10, a3 * (a2 - x))) * (1.0 + Math.Pow(10, a3 * (a2 - x))));        }
+
+
+        public static void compute_chi_square(double[] c, ref double func, double[] grad, object obj)
+        {
+            double[,] data = (double[,])obj;
+
+            //grad = new double[4];
+
+            func = 0.0;
+            grad[0] = 0.0;
+            grad[1] = 0.0;
+            grad[2] = 0.0;
+            grad[3] = 0.0;
+
+            // Compute the cost function and the exact gradient
+
+            double dof = 1.0 / (data.GetLength(0) - 4);
+
+            for (int i = 0; i < data.GetLength(0); ++i)
+            {
+
+                double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
+
+                double y_pred = c[0] + (c[1] - c[0]) / denom;
+
+                //grad[0] += 1.0 - 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
+                //grad[1] += 1.0 / (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0])));
+                //grad[2] += -1.0 * (c[3] * Math.Log(10) * (c[1] - c[0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
+                //grad[3] += -1.0 * (Math.Log(10) * (c[1] - c[0]) * (c[2] - data[i, 0]) * Math.Pow(10, c[3] * (c[2] - data[i, 0]))) / ((1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))) * (1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]))));
+
+                //grad[0] += 2 * dof * (-1 - 1 / (denom)) * ((c[1] - c[0]) / denom + y_pred - c[0]);
+                //grad[1] += 2 * dof * ((c[1] - c[0]) / denom - c[0] + y_pred) / denom;
+                //grad[2] += (c[3] * dof * Math.Log(10) * (c[1] - c[0]) * Math.Pow(2, c[3] * (c[2] - data[i, 0]) + 1) * Math.Pow(5, c[3] * (c[2] - data[i, 0])) * (y_pred - c[0] + (c[1] - c[0]) / denom)) / (denom * denom);
+                //grad[3] += -1.0 * dof * ((c[2]-data[i,0])*Math.Log(10)*(c[1]-c[0])*Math.Pow(2, 1+c[2]*c[3]-c[3]*data[i,0])*Math.Pow(5,(c[2]-data[i,0])*c[3])*(y_pred-c[0]+ (c[1]-c[0])/denom))/ (denom * denom);
+
+                double b2 = c[0]; // 0.0; //c[0];
+                double t2 = c[1]; // 1.0; // c[1];
+                double e2 = c[2]; // -7.10568394; // c[2];
+                double s2 = c[3];
+                double y2 = data[i, 1];
+                double w2 = data[i, 0];
+
+                //double a = (2 - 2 / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
+
+                grad[0] += (2 - 2 / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
+                grad[1] += 2 * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) / (Math.Pow(10, (s2 * (e2 - w2))) + 1);
+                grad[2] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * s2 * (-b2 + t2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+                grad[3] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * (-b2 + t2) * (e2 - w2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+
+                func += Math.Pow(y2 - y_pred, 2);
+            }
+
+            grad[0] *= dof;
+            grad[1] *= dof;
+            grad[2] *= dof;
+            grad[3] *= dof;
+            func *= dof;
         }
+
+        private double[] compute_jacobian_chi_square(double[] c, double[,] data)
+        {
+
+            double[] grad = new double[4];
+
+            grad[0] = 0.0;
+            grad[1] = 0.0;
+            grad[2] = 0.0;
+            grad[3] = 0.0;
+
+            // Compute the cost function and the exact gradient
+
+            double dof = 1.0 / (data.GetLength(0) - 4);
+
+            for (int i = 0; i < data.GetLength(0); ++i)
+            {
+
+                double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
+
+                double y_pred = c[0] + (c[1] - c[0]) / denom;
+
+                double b2 = c[0]; // 0.0; //c[0];
+                double t2 = c[1]; // 1.0; // c[1];
+                double e2 = c[2]; // -7.10568394; // c[2];
+                double s2 = c[3];
+                double y2 = data[i, 1];
+                double w2 = data[i, 0];
+
+                grad[0] += (2 - 2 / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1));
+                grad[1] += 2 * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) / (Math.Pow(10, (s2 * (e2 - w2))) + 1);
+                grad[2] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * s2 * (-b2 + t2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+                grad[3] += -2 * Math.Pow(10, (s2 * (e2 - w2))) * (-b2 + t2) * (e2 - w2) * (b2 - y2 + (-b2 + t2) / (Math.Pow(10, (s2 * (e2 - w2))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s2 * (e2 - w2))) + 1), 2);
+
+            }
+
+            grad[0] *= dof;
+            grad[1] *= dof;
+            grad[2] *= dof;
+            grad[3] *= dof;
+
+            return grad;
+
+        }
+
+        public static void compute_chi_square2(double[] c, ref double func, object obj)
+        {
+            double[,] data = (double[,])obj;
+
+            // Compute the cost function and the exact gradient
+
+            double dof = 1.0 / (data.GetLength(0) - 4);
+
+            //c[0] = 0.0;
+            //c[1] = 1.0;
+            //c[2] = -7.10568394;
+            //c[3] = 1.0;
+
+            for (int i = 0; i < data.GetLength(0); ++i)
+            {
+                double denom = 1 + Math.Pow(10, c[3] * (c[2] - data[i, 0]));
+                double y_pred = c[0] + (c[1] - c[0]) / denom;
+
+                func += Math.Pow(data[i, 1] - y_pred, 2);
+            }
+
+            func *= dof;
+        }
+
+        private double[,] compute_hessian(double[] c, double[,] data)
+        {
+
+            double[,] H = new double[4, 4];
+
+            for (int i = 0; i < H.GetLength(0); i++)
+            {
+                for (int j = 0; j < H.GetLength(1); ++j)
+                {
+                    H[i, j] = 0.0;
+                }
+            }
+
+
+            double dof = 1.0 / (data.GetLength(0) - 4.0);
+
+            for (int i = 0; i < data.GetLength(0); ++i)
+            {
+
+                double w = data[i, 0];
+                double y_obs = data[i, 1];
+
+                double b = c[0];
+                double t = c[1];
+                double e = c[2];
+                double s = c[3];
+
+                H[0, 0] += (1 - 1 / (Math.Pow(10, (s * (e - w))) + 1)) * (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1));
+
+                H[0, 1] += (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1)) / (Math.Pow(10, (s * (e - w))) + 1);
+
+                H[0, 2] += -Math.Pow(10, (s * (e - w))) * s * (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1)) * (-b + t) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) + 2 * Math.Pow(10, (s * (e - w))) * s * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[0, 3] += -Math.Pow(10, (s * (e - w))) * (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1)) * (-b + t) * (e - w) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) + 2 * Math.Pow(10, (s * (e - w))) * (e - w) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[1, 0] += (2 - 2 / (Math.Pow(10, (s * (e - w))) + 1)) / (Math.Pow(10, (s * (e - w))) + 1);
+
+                H[1, 1] += 2 / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[1, 2] += -Math.Pow(10, (s * (e - w))) * s * (2 * b - 2 * y_obs + 2 * (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - Math.Pow(10, (s * (e - w))) * s * (-2 * b + 2 * t) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3);
+
+                H[1, 3] += -Math.Pow(10, (s * (e - w))) * (e - w) * (2 * b - 2 * y_obs + 2 * (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - Math.Pow(10, (s * (e - w))) * (-2 * b + 2 * t) * (e - w) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3);
+
+                H[2, 0] += -2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (1 - 1 / (Math.Pow(10, (s * (e - w))) + 1)) * (-b + t) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) + 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[2, 1] += -2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (-b + t) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3);
+
+                H[2, 2] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * Math.Pow(s, 2) * (-b + t) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3) + 2 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * Math.Pow(s, 2) * Math.Pow((
+                    -b + t), 2) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, (
+                    s * (e - w))) * Math.Pow(s, 2) * (-b + t) * (b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(
+                    10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[2, 3] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * s * (-b + t) * (e - w) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 3) + 2 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * s * Math.Pow((-b + t), 2) * (
+                    e - w) * Math.Log(10) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * s * (
+                    -b + t) * (e - w) * (b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) * Math.Log(10) / Math.Pow((
+                    Math.Pow(10, (s * (e - w))) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, (s * (e - w))) * (-b + t) * (
+                    b - y_obs + (-b + t) / (Math.Pow(10, (s * (e - w))) + 1)) / Math.Pow((Math.Pow(10, (s * (e - w))) + 1), 2);
+
+                H[3, 0] += -2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (1 - 1 / (Math.Pow(10, s * (e - w)) + 1)) * (-b + t) * (e - w) / Math.Pow((
+                           Math.Pow(10, s * (e - w)) + 1), 2) + 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (e - w) * (
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w))+1, 2);
+
+                H[3, 1] += -2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (e - w) * (
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow((
+                           Math.Pow(10, s * (e - w)) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (-b + t) * (e - w) / Math.Pow((
+                           Math.Pow(10, s * (e - w)) + 1), 3);
+
+                H[3, 2] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * s * (-b + t) * (e - w) * (
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) * Math.Log(10) / Math.Pow((
+                           Math.Pow(10, s * (e - w)) + 1), 3) + 2 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * s * Math.Pow((-b + t), 2) * (
+                            e - w) * Math.Log(10) / Math.Pow((Math.Pow(10, s * (e - w)) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * s * (
+                            -b + t) * (e - w) * (b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) * Math.Log(10) / Math.Pow((
+                           Math.Pow(10, s * (e - w)) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (-b + t) * (
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w))+1, 2);
+
+                H[3, 3] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * (-b + t) * Math.Pow((e - w), 2) * (
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) * Math.Log(10) / Math.Pow((
+                           Math.Pow(10, s * (e - w)) + 1), 3) + 2 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * Math.Pow((-b + t), 2) * Math.Pow((
+                            e - w), 2) * Math.Log(10) / Math.Pow((Math.Pow(10, s * (e - w)) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (
+                            -b + t) * Math.Pow((e - w), 2) * (b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) * Math.Log(10) / Math.Pow((
+                           Math.Pow(10, s * (e - w)) + 1), 2);
+
+            }
+
+            H[0, 0] *= dof;
+            H[0, 1] *= dof;
+            H[0, 2] *= dof;
+            H[0, 3] *= dof;
+
+            H[1, 0] *= dof;
+            H[1, 1] *= dof;
+            H[1, 2] *= dof;
+            H[1, 3] *= dof;
+
+            H[2, 0] *= dof;
+            H[2, 1] *= dof;
+            H[2, 2] *= dof;
+            H[2, 3] *= dof;
+
+            H[3, 0] *= dof;
+            H[3, 1] *= dof;
+            H[3, 2] *= dof;
+            H[3, 3] *= dof;
+
+            return H;
+    }
 
         private double compute_least_square_error(double[,] cov, double a0, double a1, double a2, double a3, double x)
         {
@@ -6253,6 +6522,51 @@ namespace DRC
             double c = B[0, 0];
 
             return c;
+        }
+
+        private double compute_least_square_error2(double[,] cov, double a0, double a1, double a2, double a3, double x)
+        {
+
+            double[,] jacobian = {
+                {compute_jacobian_param_0(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_1(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_2(a0, a1, a2, a3, x)},
+                {compute_jacobian_param_3(a0, a1, a2, a3, x)},
+                                 };
+
+            double[,] jacobianT = jacobian.Transpose();
+
+            double[,] A = cov.Dot(jacobian);
+
+            double[,] B = jacobianT.Dot(A);
+
+            double c = B[0, 0];
+
+            return c;
+        }
+
+
+        private double compute_least_square_error_chi_square(double[,] cov, double[] c, double[,] data)
+        {
+
+            double[] jac = compute_jacobian_chi_square(c, data);
+
+            double[,] jacobian = {
+                                   {jac[0]},
+                                   {jac[1]},
+                                   {jac[2]},
+                                   {jac[3]}
+                                  };
+        
+            double[,] jacobianT = jacobian.Transpose();
+
+            double[,] A = cov.Dot(jacobian);
+
+            double[,] B = jacobianT.Dot(A);
+
+            double val = B[0, 0];
+
+            return val;
         }
 
         private double compute_least_square_error_3_params(double[,] cov, double a0, double a1, double a2, double a3, double x)
@@ -6282,7 +6596,26 @@ namespace DRC
             for (int i = 0; i < drc_points_x_enable.Count; ++i)
             {
                 double x = drc_points_x_enable[i];
+
                 double y_fit_curve = Sigmoid(c, x);
+
+                double residual_square = (drc_points_y_enable[i] - y_fit_curve) * (drc_points_y_enable[i] - y_fit_curve);
+
+                sum_square_residuals += residual_square;
+            }
+
+            return sum_square_residuals;
+        }
+
+        private double sum_sqaure_residuals_3_params(List<double> drc_points_x_enable, List<double> drc_points_y_enable, double[] c, double top)
+        {
+            double sum_square_residuals = 0.0;
+
+            for (int i = 0; i < drc_points_x_enable.Count; ++i)
+            {
+                double x = drc_points_x_enable[i];
+
+                double y_fit_curve = Sigmoid_3_params(c, x, top);
 
                 double residual_square = (drc_points_y_enable[i] - y_fit_curve) * (drc_points_y_enable[i] - y_fit_curve);
 
@@ -6304,7 +6637,11 @@ namespace DRC
 
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
-            double epsx = 0;
+            double epsf = 0;
+            double epsx = 0; // 0.000000001;
+            double diffstep = 1e-12;
+
+            //double epsx = 1e-6;
             int maxits = 0;
             int info;
 
@@ -6341,7 +6678,6 @@ namespace DRC
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
-                double diffstep = 1e-12;
 
                 // Fitting without weights
                 //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
@@ -6369,6 +6705,7 @@ namespace DRC
 
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
+                double mse = sum_sqaure_residuals_3_params(drc_points_x_enable, drc_points_y_enable, c, fixed_top);
 
                 if (r2 >= 0.85 && patient == false) confidence_interval = true;
                 else confidence_interval = false;
@@ -6377,7 +6714,7 @@ namespace DRC
                 err_ec_50 = rep.errpar[1];
                 err_slope = rep.errpar[2];
 
-                if (confidence_interval)
+                if (confidence_interval && display_confidence_interval)
                 {
                     double[,] covariance_matrix = rep.covpar;
 
@@ -6402,7 +6739,7 @@ namespace DRC
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
                         double a = compute_least_square_error_3_params(covariance_matrix, c[0], fixed_top, c[1], c[2], x_fit_log[i]);
-                        double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
+                        double sigma_confidence_interval = t_test_val * /*Math.Sqrt(mse/dof) */ Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
 
                         double CI_max = Sigmoid_3_params(c, x_fit_log[i], fixed_top) + sigma_confidence_interval;
                         double CI_min = Sigmoid_3_params(c, x_fit_log[i], fixed_top) - sigma_confidence_interval;
@@ -6451,6 +6788,8 @@ namespace DRC
             {
                 double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
                 double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
+                double[] c2 = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
+                double[] c3 = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
 
                 double[] bndl = null;
                 double[] bndu = null;
@@ -6461,15 +6800,17 @@ namespace DRC
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
-                double diffstep = 1e-12;
 
                 // Fitting without weights
                 //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
 
                 double[,] Concentration = new double[drc_points_x_enable.Count(), 1];
+                double[] conc_0 = new double[drc_points_x_enable.Count()];
+
                 for (var i = 0; i < drc_points_x_enable.Count(); ++i)
                 {
                     Concentration[i, 0] = drc_points_x_enable[i];
+                    conc_0[i] = drc_points_x_enable[i];
                 }
 
                 alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
@@ -6484,18 +6825,77 @@ namespace DRC
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
 
+                double[,] data = new double[drc_points_x_enable.Count(), 2];
+
+                for (int i = 0; i < drc_points_x_enable.Count(); ++i)
+                {
+                    data[i, 0] = drc_points_x_enable[i];
+                    data[i, 1] = drc_points_y_enable[i];
+                }
+
+                // Method minimization chi2
+                /*
+                double epsg2 = 1e-30;
+                double epsf2 = 0;
+                double epsx2 = 0;
+                int maxits2 = 0; //10000;
+
+                alglib.minlbfgsstate state2;
+                alglib.minlbfgsreport rep2;
+
+                //double diffstep2 = 1.0e-6;
+                //double[] s2 = new double[] { 1 / c[0], 1 / c[1], 1 / c[2], 1 / c[3] };
+
+                //alglib.minlbfgscreatef(4, c2, diffstep2, out state2);
+                alglib.minlbfgscreate(4, c2, out state2);
+                alglib.minlbfgssetcond(state2, epsg2, epsf2, epsx2, maxits2);
+                //alglib.mincgsetscale(state2, s2);
+                alglib.minlbfgsoptimize(state2, compute_chi_square, null, data);
+                alglib.minlbfgsresults(state2, out c2, out rep2);
+
+                int code = rep2.terminationtype;
+                //rep2.varidx
+                //int code3 = rep3.terminationtype;
+                //c = c3;
+                //c = c2;
+                */
+                fit_parameters = c;
+
+                double mse = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, c);
+
                 if (r2 >= 0.85 && patient == false) confidence_interval = true;
                 else confidence_interval = false;
 
                 err_bottom = rep.errpar[0];
                 err_top = rep.errpar[1];
                 err_ec_50 = rep.errpar[2];
+                //err_ec_50 = 0.0;
                 err_slope = rep.errpar[3];
 
-                if (confidence_interval)
+                if (confidence_interval && display_confidence_interval)
                 {
+                    /*
+                    double[,] hessian = compute_hessian(c, data);
+
+                    alglib.matinvreport rep_mat;
+                    int info_mat;
+
+                    alglib.rmatrixinverse(ref hessian, out info_mat, out rep_mat);
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        for (int j = 0; j < 4; j++)
+                        {
+                            hessian[i, j] = 0.5 * hessian[i, j];
+                        }
+                    }
+
+                    double[,] covariance_matrix2 = hessian;
+                    */
 
                     double[,] covariance_matrix = rep.covpar;
+
+                    //covariance_matrix[3,3] = 0.2;
 
                     int dof = drc_points_y_enable.Count - 4;
 
@@ -6519,9 +6919,30 @@ namespace DRC
                     double max_curve = Math.Max(Sigmoid(c, x_fit_log[0]), Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
                     double amplitude = Math.Abs(Sigmoid(c, x_fit_log[0]) - Sigmoid(c, x_fit_log[x_fit_log.Count - 1]));
 
+                    /*
+                    for (int i = 0; i < covariance_matrix2.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < covariance_matrix2.GetLength(1); ++j)
+                        {
+                            covariance_matrix2[i, j] = (double)(mse/dof) * covariance_matrix2[i, j];
+                        }
+                    }
+                    */
+
+                    double max_c = 0.0;
+
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
                         double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
+                        
+                        /*
+                        double a3 = compute_least_square_error2(covariance_matrix2, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
+
+                        if (max_c < a3) max_c = a3;
+                       
+                        double sigma_confidence_interval = t_test_val * Math.Sqrt(mse / dof) * Math.Sqrt(a3); // * Math.Sqrt(sum_square_residuals / (double)dof);
+                        */
+
                         double sigma_confidence_interval = t_test_val * Math.Sqrt(a); // * Math.Sqrt(sum_square_residuals / (double)dof);
 
                         double CI_max = Sigmoid(c, x_fit_log[i]) + sigma_confidence_interval;
@@ -6557,7 +6978,7 @@ namespace DRC
                         x_log_unique.Add(Math.Pow(10, elem.Key));
                     }
 
-                }
+                }          
 
                 y_fit_log.Clear();
 
@@ -7012,7 +7433,7 @@ namespace DRC
                 chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
                 chart.Series["Series2"].Color = chart_color;
 
-                if (confidence_interval)
+                if (confidence_interval && display_confidence_interval)
                 {
                     chart.Series["Born_Inf"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
                     chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
@@ -7273,6 +7694,18 @@ namespace DRC
                 menu_inactive.Visible = true;
                 chart.Annotations.Add(menu_inactive);
 
+                RectangleAnnotation menu_CI = new RectangleAnnotation();
+                menu_CI.Name = "menu_CI";
+                menu_CI.Text = "CI";
+                menu_CI.AnchorX = 11.5;
+                menu_CI.AnchorY = 5;
+                menu_CI.Height = 5;
+                menu_CI.Width = 4;
+                menu_CI.ForeColor = Color.Green;
+                menu_CI.Font = new Font(menu_CI.Font.FontFamily, menu_CI.Font.Size, FontStyle.Bold);
+                menu_CI.Visible = true;
+                chart.Annotations.Add(menu_CI);
+
                 if (inactive)
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
@@ -7283,6 +7716,15 @@ namespace DRC
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
                     ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                }
+
+                if(confidence_interval && display_confidence_interval)
+                {
+                    ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.Green;
+                }
+                else
+                { 
+                    ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
                 }
             }
 
@@ -7655,16 +8097,20 @@ namespace DRC
                 {
                     chart.Series["Series2"].Points.DataBindXY(x_fit, y_fit_log);
 
-                    if (confidence_interval)
+                    if (confidence_interval && display_confidence_interval)
                     {
                         chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
                         chart.Series["Born_Inf"].Color = Color.FromArgb(50, chart_color);
 
                         chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
                         chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
+
+                        ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.Green;
                     }
                     else
                     {
+                        ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
+
                         chart.Series["Born_Inf"].Points.Clear();
                         chart.Series["Born_Sup"].Points.Clear();
                     }
@@ -7947,6 +8393,36 @@ namespace DRC
                                                 Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
                                                 + r2.ToString("N2");
                     }
+                }
+
+                if (pointer_x >= 48 && pointer_x < 73 && pointer_y <= 18)
+                {
+
+                    ((RectangleAnnotation)chart.Annotations["menu_CI"]).Text = "CI";
+
+                    if (display_confidence_interval == true)
+                    {
+                        display_confidence_interval = false;
+                        ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
+
+                        //chart.Series["Born_Inf"].Points.Clear();
+                        //chart.Series["Born_Sup"].Points.Clear();
+                    }
+                    else
+                    {
+                        display_confidence_interval = true;
+                        ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.Green;
+
+                        //chart.Series["Born_Inf"].Points.DataBindXY(x_log_unique, y_conf_int_born_inf);
+                        //chart.Series["Born_Inf"].Color = Color.FromArgb(50, chart_color);
+
+                        //chart.Series["Born_Sup"].Points.DataBindXY(x_log_unique, y_conf_int_born_sup);
+                        //chart.Series["Born_Sup"].Color = Color.FromArgb(50, chart_color);
+
+                    }
+
+                    draw_DRC(false, false);
+
                 }
 
                 if (pointer_x >= 2 && pointer_x < 27 && pointer_y <= 18)
