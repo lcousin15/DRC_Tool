@@ -8192,10 +8192,11 @@ namespace DRC
                 ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
                 ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
 
-                annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
-                                                + r2.ToString("N2");
+                //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+                //                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+                //                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+                //                                + r2.ToString("N2");
+                annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
                 if (patient) annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
                 if (display_fit == false) annotation_ec50.Text = "Mean Value = " + drc_points_y_enable.Average().ToString("N2");
