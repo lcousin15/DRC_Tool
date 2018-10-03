@@ -7129,10 +7129,13 @@ namespace DRC
                     is_ec50_exact = true;
                     ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
 
-                    annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
-                                                + r2.ToString("N2");
+                    //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+                    //                            Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+                    //                            Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+                    //                            + r2.ToString("N2");
+
+                    annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                 }
                 else
                 {
@@ -7141,10 +7144,13 @@ namespace DRC
                     is_ec50_exact = false;
                     ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
 
-                    annotation_ec50.Text = "EC_50 > " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
-                                                + r2.ToString("N2");
+                    //annotation_ec50.Text = "EC_50 > " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+                    //                            Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+                    //                            Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+                    //                            + r2.ToString("N2");
+
+                    annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                 }
 
 
@@ -7728,10 +7734,12 @@ namespace DRC
                 }
             }
 
-            annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
-                                                + r2.ToString("N2");
+            //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+            //                                    Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+            //                                    Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+            //                                    + r2.ToString("N2");
+
+            annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
             if (patient)
             {
@@ -8377,10 +8385,12 @@ namespace DRC
                     {
                         is_ec50_exact = false;
                         ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = ">";
-                        annotation_ec50.Text = "EC_50 > " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
-                                                + r2.ToString("N2");
+                        //annotation_ec50.Text = "EC_50 > " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+                        //                        Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+                        //                        Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+                        //                        + r2.ToString("N2");
+                        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
 
                     }
                     else
@@ -8388,10 +8398,13 @@ namespace DRC
                         is_ec50_exact = true;
                         ((RectangleAnnotation)chart.Annotations["menu_ec_50_sup"]).Text = "=";
 
-                        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
-                                                + r2.ToString("N2");
+                        //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+                        //                        Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+                        //                        Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+                        //                        + r2.ToString("N2");
+
+                        annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                     }
                 }
 
@@ -8533,10 +8546,12 @@ namespace DRC
                         if (is_ec50_exact == true) sign = "=";
                         else sign = ">";
 
-                        annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
-                                                + r2.ToString("N2");
+                        //annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+                        //                        Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+                        //                        Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+                        //                        + r2.ToString("N2");
+                        annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                     }
                 }
 
@@ -8648,10 +8663,13 @@ namespace DRC
                         if (is_ec50_exact == true) sign = "=";
                         else sign = ">";
 
-                        annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
-                                                Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
-                                                + r2.ToString("N2");
+                        //annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+                        //                        Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+                        //                        Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+                        //                        + r2.ToString("N2");
+
+                        annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                     }
                 }
 
