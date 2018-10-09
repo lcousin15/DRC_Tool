@@ -308,3 +308,5 @@ E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.PathwayTab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Patient_Tab.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Load_PS_Options.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.WellPlate_Viewer.resources
+D:\DRC_Tool\DRC\obj\x64\Release\DRC.Load_PS_Options.resources
+D:\DRC_Tool\DRC\obj\x64\Release\DRC.WellPlate_Viewer.resources

@@ -229,3 +229,10 @@ E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.exe
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.pdb
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csprojResolveAssemblyReference.cache
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.WellPlate_Viewer.resources
+D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csprojAssemblyReference.cache
+D:\DRC_Tool\DRC\obj\x64\Debug\DRC.AUC_Report.resources
+D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Load_PS_Options.resources
+D:\DRC_Tool\DRC\obj\x64\Debug\DRC.PathwayTab.resources
+D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Patient_Tab.resources
+D:\DRC_Tool\DRC\obj\x64\Debug\DRC.WellPlate_Viewer.resources
+D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csproj.CopyComplete
