@@ -276,8 +276,9 @@ namespace DRC
                         string well = row.Cells["Well"].Value.ToString();
                         double value = Double.Parse(row.Cells[descriptor_name].Value.ToString());
                         plate = row.Cells["Plate"].Value.ToString();
+                        double concentration = Double.Parse(row.Cells["Concentration"].Value.ToString());
 
-                        wells_infos.add_value(plate, well, descriptor_name, value, cpd_id);
+                        wells_infos.add_value(plate, well, descriptor_name, value, cpd_id, concentration);
 
                         if (value_max_per_plate_descriptor.ContainsKey(plate))
                         {
@@ -490,7 +491,12 @@ namespace DRC
                 current_well += "\n";
                 current_well += "CPD = " + wells_infos.get_cpd_id(current_plate, well);
 
-                foreach(var item in comboBox1.Items)
+                double concentration = wells_infos.get_data(current_plate, well, "Concentration");
+
+                current_well += "\n";
+                current_well += "Concentration = " + concentration.ToString("E2");
+
+                foreach (var item in comboBox1.Items)
                 {
                     string descriptor = item.ToString();
                     double descriptor_value = wells_infos.get_data(current_plate, well, descriptor);
@@ -529,7 +535,7 @@ namespace DRC
         {
         }
 
-        public void add_value(string plate, string well, string descriptor, double value, string cpd)
+        public void add_value(string plate, string well, string descriptor, double value, string cpd, double concentration)
         {
 
             // dict values :
@@ -550,11 +556,22 @@ namespace DRC
                         dict_descriptor_value[descriptor] = value;
                         dict_well_descriptor[well] = dict_descriptor_value;
                     }
+
+                    if (dict_descriptor_value.ContainsKey("Concentration"))
+                    {
+                        data_descriptors[plate][well]["Concentration"] = concentration;
+                    }
+                    else
+                    {
+                        dict_descriptor_value["Concentration"] = concentration;
+                        dict_well_descriptor[well] = dict_descriptor_value;
+                    }
                 }
                 else
                 {
                     Dictionary<string, double> dict_temp = new Dictionary<string, double>();
                     dict_temp[descriptor] = value;
+                    dict_temp["Concentration"] = concentration;
 
                     dict_well_descriptor[well] = dict_temp;
                     data_descriptors[plate] = dict_well_descriptor;
@@ -565,6 +582,7 @@ namespace DRC
                 Dictionary<string, Dictionary<string, double>> dict_temp_0 = new Dictionary<string, Dictionary<string, double>>();
                 Dictionary<string, double> dict_temp = new Dictionary<string, double>();
                 dict_temp[descriptor] = value;
+                dict_temp["Concentration"] = concentration;
 
                 dict_temp_0[well] = dict_temp;
                 data_descriptors[plate] = dict_temp_0;
