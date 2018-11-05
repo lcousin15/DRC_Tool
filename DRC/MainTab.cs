@@ -7711,26 +7711,33 @@ namespace DRC
                 menu_CI.Font = new Font(menu_CI.Font.FontFamily, menu_CI.Font.Size, FontStyle.Bold);
                 menu_CI.Visible = true;
                 chart.Annotations.Add(menu_CI);
-
+                annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
                 if (inactive)
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
                     ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+                    annotation_ec50.Text = "Inactive";
+
                 }
 
                 if (not_fitted)
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
                     ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                    annotation_ec50.Text = "Not fitted";
                 }
 
-                if(confidence_interval && display_confidence_interval)
+                if (confidence_interval && display_confidence_interval)
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.Green;
+                    //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                 }
                 else
                 { 
                     ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
+                    //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                 }
             }
 
@@ -7739,7 +7746,7 @@ namespace DRC
             //                                    Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
             //                                    + r2.ToString("N2");
 
-            annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+            //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
             if (patient)
             {
