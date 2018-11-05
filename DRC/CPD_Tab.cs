@@ -110,11 +110,11 @@ namespace DRC
                 _form1.check_images();
                 foreach (DataGridViewRow item in dataGridView2.SelectedRows)
                 {
-                    string cpd_id = dataGridView2.Rows[item.Index].Cells[0].Value.ToString();
+                    string BATCH_ID = dataGridView2.Rows[item.Index].Cells[0].Value.ToString();
                     //_form1.view_images_per_concentration = true;
-                    _form1.load_cpd_images(cpd_id, true);
+                    _form1.load_cpd_images(BATCH_ID, true);
                 }
-                //string cpd_id = dataGridView2.Rows[dataGridView2.CurrentCell.OwningRow.Index].Cells[0].Value.ToString();
+                //string BATCH_ID = dataGridView2.Rows[dataGridView2.CurrentCell.OwningRow.Index].Cells[0].Value.ToString();
                
                
             }

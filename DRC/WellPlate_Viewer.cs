@@ -248,7 +248,7 @@ namespace DRC
         {
             cpd_values_by_plate_well = new Dictionary<string, Dictionary<string, Dictionary<string, double>>>();
 
-            // plate, cpd_id, descriptor, well, value
+            // plate, BATCH_ID, descriptor, well, value
 
             Dictionary<string, List<Chart_DRC>> list_cpd_chart = _main_tab.get_descriptors_chart();
             value_max_per_plate_descriptor = new Dictionary<string, Dictionary<string, double>>();
@@ -258,7 +258,7 @@ namespace DRC
 
             foreach (KeyValuePair<string, List<Chart_DRC>> elem in list_cpd_chart)
             {
-                string cpd_id = elem.Key;
+                string BATCH_ID = elem.Key;
                 List<Chart_DRC> charts = elem.Value;
 
                 string plate = "";
@@ -278,7 +278,7 @@ namespace DRC
                         plate = row.Cells["Plate"].Value.ToString();
                         double concentration = Double.Parse(row.Cells["Concentration"].Value.ToString());
 
-                        wells_infos.add_value(plate, well, descriptor_name, value, cpd_id, concentration);
+                        wells_infos.add_value(plate, well, descriptor_name, value, BATCH_ID, concentration);
 
                         if (value_max_per_plate_descriptor.ContainsKey(plate))
                         {
@@ -489,7 +489,7 @@ namespace DRC
                 string current_plate = comboBox2.SelectedItem.ToString();
 
                 current_well += "\n";
-                current_well += "CPD = " + wells_infos.get_cpd_id(current_plate, well);
+                current_well += "CPD = " + wells_infos.get_BATCH_ID(current_plate, well);
 
                 double concentration = wells_infos.get_data(current_plate, well, "Concentration");
 
@@ -617,7 +617,7 @@ namespace DRC
 
         }
 
-        public string get_cpd_id(string plate, string well)
+        public string get_BATCH_ID(string plate, string well)
         {
             string cpd = "";
             if (cpd_descriptors.ContainsKey(plate))
