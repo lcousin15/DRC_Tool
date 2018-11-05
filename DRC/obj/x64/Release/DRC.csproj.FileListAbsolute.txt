@@ -310,3 +310,7 @@ E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Load_PS_Options.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.WellPlate_Viewer.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Load_PS_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.WellPlate_Viewer.resources
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\bin\x64\Release\DRC.exe.config
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.ResolveComReference.cache
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.exe
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.pdb
