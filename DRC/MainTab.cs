@@ -151,14 +151,14 @@ namespace DRC
         public Descriptors_General_Options descriptors_general_options_form;
         public Descriptors_Fix_Top_Options descriptors_fix_top_form;
 
-        private string current_cpd_id;
+        private string current_BATCH_ID;
         private Dictionary<string, int> cpd_row_index = new Dictionary<string, int>();
         public List<string> list_cpd;
         private int output_parameter_number;
         private int descritpor_number;
         private List<string> descriptor_list;
 
-        private Dictionary<string, string> dict_cpd_batch_id = new Dictionary<string, string>();
+        private Dictionary<string, string> dict_cpd_BATCH_ID = new Dictionary<string, string>();
 
         private List<string> deslected_data_descriptor;
         private List<string> status_ec_50_descritpor;
@@ -194,7 +194,7 @@ namespace DRC
 
         private Random rnd = new Random();
 
-        private List<List<string>> CPD_ID_List = new List<List<string>>();
+        private List<List<string>> BATCH_ID_List = new List<List<string>>();
         //List<List<int>> Exp_ID_List = new List<List<int>>();
 
         private SortedDictionary<string, SortedDictionary<string, List<string>>> dict_plate_well_files = new SortedDictionary<string, SortedDictionary<string, List<string>>>();
@@ -208,7 +208,7 @@ namespace DRC
         private Dictionary<string, string> template_plate_2 = new Dictionary<string, string>();
         private Dictionary<string, double> template_plate_concentration = new Dictionary<string, double>();
 
-        private Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // cpd_id, descriptor, chart
+        private Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // BATCH_ID, descriptor, chart
 
         private Dictionary<string, Chart_Patient> chart_auc = new Dictionary<string, Chart_Patient>();
         private Dictionary<string, Chart_Patient> chart_auc_z_score = new Dictionary<string, Chart_Patient>();
@@ -288,14 +288,14 @@ namespace DRC
             f3.dataGridView1.DataSource = csv;
             f4.dataGridView1.DataSource = csv;
 
-            List<string> CPD_ID = new List<string>();
+            List<string> BATCH_ID = new List<string>();
             deslected_data_descriptor = new List<string>();
             status_ec_50_descritpor = new List<string>();
             bounds_descriptor = new List<string>();
             fixed_top_descriptor = new List<string>();
             data_modified_descriptor = new List<string>();
 
-            if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("CPD_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
+            if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("BATCH_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
                 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
             {
                 System.Windows.Forms.MessageBox.Show("The file must contain at least these 6 columns : \n {[Plate, Well, Concentration, CPD_ID, BATCH_ID], Descr_0,...}", "Error",
@@ -303,9 +303,9 @@ namespace DRC
                 return;
             }
 
-            //if (!f3.dataGridView1.Columns.Contains("CPD_ID"))
+            //if (!f3.dataGridView1.Columns.Contains("BATCH_ID"))
             //{
-            //    System.Windows.Forms.MessageBox.Show("CPD_ID column doesn't exist.""Error",
+            //    System.Windows.Forms.MessageBox.Show("BATCH_ID column doesn't exist.""Error",
             //        System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             //    return;
             //}
@@ -321,12 +321,12 @@ namespace DRC
             {
                 if (f3.dataGridView1.Columns.Contains("Plate") && is_with_plate == true)
                 {
-                    CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString());
+                    BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString());
                 }
-                else CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString());
+                else BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
             }
 
-            var unique_items = new HashSet<string>(CPD_ID);
+            var unique_items = new HashSet<string>(BATCH_ID);
             comboBox1.DataSource = unique_items.ToList<string>();
 
             foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
@@ -372,7 +372,7 @@ namespace DRC
 
         private void Reset()
         {
-            current_cpd_id = "";
+            current_BATCH_ID = "";
             cpd_row_index.Clear();
             list_cpd = new List<string>();
             list_cpd.Clear();
@@ -389,7 +389,7 @@ namespace DRC
             fixed_top_descriptor = new List<string>();
             data_modified_descriptor = new List<string>();
 
-            CPD_ID_List.Clear();
+            BATCH_ID_List.Clear();
 
             input_filename = "";
             output_filename = "";
@@ -440,7 +440,7 @@ namespace DRC
         void comboBox1_SelectionChangeCommited(object sender, EventArgs e)
         {
             string CPD = comboBox1.SelectedItem.ToString();
-            current_cpd_id = CPD;
+            current_BATCH_ID = CPD;
 
             if (CPD == "DMSO" || CPD == "Untreated")
                 return;
@@ -451,7 +451,7 @@ namespace DRC
 
             if (descriptors_chart.Count == 0) return;
 
-            List<Chart_DRC> list_chart = descriptors_chart[current_cpd_id];
+            List<Chart_DRC> list_chart = descriptors_chart[current_BATCH_ID];
             foreach (Chart_DRC current_chart in list_chart)
             {
                 current_chart.draw_DRC(false, true);
@@ -462,7 +462,7 @@ namespace DRC
             //foreach (DataGridViewRow row2 in f2.dataGridView2.Rows)
             //{
             //    string compound = row2.Cells[0].Value.ToString();
-            //    if (current_cpd_id == compound) break;
+            //    if (current_BATCH_ID == compound) break;
             //    k++;
             //}
             //int row_index = k;
@@ -506,7 +506,7 @@ namespace DRC
             //foreach (DataGridViewRow row2 in f2.dataGridView2.Rows)
             //{
             //    string compound = row2.Cells[0].Value.ToString();
-            //    if (current_cpd_id == compound) break;
+            //    if (current_BATCH_ID == compound) break;
             //    k++;
             //}
             //int row_index = k;
@@ -522,14 +522,14 @@ namespace DRC
 
         }
 
-        public void draw_compound(string cpd_id)
+        public void draw_compound(string BATCH_ID)
         {
-            if (cpd_id == "DMSO" || cpd_id == "Untreated")
+            if (BATCH_ID == "DMSO" || BATCH_ID == "Untreated")
                 return;
 
             tableLayoutPanel1.Controls.Clear();
 
-            List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+            List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
 
             foreach (Chart_DRC current_chart in list_chart)
             {
@@ -562,8 +562,8 @@ namespace DRC
 
                 f5.dataGridViewExport.ColumnCount = 2 + 3 * descriptor_list.Count;
 
-                f5.dataGridViewExport.Columns[0].Name = "CPD_ID";
-                f5.dataGridViewExport.Columns[1].Name = "BATCH_ID";
+                f5.dataGridViewExport.Columns[0].Name = "BATCH_ID";
+                f5.dataGridViewExport.Columns[1].Name = "CPD_ID";
 
                 int i = 0;
                 foreach (string elem in descriptor_list)
@@ -591,14 +591,14 @@ namespace DRC
                     toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
                     //toolStripStatusLabel1.Text = toolStripProgressBar1.Value.ToString();
                     //toolStripStatusLabel1.Visible=true;
-                    string cpd_id = list_cpd[idx].ToString();
+                    string BATCH_ID = list_cpd[idx].ToString();
 
-                    if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
+                    if (BATCH_ID.Contains("DMSO") || BATCH_ID.Contains("Untreated"))
                         continue;
 
                     tableLayoutPanel1.Controls.Clear();
 
-                    List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+                    List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
                     List<string> list_images = new List<string>();
 
                     foreach (Chart_DRC current_chart in list_chart)
@@ -609,12 +609,12 @@ namespace DRC
 
                     // Export
                     //
-                    // CPD_ID | Image Nuc. | EC_50 Nuc. Or Not Fitted Green/Red Cell | Image R | EC_50 R or Not Fitted Green/Red Cell | etc... 
+                    // BATCH_ID | Image Nuc. | EC_50 Nuc. Or Not Fitted Green/Red Cell | Image R | EC_50 R or Not Fitted Green/Red Cell | etc... 
                     //
 
                     int index = f5.dataGridViewExport.Rows.Add();
-                    f5.dataGridViewExport.Rows[index].Cells[0].Value = cpd_id;
-                    f5.dataGridViewExport.Rows[index].Cells[1].Value = dict_cpd_batch_id[cpd_id];
+                    f5.dataGridViewExport.Rows[index].Cells[0].Value = BATCH_ID;
+                    f5.dataGridViewExport.Rows[index].Cells[1].Value = dict_cpd_BATCH_ID[BATCH_ID];
 
                     int i_img = 0;
                     foreach (Chart_DRC current_chart in list_chart)
@@ -684,7 +684,7 @@ namespace DRC
                     }
 
                     foreach (string current_path in list_images) File.Delete(current_path);
-                    //list_img_path_by_cpd.Add(cpd_id, list_images);
+                    //list_img_path_by_cpd.Add(BATCH_ID, list_images);
                 }
 
                 toolStripProgressBar1.Visible = false;
@@ -747,7 +747,7 @@ namespace DRC
 
             f2.dataGridView2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
 
-            f2.dataGridView2.Columns[0].Name = "CPD_ID";
+            f2.dataGridView2.Columns[0].Name = "BATCH_ID";
 
             descriptor_list = new List<string>();
 
@@ -777,9 +777,9 @@ namespace DRC
             {
 
                 f2.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count);
-                string cpd_id = list_cpd[idx].ToString();
+                string BATCH_ID = list_cpd[idx].ToString();
 
-                if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
+                if (BATCH_ID.Contains("DMSO") || BATCH_ID.Contains("Untreated"))
                     continue;
 
                 // Add chart
@@ -802,12 +802,12 @@ namespace DRC
                 {
                     string cpd_string = "";
 
-                    if (is_with_plate == true) cpd_string = row.Cells["CPD_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString();
-                    else cpd_string = row.Cells["CPD_ID"].Value.ToString();
+                    if (is_with_plate == true) cpd_string = row.Cells["BATCH_ID"].Value.ToString() + "_" + row.Cells["Plate"].Value.ToString();
+                    else cpd_string = row.Cells["BATCH_ID"].Value.ToString();
 
-                    dict_cpd_batch_id[row.Cells["CPD_ID"].Value.ToString()] = row.Cells["BATCH_ID"].Value.ToString();
+                    dict_cpd_BATCH_ID[row.Cells["BATCH_ID"].Value.ToString()] = row.Cells["CPD_ID"].Value.ToString();
 
-                    if (cpd_string == cpd_id)
+                    if (cpd_string == BATCH_ID)
                     {
                         raw_data_rows.Add(row);
 
@@ -999,7 +999,7 @@ namespace DRC
                     if (data_modified_status.ContainsKey(descriptor_name)) is_data_modified = data_modified_status[descriptor_name];
                     else is_data_modified = "FALSE";
 
-                    Chart_DRC chart_drc = new Chart_DRC(cpd_id, descriptor_name, 250, ref concentrations, ref concentrations_log, ref data, color,
+                    Chart_DRC chart_drc = new Chart_DRC(BATCH_ID, descriptor_name, 250, ref concentrations, ref concentrations_log, ref data, color,
                         descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, is_data_modified, this, is_patient, true, true, true);
 
                     chart_drc.set_Raw_Data(raw_data_rows);
@@ -1027,13 +1027,13 @@ namespace DRC
                     descriptor_index++;
                 }
 
-                descriptors_chart.Add(cpd_id, list_DRC_cpd);
+                descriptors_chart.Add(BATCH_ID, list_DRC_cpd);
 
                 DataGridViewRow current_row = (DataGridViewRow)f2.dataGridView2.Rows[0].Clone();
 
                 for (int i = 0; i < row_params.Count() + 1; i++)
                 {
-                    if (i == 0) current_row.Cells[i].Value = cpd_id;
+                    if (i == 0) current_row.Cells[i].Value = BATCH_ID;
                     if (i > 0) current_row.Cells[i].Value = row_params[i - 1];
                 }
 
@@ -1218,12 +1218,12 @@ namespace DRC
 
                 for (var idx = 0; idx < list_cpd.Count; idx++)
                 {
-                    string cpd_id = list_cpd[idx].ToString();
+                    string BATCH_ID = list_cpd[idx].ToString();
 
-                    if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
+                    if (BATCH_ID.Contains("DMSO") || BATCH_ID.Contains("Untreated"))
                         continue;
 
-                    List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+                    List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
 
                     List<DataGridViewRow> raw_data_cpd;
 
@@ -1725,19 +1725,19 @@ namespace DRC
             {
                 f3.dataGridView1.DataSource = csv;
 
-                CPD_ID_List.Clear();
+                BATCH_ID_List.Clear();
 
                 List<List<string>> deslected_data_descriptor_list = new List<List<string>>();
 
                 if (f3.dataGridView1.ColumnCount < 5)
                 {
-                    System.Windows.Forms.MessageBox.Show("The file should contain at least 5 columns\n Plate,Well,Concentration,CPD_ID,Descr_0,...");
+                    System.Windows.Forms.MessageBox.Show("The file should contain at least 5 columns\n Plate,Well,Concentration,BATCH_ID,Descr_0,...");
                     return;
                 }
 
-                if (!f3.dataGridView1.Columns.Contains("CPD_ID"))
+                if (!f3.dataGridView1.Columns.Contains("BATCH_ID"))
                 {
-                    System.Windows.Forms.MessageBox.Show("CPD_ID column doesn't exist.");
+                    System.Windows.Forms.MessageBox.Show("BATCH_ID column doesn't exist.");
                     return;
                 }
 
@@ -1747,20 +1747,20 @@ namespace DRC
                     return;
                 }
 
-                List<string> CPD_ID = new List<string>();
+                List<string> BATCH_ID = new List<string>();
 
                 foreach (DataGridViewRow row in f3.dataGridView1.Rows)
                 {
-                    CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString());
+                    BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
                 }
 
-                CPD_ID_List.Add(CPD_ID);
+                BATCH_ID_List.Add(BATCH_ID);
 
                 // Features checkbox dataGridView1 :
                 foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                 {
                     string col_name = col.HeaderText;
-                    if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run" && col_name != "CPD_ID" && col_name != "Class" && !col_name.StartsWith("Deselected"))
+                    if (col_name != "Plate" && col_name != "Well" && col_name != "Concentration" && col_name != "Run" && col_name != "BATCH_ID" && col_name != "Class" && !col_name.StartsWith("Deselected"))
                     {
                         checkedListBox1.Items.Add(col_name);
                     }
@@ -1775,25 +1775,25 @@ namespace DRC
             {
                 f3.dataGridView2.DataSource = csv;
 
-                List<string> CPD_ID_2 = new List<string>();
+                List<string> BATCH_ID_2 = new List<string>();
 
                 foreach (DataGridViewRow row in f3.dataGridView2.Rows)
                 {
-                    CPD_ID_2.Add(row.Cells["CPD_ID"].Value.ToString());
+                    BATCH_ID_2.Add(row.Cells["BATCH_ID"].Value.ToString());
                 }
 
-                CPD_ID_List.Add(CPD_ID_2);
+                BATCH_ID_List.Add(BATCH_ID_2);
             }
 
-            if (CPD_ID_List.Count == 2)
+            if (BATCH_ID_List.Count == 2)
             {
-                var unique_items_1 = new HashSet<string>(CPD_ID_List[0]);
-                var unique_items_2 = new HashSet<string>(CPD_ID_List[1]);
+                var unique_items_1 = new HashSet<string>(BATCH_ID_List[0]);
+                var unique_items_2 = new HashSet<string>(BATCH_ID_List[1]);
 
-                var unique_cpd_id = unique_items_1.Intersect(unique_items_2);
+                var unique_BATCH_ID = unique_items_1.Intersect(unique_items_2);
 
-                comboBox1.DataSource = unique_cpd_id.ToList<string>();
-                list_cpd = unique_cpd_id.ToList<string>();
+                comboBox1.DataSource = unique_BATCH_ID.ToList<string>();
+                list_cpd = unique_BATCH_ID.ToList<string>();
             }
 
         }
@@ -1829,11 +1829,11 @@ namespace DRC
 
             output_parameter_number = 5;
 
-            f10.dataGridView1.ColumnCount = 1 + CPD_ID_List.Count() * output_parameter_number * checked_items;
+            f10.dataGridView1.ColumnCount = 1 + BATCH_ID_List.Count() * output_parameter_number * checked_items;
 
             f10.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
 
-            f10.dataGridView1.Columns[0].Name = "CPD_ID";
+            f10.dataGridView1.Columns[0].Name = "BATCH_ID";
 
             descriptor_list = new List<string>();
 
@@ -1848,7 +1848,7 @@ namespace DRC
 
             foreach (var item in checkedListBox1.CheckedItems)
             {
-                for (int k = 0; k < CPD_ID_List.Count; ++k)
+                for (int k = 0; k < BATCH_ID_List.Count; ++k)
                 {
                     f10.dataGridView1.Columns[k + 1 + j * output_parameter_number * 2].Name = "EC_50 " + item.ToString() + "  " + k.ToString();
                     f10.dataGridView1.Columns[k + 3 + j * output_parameter_number * 2].Name = "Bottom " + item.ToString() + "  " + k.ToString();
@@ -1867,9 +1867,9 @@ namespace DRC
 
             for (var idx = 0; idx < list_cpd.Count; idx++)
             {
-                string cpd_id = list_cpd[idx].ToString();
+                string BATCH_ID = list_cpd[idx].ToString();
 
-                if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
+                if (BATCH_ID.Contains("DMSO") || BATCH_ID.Contains("Untreated"))
                     continue;
 
                 // Add chart
@@ -1891,9 +1891,9 @@ namespace DRC
                 {
                     string cpd_string = "";
 
-                    cpd_string = row.Cells["CPD_ID"].Value.ToString();
+                    cpd_string = row.Cells["BATCH_ID"].Value.ToString();
 
-                    if (cpd_string == cpd_id)
+                    if (cpd_string == BATCH_ID)
                     {
                         //raw_data_rows.Add(row);
 
@@ -1948,9 +1948,9 @@ namespace DRC
                 {
                     string cpd_string = "";
 
-                    cpd_string = row.Cells["CPD_ID"].Value.ToString();
+                    cpd_string = row.Cells["BATCH_ID"].Value.ToString();
 
-                    if (cpd_string == cpd_id)
+                    if (cpd_string == BATCH_ID)
                     {
                         //raw_data_rows.Add(row);
 
@@ -2097,7 +2097,7 @@ namespace DRC
                         List<double> conc_1_log = concentrations_log_1[descriptor_name];
                         List<double> conc_2_log = concentrations_log_2[descriptor_name];
 
-                        Chart_DRC_Overlap chart_drc_overlap = new Chart_DRC_Overlap(cpd_id, descriptor_name, 100, ref conc_1, ref conc_1_log,
+                        Chart_DRC_Overlap chart_drc_overlap = new Chart_DRC_Overlap(BATCH_ID, descriptor_name, 100, ref conc_1, ref conc_1_log,
                         ref conc_2, ref conc_2_log, ref data_1, ref data_2, color, descriptor_index, this);
 
                         double[] parameters_1 = chart_drc_overlap.get_Fit_Parameters_1();
@@ -2161,13 +2161,13 @@ namespace DRC
                     descriptor_index++;
                 }
 
-                descriptors_chart_overlap.Add(cpd_id, list_DRC_cpd);
+                descriptors_chart_overlap.Add(BATCH_ID, list_DRC_cpd);
 
                 DataGridViewRow current_row = (DataGridViewRow)f10.dataGridView1.Rows[0].Clone();
 
                 for (int i = 0; i < row_params.Count() + 1; i++)
                 {
-                    if (i == 0) current_row.Cells[i].Value = cpd_id;
+                    if (i == 0) current_row.Cells[i].Value = BATCH_ID;
                     if (i > 0)
                     {
                         if (row_params[i - 1] == -1) current_row.Cells[i].Value = "";
@@ -2190,12 +2190,12 @@ namespace DRC
             {
                 this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
 
-                string cpd_id = list_cpd[idx].ToString();
+                string BATCH_ID = list_cpd[idx].ToString();
 
-                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                if (BATCH_ID == "DMSO" || BATCH_ID == "Untreated")
                     continue;
 
-                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+                List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
 
                 foreach (Chart_DRC current_chart in list_chart)
                 {
@@ -2219,12 +2219,12 @@ namespace DRC
             {
                 this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
 
-                string cpd_id = list_cpd[idx].ToString();
+                string BATCH_ID = list_cpd[idx].ToString();
 
-                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                if (BATCH_ID == "DMSO" || BATCH_ID == "Untreated")
                     continue;
 
-                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+                List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
 
                 foreach (Chart_DRC current_chart in list_chart)
                 {
@@ -2247,12 +2247,12 @@ namespace DRC
             {
                 this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
 
-                string cpd_id = list_cpd[idx].ToString();
+                string BATCH_ID = list_cpd[idx].ToString();
 
-                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                if (BATCH_ID == "DMSO" || BATCH_ID == "Untreated")
                     continue;
 
-                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+                List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
 
                 foreach (Chart_DRC current_chart in list_chart)
                 {
@@ -2386,7 +2386,7 @@ namespace DRC
 
             f11.dataGridView1.ColumnCount = 1;
             f11.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
-            f11.dataGridView1.Columns[0].Name = "CPD_ID";
+            f11.dataGridView1.Columns[0].Name = "BATCH_ID";
 
             if (list_cpd != null && list_cpd.Count > 0)
             {
@@ -2444,11 +2444,11 @@ namespace DRC
 
             f12.Visible = true;
 
-            string cpd_id = f11.dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
+            string BATCH_ID = f11.dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
 
-            f12.Text = cpd_id;
+            f12.Text = BATCH_ID;
 
-            f13 = new ViewImages_Options_Tab(this, cpd_id);
+            f13 = new ViewImages_Options_Tab(this, BATCH_ID);
 
             //f13.Visible = false;
             //f13.comboBox2.SelectedIndex = 1;
@@ -2458,7 +2458,7 @@ namespace DRC
 
         }
 
-        public void load_cpd_images(string cpd_id, bool view_options)
+        public void load_cpd_images(string BATCH_ID, bool view_options)
         {
             f11.Visible = false;
 
@@ -2467,7 +2467,7 @@ namespace DRC
             if (fc == null)
                 f12 = new ViewCPD_Images_Tab(this);
 
-            f12.Text = cpd_id;
+            f12.Text = BATCH_ID;
 
             f12.view_images_per_concentration = view_options; // true in cpd main tab
 
@@ -2480,12 +2480,12 @@ namespace DRC
 
             f12.Visible = true;
 
-            f13 = new ViewImages_Options_Tab(this, cpd_id);
+            f13 = new ViewImages_Options_Tab(this, BATCH_ID);
             f13.Visible = true;
 
         }
 
-        public void load_cpd_images(List<string> list_cpd_id)       // need to debug this part--> add rows for each cpd
+        public void load_cpd_images(List<string> list_BATCH_ID)       // need to debug this part--> add rows for each cpd
         {
             f11.Visible = true;
 
@@ -2507,10 +2507,10 @@ namespace DRC
 
             f12.Visible = true;
 
-            f13 = new ViewImages_Options_Tab(this, list_cpd_id);
+            f13 = new ViewImages_Options_Tab(this, list_BATCH_ID);
             f13.Visible = true;
 
-            //for(int k = 1; k <list_cpd_id.Count; ++k) draw_images(list_cpd_id[k]);
+            //for(int k = 1; k <list_BATCH_ID.Count; ++k) draw_images(list_BATCH_ID[k]);
 
         }
 
@@ -2577,7 +2577,7 @@ namespace DRC
             }
         }
 
-        public void draw_images(string cpd_id, int cpd_idx, int cpd_nb)
+        public void draw_images(string BATCH_ID, int BATCH_IDx, int cpd_nb)
         {
 
             //f3.dataGridView1.Sort(f3.dataGridView1.Columns["Concentration"], System.ComponentModel.ListSortDirection.Descending);
@@ -2594,23 +2594,23 @@ namespace DRC
 
             //f3.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
             //f3.dataGridView1.Columns[f3.dataGridView1.ColumnCount - 1].Name = "Plates";
-            f3.dataGridView1.AllowUserToAddRows = false;
-            f3.dataGridView2.AllowUserToAddRows = false;
+            //f3.dataGridView1.AllowUserToAddRows = false;
+            f3.dataGridView3.AllowUserToAddRows = false;
 
-            copy_data_grid_view(ref f3.dataGridView1, ref f3.dataGridView2);
+            copy_data_grid_view(ref f3.dataGridView1, ref f3.dataGridView3);
 
-            f3.dataGridView2.Refresh();
-            f3.dataGridView2.Sort(new RowComparer(SortOrder.Descending));
+            //f3.dataGridView2.Refresh();
+            //f3.dataGridView2.Sort(new RowComparer(SortOrder.Descending));
 
-            copy_data_grid_view(ref f3.dataGridView2, ref f3.dataGridView1);
-            f3.dataGridView1.Refresh();
+            //copy_data_grid_view(ref f3.dataGridView2, ref f3.dataGridView1);
+            //f3.dataGridView1.Refresh();
 
             ////f3.Show();
 
-            foreach (DataGridViewRow row in f3.dataGridView1.Rows)
+            foreach (DataGridViewRow row in f3.dataGridView3.Rows)
             {
-                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
-                if (current_cpd == cpd_id)
+                string current_cpd = row.Cells["BATCH_ID"].Value.ToString();
+                if (current_cpd == BATCH_ID)
                 {
                     plates.Add(row.Cells["Plate"].Value.ToString());
                     wells.Add(row.Cells["Well"].Value.ToString());
@@ -2619,8 +2619,8 @@ namespace DRC
                     foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
                     {
                         string col_name = col.HeaderText;
-                        if (col_name != "CPD_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration"
-                            && col_name != "Class" && col_name != "BATCH_ID" && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound")
+                        if (col_name != "BATCH_ID" && col_name != "Plate" && col_name != "Well" && col_name != "Concentration"
+                            && col_name != "Class" && col_name != "CPD_ID" && !col_name.StartsWith("Status") && !col_name.StartsWith("Bound")
                             && !col_name.StartsWith("Fixed_Top") && !col_name.StartsWith("Data_Modified") && !col_name.StartsWith("Deselected"))
                         {
                             if (descriptors_dict.Keys.Contains(col_name))
@@ -2663,7 +2663,7 @@ namespace DRC
 
             if (view_images_per_concentration == true)
             {
-                if (cpd_idx == 0)
+                if (BATCH_IDx == 0)
                 {
                     f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
                     f12.dataGridView1.Columns[0].Name = "CPD/Plate";
@@ -2686,7 +2686,7 @@ namespace DRC
                     f12.dataGridView1.Columns.Insert(1, img);
                     f12.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn());
 
-                    f12.dataGridView1.Columns[0].Name = "CPD_ID";
+                    f12.dataGridView1.Columns[0].Name = "BATCH_ID";
                     f12.dataGridView1.Columns[1].Name = "Image";
                     f12.dataGridView1.Columns[2].Name = "Concentration";
 
@@ -2953,11 +2953,11 @@ namespace DRC
 
                 if (view_images_per_concentration == true)
                 {
-                    f12.dataGridView1.Rows[rows * cpd_idx + (counter - 1) % total_plate_nb].Cells[0].Style.WrapMode = DataGridViewTriState.True;
-                    f12.dataGridView1.Rows[rows * cpd_idx + (counter - 1) % total_plate_nb].Cells[0].Value = cpd_id + "\r\n" + "\r\n" + plates[i];
-                    f12.dataGridView1.Rows[rows * cpd_idx + (counter - 1) % total_plate_nb].Cells[0].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    f12.dataGridView1.Rows[rows * BATCH_IDx + (counter - 1) % total_plate_nb].Cells[0].Style.WrapMode = DataGridViewTriState.True;
+                    f12.dataGridView1.Rows[rows * BATCH_IDx + (counter - 1) % total_plate_nb].Cells[0].Value = BATCH_ID + "\r\n" + "\r\n" + plates[i];
+                    f12.dataGridView1.Rows[rows * BATCH_IDx + (counter - 1) % total_plate_nb].Cells[0].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                    f12.dataGridView1.Rows[rows * cpd_idx + (counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
+                    f12.dataGridView1.Rows[rows * BATCH_IDx + (counter - 1) % total_plate_nb].Cells[(counter - 1) / total_plate_nb + 1].Value = (Image)my_bitmap;
 
                     if (replicate != 1) f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1) / total_plate_nb) * replicate].ToString();
                     else f12.dataGridView1.Columns[(counter - 1) / total_plate_nb + 1].Name = concentrations[((counter - 1)) * replicate].ToString();
@@ -2966,7 +2966,7 @@ namespace DRC
                 {
                     int index = f12.dataGridView1.Rows.Add(new DataGridViewRow());
 
-                    f12.dataGridView1.Rows[index].Cells[0].Value = cpd_id;
+                    f12.dataGridView1.Rows[index].Cells[0].Value = BATCH_ID;
                     f12.dataGridView1.Rows[index].Cells[0].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                     f12.dataGridView1.Rows[index].Cells[1].Value = (Image)my_bitmap;
@@ -3039,24 +3039,24 @@ namespace DRC
                 f3.dataGridView1.DataSource = csv;
                 f4.dataGridView1.DataSource = csv;
 
-                List<string> CPD_ID = new List<string>();
+                List<string> BATCH_ID = new List<string>();
                 deslected_data_descriptor = new List<string>();
 
-                if (f3.dataGridView1.ColumnCount < 4 || !f3.dataGridView1.Columns.Contains("CPD_ID")
+                if (f3.dataGridView1.ColumnCount < 4 || !f3.dataGridView1.Columns.Contains("BATCH_ID")
                     || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well")
                     || !f3.dataGridView1.Columns.Contains("Concentration"))
                 {
-                    System.Windows.Forms.MessageBox.Show("The file must contain at least these 4 columns : \n [Plate, Well, CPD_ID, Concentration]", "Error",
+                    System.Windows.Forms.MessageBox.Show("The file must contain at least these 4 columns : \n [Plate, Well, BATCH_ID, Concentration]", "Error",
                         System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                     return;
                 }
 
                 foreach (DataGridViewRow row in f3.dataGridView1.Rows)
                 {
-                    CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString());
+                    BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
                 }
 
-                var unique_items = new HashSet<string>(CPD_ID);
+                var unique_items = new HashSet<string>(BATCH_ID);
                 list_cpd = unique_items.ToList<string>();
 
                 view_images_per_concentration = false;
@@ -3135,7 +3135,7 @@ namespace DRC
                 //// Print the cpd link
                 //foreach (KeyValuePair<string, HashSet<string> > elem in cpd_link)
                 //{
-                //    Console.WriteLine("CPD_ID : " + elem.Key);
+                //    Console.WriteLine("BATCH_ID : " + elem.Key);
                 //    foreach(string current_file in elem.Value)
                 //    {
                 //        Console.WriteLine(" ------ File : " + current_file);
@@ -3151,7 +3151,7 @@ namespace DRC
 
                 TimeLine.dataGridView1.ColumnCount = 1;
                 TimeLine.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
-                TimeLine.dataGridView1.Columns[0].Name = "CPD_ID";
+                TimeLine.dataGridView1.Columns[0].Name = "BATCH_ID";
                 TimeLine.dataGridView1.AllowUserToAddRows = false;
 
                 foreach (KeyValuePair<string, HashSet<string>> elem in cpd_link)
@@ -3165,13 +3165,13 @@ namespace DRC
             }
         }
 
-        public void get_compound_data(string cpd_id)
+        public void get_compound_data(string BATCH_ID)
         {
             tableLayoutPanel1.Controls.Clear();
 
-            HashSet<string> file_list = cpd_link[cpd_id];
+            HashSet<string> file_list = cpd_link[BATCH_ID];
 
-            Console.WriteLine(cpd_id);
+            Console.WriteLine(BATCH_ID);
 
             Dictionary<string, int> descriptor_occurence = new Dictionary<string, int>();
 
@@ -3220,7 +3220,7 @@ namespace DRC
             }
         }
 
-        public void draw_cpd_list(string current_file, string cpd_id, bool checked_state)
+        public void draw_cpd_list(string current_file, string BATCH_ID, bool checked_state)
         {
             Dictionary<string, List<double>> descriptor_data = new Dictionary<string, List<double>>();
             List<double> descriptor_concentrations = new List<double>();
@@ -3229,7 +3229,7 @@ namespace DRC
 
             foreach (DataRow row in my_table.Rows)
             {
-                if (row["compound_id"].ToString() == cpd_id)
+                if (row["compound_id"].ToString() == BATCH_ID)
                 {
                     foreach (string descriptor in time_line_selected_descriptors)
                     {
@@ -3255,9 +3255,9 @@ namespace DRC
                 }
             }
 
-            //charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>>(); // cpd_id, descriptor, chart
+            //charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>>(); // BATCH_ID, descriptor, chart
 
-            if (!charts_time_line.ContainsKey(cpd_id))
+            if (!charts_time_line.ContainsKey(BATCH_ID))
             {
 
                 Dictionary<string, Chart_DRC_Time_Line> list_chart_descriptors = new Dictionary<string, Chart_DRC_Time_Line>();
@@ -3273,17 +3273,17 @@ namespace DRC
 
                     foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
 
-                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(cpd_id, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
                     current_chart.draw_DRC();
 
                     list_chart_descriptors.Add(descriptor, current_chart);
                 }
 
-                charts_time_line[cpd_id] = list_chart_descriptors;
+                charts_time_line[BATCH_ID] = list_chart_descriptors;
             }
             else
             {
-                Dictionary<string, Chart_DRC_Time_Line> list_chart_descriptors = charts_time_line[cpd_id];
+                Dictionary<string, Chart_DRC_Time_Line> list_chart_descriptors = charts_time_line[BATCH_ID];
 
                 foreach (KeyValuePair<string, Chart_DRC_Time_Line> elem in list_chart_descriptors)
                 {
@@ -3300,10 +3300,10 @@ namespace DRC
 
                             foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
 
-                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(cpd_id, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
                             current_chart.draw_DRC();
 
-                            charts_time_line[cpd_id][descriptor] = current_chart;
+                            charts_time_line[BATCH_ID][descriptor] = current_chart;
                         }
                         else
                         {
@@ -3336,12 +3336,12 @@ namespace DRC
             {
                 toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
 
-                string cpd_id = list_cpd[idx].ToString();
+                string BATCH_ID = list_cpd[idx].ToString();
 
-                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                if (BATCH_ID == "DMSO" || BATCH_ID == "Untreated")
                     continue;
 
-                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+                List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
 
                 foreach (Chart_DRC current_chart in list_chart)
                 {
@@ -3374,12 +3374,12 @@ namespace DRC
             {
                 this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
 
-                string cpd_id = list_cpd[idx].ToString();
+                string BATCH_ID = list_cpd[idx].ToString();
 
-                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                if (BATCH_ID == "DMSO" || BATCH_ID == "Untreated")
                     continue;
 
-                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+                List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
 
                 foreach (Chart_DRC current_chart in list_chart)
                 {
@@ -3757,7 +3757,7 @@ namespace DRC
         {
             foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
             {
-                string cpd_id = elem.Key;
+                string BATCH_ID = elem.Key;
                 List<Chart_DRC> cpd_charts = elem.Value;
 
                 foreach (Chart_DRC current_chart in cpd_charts)
@@ -3782,7 +3782,7 @@ namespace DRC
         {
             foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
             {
-                string cpd_id = elem.Key;
+                string BATCH_ID = elem.Key;
                 List<Chart_DRC> cpd_charts = elem.Value;
 
                 foreach (Chart_DRC current_chart in cpd_charts)
@@ -3808,7 +3808,7 @@ namespace DRC
         {
             foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
             {
-                string cpd_id = elem.Key;
+                string BATCH_ID = elem.Key;
                 List<Chart_DRC> cpd_charts = elem.Value;
 
                 foreach (Chart_DRC current_chart in cpd_charts)
@@ -3926,7 +3926,7 @@ namespace DRC
         private void loadPSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Patient Stratificaton :
-            // CPD_ID_List Table :
+            // BATCH_ID_List Table :
 
             Reset();
             SetForm();
@@ -4487,7 +4487,7 @@ namespace DRC
 
             }
 
-            List<string> CPD_ID = new List<string>();
+            List<string> BATCH_ID = new List<string>();
             deslected_data_descriptor = new List<string>();
             status_ec_50_descritpor = new List<string>();
             bounds_descriptor = new List<string>();
@@ -4528,13 +4528,13 @@ namespace DRC
 
                 if ((row.Cells["Plate"].Value.ToString().Contains("1-1") || row.Cells["Plate"].Value.ToString().Contains("1-2")))
                 {
-                    row.Cells["CPD_ID"].Value = template_plate_1[well];
                     row.Cells["BATCH_ID"].Value = template_plate_1[well];
+                    row.Cells["CPD_ID"].Value = template_plate_1[well];
                 }
                 else if ((row.Cells["Plate"].Value.ToString().Contains("2-1") || row.Cells["Plate"].Value.ToString().Contains("2-2")))
                 {
-                    row.Cells["CPD_ID"].Value = template_plate_2[well];
                     row.Cells["BATCH_ID"].Value = template_plate_2[well];
+                    row.Cells["CPD_ID"].Value = template_plate_2[well];
                 }
 
                 row.Cells["Concentration"].Value = template_plate_concentration[well];
@@ -4542,10 +4542,10 @@ namespace DRC
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
-                CPD_ID.Add(row.Cells["CPD_ID"].Value.ToString());
+                BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
             }
 
-            var unique_items = new HashSet<string>(CPD_ID);
+            var unique_items = new HashSet<string>(BATCH_ID);
             comboBox1.DataSource = unique_items.ToList<string>();
 
             foreach (DataGridViewColumn col in f3.dataGridView1.Columns)
@@ -4593,7 +4593,7 @@ namespace DRC
 
             f2.dataGridView2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
 
-            f2.dataGridView2.Columns[0].Name = "CPD_ID";
+            f2.dataGridView2.Columns[0].Name = "BATCH_ID";
 
             descriptor_list = new List<string>();
 
@@ -4625,7 +4625,7 @@ namespace DRC
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
                 string current_plate = row.Cells["Plate"].Value.ToString();
-                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
+                string current_cpd = row.Cells["BATCH_ID"].Value.ToString();
 
                 foreach (string plate in unique_plates)
                 {
@@ -4825,7 +4825,7 @@ namespace DRC
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
                 string current_plate = row.Cells["Plate"].Value.ToString();
-                string current_cpd = row.Cells["CPD_ID"].Value.ToString();
+                string current_cpd = row.Cells["BATCH_ID"].Value.ToString();
 
                 foreach (string plate in unique_plates)
                 {
@@ -4869,12 +4869,12 @@ namespace DRC
             {
                 this.toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
 
-                string cpd_id = list_cpd[idx].ToString();
+                string BATCH_ID = list_cpd[idx].ToString();
 
-                if (cpd_id == "DMSO" || cpd_id == "Untreated")
+                if (BATCH_ID == "DMSO" || BATCH_ID == "Untreated")
                     continue;
 
-                List<Chart_DRC> list_chart = descriptors_chart[cpd_id];
+                List<Chart_DRC> list_chart = descriptors_chart[BATCH_ID];
 
                 foreach (Chart_DRC current_chart in list_chart)
                 {
@@ -4885,34 +4885,34 @@ namespace DRC
 
                     if (auc_dict.ContainsKey(descriptor))
                     {
-                        auc_dict[descriptor][cpd_id] = AUC;
+                        auc_dict[descriptor][BATCH_ID] = AUC;
                     }
                     else
                     {
                         Dictionary<string, double> temp_dict = new Dictionary<string, double>();
-                        temp_dict[cpd_id] = AUC;
+                        temp_dict[BATCH_ID] = AUC;
                         auc_dict[descriptor] = temp_dict;
                     }
 
                     if (auc_error_dict.ContainsKey(descriptor))
                     {
-                        auc_error_dict[descriptor][cpd_id] = error_auc;
+                        auc_error_dict[descriptor][BATCH_ID] = error_auc;
                     }
                     else
                     {
                         Dictionary<string, double> temp_dict = new Dictionary<string, double>();
-                        temp_dict[cpd_id] = error_auc;
+                        temp_dict[BATCH_ID] = error_auc;
                         auc_error_dict[descriptor] = temp_dict;
                     }
 
                     if (raw_data_dict.ContainsKey(descriptor))
                     {
-                        raw_data_dict[descriptor][cpd_id] = list_raw_data;
+                        raw_data_dict[descriptor][BATCH_ID] = list_raw_data;
                     }
                     else
                     {
                         Dictionary<string, List<DataGridViewRow>> temp_dict = new Dictionary<string, List<DataGridViewRow>>();
-                        temp_dict[cpd_id] = list_raw_data;
+                        temp_dict[BATCH_ID] = list_raw_data;
                         raw_data_dict[descriptor] = temp_dict;
                     }
 
@@ -4925,14 +4925,14 @@ namespace DRC
             {
                 // Display the AUC values :
 
-                //Console.WriteLine("CPD_ID" + "," + "Descriptor" + "," + "AUC");
+                //Console.WriteLine("BATCH_ID" + "," + "Descriptor" + "," + "AUC");
 
                 form_patient.Reset();
                 chart_auc.Clear();
 
                 foreach (KeyValuePair<string, Dictionary<string, double>> item in auc_dict)
                 {
-                    //Console.WriteLine("CPD_ID : " + item.Key.ToString());
+                    //Console.WriteLine("BATCH_ID : " + item.Key.ToString());
 
                     Dictionary<string, double> descriptor_auc = item.Value;
                     Dictionary<string, double> descriptor_auc_error = auc_error_dict[item.Key];
@@ -4977,29 +4977,29 @@ namespace DRC
 
                     foreach (KeyValuePair<string, double> val in auc_values_by_cpd)
                     {
-                        string cpd_id = val.Key;
+                        string BATCH_ID = val.Key;
                         double z_score = (val.Value - mu) / sigma;
                         double error_z_score = auc_errors[val.Key] / sigma;
 
                         if (z_score_auc.ContainsKey(descriptor))
                         {
-                            z_score_auc[descriptor][cpd_id] = z_score;
+                            z_score_auc[descriptor][BATCH_ID] = z_score;
                         }
                         else
                         {
                             Dictionary<string, double> temp_dict = new Dictionary<string, double>();
-                            temp_dict[cpd_id] = z_score;
+                            temp_dict[BATCH_ID] = z_score;
                             z_score_auc[descriptor] = temp_dict;
                         }
 
                         if (z_score_auc_error.ContainsKey(descriptor))
                         {
-                            z_score_auc_error[descriptor][cpd_id] = error_z_score;
+                            z_score_auc_error[descriptor][BATCH_ID] = error_z_score;
                         }
                         else
                         {
                             Dictionary<string, double> temp_dict = new Dictionary<string, double>();
-                            temp_dict[cpd_id] = error_z_score;
+                            temp_dict[BATCH_ID] = error_z_score;
                             z_score_auc_error[descriptor] = temp_dict;
                         }
 
@@ -7711,26 +7711,33 @@ namespace DRC
                 menu_CI.Font = new Font(menu_CI.Font.FontFamily, menu_CI.Font.Size, FontStyle.Bold);
                 menu_CI.Visible = true;
                 chart.Annotations.Add(menu_CI);
-
+                annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
                 if (inactive)
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
                     ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+                    annotation_ec50.Text = "Inactive";
+
                 }
 
                 if (not_fitted)
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
                     ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.Red;
+                    annotation_ec50.Text = "Not fitted";
                 }
 
-                if(confidence_interval && display_confidence_interval)
+                if (confidence_interval && display_confidence_interval)
                 {
                     ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.Green;
+                    //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                 }
                 else
                 { 
                     ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
+                    //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+
                 }
             }
 
@@ -7739,7 +7746,7 @@ namespace DRC
             //                                    Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
             //                                    + r2.ToString("N2");
 
-            annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
+            //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
             if (patient)
             {

@@ -25,15 +25,15 @@ namespace DRC
 
         private string search_cpd_point(Dictionary<string, List<double>> cpd_dict, double pos_x, double pos_y)
         {
-            string cpd_id = "";
+            string BATCH_ID = "";
 
             foreach (KeyValuePair<string, List<double>> item in cpd_dict)
             {
                 List<double> point_coord = item.Value;
-                if(Math.Abs(point_coord[0]-pos_x)<0.001 && Math.Abs(point_coord[1] - pos_y) < 0.001) cpd_id = item.Key;
+                if(Math.Abs(point_coord[0]-pos_x)<0.001 && Math.Abs(point_coord[1] - pos_y) < 0.001) BATCH_ID = item.Key;
             }
 
-            return cpd_id;
+            return BATCH_ID;
         }
 
         Point? prevPosition = null;

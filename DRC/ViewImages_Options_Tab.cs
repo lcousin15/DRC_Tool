@@ -23,11 +23,11 @@ namespace DRC
         //// Task will hold the logic
         //private readonly Task _task;
 
-        public ViewImages_Options_Tab(MainTab form, string cpd_id)
+        public ViewImages_Options_Tab(MainTab form, string BATCH_ID)
         {
             InitializeComponent();
             _form1 = form;
-            selected_cpd = cpd_id;
+            selected_cpd = BATCH_ID;
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
             if (_form1.cpd_low_thr_ch1 != -1)
@@ -53,11 +53,11 @@ namespace DRC
             //_task = Task.Factory.StartNew(() => EventLoop(_cts.Token), _cts.Token);
         }
 
-        public ViewImages_Options_Tab(MainTab form, List<string> cpd_id)
+        public ViewImages_Options_Tab(MainTab form, List<string> BATCH_ID)
         {
             InitializeComponent();
             _form1 = form;
-            list_cpd = cpd_id;
+            list_cpd = BATCH_ID;
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
             if (_form1.cpd_low_thr_ch1 != -1)

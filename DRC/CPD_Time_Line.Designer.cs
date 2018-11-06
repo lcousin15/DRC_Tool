@@ -46,10 +46,10 @@
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
-            // CPD_ID
+            // BATCH_ID
             // 
-            this.CPD_ID.HeaderText = "CPD_ID";
-            this.CPD_ID.Name = "CPD_ID";
+            this.CPD_ID.HeaderText = "BATCH_ID";
+            this.CPD_ID.Name = "BATCH_ID";
             this.CPD_ID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // checkedListBox1

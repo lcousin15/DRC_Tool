@@ -14,7 +14,7 @@ namespace DRC
     {
         MainTab _form1 = new MainTab();
 
-        private string cpd_id = "";
+        private string BATCH_ID = "";
 
         public CPD_Time_Line(MainTab f)
         {
@@ -24,9 +24,9 @@ namespace DRC
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            cpd_id = dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
-            //Console.WriteLine(cpd_id);
-            _form1.get_compound_data(cpd_id);
+            BATCH_ID = dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
+            //Console.WriteLine(BATCH_ID);
+            _form1.get_compound_data(BATCH_ID);
         }
 
         private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
@@ -37,7 +37,7 @@ namespace DRC
             if (!checkedListBox1.GetItemChecked(e.Index)) checked_state = false;
 
             Console.WriteLine(file);
-            _form1.draw_cpd_list(file, cpd_id, checked_state);
+            _form1.draw_cpd_list(file, BATCH_ID, checked_state);
         }
     }
 }

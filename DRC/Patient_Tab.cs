@@ -34,9 +34,9 @@ namespace DRC
             tableLayoutPanel1.Controls.Clear();
         }
 
-        public void draw_compound(string cpd_id)
+        public void draw_compound(string BATCH_ID)
         {
-            _main_tab.draw_compound(cpd_id);
+            _main_tab.draw_compound(BATCH_ID);
         }
 
         private void exportReportToolStripMenuItem_Click(object sender, EventArgs e)
@@ -90,7 +90,7 @@ namespace DRC
                 if (CPD_KEGG != "")
                 {
 
-                    Console.WriteLine("------ CPD : " + CPD + "------ CPD_ID : " + CPD_KEGG);
+                    Console.WriteLine("------ CPD : " + CPD + "------ BATCH_ID : " + CPD_KEGG);
 
                     string getvars3 = "/get/" + CPD_KEGG;
                     WebRequest req3 = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars3)) as WebRequest;
@@ -438,11 +438,11 @@ namespace DRC
             return output_image;
         }
 
-        private List<string> get_cpd_wells(string cpd_id)
+        private List<string> get_cpd_wells(string BATCH_ID)
         {
             HashSet<string> wells_id = new HashSet<string>();
 
-            foreach (DataGridViewRow row in raw_data[cpd_id])
+            foreach (DataGridViewRow row in raw_data[BATCH_ID])
             {
                 wells_id.Add(row.Cells["Well"].Value.ToString());
             }
@@ -551,12 +551,12 @@ namespace DRC
             }
         }
         /*
-        private List<string> get_targets(string cpd_id)
+        private List<string> get_targets(string BATCH_ID)
         {
             Dictionary<string, List<string>> Path_target = new Dictionary<string, List<string>>();
 
-            Console.WriteLine("------ CPD : " + cpd_id);
-            string getvars = "/find/drug/" + cpd_id;
+            Console.WriteLine("------ CPD : " + BATCH_ID);
+            string getvars = "/find/drug/" + BATCH_ID;
             WebRequest req = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars)) as WebRequest;
             req.Method = "GET";
 
@@ -574,7 +574,7 @@ namespace DRC
             if (CPD_KEGG != "")
             {
 
-                Console.WriteLine("------ CPD : " + cpd_id + "------ CPD_ID : " + CPD_KEGG);
+                Console.WriteLine("------ CPD : " + BATCH_ID + "------ BATCH_ID : " + CPD_KEGG);
 
                 string getvars3 = "/get/" + CPD_KEGG;
                 WebRequest req3 = WebRequest.Create(string.Format("http://rest.kegg.jp" + getvars3)) as WebRequest;

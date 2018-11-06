@@ -226,7 +226,7 @@ namespace DRC
 
                 int cellRowIndex = 1;
 
-                ws_table.Cells[cellRowIndex, 1].Value = "CPD_ID";
+                ws_table.Cells[cellRowIndex, 1].Value = "BATCH_ID";
 
                 ws_table.Cells[cellRowIndex, 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                 ws_table.Cells[cellRowIndex, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
@@ -294,16 +294,16 @@ namespace DRC
                     toolStripProgressBar1.Value = idx * 100 / (list_cpds.Count - 1);
                     //toolStripStatusLabel1.Text = toolStripProgressBar1.Value.ToString();
                     //toolStripStatusLabel1.Visible=true;
-                    string cpd_id = list_cpds[idx].ToString();
+                    string BATCH_ID = list_cpds[idx].ToString();
 
-                    if (cpd_id.Contains("DMSO") || cpd_id.Contains("Untreated"))
+                    if (BATCH_ID.Contains("DMSO") || BATCH_ID.Contains("Untreated"))
                         continue;
 
                     _main_tab.tableLayoutPanel1.Controls.Clear();
 
                     Dictionary<string, List<Chart_DRC>> cpd_charts = _main_tab.get_descriptors_chart();
 
-                    List<Chart_DRC> list_chart = cpd_charts[cpd_id];
+                    List<Chart_DRC> list_chart = cpd_charts[BATCH_ID];
 
                     List<string> list_images = new List<string>();
 
@@ -327,7 +327,7 @@ namespace DRC
 
                     foreach (Chart_DRC current_chart in list_chart)
                     {
-                        ws_table.Cells[cellRowIndex, 1].Value = cpd_id;
+                        ws_table.Cells[cellRowIndex, 1].Value = BATCH_ID;
 
                         ws_table.Cells[cellRowIndex, 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                         ws_table.Cells[cellRowIndex, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
@@ -339,7 +339,7 @@ namespace DRC
 
 
                         Bitmap img = (Bitmap)LoadImageNoLock(list_images[i_img]);
-                        string name_idx = "DRC_Curve" + "_" + cpd_id + "_" + i_img.ToString();
+                        string name_idx = "DRC_Curve" + "_" + BATCH_ID + "_" + i_img.ToString();
                         ExcelPicture excelImage = null;
 
                         excelImage = ws_table.Drawings.AddPicture(name_idx, img);
@@ -347,10 +347,10 @@ namespace DRC
                         excelImage.From.Row = cellRowIndex-1;
                         excelImage.SetSize(485, 350);
 
-                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Value = auc_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_values()[cpd_id];
-                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Value = auc_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_error_values()[cpd_id];
-                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Value = auc_z_score_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_values()[cpd_id];
-                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Value = auc_z_score_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_error_values()[cpd_id];
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 3].Value = auc_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_values()[BATCH_ID];
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 4].Value = auc_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_error_values()[BATCH_ID];
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 5].Value = auc_z_score_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_values()[BATCH_ID];
+                        ws_table.Cells[cellRowIndex, 5 * i_img + 6].Value = auc_z_score_by_descriptor[current_chart.get_Descriptor_Name()].get_auc_error_values()[BATCH_ID];
 
                         ws_table.Cells[cellRowIndex, 5 * i_img + 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                         ws_table.Cells[cellRowIndex, 5 * i_img + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
