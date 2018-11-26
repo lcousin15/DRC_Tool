@@ -206,7 +206,7 @@ namespace DRC
 
         private Dictionary<string, string> template_plate_1 = new Dictionary<string, string>();
         private Dictionary<string, string> template_plate_2 = new Dictionary<string, string>();
-        private Dictionary<string, double> template_plate_concentration = new Dictionary<string, double>();
+        private Dictionary<string, Dictionary<string, double>> template_plate_concentration = new Dictionary<string, Dictionary<string, double>>();
 
         private Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // BATCH_ID, descriptor, chart
 
@@ -3973,10 +3973,11 @@ namespace DRC
             List<string> first_wells = new List<string>();
             List<string> drugs = new List<string>();
             List<string> drugs_kegg = new List<string>();
-
             List<string> targets = new List<string>();
-
             List<string> drug_plate = new List<string>();
+
+            Dictionary<string, Dictionary<string, List<double>>> dict_concentrations_plate = new Dictionary<string, Dictionary<string, List<double>>>();
+
 
             System.IO.StreamReader sr = new System.IO.StreamReader(file);
             CachedCsvReader template_cpds_csv = new CachedCsvReader(sr, true);
@@ -4051,6 +4052,175 @@ namespace DRC
                         }
                     }
 
+                    if (col_name.Contains("Concentration_1"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+
+                        double conc_1;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_1);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_1);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_1);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_2"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_2;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_2);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_2);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_2);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_3"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_3;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_3);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_3);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_3);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_4"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_4;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_4);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_4);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_4);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_5"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_5;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_5);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_5);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_5);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_6"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_6;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_6);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_6);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_6);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_7"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_7;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_7);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_7);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_7);
+                        }
+
+                    }
 
                 }
 
@@ -4059,17 +4229,17 @@ namespace DRC
             template_plate_1 = new Dictionary<string, string>();
             template_plate_2 = new Dictionary<string, string>();
 
-            template_plate_concentration = new Dictionary<string, double>();
+            template_plate_concentration = new Dictionary<string, Dictionary<string, double>>();
 
-            ps_concentrations.Add(30 * 1e-6);
-            ps_concentrations.Add(7.5 * 1e-6);
-            ps_concentrations.Add(1.875 * 1e-6);
-            ps_concentrations.Add(0.46875 * 1e-6);
-            ps_concentrations.Add(0.1171875 * 1e-6);
-            ps_concentrations.Add(0.029296875 * 1e-6);
-            ps_concentrations.Add(0.00732421875 * 1e-6);
+            //ps_concentrations.Add(30 * 1e-6);
+            //ps_concentrations.Add(7.5 * 1e-6);
+            //ps_concentrations.Add(1.875 * 1e-6);
+            //ps_concentrations.Add(0.46875 * 1e-6);
+            //ps_concentrations.Add(0.1171875 * 1e-6);
+            //ps_concentrations.Add(0.029296875 * 1e-6);
+            //ps_concentrations.Add(0.00732421875 * 1e-6);
 
-            norm_integral = (Math.Log10(ps_concentrations[0]) - Math.Log10(ps_concentrations[ps_concentrations.Count - 1]));
+            //norm_integral = (Math.Log10(ps_concentrations[0]) - Math.Log10(ps_concentrations[ps_concentrations.Count - 1]));
 
             List<string> first_letter = new List<string>();
             first_letter.Add("B");
@@ -4230,31 +4400,6 @@ namespace DRC
                     {
                         template_plate_1[letter + number] = elem.Value;
 
-                        switch (letter)
-                        {
-                            case "B":
-                                template_plate_concentration[letter + number] = ps_concentrations[0];
-                                break;
-                            case "C":
-                                template_plate_concentration[letter + number] = ps_concentrations[1];
-                                break;
-                            case "D":
-                                template_plate_concentration[letter + number] = ps_concentrations[2];
-                                break;
-                            case "E":
-                                template_plate_concentration[letter + number] = ps_concentrations[3];
-                                break;
-                            case "F":
-                                template_plate_concentration[letter + number] = ps_concentrations[4];
-                                break;
-                            case "G":
-                                template_plate_concentration[letter + number] = ps_concentrations[5];
-                                break;
-                            case "H":
-                                template_plate_concentration[letter + number] = ps_concentrations[6];
-                                break;
-                        }
-
                     }
                 }
 
@@ -4263,34 +4408,111 @@ namespace DRC
                     foreach (string letter in second_letter)
                     {
                         template_plate_1[letter + number] = elem.Value;
-
-                        switch (letter)
-                        {
-                            case "I":
-                                template_plate_concentration[letter + number] = ps_concentrations[0];
-                                break;
-                            case "J":
-                                template_plate_concentration[letter + number] = ps_concentrations[1];
-                                break;
-                            case "K":
-                                template_plate_concentration[letter + number] = ps_concentrations[2];
-                                break;
-                            case "L":
-                                template_plate_concentration[letter + number] = ps_concentrations[3];
-                                break;
-                            case "M":
-                                template_plate_concentration[letter + number] = ps_concentrations[4];
-                                break;
-                            case "N":
-                                template_plate_concentration[letter + number] = ps_concentrations[5];
-                                break;
-                            case "O":
-                                template_plate_concentration[letter + number] = ps_concentrations[6];
-                                break;
-                        }
                     }
                 }
 
+            }
+
+            // Get the concentrations :
+
+            List<string> plates = new List<string>();
+            plates.Add("1");
+            plates.Add("2");
+
+            foreach (string plate_number in plates)
+            {
+
+                foreach (KeyValuePair<string, string> elem in cpd_position_1) // cpd_position1 to get all the key (because first plate is totally filled)
+                {
+                    string number = elem.Key[1].ToString() + elem.Key[2].ToString();
+                    string current_letter = elem.Key[0].ToString();
+
+                    if (dict_concentrations_plate[plate_number].ContainsKey(first_letter[0] + number))
+                    {
+
+                        if (first_letter.Contains(current_letter))
+                        {
+                            foreach (string letter in first_letter)
+                            {
+
+                                if (!template_plate_concentration.ContainsKey(plate_number))
+                                {
+                                    Dictionary<string, double> temp = new Dictionary<string, double>();
+                                    template_plate_concentration[plate_number] = temp;
+                                }
+
+                                switch (letter)
+                                {
+                                    case "B":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][0];
+                                        break;
+                                    case "C":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][1];
+                                        break;
+                                    case "D":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][2];
+                                        break;
+                                    case "E":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][3];
+                                        break;
+                                    case "F":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][4];
+                                        break;
+                                    case "G":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][5];
+                                        break;
+                                    case "H":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][6];
+                                        break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (dict_concentrations_plate[plate_number].ContainsKey(second_letter[0] + number))
+                    {
+
+                        if (second_letter.Contains(current_letter))
+                        {
+
+                            if (!template_plate_concentration.ContainsKey(plate_number))
+                            {
+                                Dictionary<string, double> temp = new Dictionary<string, double>();
+                                template_plate_concentration[plate_number] = temp;
+                            }
+
+                            foreach (string letter in second_letter)
+                            {
+
+                                switch (letter)
+                                {
+                                    case "I":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][0];
+                                        break;
+                                    case "J":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][1];
+                                        break;
+                                    case "K":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][2];
+                                        break;
+                                    case "L":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][3];
+                                        break;
+                                    case "M":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][4];
+                                        break;
+                                    case "N":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][5];
+                                        break;
+                                    case "O":
+                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][6];
+                                        break;
+                                }
+                            }
+
+                        }
+                    }
+                }
             }
 
             /*
@@ -4530,14 +4752,15 @@ namespace DRC
                 {
                     row.Cells["BATCH_ID"].Value = template_plate_1[well];
                     row.Cells["CPD_ID"].Value = template_plate_1[well];
+                    row.Cells["Concentration"].Value = template_plate_concentration["1"][well];
                 }
                 else if ((row.Cells["Plate"].Value.ToString().Contains("2-1") || row.Cells["Plate"].Value.ToString().Contains("2-2")))
                 {
                     row.Cells["BATCH_ID"].Value = template_plate_2[well];
                     row.Cells["CPD_ID"].Value = template_plate_2[well];
+                    row.Cells["Concentration"].Value = template_plate_concentration["2"][well];
                 }
 
-                row.Cells["Concentration"].Value = template_plate_concentration[well];
             }
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
@@ -4698,17 +4921,17 @@ namespace DRC
                 List<double> ps_concentrations_log = new List<double>();
                 List<string> deselected = new List<string>();
 
-                int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / ps_concentrations.Count;
+                int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / 7;
 
-                for (int i = 0; i < replicates; ++i)
-                {
-                    foreach (double item in ps_concentrations)
-                    {
-                        ps_concentrations_bis.Add(item);
-                        ps_concentrations_log.Add(Math.Log10(item));
-                        deselected.Add("FALSE");
-                    }
-                }
+                //for (int i = 0; i < replicates; ++i)
+                //{
+                //    foreach (double item in ps_concentrations)
+                //    {
+                //        ps_concentrations_bis.Add(item);
+                //        ps_concentrations_log.Add(Math.Log10(item));
+                //        deselected.Add("FALSE");
+                //    }
+                //}
 
                 List<double> row_params = new List<double>();
 
@@ -4731,6 +4954,9 @@ namespace DRC
                     foreach (DataGridViewRow row in raw_data)
                     {
                         list_wells.Add(row.Cells["Well"].Value.ToString());
+                        ps_concentrations_bis.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+                        ps_concentrations_log.Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
+                        deselected.Add("FALSE");
                     }
 
                     // ps_concentrations_log
@@ -6252,7 +6478,8 @@ namespace DRC
 
         private double compute_jacobian_param_3(double a0, double a1, double a2, double a3, double x)
         {
-            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1.0 + Math.Pow(10, a3 * (a2 - x))) * (1.0 + Math.Pow(10, a3 * (a2 - x))));        }
+            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1.0 + Math.Pow(10, a3 * (a2 - x))) * (1.0 + Math.Pow(10, a3 * (a2 - x))));
+        }
 
 
         public static void compute_chi_square(double[] c, ref double func, double[] grad, object obj)
@@ -6456,7 +6683,7 @@ namespace DRC
 
                 H[3, 0] += -2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (1 - 1 / (Math.Pow(10, s * (e - w)) + 1)) * (-b + t) * (e - w) / Math.Pow((
                            Math.Pow(10, s * (e - w)) + 1), 2) + 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (e - w) * (
-                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w))+1, 2);
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w)) + 1, 2);
 
                 H[3, 1] += -2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (e - w) * (
                             b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow((
@@ -6469,7 +6696,7 @@ namespace DRC
                             e - w) * Math.Log(10) / Math.Pow((Math.Pow(10, s * (e - w)) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * s * (
                             -b + t) * (e - w) * (b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) * Math.Log(10) / Math.Pow((
                            Math.Pow(10, s * (e - w)) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (-b + t) * (
-                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w))+1, 2);
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w)) + 1, 2);
 
                 H[3, 3] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * (-b + t) * Math.Pow((e - w), 2) * (
                             b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) * Math.Log(10) / Math.Pow((
@@ -6501,7 +6728,7 @@ namespace DRC
             H[3, 3] *= dof;
 
             return H;
-    }
+        }
 
         private double compute_least_square_error(double[,] cov, double a0, double a1, double a2, double a3, double x)
         {
@@ -6557,7 +6784,7 @@ namespace DRC
                                    {jac[2]},
                                    {jac[3]}
                                   };
-        
+
             double[,] jacobianT = jacobian.Transpose();
 
             double[,] A = cov.Dot(jacobian);
@@ -6934,12 +7161,12 @@ namespace DRC
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
                         double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
-                        
+
                         /*
                         double a3 = compute_least_square_error2(covariance_matrix2, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
 
                         if (max_c < a3) max_c = a3;
-                       
+
                         double sigma_confidence_interval = t_test_val * Math.Sqrt(mse / dof) * Math.Sqrt(a3); // * Math.Sqrt(sum_square_residuals / (double)dof);
                         */
 
@@ -6978,7 +7205,7 @@ namespace DRC
                         x_log_unique.Add(Math.Pow(10, elem.Key));
                     }
 
-                }          
+                }
 
                 y_fit_log.Clear();
 
@@ -7734,7 +7961,7 @@ namespace DRC
 
                 }
                 else
-                { 
+                {
                     ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
                     //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
