@@ -5128,6 +5128,7 @@ namespace DRC
                     string descriptor = current_chart.get_Descriptor_Name();
                     double AUC = current_chart.compute_AUC();
                     double error_auc = current_chart.get_error_auc();
+
                     List<DataGridViewRow> list_raw_data = current_chart.get_Raw_Data();
 
                     if (auc_dict.ContainsKey(descriptor))
@@ -7998,6 +7999,7 @@ namespace DRC
 
             if (patient)
             {
+                chart.Series["Series1"].Points.Clear();
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
                 annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
             }
