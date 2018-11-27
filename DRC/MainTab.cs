@@ -4421,18 +4421,59 @@ namespace DRC
 
             foreach (string plate_number in plates)
             {
-
-                foreach (KeyValuePair<string, string> elem in cpd_position_1) // cpd_position1 to get all the key (because first plate is totally filled)
+                if (dict_concentrations_plate.ContainsKey(plate_number))
                 {
-                    string number = elem.Key[1].ToString() + elem.Key[2].ToString();
-                    string current_letter = elem.Key[0].ToString();
-
-                    if (dict_concentrations_plate[plate_number].ContainsKey(first_letter[0] + number))
+                    foreach (KeyValuePair<string, string> elem in cpd_position_1) // cpd_position1 to get all the key (because first plate is totally filled)
                     {
+                        string number = elem.Key[1].ToString() + elem.Key[2].ToString();
+                        string current_letter = elem.Key[0].ToString();
 
-                        if (first_letter.Contains(current_letter))
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_letter[0] + number))
                         {
-                            foreach (string letter in first_letter)
+
+                            if (first_letter.Contains(current_letter))
+                            {
+                                foreach (string letter in first_letter)
+                                {
+
+                                    if (!template_plate_concentration.ContainsKey(plate_number))
+                                    {
+                                        Dictionary<string, double> temp = new Dictionary<string, double>();
+                                        template_plate_concentration[plate_number] = temp;
+                                    }
+
+                                    switch (letter)
+                                    {
+                                        case "B":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][0];
+                                            break;
+                                        case "C":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][1];
+                                            break;
+                                        case "D":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][2];
+                                            break;
+                                        case "E":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][3];
+                                            break;
+                                        case "F":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][4];
+                                            break;
+                                        case "G":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][5];
+                                            break;
+                                        case "H":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][6];
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (dict_concentrations_plate[plate_number].ContainsKey(second_letter[0] + number))
+                        {
+
+                            if (second_letter.Contains(current_letter))
                             {
 
                                 if (!template_plate_concentration.ContainsKey(plate_number))
@@ -4441,75 +4482,36 @@ namespace DRC
                                     template_plate_concentration[plate_number] = temp;
                                 }
 
-                                switch (letter)
+                                foreach (string letter in second_letter)
                                 {
-                                    case "B":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][0];
-                                        break;
-                                    case "C":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][1];
-                                        break;
-                                    case "D":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][2];
-                                        break;
-                                    case "E":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][3];
-                                        break;
-                                    case "F":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][4];
-                                        break;
-                                    case "G":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][5];
-                                        break;
-                                    case "H":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][6];
-                                        break;
+
+                                    switch (letter)
+                                    {
+                                        case "I":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][0];
+                                            break;
+                                        case "J":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][1];
+                                            break;
+                                        case "K":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][2];
+                                            break;
+                                        case "L":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][3];
+                                            break;
+                                        case "M":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][4];
+                                            break;
+                                        case "N":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][5];
+                                            break;
+                                        case "O":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][6];
+                                            break;
+                                    }
                                 }
+
                             }
-                        }
-                    }
-
-                    if (dict_concentrations_plate[plate_number].ContainsKey(second_letter[0] + number))
-                    {
-
-                        if (second_letter.Contains(current_letter))
-                        {
-
-                            if (!template_plate_concentration.ContainsKey(plate_number))
-                            {
-                                Dictionary<string, double> temp = new Dictionary<string, double>();
-                                template_plate_concentration[plate_number] = temp;
-                            }
-
-                            foreach (string letter in second_letter)
-                            {
-
-                                switch (letter)
-                                {
-                                    case "I":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][0];
-                                        break;
-                                    case "J":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][1];
-                                        break;
-                                    case "K":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][2];
-                                        break;
-                                    case "L":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][3];
-                                        break;
-                                    case "M":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][4];
-                                        break;
-                                    case "N":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][5];
-                                        break;
-                                    case "O":
-                                        template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][6];
-                                        break;
-                                }
-                            }
-
                         }
                     }
                 }
@@ -4750,22 +4752,40 @@ namespace DRC
 
                 if ((row.Cells["Plate"].Value.ToString().Contains("1-1") || row.Cells["Plate"].Value.ToString().Contains("1-2")))
                 {
-                    row.Cells["BATCH_ID"].Value = template_plate_1[well];
-                    row.Cells["CPD_ID"].Value = template_plate_1[well];
-                    row.Cells["Concentration"].Value = template_plate_concentration["1"][well];
+                    if (template_plate_1.ContainsKey(well))
+                    {
+                        row.Cells["BATCH_ID"].Value = template_plate_1[well];
+                        row.Cells["CPD_ID"].Value = template_plate_1[well];
+                        row.Cells["Concentration"].Value = template_plate_concentration["1"][well];
+                    }
+                    else
+                    {
+                        row.Cells["BATCH_ID"].Value = "Untreated";
+                        row.Cells["CPD_ID"].Value = "Untreated";
+                        row.Cells["Concentration"].Value = 0;
+                    }
                 }
                 else if ((row.Cells["Plate"].Value.ToString().Contains("2-1") || row.Cells["Plate"].Value.ToString().Contains("2-2")))
                 {
-                    row.Cells["BATCH_ID"].Value = template_plate_2[well];
-                    row.Cells["CPD_ID"].Value = template_plate_2[well];
-                    row.Cells["Concentration"].Value = template_plate_concentration["2"][well];
+                    if (template_plate_1.ContainsKey(well))
+                    {
+                        row.Cells["BATCH_ID"].Value = template_plate_2[well];
+                        row.Cells["CPD_ID"].Value = template_plate_2[well];
+                        row.Cells["Concentration"].Value = template_plate_concentration["2"][well];
+                    }
+                    else
+                    {
+                        row.Cells["BATCH_ID"].Value = "Untreated";
+                        row.Cells["CPD_ID"].Value = "Untreated";
+                        row.Cells["Concentration"].Value = 0;
+                    }
                 }
 
             }
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
-                BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
+               /* if (row.Cells["BATCH_ID"].Value.ToString() != "Empty") */BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
             }
 
             var unique_items = new HashSet<string>(BATCH_ID);
@@ -4961,6 +4981,7 @@ namespace DRC
 
                     // ps_concentrations_log
                     // ps_concentrations
+                    if (dmso_value_per_descriptor.Count() == 0) continue;
 
                     Chart_DRC chart_DMSO_per_plate = new Chart_DRC(plate + " DMSO", item, 50, ref ps_concentrations_bis, ref ps_concentrations_log,
                         ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this,
@@ -6367,7 +6388,7 @@ namespace DRC
 
         private void chart1_Paint(object sender, PaintEventArgs e)
         {
-            if (confidence_interval && display_confidence_interval)
+            if (confidence_interval && display_confidence_interval && !compound_id.Contains("DMSO"))
             {
                 // we assume two series variables are set..:
                 if (chart.Series["Born_Inf"] == null || chart.Series["Born_Sup"] == null) return;
@@ -6402,7 +6423,7 @@ namespace DRC
                     e.Graphics.FillPath(brush, gp);
                 gp.Dispose();
             }
-            // Don't uncomment this : infinity looping
+            // Don't uncomment this : infinite looping
             //else
             //{
             //    chart.Series["Born_Inf"].Points.Clear();
