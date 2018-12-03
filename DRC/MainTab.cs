@@ -4812,6 +4812,7 @@ namespace DRC
 
         private void select_DMSO()
         {
+            dmso_charts.Clear();
 
             if (f3.dataGridView1.RowCount < 1)
             {
@@ -4970,6 +4971,9 @@ namespace DRC
                     List<string> list_wells = new List<string>();
 
                     List<DataGridViewRow> raw_data = raw_data_rows[plate][item];
+
+                    ps_concentrations_bis.Clear();
+                    ps_concentrations_log.Clear();
 
                     foreach (DataGridViewRow row in raw_data)
                     {
