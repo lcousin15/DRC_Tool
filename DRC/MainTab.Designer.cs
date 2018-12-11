@@ -59,6 +59,7 @@
             this.loadHitsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dRCTimeLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawOverlap1FileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patientStratificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCZScoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -348,17 +349,25 @@
             // dRCToolStripMenuItem
             // 
             this.dRCToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.dRCTimeLineToolStripMenuItem});
+            this.dRCTimeLineToolStripMenuItem,
+            this.drawOverlap1FileToolStripMenuItem});
             this.dRCToolStripMenuItem.Name = "dRCToolStripMenuItem";
-            this.dRCToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
-            this.dRCToolStripMenuItem.Text = "Time Line";
+            this.dRCToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.dRCToolStripMenuItem.Text = "DRC Overlap";
             // 
             // dRCTimeLineToolStripMenuItem
             // 
             this.dRCTimeLineToolStripMenuItem.Name = "dRCTimeLineToolStripMenuItem";
-            this.dRCTimeLineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.dRCTimeLineToolStripMenuItem.Text = "DRC Time Line";
+            this.dRCTimeLineToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.dRCTimeLineToolStripMenuItem.Text = "Overlap (List Files)";
             this.dRCTimeLineToolStripMenuItem.Click += new System.EventHandler(this.dRCTimeLineToolStripMenuItem_Click);
+            // 
+            // drawOverlap1FileToolStripMenuItem
+            // 
+            this.drawOverlap1FileToolStripMenuItem.Name = "drawOverlap1FileToolStripMenuItem";
+            this.drawOverlap1FileToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.drawOverlap1FileToolStripMenuItem.Text = "Overlap (By Plate)";
+            this.drawOverlap1FileToolStripMenuItem.Click += new System.EventHandler(this.drawOverlap1FileToolStripMenuItem_Click);
             // 
             // patientStratificationToolStripMenuItem
             // 
@@ -394,7 +403,7 @@
             // showToolStripMenuItem
             // 
             this.showToolStripMenuItem.Name = "showToolStripMenuItem";
-            this.showToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.showToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.showToolStripMenuItem.Text = "Show";
             this.showToolStripMenuItem.Click += new System.EventHandler(this.showToolStripMenuItem_Click);
             // 
@@ -917,6 +926,7 @@
         private System.Windows.Forms.Button btn_normalize;
         private System.Windows.Forms.ToolStripMenuItem wellPlateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem drawOverlap1FileToolStripMenuItem;
     }
 }
 

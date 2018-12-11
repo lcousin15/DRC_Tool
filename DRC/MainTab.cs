@@ -3084,7 +3084,7 @@ namespace DRC
 
                 foreach (DataRow row in main_table.Rows)
                 {
-                    string cpd = row["compound_id"].ToString();
+                    string cpd = row["BATCH_ID"].ToString();
                     main_cpds.Add(cpd);
                 }
             }
@@ -3114,7 +3114,7 @@ namespace DRC
 
                     foreach (DataRow row in table.Rows)
                     {
-                        string cpd = row["compound_id"].ToString();
+                        string cpd = row["BATCH_ID"].ToString();
 
                         if (cpd_link.ContainsKey(cpd))
                         {
@@ -3203,7 +3203,7 @@ namespace DRC
 
                 if (occ_number >= file_list.Count())
                 {
-                    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "compound_id" && the_descriptor != "Class" && the_descriptor != "dose")
+                    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "BATCH_ID" && the_descriptor != "Class" && the_descriptor != "Concentration")
                     {
                         time_line_selected_descriptors.Add(the_descriptor);
                     }
@@ -3229,7 +3229,7 @@ namespace DRC
 
             foreach (DataRow row in my_table.Rows)
             {
-                if (row["compound_id"].ToString() == BATCH_ID)
+                if (row["BATCH_ID"].ToString() == BATCH_ID)
                 {
                     foreach (string descriptor in time_line_selected_descriptors)
                     {
@@ -3250,7 +3250,7 @@ namespace DRC
 
                     }
 
-                    double current_concentration = Double.Parse(row["dose"].ToString());
+                    double current_concentration = Double.Parse(row["Concentration"].ToString());
                     descriptor_concentrations.Add(current_concentration);
                 }
             }
@@ -4785,7 +4785,8 @@ namespace DRC
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
-               /* if (row.Cells["BATCH_ID"].Value.ToString() != "Empty") */BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
+                /* if (row.Cells["BATCH_ID"].Value.ToString() != "Empty") */
+                BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
             }
 
             var unique_items = new HashSet<string>(BATCH_ID);
@@ -5330,6 +5331,104 @@ namespace DRC
                 well_plate.Show();
                 well_plate.draw();
             }
+        }
+
+        private void drawOverlap1FileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.SetForm();
+
+            DataTable main_table = new DataTable();
+            HashSet<string> main_cpds = new HashSet<string>();
+            HashSet<string> main_plates = new HashSet<string>();
+
+            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Text = openFileDialog1.FileName;
+
+                System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
+                CachedCsvReader my_csv = new CachedCsvReader(sr, true);
+                main_table.Load(my_csv);
+
+                foreach (DataRow row in main_table.Rows)
+                {
+                    string cpd = row["BATCH_ID"].ToString();
+                    string plate = row["Plate"].ToString();
+                    main_cpds.Add(cpd);
+                    main_plates.Add(plate);
+                }
+            }
+
+            foreach (string plate in main_plates)
+            {
+                DataTable table = new DataTable();
+
+                table = main_table.Copy();
+
+                table.Rows.Clear();
+
+                foreach (DataRow row_main in main_table.Rows)
+                {
+                    if(row_main["Plate"].ToString()==plate.ToString())
+                    {
+                        table.Rows.Add(row_main.ItemArray);
+                    }
+                }
+
+                data_dict.Add(plate, table);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    string cpd = row["BATCH_ID"].ToString();
+
+                    if (cpd_link.ContainsKey(cpd))
+                    {
+                        cpd_link[cpd].Add(plate);
+                    }
+                    else
+                    {
+                        HashSet<string> set_files = new HashSet<string>();
+                        set_files.Add(plate);
+                        cpd_link[cpd] = set_files;
+                    }
+
+                }
+
+                Console.WriteLine("Reading --> " + plate);
+            }
+
+            //// Print the cpd link
+            //foreach (KeyValuePair<string, HashSet<string> > elem in cpd_link)
+            //{
+            //    Console.WriteLine("BATCH_ID : " + elem.Key);
+            //    foreach(string current_file in elem.Value)
+            //    {
+            //        Console.WriteLine(" ------ File : " + current_file);
+            //    }
+            //}
+
+            foreach (var item in cpd_link.Where(dict => !main_cpds.Contains(dict.Key)).ToList())
+            {
+                cpd_link.Remove(item.Key);
+            }
+
+            Console.WriteLine(" CPDS NB = " + cpd_link.Count());
+
+            TimeLine.dataGridView1.ColumnCount = 1;
+            TimeLine.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+            TimeLine.dataGridView1.Columns[0].Name = "BATCH_ID";
+            TimeLine.dataGridView1.AllowUserToAddRows = false;
+
+            foreach (KeyValuePair<string, HashSet<string>> elem in cpd_link)
+            {
+                int idx = TimeLine.dataGridView1.Rows.Add(new DataGridViewRow());
+                TimeLine.dataGridView1.Rows[idx].Cells[0].Value = elem.Key;
+                TimeLine.dataGridView1.Rows[idx].Cells[0].Style.BackColor = Color.LightBlue;
+            }
+
+            TimeLine.Visible = true;
+
         }
     }
 
@@ -9340,9 +9439,9 @@ namespace DRC
 
         private double[] fit_parameters = new double[4];
 
-        private List<double> x_fit;
-        private List<double> x_fit_log;
-        private List<double> y_fit;
+        private Dictionary<string, List<double>> x_fit = new Dictionary<string, List<double>>();
+        private Dictionary<string, List<double>> x_fit_log = new Dictionary<string, List<double>>();
+        private Dictionary<string, List<double>> y_fit = new Dictionary<string, List<double>>();
 
         private int step_curve;
 
@@ -9464,14 +9563,14 @@ namespace DRC
             MinConcentrationLin = min_x;
             MaxConcentrationLin = max_x;
 
-            x_fit = new List<double>();
-            x_fit_log = new List<double>();
-            y_fit = new List<double>();
+            x_fit[file_name] = new List<double>();
+            x_fit_log[file_name] = new List<double>();
+            y_fit[file_name] = new List<double>();
 
             for (int j = 0; j < step_curve; j++)
             {
-                x_fit.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
-                x_fit_log.Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
+                x_fit[file_name].Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
+                x_fit_log[file_name].Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
             }
 
             chart = new Chart();
@@ -9511,7 +9610,7 @@ namespace DRC
 
             chart.Titles.Add("Title1");
 
-            fit_DRC();
+            fit_DRC(file_name);
         }
 
         public void add_serie_points(string file, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color)
@@ -9526,6 +9625,18 @@ namespace DRC
             drc_points_y[file] = y;
             chart_colors[file] = color;
 
+            double minx = MinA(drc_points_x[file].ToArray());
+            double maxx = MaxA(drc_points_x[file].ToArray());
+
+            x_fit[file] = new List<double>();
+            x_fit_log[file] = new List<double>();
+
+            for (int j = 0; j < step_curve; j++)
+            {
+                x_fit[file].Add(minx + j * (maxx - minx) / (double)step_curve);
+                x_fit_log[file].Add(Math.Log10(minx) + j * (Math.Log10(maxx) - Math.Log10(minx)) / (double)step_curve);
+            }
+
             Series series_new_points = new Series();
 
             series_new_points.ChartType = SeriesChartType.Point;
@@ -9533,6 +9644,15 @@ namespace DRC
             series_new_points.Name = file;
 
             chart.Series.Add(series_new_points);
+
+            Series series_new_curve = new Series();
+
+            series_new_curve.ChartType = SeriesChartType.Line;
+            series_new_curve.Name = file + "_curve";
+
+            chart.Series.Add(series_new_curve);
+
+            fit_DRC(file);
 
             draw_DRC();
         }
@@ -9551,8 +9671,12 @@ namespace DRC
                 drc_points_y.Remove(file);
                 chart_colors.Remove(file);
 
-                chart.Series.Remove(chart.Series[file]);
+                y_fit.Remove(file);
+                x_fit.Remove(file);
+                x_fit_log.Remove(file);
 
+                chart.Series.Remove(chart.Series[file]);
+                chart.Series.Remove(chart.Series[file + "_curve"]);
                 filenames.RemoveAll(p => p == file);
             }
 
@@ -9570,15 +9694,15 @@ namespace DRC
             return y;
         }
 
-        private void fit_DRC()
+        private void fit_DRC(string filename)
         {
             double GlobalMax = double.MinValue;
-            double MaxValues = MaxA(drc_points_y[file_name].ToArray());
+            double MaxValues = MaxA(drc_points_y[filename].ToArray());
 
             GlobalMax = MaxValues + 0.5 * Math.Abs(MaxValues);
 
             double GlobalMin = double.MaxValue;
-            double MinValues = MinA(drc_points_y[file_name].ToArray());
+            double MinValues = MinA(drc_points_y[filename].ToArray());
 
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
@@ -9610,14 +9734,14 @@ namespace DRC
             // Fitting without weights
             //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
 
-            double[,] Concentration = new double[drc_points_x_log[file_name].Count(), 1];
-            for (var i = 0; i < drc_points_x_log[file_name].Count(); ++i)
+            double[,] Concentration = new double[drc_points_x_log[filename].Count(), 1];
+            for (var i = 0; i < drc_points_x_log[filename].Count(); ++i)
             {
-                Concentration[i, 0] = drc_points_x_log[file_name][i];
+                Concentration[i, 0] = drc_points_x_log[filename][i];
             }
 
             int NumDimension = 1;
-            alglib.lsfitcreatef(Concentration, drc_points_y[file_name].ToArray(), c, diffstep, out state);
+            alglib.lsfitcreatef(Concentration, drc_points_y[filename].ToArray(), c, diffstep, out state);
             alglib.lsfitsetcond(state, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
             // alglib.lsfitsetscale(state, s);
@@ -9629,11 +9753,13 @@ namespace DRC
             RelativeError = rep.avgrelerror;
             r2 = rep.r2;
 
-            y_fit.Clear();
+            if (y_fit.ContainsKey(filename)) y_fit[filename].Clear();
 
-            for (int IdxConc = 0; IdxConc < x_fit_log.Count; IdxConc++)
+            y_fit[filename] = new List<double>();
+
+            for (int IdxConc = 0; IdxConc < x_fit_log[filename].Count; IdxConc++)
             {
-                y_fit.Add(Sigmoid(c, x_fit_log[IdxConc]));
+                y_fit[filename].Add(Sigmoid(c, x_fit_log[filename][IdxConc]));
             }
 
         }
@@ -9642,7 +9768,7 @@ namespace DRC
         {
             string cpd = compound_id;
 
-            fit_DRC();
+            fit_DRC(file_name);
 
             chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
 
@@ -9652,7 +9778,7 @@ namespace DRC
             chart.Series["DRC_Points"].Color = chart_colors[file_name];
 
             chart.Series["DRC_Fit"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit_log, y_fit);
+            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit_log[file_name], y_fit[file_name]);
             chart.Series["DRC_Fit"].Color = chart_colors[file_name];
 
             // Draw the other graph
@@ -9662,14 +9788,25 @@ namespace DRC
             {
                 if (elem.Key != file_name)
                 {
+                    fit_DRC(elem.Key);
+
                     chart.Series[elem.Key].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
                     chart.Series[elem.Key].Points.DataBindXY(drc_points_x_log[elem.Key], drc_points_y[elem.Key]);
+
+                    chart.Series[elem.Key + "_curve"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                    chart.Series[elem.Key + "_curve"].Points.DataBindXY(x_fit_log[elem.Key], y_fit[elem.Key]);
 
                     if (counter_color + 1 >= curve_color.Count())
                     {
                         chart.Series[elem.Key].Color = curve_color[0];
+                        chart.Series[elem.Key + "_curve"].Color = curve_color[0];
+
                     }
-                    else chart.Series[elem.Key].Color = curve_color[counter_color + 1];
+                    else
+                    {
+                        chart.Series[elem.Key].Color = curve_color[counter_color + 1];
+                        chart.Series[elem.Key + "_curve"].Color = curve_color[counter_color + 1];
+                    }
 
                     counter_color++;
                 }
