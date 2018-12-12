@@ -3309,7 +3309,7 @@ namespace DRC
                         concentrations.Add(val);
                     }
 
-                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref concentrations, 
+                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 250, ref concentrations, 
                         ref x_log, ref y, Color.Blue, this, current_file);
                     current_chart.draw_DRC();
 
@@ -9509,6 +9509,9 @@ namespace DRC
         private double min_y;
         private double max_y;
 
+        private int min_x =+20;
+        private int max_x =-20;
+
         private List<Color> curve_color = new List<Color>();
 
         //List<DataGridViewRow> raw_data;
@@ -9598,14 +9601,14 @@ namespace DRC
 
             drc_points_x[file_name] = x.ToList();
 
-            double min_x = MinA(x.ToArray());
-            double max_x = MaxA(x.ToArray());
-
+            double minx = MinA(x.ToArray());
+            double maxx = MaxA(x.ToArray());
+        
             min_y = MinA(y.ToArray());
             max_y = MaxA(y.ToArray());
 
-            MinConcentrationLin = min_x;
-            MaxConcentrationLin = max_x;
+            MinConcentrationLin = minx;
+            MaxConcentrationLin = maxx;
 
             x_fit[file_name] = new List<double>();
             x_fit_log[file_name] = new List<double>();
@@ -9653,6 +9656,30 @@ namespace DRC
             chart.Size = new System.Drawing.Size(550, 350);
 
             chart.Titles.Add("Title1");
+
+            if (drc_points_x_log[file_name].Count > 0)
+            {
+                int min = (int)Math.Floor(MinA<double>(drc_points_x_log[file_name].ToArray()));
+                int max = (int)Math.Ceiling(MaxA<double>(drc_points_x_log[file_name].ToArray()));
+
+                if (min < min_x) min_x = min;
+                if (max > max_x) max_x = max;
+            }
+            else
+            {
+                max_x = -5;
+                min_x = -0;
+            }
+
+            double Minx = Math.Pow(10, min_x);
+            double Maxx = Math.Pow(10, max_x);
+
+            chart.ChartAreas[0].AxisX.Minimum = Minx;
+            chart.ChartAreas[0].AxisX.Maximum = Maxx;
+
+            chart.ChartAreas[0].AxisX.IsLogarithmic = true;
+            chart.ChartAreas[0].AxisX.LogarithmBase = 10;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
 
             fit_DRC(file_name);
         }
@@ -9768,8 +9795,8 @@ namespace DRC
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin) + 1.0, +100 };
-            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin) - 1.0, -100 };
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin) + 1.0, +1000 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin) - 1.0, -1000 };
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
@@ -9814,15 +9841,39 @@ namespace DRC
 
             fit_DRC(file_name);
 
+            if (drc_points_x_log[file_name].Count > 0)
+            {
+                int min = (int)Math.Floor(MinA<double>(drc_points_x_log[file_name].ToArray()));
+                int max = (int)Math.Ceiling(MaxA<double>(drc_points_x_log[file_name].ToArray()));
+
+                if (min < min_x) min_x = min;
+                if (max > max_x) max_x = max;
+            }
+            else
+            {
+                max_x = -5;
+                min_x = -8;
+            }
+
+            double minx = Math.Pow(10, min_x);
+            double maxx = Math.Pow(10, max_x);
+
+            chart.ChartAreas[0].AxisX.Minimum = minx;
+            chart.ChartAreas[0].AxisX.Maximum = maxx;
+
+            chart.ChartAreas[0].AxisX.IsLogarithmic = true;
+            chart.ChartAreas[0].AxisX.LogarithmBase = 10;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
+
             chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
 
             // Draw the first graph
             chart.Series["DRC_Points"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            chart.Series["DRC_Points"].Points.DataBindXY(drc_points_x_log[file_name], drc_points_y[file_name]);
+            chart.Series["DRC_Points"].Points.DataBindXY(drc_points_x[file_name], drc_points_y[file_name]);
             chart.Series["DRC_Points"].Color = chart_colors[file_name];
 
             chart.Series["DRC_Fit"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit_log[file_name], y_fit[file_name]);
+            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit[file_name], y_fit[file_name]);
             chart.Series["DRC_Fit"].Color = chart_colors[file_name];
 
             // Draw the other graph
@@ -9835,10 +9886,10 @@ namespace DRC
                     fit_DRC(elem.Key);
 
                     chart.Series[elem.Key].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-                    chart.Series[elem.Key].Points.DataBindXY(drc_points_x_log[elem.Key], drc_points_y[elem.Key]);
+                    chart.Series[elem.Key].Points.DataBindXY(drc_points_x[elem.Key], drc_points_y[elem.Key]);
 
                     chart.Series[elem.Key + "_curve"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-                    chart.Series[elem.Key + "_curve"].Points.DataBindXY(x_fit_log[elem.Key], y_fit[elem.Key]);
+                    chart.Series[elem.Key + "_curve"].Points.DataBindXY(x_fit[elem.Key], y_fit[elem.Key]);
 
                     if (counter_color + 1 >= curve_color.Count())
                     {
