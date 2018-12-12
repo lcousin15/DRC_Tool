@@ -3203,8 +3203,12 @@ namespace DRC
 
                 if (occ_number >= file_list.Count())
                 {
-                    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "BATCH_ID" && the_descriptor != "Class" && the_descriptor != "Concentration")
+                    if (the_descriptor != "BATCH_ID" && the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "Concentration"
+                           && the_descriptor != "Class" && the_descriptor != "CPD_ID" && !the_descriptor.StartsWith("Status") && !the_descriptor.StartsWith("Bound")
+                           && !the_descriptor.StartsWith("Fixed_Top") && !the_descriptor.StartsWith("Data_Modified") && !the_descriptor.StartsWith("Deselected"))
                     {
+                    //    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "BATCH_ID" && the_descriptor != "Class" && the_descriptor != "Concentration")
+                    //{
                         time_line_selected_descriptors.Add(the_descriptor);
                     }
                 }
@@ -3223,7 +3227,7 @@ namespace DRC
         public void draw_cpd_list(string current_file, string BATCH_ID, bool checked_state)
         {
             Dictionary<string, List<double>> descriptor_data = new Dictionary<string, List<double>>();
-            List<double> descriptor_concentrations = new List<double>();
+            Dictionary<string, List<double>> descriptor_concentrations = new Dictionary<string, List<double>>();
 
             DataTable my_table = data_dict[current_file]; // file --> DataTable
 
@@ -3237,21 +3241,49 @@ namespace DRC
                         bool test_double = Double.TryParse(row[descriptor].ToString(), out val);
                         if (test_double == false) continue;
 
+                        bool select_point = true;
+                        if (my_table.Columns.Contains("Deselected_" + descriptor))
+                        {
+                            string value_str = row["Deselected_" + descriptor].ToString();
+                            if (value_str == "TRUE" || value_str == "True" | value_str == "true") select_point = false;
+                            else if (value_str == "FALSE" || value_str == "False" || value_str == "false") select_point = true;
+                        }
+
                         if (descriptor_data.ContainsKey(descriptor))
                         {
-                            descriptor_data[descriptor].Add(val);
+
+                            if(select_point) descriptor_data[descriptor].Add(val);
                         }
                         else
                         {
-                            List<double> descriptor_values = new List<double>();
-                            descriptor_values.Add(val);
-                            descriptor_data[descriptor] = descriptor_values;
+                            if (select_point)
+                            {
+                                List<double> descriptor_values = new List<double>();
+                                descriptor_values.Add(val);
+                                descriptor_data[descriptor] = descriptor_values;
+                            }
+                        }
+
+                        double current_concentration = Double.Parse(row["Concentration"].ToString());
+
+                        if (descriptor_concentrations.ContainsKey(descriptor))
+                        {
+
+                            if (select_point) descriptor_concentrations[descriptor].Add(current_concentration);
+                        }
+                        else
+                        {
+                            if (select_point)
+                            {
+                                List<double> descriptor_values = new List<double>();
+                                descriptor_values.Add(current_concentration);
+                                descriptor_concentrations[descriptor] = descriptor_values;
+                            }
                         }
 
                     }
 
-                    double current_concentration = Double.Parse(row["Concentration"].ToString());
-                    descriptor_concentrations.Add(current_concentration);
+                    
                 }
             }
 
@@ -3264,16 +3296,21 @@ namespace DRC
 
                 foreach (KeyValuePair<string, List<double>> elem in descriptor_data)
                 {
-                    Console.WriteLine(descriptor_concentrations.Count());
-
                     string descriptor = elem.Key;
-                    List<double> y = elem.Value;
+                    Console.WriteLine(descriptor_concentrations[descriptor].Count());
 
+                    List<double> y = elem.Value;
+                    List<double> concentrations = new List<double>();
                     List<double> x_log = new List<double>();
 
-                    foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
+                    foreach (double val in descriptor_concentrations[descriptor])
+                    {
+                        x_log.Add(Math.Log10(val));
+                        concentrations.Add(val);
+                    }
 
-                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref concentrations, 
+                        ref x_log, ref y, Color.Blue, this, current_file);
                     current_chart.draw_DRC();
 
                     list_chart_descriptors.Add(descriptor, current_chart);
@@ -3295,12 +3332,15 @@ namespace DRC
                         if (elem.Value.is_first_curve_drawn() == false)
                         {
                             List<double> y = descriptor_data[descriptor];
-
+                            List<double> concentrations = new List<double>();
                             List<double> x_log = new List<double>();
 
-                            foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
-
-                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                            foreach (double val in descriptor_concentrations[descriptor])
+                            {
+                                x_log.Add(Math.Log10(val));
+                                concentrations.Add(val);
+                            }
+                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref concentrations, ref x_log, ref y, Color.Blue, this, current_file);
                             current_chart.draw_DRC();
 
                             charts_time_line[BATCH_ID][descriptor] = current_chart;
@@ -3309,11 +3349,15 @@ namespace DRC
                         {
 
                             List<double> y = descriptor_data[descriptor];
-
+                            List<double> concentrations = new List<double>();
                             List<double> x_log = new List<double>();
-                            foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
 
-                            elem.Value.add_serie_points(current_file, ref descriptor_concentrations, ref x_log, ref y, Color.Blue);
+                            foreach (double val in descriptor_concentrations[descriptor])
+                            {
+                                x_log.Add(Math.Log10(val));
+                                concentrations.Add(val);
+                            }
+                            elem.Value.add_serie_points(current_file, ref concentrations, ref x_log, ref y, Color.Blue);
                         }
 
                     }
