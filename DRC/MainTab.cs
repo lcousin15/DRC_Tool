@@ -9486,6 +9486,7 @@ namespace DRC
         private Dictionary<string, List<double>> x_fit = new Dictionary<string, List<double>>();
         private Dictionary<string, List<double>> x_fit_log = new Dictionary<string, List<double>>();
         private Dictionary<string, List<double>> y_fit = new Dictionary<string, List<double>>();
+        private Dictionary<string, List<double>> x_fit_points = new Dictionary<string, List<double>>();
 
         private int step_curve;
 
@@ -9825,12 +9826,24 @@ namespace DRC
             r2 = rep.r2;
 
             if (y_fit.ContainsKey(filename)) y_fit[filename].Clear();
-
-            y_fit[filename] = new List<double>();
+            if (x_fit_points.ContainsKey(filename)) x_fit_points[filename].Clear();
+           
+             y_fit[filename] = new List<double>();
 
             for (int IdxConc = 0; IdxConc < x_fit_log[filename].Count; IdxConc++)
             {
                 y_fit[filename].Add(Sigmoid(c, x_fit_log[filename][IdxConc]));
+
+                if (x_fit_points.ContainsKey(filename))
+                {
+                    x_fit_points[filename].Add(Math.Pow(10, x_fit_log[filename][IdxConc]));
+                }
+                else
+                {
+                    List<double> temp = new List<double>();
+                    temp.Add(Math.Pow(10, x_fit_log[filename][IdxConc]));
+                    x_fit_points[filename] = temp;
+                }
             }
 
         }
@@ -9873,7 +9886,7 @@ namespace DRC
             chart.Series["DRC_Points"].Color = chart_colors[file_name];
 
             chart.Series["DRC_Fit"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit[file_name], y_fit[file_name]);
+            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit_points[file_name], y_fit[file_name]);
             chart.Series["DRC_Fit"].Color = chart_colors[file_name];
 
             // Draw the other graph
@@ -9889,7 +9902,7 @@ namespace DRC
                     chart.Series[elem.Key].Points.DataBindXY(drc_points_x[elem.Key], drc_points_y[elem.Key]);
 
                     chart.Series[elem.Key + "_curve"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-                    chart.Series[elem.Key + "_curve"].Points.DataBindXY(x_fit[elem.Key], y_fit[elem.Key]);
+                    chart.Series[elem.Key + "_curve"].Points.DataBindXY(x_fit_points[elem.Key], y_fit[elem.Key]);
 
                     if (counter_color + 1 >= curve_color.Count())
                     {
