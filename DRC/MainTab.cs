@@ -206,7 +206,7 @@ namespace DRC
 
         private Dictionary<string, string> template_plate_1 = new Dictionary<string, string>();
         private Dictionary<string, string> template_plate_2 = new Dictionary<string, string>();
-        private Dictionary<string, double> template_plate_concentration = new Dictionary<string, double>();
+        private Dictionary<string, Dictionary<string, double>> template_plate_concentration = new Dictionary<string, Dictionary<string, double>>();
 
         private Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>> charts_time_line = new Dictionary<string, Dictionary<string, Chart_DRC_Time_Line>>(); // BATCH_ID, descriptor, chart
 
@@ -3084,7 +3084,7 @@ namespace DRC
 
                 foreach (DataRow row in main_table.Rows)
                 {
-                    string cpd = row["compound_id"].ToString();
+                    string cpd = row["BATCH_ID"].ToString();
                     main_cpds.Add(cpd);
                 }
             }
@@ -3114,7 +3114,7 @@ namespace DRC
 
                     foreach (DataRow row in table.Rows)
                     {
-                        string cpd = row["compound_id"].ToString();
+                        string cpd = row["BATCH_ID"].ToString();
 
                         if (cpd_link.ContainsKey(cpd))
                         {
@@ -3203,8 +3203,12 @@ namespace DRC
 
                 if (occ_number >= file_list.Count())
                 {
-                    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "compound_id" && the_descriptor != "Class" && the_descriptor != "dose")
+                    if (the_descriptor != "BATCH_ID" && the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "Concentration"
+                           && the_descriptor != "Class" && the_descriptor != "CPD_ID" && !the_descriptor.StartsWith("Status") && !the_descriptor.StartsWith("Bound")
+                           && !the_descriptor.StartsWith("Fixed_Top") && !the_descriptor.StartsWith("Data_Modified") && !the_descriptor.StartsWith("Deselected"))
                     {
+                    //    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "BATCH_ID" && the_descriptor != "Class" && the_descriptor != "Concentration")
+                    //{
                         time_line_selected_descriptors.Add(the_descriptor);
                     }
                 }
@@ -3223,13 +3227,13 @@ namespace DRC
         public void draw_cpd_list(string current_file, string BATCH_ID, bool checked_state)
         {
             Dictionary<string, List<double>> descriptor_data = new Dictionary<string, List<double>>();
-            List<double> descriptor_concentrations = new List<double>();
+            Dictionary<string, List<double>> descriptor_concentrations = new Dictionary<string, List<double>>();
 
             DataTable my_table = data_dict[current_file]; // file --> DataTable
 
             foreach (DataRow row in my_table.Rows)
             {
-                if (row["compound_id"].ToString() == BATCH_ID)
+                if (row["BATCH_ID"].ToString() == BATCH_ID)
                 {
                     foreach (string descriptor in time_line_selected_descriptors)
                     {
@@ -3237,21 +3241,49 @@ namespace DRC
                         bool test_double = Double.TryParse(row[descriptor].ToString(), out val);
                         if (test_double == false) continue;
 
+                        bool select_point = true;
+                        if (my_table.Columns.Contains("Deselected_" + descriptor))
+                        {
+                            string value_str = row["Deselected_" + descriptor].ToString();
+                            if (value_str == "TRUE" || value_str == "True" | value_str == "true") select_point = false;
+                            else if (value_str == "FALSE" || value_str == "False" || value_str == "false") select_point = true;
+                        }
+
                         if (descriptor_data.ContainsKey(descriptor))
                         {
-                            descriptor_data[descriptor].Add(val);
+
+                            if(select_point) descriptor_data[descriptor].Add(val);
                         }
                         else
                         {
-                            List<double> descriptor_values = new List<double>();
-                            descriptor_values.Add(val);
-                            descriptor_data[descriptor] = descriptor_values;
+                            if (select_point)
+                            {
+                                List<double> descriptor_values = new List<double>();
+                                descriptor_values.Add(val);
+                                descriptor_data[descriptor] = descriptor_values;
+                            }
+                        }
+
+                        double current_concentration = Double.Parse(row["Concentration"].ToString());
+
+                        if (descriptor_concentrations.ContainsKey(descriptor))
+                        {
+
+                            if (select_point) descriptor_concentrations[descriptor].Add(current_concentration);
+                        }
+                        else
+                        {
+                            if (select_point)
+                            {
+                                List<double> descriptor_values = new List<double>();
+                                descriptor_values.Add(current_concentration);
+                                descriptor_concentrations[descriptor] = descriptor_values;
+                            }
                         }
 
                     }
 
-                    double current_concentration = Double.Parse(row["dose"].ToString());
-                    descriptor_concentrations.Add(current_concentration);
+                    
                 }
             }
 
@@ -3264,16 +3296,21 @@ namespace DRC
 
                 foreach (KeyValuePair<string, List<double>> elem in descriptor_data)
                 {
-                    Console.WriteLine(descriptor_concentrations.Count());
-
                     string descriptor = elem.Key;
-                    List<double> y = elem.Value;
+                    Console.WriteLine(descriptor_concentrations[descriptor].Count());
 
+                    List<double> y = elem.Value;
+                    List<double> concentrations = new List<double>();
                     List<double> x_log = new List<double>();
 
-                    foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
+                    foreach (double val in descriptor_concentrations[descriptor])
+                    {
+                        x_log.Add(Math.Log10(val));
+                        concentrations.Add(val);
+                    }
 
-                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 250, ref concentrations, 
+                        ref x_log, ref y, Color.Blue, this, current_file);
                     current_chart.draw_DRC();
 
                     list_chart_descriptors.Add(descriptor, current_chart);
@@ -3295,12 +3332,15 @@ namespace DRC
                         if (elem.Value.is_first_curve_drawn() == false)
                         {
                             List<double> y = descriptor_data[descriptor];
-
+                            List<double> concentrations = new List<double>();
                             List<double> x_log = new List<double>();
 
-                            foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
-
-                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref descriptor_concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                            foreach (double val in descriptor_concentrations[descriptor])
+                            {
+                                x_log.Add(Math.Log10(val));
+                                concentrations.Add(val);
+                            }
+                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref concentrations, ref x_log, ref y, Color.Blue, this, current_file);
                             current_chart.draw_DRC();
 
                             charts_time_line[BATCH_ID][descriptor] = current_chart;
@@ -3309,11 +3349,15 @@ namespace DRC
                         {
 
                             List<double> y = descriptor_data[descriptor];
-
+                            List<double> concentrations = new List<double>();
                             List<double> x_log = new List<double>();
-                            foreach (double val in descriptor_concentrations) x_log.Add(Math.Log10(val));
 
-                            elem.Value.add_serie_points(current_file, ref descriptor_concentrations, ref x_log, ref y, Color.Blue);
+                            foreach (double val in descriptor_concentrations[descriptor])
+                            {
+                                x_log.Add(Math.Log10(val));
+                                concentrations.Add(val);
+                            }
+                            elem.Value.add_serie_points(current_file, ref concentrations, ref x_log, ref y, Color.Blue);
                         }
 
                     }
@@ -3973,10 +4017,11 @@ namespace DRC
             List<string> first_wells = new List<string>();
             List<string> drugs = new List<string>();
             List<string> drugs_kegg = new List<string>();
-
             List<string> targets = new List<string>();
-
             List<string> drug_plate = new List<string>();
+
+            Dictionary<string, Dictionary<string, List<double>>> dict_concentrations_plate = new Dictionary<string, Dictionary<string, List<double>>>();
+
 
             System.IO.StreamReader sr = new System.IO.StreamReader(file);
             CachedCsvReader template_cpds_csv = new CachedCsvReader(sr, true);
@@ -4051,6 +4096,175 @@ namespace DRC
                         }
                     }
 
+                    if (col_name.Contains("Concentration_1"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+
+                        double conc_1;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_1);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_1);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_1);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_2"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_2;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_2);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_2);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_2);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_3"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_3;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_3);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_3);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_3);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_4"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_4;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_4);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_4);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_4);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_5"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_5;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_5);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_5);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_5);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_6"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_6;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_6);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_6);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_6);
+                        }
+                    }
+
+                    if (col_name.Contains("Concentration_7"))
+                    {
+
+                        string plate_number = drug_plate[drug_plate.Count() - 1].ToString();
+
+                        if (!dict_concentrations_plate.ContainsKey(plate_number))
+                        {
+                            Dictionary<string, List<double>> temp = new Dictionary<string, List<double>>();
+                            dict_concentrations_plate[plate_number] = temp;
+                        }
+                        double conc_7;
+                        double.TryParse(template_cpds_csv[i].ToString(), out conc_7);
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_wells[first_wells.Count() - 1]))
+                        {
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_7);
+                        }
+                        else
+                        {
+                            List<double> temp_list = new List<double>();
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]] = temp_list;
+                            dict_concentrations_plate[plate_number][first_wells[first_wells.Count() - 1]].Add(conc_7);
+                        }
+
+                    }
 
                 }
 
@@ -4059,17 +4273,17 @@ namespace DRC
             template_plate_1 = new Dictionary<string, string>();
             template_plate_2 = new Dictionary<string, string>();
 
-            template_plate_concentration = new Dictionary<string, double>();
+            template_plate_concentration = new Dictionary<string, Dictionary<string, double>>();
 
-            ps_concentrations.Add(30 * 1e-6);
-            ps_concentrations.Add(7.5 * 1e-6);
-            ps_concentrations.Add(1.875 * 1e-6);
-            ps_concentrations.Add(0.46875 * 1e-6);
-            ps_concentrations.Add(0.1171875 * 1e-6);
-            ps_concentrations.Add(0.029296875 * 1e-6);
-            ps_concentrations.Add(0.00732421875 * 1e-6);
+            //ps_concentrations.Add(30 * 1e-6);
+            //ps_concentrations.Add(7.5 * 1e-6);
+            //ps_concentrations.Add(1.875 * 1e-6);
+            //ps_concentrations.Add(0.46875 * 1e-6);
+            //ps_concentrations.Add(0.1171875 * 1e-6);
+            //ps_concentrations.Add(0.029296875 * 1e-6);
+            //ps_concentrations.Add(0.00732421875 * 1e-6);
 
-            norm_integral = (Math.Log10(ps_concentrations[0]) - Math.Log10(ps_concentrations[ps_concentrations.Count - 1]));
+            //norm_integral = (Math.Log10(ps_concentrations[0]) - Math.Log10(ps_concentrations[ps_concentrations.Count - 1]));
 
             List<string> first_letter = new List<string>();
             first_letter.Add("B");
@@ -4230,31 +4444,6 @@ namespace DRC
                     {
                         template_plate_1[letter + number] = elem.Value;
 
-                        switch (letter)
-                        {
-                            case "B":
-                                template_plate_concentration[letter + number] = ps_concentrations[0];
-                                break;
-                            case "C":
-                                template_plate_concentration[letter + number] = ps_concentrations[1];
-                                break;
-                            case "D":
-                                template_plate_concentration[letter + number] = ps_concentrations[2];
-                                break;
-                            case "E":
-                                template_plate_concentration[letter + number] = ps_concentrations[3];
-                                break;
-                            case "F":
-                                template_plate_concentration[letter + number] = ps_concentrations[4];
-                                break;
-                            case "G":
-                                template_plate_concentration[letter + number] = ps_concentrations[5];
-                                break;
-                            case "H":
-                                template_plate_concentration[letter + number] = ps_concentrations[6];
-                                break;
-                        }
-
                     }
                 }
 
@@ -4263,34 +4452,113 @@ namespace DRC
                     foreach (string letter in second_letter)
                     {
                         template_plate_1[letter + number] = elem.Value;
-
-                        switch (letter)
-                        {
-                            case "I":
-                                template_plate_concentration[letter + number] = ps_concentrations[0];
-                                break;
-                            case "J":
-                                template_plate_concentration[letter + number] = ps_concentrations[1];
-                                break;
-                            case "K":
-                                template_plate_concentration[letter + number] = ps_concentrations[2];
-                                break;
-                            case "L":
-                                template_plate_concentration[letter + number] = ps_concentrations[3];
-                                break;
-                            case "M":
-                                template_plate_concentration[letter + number] = ps_concentrations[4];
-                                break;
-                            case "N":
-                                template_plate_concentration[letter + number] = ps_concentrations[5];
-                                break;
-                            case "O":
-                                template_plate_concentration[letter + number] = ps_concentrations[6];
-                                break;
-                        }
                     }
                 }
 
+            }
+
+            // Get the concentrations :
+
+            List<string> plates = new List<string>();
+            plates.Add("1");
+            plates.Add("2");
+
+            foreach (string plate_number in plates)
+            {
+                if (dict_concentrations_plate.ContainsKey(plate_number))
+                {
+                    foreach (KeyValuePair<string, string> elem in cpd_position_1) // cpd_position1 to get all the key (because first plate is totally filled)
+                    {
+                        string number = elem.Key[1].ToString() + elem.Key[2].ToString();
+                        string current_letter = elem.Key[0].ToString();
+
+                        if (dict_concentrations_plate[plate_number].ContainsKey(first_letter[0] + number))
+                        {
+
+                            if (first_letter.Contains(current_letter))
+                            {
+                                foreach (string letter in first_letter)
+                                {
+
+                                    if (!template_plate_concentration.ContainsKey(plate_number))
+                                    {
+                                        Dictionary<string, double> temp = new Dictionary<string, double>();
+                                        template_plate_concentration[plate_number] = temp;
+                                    }
+
+                                    switch (letter)
+                                    {
+                                        case "B":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][0];
+                                            break;
+                                        case "C":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][1];
+                                            break;
+                                        case "D":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][2];
+                                            break;
+                                        case "E":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][3];
+                                            break;
+                                        case "F":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][4];
+                                            break;
+                                        case "G":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][5];
+                                            break;
+                                        case "H":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][first_letter[0] + number][6];
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (dict_concentrations_plate[plate_number].ContainsKey(second_letter[0] + number))
+                        {
+
+                            if (second_letter.Contains(current_letter))
+                            {
+
+                                if (!template_plate_concentration.ContainsKey(plate_number))
+                                {
+                                    Dictionary<string, double> temp = new Dictionary<string, double>();
+                                    template_plate_concentration[plate_number] = temp;
+                                }
+
+                                foreach (string letter in second_letter)
+                                {
+
+                                    switch (letter)
+                                    {
+                                        case "I":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][0];
+                                            break;
+                                        case "J":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][1];
+                                            break;
+                                        case "K":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][2];
+                                            break;
+                                        case "L":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][3];
+                                            break;
+                                        case "M":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][4];
+                                            break;
+                                        case "N":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][5];
+                                            break;
+                                        case "O":
+                                            template_plate_concentration[plate_number][letter + number] = dict_concentrations_plate[plate_number][second_letter[0] + number][6];
+                                            break;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
             }
 
             /*
@@ -4528,20 +4796,40 @@ namespace DRC
 
                 if ((row.Cells["Plate"].Value.ToString().Contains("1-1") || row.Cells["Plate"].Value.ToString().Contains("1-2")))
                 {
-                    row.Cells["BATCH_ID"].Value = template_plate_1[well];
-                    row.Cells["CPD_ID"].Value = template_plate_1[well];
+                    if (template_plate_1.ContainsKey(well))
+                    {
+                        row.Cells["BATCH_ID"].Value = template_plate_1[well];
+                        row.Cells["CPD_ID"].Value = template_plate_1[well];
+                        row.Cells["Concentration"].Value = template_plate_concentration["1"][well];
+                    }
+                    else
+                    {
+                        row.Cells["BATCH_ID"].Value = "Untreated";
+                        row.Cells["CPD_ID"].Value = "Untreated";
+                        row.Cells["Concentration"].Value = 0;
+                    }
                 }
                 else if ((row.Cells["Plate"].Value.ToString().Contains("2-1") || row.Cells["Plate"].Value.ToString().Contains("2-2")))
                 {
-                    row.Cells["BATCH_ID"].Value = template_plate_2[well];
-                    row.Cells["CPD_ID"].Value = template_plate_2[well];
+                    if (template_plate_1.ContainsKey(well))
+                    {
+                        row.Cells["BATCH_ID"].Value = template_plate_2[well];
+                        row.Cells["CPD_ID"].Value = template_plate_2[well];
+                        row.Cells["Concentration"].Value = template_plate_concentration["2"][well];
+                    }
+                    else
+                    {
+                        row.Cells["BATCH_ID"].Value = "Untreated";
+                        row.Cells["CPD_ID"].Value = "Untreated";
+                        row.Cells["Concentration"].Value = 0;
+                    }
                 }
 
-                row.Cells["Concentration"].Value = template_plate_concentration[well];
             }
 
             foreach (DataGridViewRow row in f3.dataGridView1.Rows)
             {
+                /* if (row.Cells["BATCH_ID"].Value.ToString() != "Empty") */
                 BATCH_ID.Add(row.Cells["BATCH_ID"].Value.ToString());
             }
 
@@ -4569,6 +4857,7 @@ namespace DRC
 
         private void select_DMSO()
         {
+            dmso_charts.Clear();
 
             if (f3.dataGridView1.RowCount < 1)
             {
@@ -4698,17 +4987,17 @@ namespace DRC
                 List<double> ps_concentrations_log = new List<double>();
                 List<string> deselected = new List<string>();
 
-                int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / ps_concentrations.Count;
+                int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / 7;
 
-                for (int i = 0; i < replicates; ++i)
-                {
-                    foreach (double item in ps_concentrations)
-                    {
-                        ps_concentrations_bis.Add(item);
-                        ps_concentrations_log.Add(Math.Log10(item));
-                        deselected.Add("FALSE");
-                    }
-                }
+                //for (int i = 0; i < replicates; ++i)
+                //{
+                //    foreach (double item in ps_concentrations)
+                //    {
+                //        ps_concentrations_bis.Add(item);
+                //        ps_concentrations_log.Add(Math.Log10(item));
+                //        deselected.Add("FALSE");
+                //    }
+                //}
 
                 List<double> row_params = new List<double>();
 
@@ -4728,13 +5017,20 @@ namespace DRC
 
                     List<DataGridViewRow> raw_data = raw_data_rows[plate][item];
 
+                    ps_concentrations_bis.Clear();
+                    ps_concentrations_log.Clear();
+
                     foreach (DataGridViewRow row in raw_data)
                     {
                         list_wells.Add(row.Cells["Well"].Value.ToString());
+                        ps_concentrations_bis.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+                        ps_concentrations_log.Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
+                        deselected.Add("FALSE");
                     }
 
                     // ps_concentrations_log
                     // ps_concentrations
+                    if (dmso_value_per_descriptor.Count() == 0) continue;
 
                     Chart_DRC chart_DMSO_per_plate = new Chart_DRC(plate + " DMSO", item, 50, ref ps_concentrations_bis, ref ps_concentrations_log,
                         ref dmso_value_per_descriptor, Color.Blue, descriptor_index, deselected, chart_ec_50_status, bounds, fixed_top, "FALSE", this,
@@ -4881,6 +5177,7 @@ namespace DRC
                     string descriptor = current_chart.get_Descriptor_Name();
                     double AUC = current_chart.compute_AUC();
                     double error_auc = current_chart.get_error_auc();
+
                     List<DataGridViewRow> list_raw_data = current_chart.get_Raw_Data();
 
                     if (auc_dict.ContainsKey(descriptor))
@@ -5078,6 +5375,104 @@ namespace DRC
                 well_plate.Show();
                 well_plate.draw();
             }
+        }
+
+        private void drawOverlap1FileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.SetForm();
+
+            DataTable main_table = new DataTable();
+            HashSet<string> main_cpds = new HashSet<string>();
+            HashSet<string> main_plates = new HashSet<string>();
+
+            openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Text = openFileDialog1.FileName;
+
+                System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
+                CachedCsvReader my_csv = new CachedCsvReader(sr, true);
+                main_table.Load(my_csv);
+
+                foreach (DataRow row in main_table.Rows)
+                {
+                    string cpd = row["BATCH_ID"].ToString();
+                    string plate = row["Plate"].ToString();
+                    main_cpds.Add(cpd);
+                    main_plates.Add(plate);
+                }
+            }
+
+            foreach (string plate in main_plates)
+            {
+                DataTable table = new DataTable();
+
+                table = main_table.Copy();
+
+                table.Rows.Clear();
+
+                foreach (DataRow row_main in main_table.Rows)
+                {
+                    if(row_main["Plate"].ToString()==plate.ToString())
+                    {
+                        table.Rows.Add(row_main.ItemArray);
+                    }
+                }
+
+                data_dict.Add(plate, table);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    string cpd = row["BATCH_ID"].ToString();
+
+                    if (cpd_link.ContainsKey(cpd))
+                    {
+                        cpd_link[cpd].Add(plate);
+                    }
+                    else
+                    {
+                        HashSet<string> set_files = new HashSet<string>();
+                        set_files.Add(plate);
+                        cpd_link[cpd] = set_files;
+                    }
+
+                }
+
+                Console.WriteLine("Reading --> " + plate);
+            }
+
+            //// Print the cpd link
+            //foreach (KeyValuePair<string, HashSet<string> > elem in cpd_link)
+            //{
+            //    Console.WriteLine("BATCH_ID : " + elem.Key);
+            //    foreach(string current_file in elem.Value)
+            //    {
+            //        Console.WriteLine(" ------ File : " + current_file);
+            //    }
+            //}
+
+            foreach (var item in cpd_link.Where(dict => !main_cpds.Contains(dict.Key)).ToList())
+            {
+                cpd_link.Remove(item.Key);
+            }
+
+            Console.WriteLine(" CPDS NB = " + cpd_link.Count());
+
+            TimeLine.dataGridView1.ColumnCount = 1;
+            TimeLine.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+            TimeLine.dataGridView1.Columns[0].Name = "BATCH_ID";
+            TimeLine.dataGridView1.AllowUserToAddRows = false;
+
+            foreach (KeyValuePair<string, HashSet<string>> elem in cpd_link)
+            {
+                int idx = TimeLine.dataGridView1.Rows.Add(new DataGridViewRow());
+                TimeLine.dataGridView1.Rows[idx].Cells[0].Value = elem.Key;
+                TimeLine.dataGridView1.Rows[idx].Cells[0].Style.BackColor = Color.LightBlue;
+            }
+
+            TimeLine.Visible = true;
+
         }
     }
 
@@ -6141,7 +6536,7 @@ namespace DRC
 
         private void chart1_Paint(object sender, PaintEventArgs e)
         {
-            if (confidence_interval && display_confidence_interval)
+            if (confidence_interval && display_confidence_interval && !compound_id.Contains("DMSO"))
             {
                 // we assume two series variables are set..:
                 if (chart.Series["Born_Inf"] == null || chart.Series["Born_Sup"] == null) return;
@@ -6176,7 +6571,7 @@ namespace DRC
                     e.Graphics.FillPath(brush, gp);
                 gp.Dispose();
             }
-            // Don't uncomment this : infinity looping
+            // Don't uncomment this : infinite looping
             //else
             //{
             //    chart.Series["Born_Inf"].Points.Clear();
@@ -6252,7 +6647,8 @@ namespace DRC
 
         private double compute_jacobian_param_3(double a0, double a1, double a2, double a3, double x)
         {
-            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1.0 + Math.Pow(10, a3 * (a2 - x))) * (1.0 + Math.Pow(10, a3 * (a2 - x))));        }
+            return -1.0 * (Math.Log(10) * (a1 - a0) * (a2 - x) * Math.Pow(10, a3 * (a2 - x))) / ((1.0 + Math.Pow(10, a3 * (a2 - x))) * (1.0 + Math.Pow(10, a3 * (a2 - x))));
+        }
 
 
         public static void compute_chi_square(double[] c, ref double func, double[] grad, object obj)
@@ -6456,7 +6852,7 @@ namespace DRC
 
                 H[3, 0] += -2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (1 - 1 / (Math.Pow(10, s * (e - w)) + 1)) * (-b + t) * (e - w) / Math.Pow((
                            Math.Pow(10, s * (e - w)) + 1), 2) + 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (e - w) * (
-                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w))+1, 2);
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w)) + 1, 2);
 
                 H[3, 1] += -2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (e - w) * (
                             b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow((
@@ -6469,7 +6865,7 @@ namespace DRC
                             e - w) * Math.Log(10) / Math.Pow((Math.Pow(10, s * (e - w)) + 1), 4) - 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * s * (
                             -b + t) * (e - w) * (b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) * Math.Log(10) / Math.Pow((
                            Math.Pow(10, s * (e - w)) + 1), 2) - 2 * Math.Log(10) * Math.Pow(10, s * (e - w)) * (-b + t) * (
-                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w))+1, 2);
+                            b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) / Math.Pow(Math.Pow(10, s * (e - w)) + 1, 2);
 
                 H[3, 3] += 4 * Math.Log(10) * Math.Pow(10, (2 * s * (e - w))) * (-b + t) * Math.Pow((e - w), 2) * (
                             b - y_obs + (-b + t) / (Math.Pow(10, s * (e - w)) + 1)) * Math.Log(10) / Math.Pow((
@@ -6501,7 +6897,7 @@ namespace DRC
             H[3, 3] *= dof;
 
             return H;
-    }
+        }
 
         private double compute_least_square_error(double[,] cov, double a0, double a1, double a2, double a3, double x)
         {
@@ -6557,7 +6953,7 @@ namespace DRC
                                    {jac[2]},
                                    {jac[3]}
                                   };
-        
+
             double[,] jacobianT = jacobian.Transpose();
 
             double[,] A = cov.Dot(jacobian);
@@ -6934,12 +7330,12 @@ namespace DRC
                     for (int i = 0; i < x_fit_log.Count; ++i)
                     {
                         double a = compute_least_square_error(covariance_matrix, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
-                        
+
                         /*
                         double a3 = compute_least_square_error2(covariance_matrix2, fit_parameters[0], fit_parameters[1], fit_parameters[2], fit_parameters[3], x_fit_log[i]);
 
                         if (max_c < a3) max_c = a3;
-                       
+
                         double sigma_confidence_interval = t_test_val * Math.Sqrt(mse / dof) * Math.Sqrt(a3); // * Math.Sqrt(sum_square_residuals / (double)dof);
                         */
 
@@ -6978,7 +7374,7 @@ namespace DRC
                         x_log_unique.Add(Math.Pow(10, elem.Key));
                     }
 
-                }          
+                }
 
                 y_fit_log.Clear();
 
@@ -7734,7 +8130,7 @@ namespace DRC
 
                 }
                 else
-                { 
+                {
                     ((RectangleAnnotation)chart.Annotations["menu_CI"]).ForeColor = Color.LightGray;
                     //annotation_ec50.Text = "EC_50 = " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
@@ -7750,6 +8146,7 @@ namespace DRC
 
             if (patient)
             {
+                chart.Series["Series1"].Points.Clear();
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
                 annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
             }
@@ -9086,9 +9483,10 @@ namespace DRC
 
         private double[] fit_parameters = new double[4];
 
-        private List<double> x_fit;
-        private List<double> x_fit_log;
-        private List<double> y_fit;
+        private Dictionary<string, List<double>> x_fit = new Dictionary<string, List<double>>();
+        private Dictionary<string, List<double>> x_fit_log = new Dictionary<string, List<double>>();
+        private Dictionary<string, List<double>> y_fit = new Dictionary<string, List<double>>();
+        private Dictionary<string, List<double>> x_fit_points = new Dictionary<string, List<double>>();
 
         private int step_curve;
 
@@ -9111,6 +9509,9 @@ namespace DRC
 
         private double min_y;
         private double max_y;
+
+        private int min_x =+20;
+        private int max_x =-20;
 
         private List<Color> curve_color = new List<Color>();
 
@@ -9201,23 +9602,23 @@ namespace DRC
 
             drc_points_x[file_name] = x.ToList();
 
-            double min_x = MinA(x.ToArray());
-            double max_x = MaxA(x.ToArray());
-
+            double minx = MinA(x.ToArray());
+            double maxx = MaxA(x.ToArray());
+        
             min_y = MinA(y.ToArray());
             max_y = MaxA(y.ToArray());
 
-            MinConcentrationLin = min_x;
-            MaxConcentrationLin = max_x;
+            MinConcentrationLin = minx;
+            MaxConcentrationLin = maxx;
 
-            x_fit = new List<double>();
-            x_fit_log = new List<double>();
-            y_fit = new List<double>();
+            x_fit[file_name] = new List<double>();
+            x_fit_log[file_name] = new List<double>();
+            y_fit[file_name] = new List<double>();
 
             for (int j = 0; j < step_curve; j++)
             {
-                x_fit.Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
-                x_fit_log.Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
+                x_fit[file_name].Add(MinConcentrationLin + j * (MaxConcentrationLin - MinConcentrationLin) / (double)step_curve);
+                x_fit_log[file_name].Add(Math.Log10(MinConcentrationLin) + j * (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / (double)step_curve);
             }
 
             chart = new Chart();
@@ -9257,7 +9658,31 @@ namespace DRC
 
             chart.Titles.Add("Title1");
 
-            fit_DRC();
+            if (drc_points_x_log[file_name].Count > 0)
+            {
+                int min = (int)Math.Floor(MinA<double>(drc_points_x_log[file_name].ToArray()));
+                int max = (int)Math.Ceiling(MaxA<double>(drc_points_x_log[file_name].ToArray()));
+
+                if (min < min_x) min_x = min;
+                if (max > max_x) max_x = max;
+            }
+            else
+            {
+                max_x = -5;
+                min_x = -0;
+            }
+
+            double Minx = Math.Pow(10, min_x);
+            double Maxx = Math.Pow(10, max_x);
+
+            chart.ChartAreas[0].AxisX.Minimum = Minx;
+            chart.ChartAreas[0].AxisX.Maximum = Maxx;
+
+            chart.ChartAreas[0].AxisX.IsLogarithmic = true;
+            chart.ChartAreas[0].AxisX.LogarithmBase = 10;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
+
+            fit_DRC(file_name);
         }
 
         public void add_serie_points(string file, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color)
@@ -9272,6 +9697,42 @@ namespace DRC
             drc_points_y[file] = y;
             chart_colors[file] = color;
 
+            if (drc_points_x_log[file_name].Count > 0)
+            {
+                int min = (int)Math.Floor(MinA<double>(drc_points_x_log[file].ToArray()));
+                int max = (int)Math.Ceiling(MaxA<double>(drc_points_x_log[file].ToArray()));
+
+                if (min < min_x) min_x = min;
+                if (max > max_x) max_x = max;
+            }
+            else
+            {
+                max_x = -5;
+                min_x = -8;
+            }
+
+            double min_x_pow10 = Math.Pow(10, min_x);
+            double max_x_pow10 = Math.Pow(10, max_x);
+
+            chart.ChartAreas[0].AxisX.Minimum = min_x_pow10;
+            chart.ChartAreas[0].AxisX.Maximum = max_x_pow10;
+
+            chart.ChartAreas[0].AxisX.IsLogarithmic = true;
+            chart.ChartAreas[0].AxisX.LogarithmBase = 10;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
+
+            double minx = MinA(drc_points_x[file].ToArray());
+            double maxx = MaxA(drc_points_x[file].ToArray());
+
+            x_fit[file] = new List<double>();
+            x_fit_log[file] = new List<double>();
+
+            for (int j = 0; j < step_curve; j++)
+            {
+                x_fit[file].Add(minx + j * (maxx - minx) / (double)step_curve);
+                x_fit_log[file].Add(Math.Log10(minx) + j * (Math.Log10(maxx) - Math.Log10(minx)) / (double)step_curve);
+            }
+
             Series series_new_points = new Series();
 
             series_new_points.ChartType = SeriesChartType.Point;
@@ -9279,6 +9740,15 @@ namespace DRC
             series_new_points.Name = file;
 
             chart.Series.Add(series_new_points);
+
+            Series series_new_curve = new Series();
+
+            series_new_curve.ChartType = SeriesChartType.Line;
+            series_new_curve.Name = file + "_curve";
+
+            chart.Series.Add(series_new_curve);
+
+            fit_DRC(file);
 
             draw_DRC();
         }
@@ -9297,8 +9767,12 @@ namespace DRC
                 drc_points_y.Remove(file);
                 chart_colors.Remove(file);
 
-                chart.Series.Remove(chart.Series[file]);
+                y_fit.Remove(file);
+                x_fit.Remove(file);
+                x_fit_log.Remove(file);
 
+                chart.Series.Remove(chart.Series[file]);
+                chart.Series.Remove(chart.Series[file + "_curve"]);
                 filenames.RemoveAll(p => p == file);
             }
 
@@ -9316,15 +9790,15 @@ namespace DRC
             return y;
         }
 
-        private void fit_DRC()
+        private void fit_DRC(string filename)
         {
             double GlobalMax = double.MinValue;
-            double MaxValues = MaxA(drc_points_y[file_name].ToArray());
+            double MaxValues = MaxA(drc_points_y[filename].ToArray());
 
             GlobalMax = MaxValues + 0.5 * Math.Abs(MaxValues);
 
             double GlobalMin = double.MaxValue;
-            double MinValues = MinA(drc_points_y[file_name].ToArray());
+            double MinValues = MinA(drc_points_y[filename].ToArray());
 
             GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
 
@@ -9346,8 +9820,8 @@ namespace DRC
             double[] bndu = null;
 
             // boundaries
-            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin) + 1.0, +100 };
-            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin) - 1.0, -100 };
+            bndu = new double[] { GlobalMax, GlobalMax, Math.Log10(MaxConcentrationLin) + 1.0, +1000 };
+            bndl = new double[] { GlobalMin, GlobalMin, Math.Log10(MinConcentrationLin) - 1.0, -1000 };
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
@@ -9356,14 +9830,14 @@ namespace DRC
             // Fitting without weights
             //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
 
-            double[,] Concentration = new double[drc_points_x_log[file_name].Count(), 1];
-            for (var i = 0; i < drc_points_x_log[file_name].Count(); ++i)
+            double[,] Concentration = new double[drc_points_x_log[filename].Count(), 1];
+            for (var i = 0; i < drc_points_x_log[filename].Count(); ++i)
             {
-                Concentration[i, 0] = drc_points_x_log[file_name][i];
+                Concentration[i, 0] = drc_points_x_log[filename][i];
             }
 
             int NumDimension = 1;
-            alglib.lsfitcreatef(Concentration, drc_points_y[file_name].ToArray(), c, diffstep, out state);
+            alglib.lsfitcreatef(Concentration, drc_points_y[filename].ToArray(), c, diffstep, out state);
             alglib.lsfitsetcond(state, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
             // alglib.lsfitsetscale(state, s);
@@ -9375,11 +9849,25 @@ namespace DRC
             RelativeError = rep.avgrelerror;
             r2 = rep.r2;
 
-            y_fit.Clear();
+            if (y_fit.ContainsKey(filename)) y_fit[filename].Clear();
+            if (x_fit_points.ContainsKey(filename)) x_fit_points[filename].Clear();
+           
+             y_fit[filename] = new List<double>();
 
-            for (int IdxConc = 0; IdxConc < x_fit_log.Count; IdxConc++)
+            for (int IdxConc = 0; IdxConc < x_fit_log[filename].Count; IdxConc++)
             {
-                y_fit.Add(Sigmoid(c, x_fit_log[IdxConc]));
+                y_fit[filename].Add(Sigmoid(c, x_fit_log[filename][IdxConc]));
+
+                if (x_fit_points.ContainsKey(filename))
+                {
+                    x_fit_points[filename].Add(Math.Pow(10, x_fit_log[filename][IdxConc]));
+                }
+                else
+                {
+                    List<double> temp = new List<double>();
+                    temp.Add(Math.Pow(10, x_fit_log[filename][IdxConc]));
+                    x_fit_points[filename] = temp;
+                }
             }
 
         }
@@ -9388,17 +9876,17 @@ namespace DRC
         {
             string cpd = compound_id;
 
-            fit_DRC();
+            fit_DRC(file_name);
 
             chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
 
             // Draw the first graph
             chart.Series["DRC_Points"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            chart.Series["DRC_Points"].Points.DataBindXY(drc_points_x_log[file_name], drc_points_y[file_name]);
+            chart.Series["DRC_Points"].Points.DataBindXY(drc_points_x[file_name], drc_points_y[file_name]);
             chart.Series["DRC_Points"].Color = chart_colors[file_name];
 
             chart.Series["DRC_Fit"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit_log, y_fit);
+            chart.Series["DRC_Fit"].Points.DataBindXY(x_fit_points[file_name], y_fit[file_name]);
             chart.Series["DRC_Fit"].Color = chart_colors[file_name];
 
             // Draw the other graph
@@ -9408,14 +9896,25 @@ namespace DRC
             {
                 if (elem.Key != file_name)
                 {
+                    fit_DRC(elem.Key);
+
                     chart.Series[elem.Key].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-                    chart.Series[elem.Key].Points.DataBindXY(drc_points_x_log[elem.Key], drc_points_y[elem.Key]);
+                    chart.Series[elem.Key].Points.DataBindXY(drc_points_x[elem.Key], drc_points_y[elem.Key]);
+
+                    chart.Series[elem.Key + "_curve"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                    chart.Series[elem.Key + "_curve"].Points.DataBindXY(x_fit_points[elem.Key], y_fit[elem.Key]);
 
                     if (counter_color + 1 >= curve_color.Count())
                     {
                         chart.Series[elem.Key].Color = curve_color[0];
+                        chart.Series[elem.Key + "_curve"].Color = curve_color[0];
+
                     }
-                    else chart.Series[elem.Key].Color = curve_color[counter_color + 1];
+                    else
+                    {
+                        chart.Series[elem.Key].Color = curve_color[counter_color + 1];
+                        chart.Series[elem.Key + "_curve"].Color = curve_color[counter_color + 1];
+                    }
 
                     counter_color++;
                 }

@@ -72,7 +72,7 @@ namespace DRC
             {
                 string col_name = col.HeaderText;
 
-                if (col_name != "Run" && col_name != "BATCH_ID")
+                if (col_name != "Run" && col_name != "BATCH_ID" && col_name != "CPD_ID")
                 {
                     if (col_name.Contains("EC_50")) list_items_1.Add(col_name); //checkedListBox1.Items.Add(col_name);
                 }
@@ -89,7 +89,7 @@ namespace DRC
             {
                 string col_name = col.HeaderText;
 
-                if (col_name != "Run" && col_name != "BATCH_ID")
+                if (col_name != "Run" && col_name != "BATCH_ID" && col_name != "CPD_ID")
                 {
                     if (col_name.Contains("EC_50")) list_items_2.Add(col_name); //checkedListBox1.Items.Add(col_name);
                 }
@@ -174,7 +174,12 @@ namespace DRC
                 Dictionary<string, double> dict_var_1 = new Dictionary<string, double>();
                 foreach (DataGridViewRow row in f8.dataGridView1.Rows)
                 {
-                    string cpd = row.Cells["BATCH_ID"].Value.ToString();
+
+                    string cpd = "";
+
+                    if (f8.dataGridView1.Columns.Contains("BATCH_ID")) cpd = row.Cells["BATCH_ID"].Value.ToString();
+                    else if (f8.dataGridView1.Columns.Contains("CPD_ID")) cpd = row.Cells["CPD_ID"].Value.ToString();
+
                     string val_str = row.Cells[item].Value.ToString();
                     run_description_1 = label_exp_1;
 
@@ -205,7 +210,11 @@ namespace DRC
                 Dictionary<string, double> dict_var_2 = new Dictionary<string, double>();
                 foreach (DataGridViewRow row in f8.dataGridView2.Rows)
                 {
-                    string cpd = row.Cells["BATCH_ID"].Value.ToString();
+                    string cpd = "";
+
+                    if (f8.dataGridView2.Columns.Contains("BATCH_ID")) cpd = row.Cells["BATCH_ID"].Value.ToString();
+                    else if (f8.dataGridView2.Columns.Contains("CPD_ID")) cpd = row.Cells["CPD_ID"].Value.ToString();
+
                     string val_str = row.Cells[item].Value.ToString();
                     run_description_2 = label_exp_2;
 
