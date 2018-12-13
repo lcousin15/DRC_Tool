@@ -9697,6 +9697,30 @@ namespace DRC
             drc_points_y[file] = y;
             chart_colors[file] = color;
 
+            if (drc_points_x_log[file_name].Count > 0)
+            {
+                int min = (int)Math.Floor(MinA<double>(drc_points_x_log[file].ToArray()));
+                int max = (int)Math.Ceiling(MaxA<double>(drc_points_x_log[file].ToArray()));
+
+                if (min < min_x) min_x = min;
+                if (max > max_x) max_x = max;
+            }
+            else
+            {
+                max_x = -5;
+                min_x = -8;
+            }
+
+            double min_x_pow10 = Math.Pow(10, min_x);
+            double max_x_pow10 = Math.Pow(10, max_x);
+
+            chart.ChartAreas[0].AxisX.Minimum = min_x_pow10;
+            chart.ChartAreas[0].AxisX.Maximum = max_x_pow10;
+
+            chart.ChartAreas[0].AxisX.IsLogarithmic = true;
+            chart.ChartAreas[0].AxisX.LogarithmBase = 10;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
+
             double minx = MinA(drc_points_x[file].ToArray());
             double maxx = MaxA(drc_points_x[file].ToArray());
 
@@ -9853,30 +9877,6 @@ namespace DRC
             string cpd = compound_id;
 
             fit_DRC(file_name);
-
-            if (drc_points_x_log[file_name].Count > 0)
-            {
-                int min = (int)Math.Floor(MinA<double>(drc_points_x_log[file_name].ToArray()));
-                int max = (int)Math.Ceiling(MaxA<double>(drc_points_x_log[file_name].ToArray()));
-
-                if (min < min_x) min_x = min;
-                if (max > max_x) max_x = max;
-            }
-            else
-            {
-                max_x = -5;
-                min_x = -8;
-            }
-
-            double minx = Math.Pow(10, min_x);
-            double maxx = Math.Pow(10, max_x);
-
-            chart.ChartAreas[0].AxisX.Minimum = minx;
-            chart.ChartAreas[0].AxisX.Maximum = maxx;
-
-            chart.ChartAreas[0].AxisX.IsLogarithmic = true;
-            chart.ChartAreas[0].AxisX.LogarithmBase = 10;
-            chart.ChartAreas[0].AxisX.LabelStyle.Format = "E2";
 
             chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
 
