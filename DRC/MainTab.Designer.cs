@@ -59,6 +59,7 @@
             this.loadHitsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dRCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dRCTimeLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawOverlap1FileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patientStratificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.computeAUCZScoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -281,14 +282,14 @@
             // pCAToolStripMenuItem
             // 
             this.pCAToolStripMenuItem.Name = "pCAToolStripMenuItem";
-            this.pCAToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.pCAToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.pCAToolStripMenuItem.Text = "PCA";
             this.pCAToolStripMenuItem.Click += new System.EventHandler(this.pCAToolStripMenuItem_Click);
             // 
             // tSNEToolStripMenuItem
             // 
             this.tSNEToolStripMenuItem.Name = "tSNEToolStripMenuItem";
-            this.tSNEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tSNEToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.tSNEToolStripMenuItem.Text = "T-SNE";
             this.tSNEToolStripMenuItem.Click += new System.EventHandler(this.tSNEToolStripMenuItem_Click);
             // 
@@ -303,7 +304,7 @@
             // correlationsToolStripMenuItem2
             // 
             this.correlationsToolStripMenuItem2.Name = "correlationsToolStripMenuItem2";
-            this.correlationsToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.correlationsToolStripMenuItem2.Size = new System.Drawing.Size(138, 22);
             this.correlationsToolStripMenuItem2.Text = "Correlations";
             this.correlationsToolStripMenuItem2.Click += new System.EventHandler(this.correlationsToolStripMenuItem2_Click);
             // 
@@ -319,14 +320,14 @@
             // loadCurvesToolStripMenuItem
             // 
             this.loadCurvesToolStripMenuItem.Name = "loadCurvesToolStripMenuItem";
-            this.loadCurvesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadCurvesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.loadCurvesToolStripMenuItem.Text = "Load curves";
             this.loadCurvesToolStripMenuItem.Click += new System.EventHandler(this.loadCurvesToolStripMenuItem_Click);
             // 
             // drawCurvesToolStripMenuItem
             // 
             this.drawCurvesToolStripMenuItem.Name = "drawCurvesToolStripMenuItem";
-            this.drawCurvesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.drawCurvesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.drawCurvesToolStripMenuItem.Text = "Draw Curves";
             this.drawCurvesToolStripMenuItem.Click += new System.EventHandler(this.drawCurvesToolStripMenuItem_Click);
             // 
@@ -341,24 +342,32 @@
             // loadHitsToolStripMenuItem
             // 
             this.loadHitsToolStripMenuItem.Name = "loadHitsToolStripMenuItem";
-            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.loadHitsToolStripMenuItem.Text = "Load Hits";
             this.loadHitsToolStripMenuItem.Click += new System.EventHandler(this.loadHitsToolStripMenuItem_Click);
             // 
             // dRCToolStripMenuItem
             // 
             this.dRCToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.dRCTimeLineToolStripMenuItem});
+            this.dRCTimeLineToolStripMenuItem,
+            this.drawOverlap1FileToolStripMenuItem});
             this.dRCToolStripMenuItem.Name = "dRCToolStripMenuItem";
-            this.dRCToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
-            this.dRCToolStripMenuItem.Text = "Time Line";
+            this.dRCToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.dRCToolStripMenuItem.Text = "DRC Overlap";
             // 
             // dRCTimeLineToolStripMenuItem
             // 
             this.dRCTimeLineToolStripMenuItem.Name = "dRCTimeLineToolStripMenuItem";
-            this.dRCTimeLineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.dRCTimeLineToolStripMenuItem.Text = "DRC Time Line";
+            this.dRCTimeLineToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.dRCTimeLineToolStripMenuItem.Text = "Overlap (List Files)";
             this.dRCTimeLineToolStripMenuItem.Click += new System.EventHandler(this.dRCTimeLineToolStripMenuItem_Click);
+            // 
+            // drawOverlap1FileToolStripMenuItem
+            // 
+            this.drawOverlap1FileToolStripMenuItem.Name = "drawOverlap1FileToolStripMenuItem";
+            this.drawOverlap1FileToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.drawOverlap1FileToolStripMenuItem.Text = "Overlap (By Plate)";
+            this.drawOverlap1FileToolStripMenuItem.Click += new System.EventHandler(this.drawOverlap1FileToolStripMenuItem_Click);
             // 
             // patientStratificationToolStripMenuItem
             // 
@@ -394,7 +403,7 @@
             // showToolStripMenuItem
             // 
             this.showToolStripMenuItem.Name = "showToolStripMenuItem";
-            this.showToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.showToolStripMenuItem.Text = "Show";
             this.showToolStripMenuItem.Click += new System.EventHandler(this.showToolStripMenuItem_Click);
             // 
@@ -800,7 +809,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1244, 961);
             this.Controls.Add(this.btn_normalize);
             this.Controls.Add(this.btn_fix_top_bottom);
@@ -917,6 +926,7 @@
         private System.Windows.Forms.Button btn_normalize;
         private System.Windows.Forms.ToolStripMenuItem wellPlateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem drawOverlap1FileToolStripMenuItem;
     }
 }
 
