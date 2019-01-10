@@ -5840,6 +5840,7 @@ namespace DRC
 
         private T MinA<T>(T[] rest) where T : IComparable
         {
+           
             T min = rest[0];
             foreach (T f in rest) if (f.CompareTo(min) < 0)
                     min = f;
@@ -5848,6 +5849,7 @@ namespace DRC
 
         private T MaxA<T>(T[] rest) where T : IComparable
         {
+           
             T max = rest[0];
             foreach (T f in rest) if (f.CompareTo(max) > 0)
                     max = f;
