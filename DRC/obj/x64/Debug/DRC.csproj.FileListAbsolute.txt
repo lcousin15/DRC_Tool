@@ -236,3 +236,4 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.PathwayTab.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Patient_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.WellPlate_Viewer.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csproj.CopyComplete
+D:\DRC_Tool\DRC\obj\x64\Debug\DRC.EntryMenu.resources
