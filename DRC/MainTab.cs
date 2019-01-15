@@ -2690,6 +2690,14 @@ namespace DRC
                     f12.dataGridView1.Columns[1].Name = "Image";
                     f12.dataGridView1.Columns[2].Name = "Concentration";
 
+                    DataGridViewTextBoxColumn new_col_plate = new DataGridViewTextBoxColumn();
+                    new_col_plate.Name = "Plate";
+                    f12.dataGridView1.Columns.Add(new_col_plate);
+
+                    DataGridViewTextBoxColumn new_col_well = new DataGridViewTextBoxColumn();
+                    new_col_well.Name = "Well";
+                    f12.dataGridView1.Columns.Add(new_col_well);
+
                     foreach (var item in descriptors_dict)
                     {
                         string col_name = item.Key;
@@ -2997,6 +3005,12 @@ namespace DRC
                     f12.dataGridView1.Rows[index].Cells[1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[index].Cells[2].Value = concentrations[i];
                     f12.dataGridView1.Rows[index].Cells[2].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                    f12.dataGridView1.Rows[index].Cells[3].Value = plates[i];
+                    f12.dataGridView1.Rows[index].Cells[3].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                    f12.dataGridView1.Rows[index].Cells[4].Value = wells[i];
+                    f12.dataGridView1.Rows[index].Cells[4].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                     foreach (var item in descriptors_dict)
                     {
