@@ -238,7 +238,8 @@
             this.comboBox3.Items.AddRange(new object[] {
             "Saturate",
             "Otsu",
-            "Equal"});
+            "Equal",
+            "Raw"});
             this.comboBox3.Location = new System.Drawing.Point(110, 20);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(87, 21);
