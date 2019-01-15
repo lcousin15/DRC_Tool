@@ -2792,6 +2792,9 @@ namespace DRC
                                     ushort px_value = data[idx];
                                     if (px_value < low_thr_ch1) data[idx] = 0;
                                     else if (px_value >= thr_ch1) data[idx] = thr_ch1;
+                                    //data[idx] >= thr_ch1 ? thr_ch1 : 0;
+                                    
+
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch1);
                                 }
                             }
@@ -2830,7 +2833,20 @@ namespace DRC
                     }
 
                     Mat mat_8u = new Mat();
-                    temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 1.0 / 255.0);
+
+                    if (method_norm == "Raw")
+                    {
+
+
+                        temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 1.0 / 255.0);
+                        double minval, maxval;
+                        int[] minIdx = new int[1];
+                        int[] maxidx = new int[1];
+
+                        CvInvoke.MinMaxIdx(temp, out minval, out maxval, minIdx, maxidx);
+                        Image<Gray, float> tempbis = temp.ToImage<Gray, float>() * (1.0 / maxval);
+                        tempbis.Mat.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 255.0);
+                    }
 
                     temp.Dispose();
 
