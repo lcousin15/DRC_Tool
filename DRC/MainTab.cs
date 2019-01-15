@@ -2690,14 +2690,6 @@ namespace DRC
                     f12.dataGridView1.Columns[1].Name = "Image";
                     f12.dataGridView1.Columns[2].Name = "Concentration";
 
-                    DataGridViewTextBoxColumn new_col_plate = new DataGridViewTextBoxColumn();
-                    new_col_plate.Name = "Plate";
-                    f12.dataGridView1.Columns.Add(new_col_plate);
-
-                    DataGridViewTextBoxColumn new_col_well = new DataGridViewTextBoxColumn();
-                    new_col_well.Name = "Well";
-                    f12.dataGridView1.Columns.Add(new_col_well);
-
                     foreach (var item in descriptors_dict)
                     {
                         string col_name = item.Key;
@@ -2800,6 +2792,9 @@ namespace DRC
                                     ushort px_value = data[idx];
                                     if (px_value < low_thr_ch1) data[idx] = 0;
                                     else if (px_value >= thr_ch1) data[idx] = thr_ch1;
+                                   
+                                    
+
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch1);
                                 }
                             }
@@ -2839,16 +2834,22 @@ namespace DRC
 
                     Mat mat_8u = new Mat();
                     temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 1.0 / 255.0);
-
                     if (method_norm == "Raw")
                     {
-                        double minval, maxval;
-                        int[] minIdx = new int[1];
-                        int[] maxidx = new int[1];
 
-                        CvInvoke.MinMaxIdx(temp, out minval, out maxval, minIdx, maxidx);
-                        Image<Gray, float> tempbis = temp.ToImage<Gray, float>() * (1.0 / maxval);
-                        tempbis.Mat.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 255.0);
+
+                        
+                        //double minval, maxval;
+                        //int[] minIdx = new int[1];
+                        //int[] maxidx = new int[1];
+                        //Emgu.CV.Structure.MCvScalar mean = new MCvScalar(0);
+                        //Emgu.CV.Structure.MCvScalar std = new MCvScalar(0);
+                        //Image<Gray, Byte> mask = temp.ToImage<Gray, Byte>().ThresholdBinary(new Gray(180),new Gray(1));
+
+                        CvInvoke.Normalize(temp,mat_8u,0,255,Emgu.CV.CvEnum.NormType.MinMax);
+                        //CvInvoke.MinMaxIdx(temp, out minval, out maxval, minIdx, maxidx);
+                        //Image<Gray, float> tempbis = temp.ToImage<Gray, float>() * (1.0 / (mean.V0+3*std.V0));
+                        //tempbis.Mat.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 255.0);
                     }
 
                     temp.Dispose();
@@ -2881,7 +2882,7 @@ namespace DRC
 
                     double scale_factor = 1.0 / (double)f13.numericUpDown7.Value;
 
-                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), scale_factor, scale_factor, Emgu.CV.CvEnum.Inter.Linear);
+                    CvInvoke.Resize(dst_thr, dst_resize, new Size(0, 0), scale_factor, scale_factor, Emgu.CV.CvEnum.Inter.Cubic);
 
                     dst_thr.Dispose();
 
@@ -2996,12 +2997,6 @@ namespace DRC
                     f12.dataGridView1.Rows[index].Cells[1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[index].Cells[2].Value = concentrations[i];
                     f12.dataGridView1.Rows[index].Cells[2].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                    f12.dataGridView1.Rows[index].Cells[3].Value = plates[i];
-                    f12.dataGridView1.Rows[index].Cells[3].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                    f12.dataGridView1.Rows[index].Cells[4].Value = wells[i];
-                    f12.dataGridView1.Rows[index].Cells[4].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                     foreach (var item in descriptors_dict)
                     {
