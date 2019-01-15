@@ -694,7 +694,7 @@ namespace DRC
 
         }
 
-        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             comboBox1.Visible = true;
 
@@ -1447,7 +1447,7 @@ namespace DRC
             f4.Text = this.Text;
         }
 
-        private void loadWithPlateToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadWithPlateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -1675,7 +1675,7 @@ namespace DRC
 
         }
 
-        private void correlationsToolStripMenuItem2_Click(object sender, EventArgs e)
+        public void correlationsToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             Form fc = Application.OpenForms["Correlations_Tab"];
 
@@ -2277,7 +2277,7 @@ namespace DRC
             check_images();
         }
 
-        private void checkImagesToolStripMenuItem_Click(object sender, EventArgs e)
+        public void checkImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             view_images_per_concentration = true;
             f12.view_images_per_concentration = true;
@@ -2851,6 +2851,11 @@ namespace DRC
                         dst_thr = mat_8u.Clone();
                     }
 
+                    if (method_norm == "Raw")
+                    {
+                        dst_thr = mat_8u.Clone();
+                    }
+
                     mat_8u.Dispose();
 
                     Mat dst_resize = new Mat();
@@ -3021,7 +3026,7 @@ namespace DRC
         }
 
         // Hits Menu
-        private void loadHitsToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadHitsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
@@ -3065,7 +3070,7 @@ namespace DRC
 
         }
 
-        private void dRCTimeLineToolStripMenuItem_Click(object sender, EventArgs e)
+        public void dRCTimeLineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.SetForm();
 
@@ -3967,7 +3972,7 @@ namespace DRC
             return (ys[(int)(mid)] + ys[(int)(mid + 0.5)]) / 2;
         }
 
-        private void loadPSToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadPSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Patient Stratificaton :
             // BATCH_ID_List Table :
@@ -4853,6 +4858,8 @@ namespace DRC
             list_cpd = unique_items.ToList<string>();
             bool fill_concentrations = true;
 
+            //f3.Show();
+
         }
 
         private void select_DMSO()
@@ -4987,7 +4994,7 @@ namespace DRC
                 List<double> ps_concentrations_log = new List<double>();
                 List<string> deselected = new List<string>();
 
-                int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / 7;
+                //int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / 7;
 
                 //for (int i = 0; i < replicates; ++i)
                 //{
@@ -5377,7 +5384,7 @@ namespace DRC
             }
         }
 
-        private void drawOverlap1FileToolStripMenuItem_Click(object sender, EventArgs e)
+        public void drawOverlap1FileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.SetForm();
 
@@ -5472,6 +5479,11 @@ namespace DRC
             }
 
             TimeLine.Visible = true;
+
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
         }
     }
@@ -8148,7 +8160,7 @@ namespace DRC
 
             if (patient)
             {
-                chart.Series["Series1"].Points.Clear();
+                if(if_report) chart.Series["Series1"].Points.Clear(); // /!\ POINTS AUC REMOVED /!\
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
                 annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
             }
@@ -9879,6 +9891,8 @@ namespace DRC
             string cpd = compound_id;
 
             fit_DRC(file_name);
+
+            //chart.ChartAreas[0].RecalculateAxesScale();
 
             chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
 

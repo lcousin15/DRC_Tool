@@ -386,3 +386,4 @@ C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.Export
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.Properties.Resources.resources
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.WellPlate_Viewer.resources
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.GenerateResource.Cache
+E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.EntryMenu.resources

@@ -17,7 +17,7 @@ namespace DRC
             SetProcessDPIAware();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainTab());
+            Application.Run(new EntryMenu());
         }
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
