@@ -2801,8 +2801,6 @@ namespace DRC
                                     if (px_value < low_thr_ch1) data[idx] = 0;
                                     else if (px_value >= thr_ch1) data[idx] = thr_ch1;
                                    
-                                    
-
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch1);
                                 }
                             }
@@ -2969,9 +2967,93 @@ namespace DRC
                     }
                 }
 
-                Mat mat = new Mat();
-                CvInvoke.Merge(channels, mat);
+                
 
+                if (color_format == "SMARCA2")
+                {
+                        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                        channels_bgr.Push(channels[1].Clone());
+                        channels_bgr.Push(channels[0].Clone());
+                        channels_bgr.Push(channels[2].Clone());
+
+                        channels.Clear();
+                        channels = channels_bgr;
+                }
+
+                //CvInvoke.CvtColor(channels[0], channels[0], Emgu.CV.CvEnum.ColorConversion.Bgr2Hsv);
+                //CvInvoke.CvtColor(channels[1], channels[1], Emgu.CV.CvEnum.ColorConversion.Bgr2Hsv);
+                //CvInvoke.CvtColor(channels[2], channels[2], Emgu.CV.CvEnum.ColorConversion.Bgr2Hsv);
+
+                List<byte> rgb_ch0 = f13.get_rgb_ch0();
+                List<byte> rgb_ch1 = f13.get_rgb_ch1();
+                List<byte> rgb_ch2 = f13.get_rgb_ch2();
+                List<byte> rgb_ch3 = f13.get_rgb_ch3();
+
+                byte color_r_ch0 = rgb_ch0[0];
+                byte color_g_ch0 = rgb_ch0[1];
+                byte color_b_ch0 = rgb_ch0[2];
+
+                byte color_r_ch1 = rgb_ch1[0];
+                byte color_g_ch1 = rgb_ch1[1];
+                byte color_b_ch1 = rgb_ch1[2];
+
+                byte color_r_ch2 = rgb_ch2[0];
+                byte color_g_ch2 = rgb_ch2[1];
+                byte color_b_ch2 = rgb_ch2[2];
+
+                //if (color_format == "SMARCA2")
+                //{
+                //    color_r_ch0 = 0;
+                //    color_g_ch0 = 51;
+                //    color_b_ch0 = 255;
+
+                //    color_r_ch1 = 0;
+                //    color_g_ch1 = 255;
+                //    color_b_ch1 = 157;
+
+                //    color_r_ch2 = 255;
+                //    color_g_ch2 = 25;
+                //    color_b_ch2 = 0;
+                //}
+
+                Mat mat_ch0 = new Mat();
+
+                Emgu.CV.Util.VectorOfMat channels_mixed = new Emgu.CV.Util.VectorOfMat();
+                channels_mixed.Push(channels[0].Clone());
+                channels_mixed.Push(channels[0].Clone());
+                channels_mixed.Push(channels[0].Clone());
+
+                unsafe
+                {
+                    byte* ch0_gray = (byte*)channels[0].DataPointer;
+                    byte* ch1_gray = (byte*)channels[1].DataPointer;
+                    byte* ch2_gray = (byte*)channels[2].DataPointer;
+
+                    byte* ch_b = (byte*)channels_mixed[0].DataPointer;
+                    byte* ch_g = (byte*)channels_mixed[1].DataPointer;
+                    byte* ch_r = (byte*)channels_mixed[2].DataPointer;
+
+                    for (int idx = 0; idx < channels[0].Cols * channels[0].Rows; idx++)
+                    {
+                        int value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_b_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_b_ch2 * ch2_gray[idx] / 255.0);
+                        int value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_g_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_g_ch2 * ch2_gray[idx] / 255.0);
+                        int value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_r_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_r_ch2 * ch2_gray[idx] / 255.0);
+
+                        if (value_b <= 255) ch_b[idx] = (byte)value_b;
+                        else ch_b[idx] = 255;
+
+                        if (value_g <= 255) ch_g[idx] = (byte)value_g;
+                        else ch_g[idx] = 255;
+
+                        if (value_r <= 255) ch_r[idx] = (byte)value_r;
+                        else ch_r[idx] = 255;
+                    }
+                }
+                
+                Mat mat = new Mat();
+                CvInvoke.Merge(channels_mixed, mat);
+
+                channels_mixed.Clear();
                 channels.Clear();
 
                 Bitmap my_bitmap = null;
@@ -2979,7 +3061,7 @@ namespace DRC
                 if (color_format == "Rgb")
                     my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
-                if (color_format == "Bgr" || color_format == "EMT")
+                if (color_format == "Bgr" || color_format == "EMT" || color_format == "SMARCA2")
                     my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
                 int replicate = (int)f13.numericUpDown6.Value;

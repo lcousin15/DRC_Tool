@@ -151,7 +151,6 @@ namespace DRC
                             }
                             else if (j > 0)
                             {
-
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridView1.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridView1.Rows[i].Cells[j].Value);
 
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Numberformat.Format = "0.00E+00";
