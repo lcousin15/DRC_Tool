@@ -30,6 +30,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -40,6 +41,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,6 +51,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -104,12 +107,12 @@
     <Reference Include="alglibnet2">
       <HintPath>..\..\alglib_csharp\net-core\alglibnet2.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.UI, Version=3.4.1.2976, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EMGU.CV.3.4.1.2976\lib\net35\Emgu.CV.UI.dll</HintPath>
+    <Reference Include="Emgu.CV.UI, Version=3.2.0.2721, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+      <HintPath>..\packages\Emgu.CV.3.2.0.2721\lib\net35\Emgu.CV.UI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Emgu.CV.World, Version=3.4.1.2976, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EMGU.CV.3.4.1.2976\lib\net35\Emgu.CV.World.dll</HintPath>
+    <Reference Include="Emgu.CV.World, Version=3.2.0.2721, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+      <HintPath>..\packages\Emgu.CV.3.2.0.2721\lib\net35\Emgu.CV.World.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
@@ -383,6 +386,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="WellPlate_Viewer.resx">
       <DependentUpon>WellPlate_Viewer.cs</DependentUpon>
@@ -456,9 +460,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Accord.3.8.2-alpha\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.2-alpha\build\Accord.targets'))" />
     <Error Condition="!Exists('..\packages\OpenCvSharp3-AnyCPU.3.4.1.20180319\build\OpenCvSharp3-AnyCPU.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCvSharp3-AnyCPU.3.4.1.20180319\build\OpenCvSharp3-AnyCPU.props'))" />
-    <Error Condition="!Exists('..\packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets'))" />
+    <Error Condition="!Exists('..\packages\Emgu.CV.3.2.0.2721\build\Emgu.CV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Emgu.CV.3.2.0.2721\build\Emgu.CV.targets'))" />
   </Target>
-  <Import Project="..\packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets" Condition="Exists('..\packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets')" />
+  <Import Project="..\packages\Emgu.CV.3.2.0.2721\build\Emgu.CV.targets" Condition="Exists('..\packages\Emgu.CV.3.2.0.2721\build\Emgu.CV.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
