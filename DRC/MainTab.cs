@@ -694,7 +694,7 @@ namespace DRC
 
         }
 
-        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             comboBox1.Visible = true;
 
@@ -1447,7 +1447,7 @@ namespace DRC
             f4.Text = this.Text;
         }
 
-        private void loadWithPlateToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadWithPlateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -1675,7 +1675,7 @@ namespace DRC
 
         }
 
-        private void correlationsToolStripMenuItem2_Click(object sender, EventArgs e)
+        public void correlationsToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             Form fc = Application.OpenForms["Correlations_Tab"];
 
@@ -2277,7 +2277,7 @@ namespace DRC
             check_images();
         }
 
-        private void checkImagesToolStripMenuItem_Click(object sender, EventArgs e)
+        public void checkImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             view_images_per_concentration = true;
             f12.view_images_per_concentration = true;
@@ -2690,6 +2690,14 @@ namespace DRC
                     f12.dataGridView1.Columns[1].Name = "Image";
                     f12.dataGridView1.Columns[2].Name = "Concentration";
 
+                    DataGridViewTextBoxColumn new_col_plate = new DataGridViewTextBoxColumn();
+                    new_col_plate.Name = "Plate";
+                    f12.dataGridView1.Columns.Add(new_col_plate);
+
+                    DataGridViewTextBoxColumn new_col_well = new DataGridViewTextBoxColumn();
+                    new_col_well.Name = "Well";
+                    f12.dataGridView1.Columns.Add(new_col_well);
+
                     foreach (var item in descriptors_dict)
                     {
                         string col_name = item.Key;
@@ -2792,6 +2800,7 @@ namespace DRC
                                     ushort px_value = data[idx];
                                     if (px_value < low_thr_ch1) data[idx] = 0;
                                     else if (px_value >= thr_ch1) data[idx] = thr_ch1;
+                                   
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch1);
                                 }
                             }
@@ -2831,6 +2840,23 @@ namespace DRC
 
                     Mat mat_8u = new Mat();
                     temp.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 1.0 / 255.0);
+                    if (method_norm == "Raw")
+                    {
+
+
+                        
+                        //double minval, maxval;
+                        //int[] minIdx = new int[1];
+                        //int[] maxidx = new int[1];
+                        //Emgu.CV.Structure.MCvScalar mean = new MCvScalar(0);
+                        //Emgu.CV.Structure.MCvScalar std = new MCvScalar(0);
+                        //Image<Gray, Byte> mask = temp.ToImage<Gray, Byte>().ThresholdBinary(new Gray(180),new Gray(1));
+
+                        CvInvoke.Normalize(temp,mat_8u,0,255,Emgu.CV.CvEnum.NormType.MinMax);
+                        //CvInvoke.MinMaxIdx(temp, out minval, out maxval, minIdx, maxidx);
+                        //Image<Gray, float> tempbis = temp.ToImage<Gray, float>() * (1.0 / (mean.V0+3*std.V0));
+                        //tempbis.Mat.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 255.0);
+                    }
 
                     temp.Dispose();
 
@@ -2847,6 +2873,11 @@ namespace DRC
                     }
 
                     if (method_norm == "Saturate")
+                    {
+                        dst_thr = mat_8u.Clone();
+                    }
+
+                    if (method_norm == "Raw")
                     {
                         dst_thr = mat_8u.Clone();
                     }
@@ -2936,9 +2967,147 @@ namespace DRC
                     }
                 }
 
-                Mat mat = new Mat();
-                CvInvoke.Merge(channels, mat);
+                
 
+                if (color_format == "SMARCA2")
+                {
+                        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                        channels_bgr.Push(channels[1].Clone());
+                        channels_bgr.Push(channels[0].Clone());
+                        channels_bgr.Push(channels[2].Clone());
+
+                        channels.Clear();
+                        channels = channels_bgr;
+                }
+
+                //CvInvoke.CvtColor(channels[0], channels[0], Emgu.CV.CvEnum.ColorConversion.Bgr2Hsv);
+                //CvInvoke.CvtColor(channels[1], channels[1], Emgu.CV.CvEnum.ColorConversion.Bgr2Hsv);
+                //CvInvoke.CvtColor(channels[2], channels[2], Emgu.CV.CvEnum.ColorConversion.Bgr2Hsv);
+
+                List<byte> rgb_ch0 = f13.get_rgb_ch0();
+                List<byte> rgb_ch1 = f13.get_rgb_ch1();
+                List<byte> rgb_ch2 = f13.get_rgb_ch2();
+                List<byte> rgb_ch3 = f13.get_rgb_ch3();
+
+                byte color_r_ch0 = rgb_ch0[0];
+                byte color_g_ch0 = rgb_ch0[1];
+                byte color_b_ch0 = rgb_ch0[2];
+
+                byte color_r_ch1 = rgb_ch1[0];
+                byte color_g_ch1 = rgb_ch1[1];
+                byte color_b_ch1 = rgb_ch1[2];
+
+                byte color_r_ch2 = rgb_ch2[0];
+                byte color_g_ch2 = rgb_ch2[1];
+                byte color_b_ch2 = rgb_ch2[2];
+
+                byte color_r_ch3 = rgb_ch3[0];
+                byte color_g_ch3 = rgb_ch3[1];
+                byte color_b_ch3 = rgb_ch3[2];
+
+                //if (color_format == "SMARCA2")
+                //{
+                //    color_r_ch0 = 0;
+                //    color_g_ch0 = 51;
+                //    color_b_ch0 = 255;
+
+                //    color_r_ch1 = 0;
+                //    color_g_ch1 = 255;
+                //    color_b_ch1 = 157;
+
+                //    color_r_ch2 = 255;
+                //    color_g_ch2 = 25;
+                //    color_b_ch2 = 0;
+                //}
+
+                Emgu.CV.Util.VectorOfMat channels_mixed = new Emgu.CV.Util.VectorOfMat();
+
+                for (int j = 0; j < channels.Size; ++j)
+                {
+                    channels_mixed.Push(channels[0].Clone());
+                }
+
+                unsafe
+                {
+                    byte* ch0_gray = null;
+                    byte* ch1_gray = null;
+                    byte* ch2_gray = null;
+                    byte* ch3_gray = null;
+
+                    byte* ch_b = (byte*)channels_mixed[0].DataPointer;
+                    byte* ch_g = (byte*)channels_mixed[1].DataPointer;
+                    byte* ch_r = (byte*)channels_mixed[2].DataPointer;
+
+                    if (channels.Size >= 1)
+                    {
+                        ch0_gray = (byte*)channels[0].DataPointer;
+                    }
+
+                    if (channels.Size >= 2)
+                    {
+                        ch1_gray = (byte*)channels[1].DataPointer;
+                    }
+
+                    if (channels.Size >= 3)
+                    {
+                        ch2_gray = (byte*)channels[2].DataPointer;
+                    }
+
+                    if (channels.Size >= 4)
+                    {
+                        ch3_gray = (byte*)channels[3].DataPointer;
+                    }
+
+                    int value_r = 0;
+                    int value_g = 0;
+                    int value_b = 0;
+
+                    for (int idx = 0; idx < channels[0].Cols * channels[0].Rows; idx++)
+                    {
+
+                        if (channels.Size == 1)
+                        {
+                            value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0);
+                            value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0);
+                            value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0);
+                        }
+
+                        if (channels.Size == 2)
+                        {
+                            value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_b_ch1 * ch1_gray[idx] / 255.0);
+                            value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_g_ch1 * ch1_gray[idx] / 255.0);
+                            value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_r_ch1 * ch1_gray[idx] / 255.0);
+                        }
+
+                        if (channels.Size == 3)
+                        {
+                            value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_b_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_b_ch2 * ch2_gray[idx] / 255.0);
+                            value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_g_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_g_ch2 * ch2_gray[idx] / 255.0);
+                            value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_r_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_r_ch2 * ch2_gray[idx] / 255.0);
+                        }
+
+                        if (channels.Size == 4)
+                        {
+                            value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_b_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_b_ch2 * ch2_gray[idx] / 255.0) + (byte)(color_b_ch3 * ch3_gray[idx] / 255.0);
+                            value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_g_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_g_ch2 * ch2_gray[idx] / 255.0) + (byte)(color_g_ch3 * ch3_gray[idx] / 255.0);
+                            value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_r_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_r_ch2 * ch2_gray[idx] / 255.0) + (byte)(color_r_ch3 * ch3_gray[idx] / 255.0);
+                        }
+
+                        if (value_b <= 255) ch_b[idx] = (byte)value_b;
+                        else ch_b[idx] = 255;
+
+                        if (value_g <= 255) ch_g[idx] = (byte)value_g;
+                        else ch_g[idx] = 255;
+
+                        if (value_r <= 255) ch_r[idx] = (byte)value_r;
+                        else ch_r[idx] = 255;
+                    }
+                }
+                
+                Mat mat = new Mat();
+                CvInvoke.Merge(channels_mixed, mat);
+
+                channels_mixed.Clear();
                 channels.Clear();
 
                 Bitmap my_bitmap = null;
@@ -2946,7 +3115,7 @@ namespace DRC
                 if (color_format == "Rgb")
                     my_bitmap = (mat.ToImage<Emgu.CV.Structure.Rgb, Byte>()).ToBitmap();
 
-                if (color_format == "Bgr" || color_format == "EMT")
+                if (color_format == "Bgr" || color_format == "EMT" || color_format == "SMARCA2")
                     my_bitmap = (mat.ToImage<Emgu.CV.Structure.Bgr, Byte>()).ToBitmap();
 
                 int replicate = (int)f13.numericUpDown6.Value;
@@ -2972,6 +3141,12 @@ namespace DRC
                     f12.dataGridView1.Rows[index].Cells[1].Value = (Image)my_bitmap;
                     f12.dataGridView1.Rows[index].Cells[2].Value = concentrations[i];
                     f12.dataGridView1.Rows[index].Cells[2].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                    f12.dataGridView1.Rows[index].Cells[3].Value = plates[i];
+                    f12.dataGridView1.Rows[index].Cells[3].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                    f12.dataGridView1.Rows[index].Cells[4].Value = wells[i];
+                    f12.dataGridView1.Rows[index].Cells[4].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                     foreach (var item in descriptors_dict)
                     {
@@ -3021,7 +3196,7 @@ namespace DRC
         }
 
         // Hits Menu
-        private void loadHitsToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadHitsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             openFileDialog1.Filter = "CSV Files (*.csv)|*.csv";
@@ -3065,7 +3240,7 @@ namespace DRC
 
         }
 
-        private void dRCTimeLineToolStripMenuItem_Click(object sender, EventArgs e)
+        public void dRCTimeLineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.SetForm();
 
@@ -3967,7 +4142,7 @@ namespace DRC
             return (ys[(int)(mid)] + ys[(int)(mid + 0.5)]) / 2;
         }
 
-        private void loadPSToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadPSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Patient Stratificaton :
             // BATCH_ID_List Table :
@@ -4853,6 +5028,8 @@ namespace DRC
             list_cpd = unique_items.ToList<string>();
             bool fill_concentrations = true;
 
+            //f3.Show();
+
         }
 
         private void select_DMSO()
@@ -4987,7 +5164,7 @@ namespace DRC
                 List<double> ps_concentrations_log = new List<double>();
                 List<string> deselected = new List<string>();
 
-                int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / 7;
+                //int replicates = descriptors_values[checkedListBox1.CheckedItems[0].ToString()].Count / 7;
 
                 //for (int i = 0; i < replicates; ++i)
                 //{
@@ -5377,7 +5554,7 @@ namespace DRC
             }
         }
 
-        private void drawOverlap1FileToolStripMenuItem_Click(object sender, EventArgs e)
+        public void drawOverlap1FileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.SetForm();
 
@@ -5472,6 +5649,11 @@ namespace DRC
             }
 
             TimeLine.Visible = true;
+
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
         }
     }
@@ -6235,6 +6417,7 @@ namespace DRC
 
         private T MinA<T>(T[] rest) where T : IComparable
         {
+           
             T min = rest[0];
             foreach (T f in rest) if (f.CompareTo(min) < 0)
                     min = f;
@@ -6243,6 +6426,7 @@ namespace DRC
 
         private T MaxA<T>(T[] rest) where T : IComparable
         {
+           
             T max = rest[0];
             foreach (T f in rest) if (f.CompareTo(max) > 0)
                     max = f;
@@ -8146,7 +8330,7 @@ namespace DRC
 
             if (patient)
             {
-                chart.Series["Series1"].Points.Clear();
+                if(if_report) chart.Series["Series1"].Points.Clear(); // /!\ POINTS AUC REMOVED /!\
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
                 annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
             }
@@ -9877,6 +10061,8 @@ namespace DRC
             string cpd = compound_id;
 
             fit_DRC(file_name);
+
+            //chart.ChartAreas[0].RecalculateAxesScale();
 
             chart.Titles["Title1"].Text = descriptor + " CPD=" + compound_id;
 

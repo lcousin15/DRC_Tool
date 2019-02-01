@@ -205,6 +205,12 @@
     <Compile Include="AUC_Report.Designer.cs">
       <DependentUpon>AUC_Report.cs</DependentUpon>
     </Compile>
+    <Compile Include="EntryMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EntryMenu.Designer.cs">
+      <DependentUpon>EntryMenu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Load_PS_Options.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -330,6 +336,9 @@
     <EmbeddedResource Include="AUC_Report.resx">
       <DependentUpon>AUC_Report.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="EntryMenu.resx">
+      <DependentUpon>EntryMenu.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Load_PS_Options.resx">
       <DependentUpon>Load_PS_Options.cs</DependentUpon>
     </EmbeddedResource>
@@ -391,6 +400,7 @@
     <EmbeddedResource Include="WellPlate_Viewer.resx">
       <DependentUpon>WellPlate_Viewer.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

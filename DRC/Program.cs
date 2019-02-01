@@ -12,12 +12,12 @@ namespace DRC
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             SetProcessDPIAware();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainTab());
+            Application.Run(new EntryMenu());
         }
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]

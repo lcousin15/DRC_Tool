@@ -47,9 +47,6 @@
             this.showImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clusteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pCAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tSNEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.correlationsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.correlationsToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.curvesSuperpositionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,6 +62,10 @@
             this.computeAUCZScoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wellPlateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clusteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pCAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tSNEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -164,13 +165,14 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.clusteringToolStripMenuItem,
             this.correlationsToolStripMenuItem1,
             this.curvesSuperpositionToolStripMenuItem,
             this.hItsToolStripMenuItem,
             this.dRCToolStripMenuItem,
             this.patientStratificationToolStripMenuItem,
-            this.wellPlateToolStripMenuItem});
+            this.wellPlateToolStripMenuItem,
+            this.clusteringToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1244, 24);
@@ -215,6 +217,7 @@
             this.loadPSToolStripMenuItem.Name = "loadPSToolStripMenuItem";
             this.loadPSToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.loadPSToolStripMenuItem.Text = "Load PS";
+            this.loadPSToolStripMenuItem.Visible = false;
             this.loadPSToolStripMenuItem.Click += new System.EventHandler(this.loadPSToolStripMenuItem_Click);
             // 
             // drawDRCToolStripMenuItem
@@ -270,29 +273,6 @@
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
-            // clusteringToolStripMenuItem
-            // 
-            this.clusteringToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pCAToolStripMenuItem,
-            this.tSNEToolStripMenuItem});
-            this.clusteringToolStripMenuItem.Name = "clusteringToolStripMenuItem";
-            this.clusteringToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
-            this.clusteringToolStripMenuItem.Text = "Clustering";
-            // 
-            // pCAToolStripMenuItem
-            // 
-            this.pCAToolStripMenuItem.Name = "pCAToolStripMenuItem";
-            this.pCAToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.pCAToolStripMenuItem.Text = "PCA";
-            this.pCAToolStripMenuItem.Click += new System.EventHandler(this.pCAToolStripMenuItem_Click);
-            // 
-            // tSNEToolStripMenuItem
-            // 
-            this.tSNEToolStripMenuItem.Name = "tSNEToolStripMenuItem";
-            this.tSNEToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.tSNEToolStripMenuItem.Text = "T-SNE";
-            this.tSNEToolStripMenuItem.Click += new System.EventHandler(this.tSNEToolStripMenuItem_Click);
-            // 
             // correlationsToolStripMenuItem1
             // 
             this.correlationsToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -304,7 +284,7 @@
             // correlationsToolStripMenuItem2
             // 
             this.correlationsToolStripMenuItem2.Name = "correlationsToolStripMenuItem2";
-            this.correlationsToolStripMenuItem2.Size = new System.Drawing.Size(138, 22);
+            this.correlationsToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.correlationsToolStripMenuItem2.Text = "Correlations";
             this.correlationsToolStripMenuItem2.Click += new System.EventHandler(this.correlationsToolStripMenuItem2_Click);
             // 
@@ -320,14 +300,14 @@
             // loadCurvesToolStripMenuItem
             // 
             this.loadCurvesToolStripMenuItem.Name = "loadCurvesToolStripMenuItem";
-            this.loadCurvesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.loadCurvesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadCurvesToolStripMenuItem.Text = "Load curves";
             this.loadCurvesToolStripMenuItem.Click += new System.EventHandler(this.loadCurvesToolStripMenuItem_Click);
             // 
             // drawCurvesToolStripMenuItem
             // 
             this.drawCurvesToolStripMenuItem.Name = "drawCurvesToolStripMenuItem";
-            this.drawCurvesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.drawCurvesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.drawCurvesToolStripMenuItem.Text = "Draw Curves";
             this.drawCurvesToolStripMenuItem.Click += new System.EventHandler(this.drawCurvesToolStripMenuItem_Click);
             // 
@@ -342,7 +322,7 @@
             // loadHitsToolStripMenuItem
             // 
             this.loadHitsToolStripMenuItem.Name = "loadHitsToolStripMenuItem";
-            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.loadHitsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadHitsToolStripMenuItem.Text = "Load Hits";
             this.loadHitsToolStripMenuItem.Click += new System.EventHandler(this.loadHitsToolStripMenuItem_Click);
             // 
@@ -403,9 +383,39 @@
             // showToolStripMenuItem
             // 
             this.showToolStripMenuItem.Name = "showToolStripMenuItem";
-            this.showToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.showToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.showToolStripMenuItem.Text = "Show";
             this.showToolStripMenuItem.Click += new System.EventHandler(this.showToolStripMenuItem_Click);
+            // 
+            // clusteringToolStripMenuItem
+            // 
+            this.clusteringToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pCAToolStripMenuItem,
+            this.tSNEToolStripMenuItem});
+            this.clusteringToolStripMenuItem.Name = "clusteringToolStripMenuItem";
+            this.clusteringToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.clusteringToolStripMenuItem.Text = "Clustering";
+            // 
+            // pCAToolStripMenuItem
+            // 
+            this.pCAToolStripMenuItem.Name = "pCAToolStripMenuItem";
+            this.pCAToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.pCAToolStripMenuItem.Text = "PCA";
+            this.pCAToolStripMenuItem.Click += new System.EventHandler(this.pCAToolStripMenuItem_Click);
+            // 
+            // tSNEToolStripMenuItem
+            // 
+            this.tSNEToolStripMenuItem.Name = "tSNEToolStripMenuItem";
+            this.tSNEToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tSNEToolStripMenuItem.Text = "T-SNE";
+            this.tSNEToolStripMenuItem.Click += new System.EventHandler(this.tSNEToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // comboBox1
             // 
@@ -870,8 +880,6 @@
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem drawDRCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportDataToolStripMenuItem;
@@ -919,7 +927,6 @@
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
         private System.Windows.Forms.Button btn_descriptors_options;
         private System.Windows.Forms.Button btn_fix_top_bottom;
-        private System.Windows.Forms.ToolStripMenuItem loadPSToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem patientStratificationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computeAUCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem computeAUCZScoreToolStripMenuItem;
@@ -927,6 +934,10 @@
         private System.Windows.Forms.ToolStripMenuItem wellPlateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem drawOverlap1FileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem loadPSToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
     }
 }
 

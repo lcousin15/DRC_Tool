@@ -86,8 +86,8 @@ namespace DRC
                 {
                     if (j == 1) ws.Column(j).Width = 15;
                     else ws.Column(j).Width = width;
-                    if (j == 3 && !view_images_per_concentration) ws.Column(j).Width = 15;
-                    
+                          
+                    if (j>2 && !view_images_per_concentration) ws.Column(j).Width = 15;
                     //if (j == 0) worksheet.Columns[j].ColumnWidth = 10;
                 }
 
@@ -95,7 +95,7 @@ namespace DRC
                 //Loop through each row and read value from each column. 
                 for (int i = 0; i < dataGridView1.Rows.Count; i++)
                 {
-                    toolStripProgressBar1.Value = i * 100 / (dataGridView1.Rows.Count - 1);
+                    toolStripProgressBar1.Value = i * 100 / dataGridView1.Rows.Count;
 
 
                     for (int j = 0; j < dataGridView1.Columns.Count; j++)
@@ -151,7 +151,6 @@ namespace DRC
                             }
                             else if (j > 0)
                             {
-
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Value = dataGridView1.Rows[i].Cells[j].Value; //Convert.ToDouble(dataGridView1.Rows[i].Cells[j].Value);
 
                                 ws.Cells[cellRowIndex + 1, cellColumnIndex].Style.Numberformat.Format = "0.00E+00";
