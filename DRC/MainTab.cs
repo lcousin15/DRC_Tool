@@ -3001,6 +3001,10 @@ namespace DRC
                 byte color_g_ch2 = rgb_ch2[1];
                 byte color_b_ch2 = rgb_ch2[2];
 
+                byte color_r_ch3 = rgb_ch3[0];
+                byte color_g_ch3 = rgb_ch3[1];
+                byte color_b_ch3 = rgb_ch3[2];
+
                 //if (color_format == "SMARCA2")
                 //{
                 //    color_r_ch0 = 0;
@@ -3016,28 +3020,78 @@ namespace DRC
                 //    color_b_ch2 = 0;
                 //}
 
-                Mat mat_ch0 = new Mat();
-
                 Emgu.CV.Util.VectorOfMat channels_mixed = new Emgu.CV.Util.VectorOfMat();
-                channels_mixed.Push(channels[0].Clone());
-                channels_mixed.Push(channels[0].Clone());
-                channels_mixed.Push(channels[0].Clone());
+
+                for (int j = 0; j < channels.Size; ++j)
+                {
+                    channels_mixed.Push(channels[0].Clone());
+                }
 
                 unsafe
                 {
-                    byte* ch0_gray = (byte*)channels[0].DataPointer;
-                    byte* ch1_gray = (byte*)channels[1].DataPointer;
-                    byte* ch2_gray = (byte*)channels[2].DataPointer;
+                    byte* ch0_gray = null;
+                    byte* ch1_gray = null;
+                    byte* ch2_gray = null;
+                    byte* ch3_gray = null;
 
                     byte* ch_b = (byte*)channels_mixed[0].DataPointer;
                     byte* ch_g = (byte*)channels_mixed[1].DataPointer;
                     byte* ch_r = (byte*)channels_mixed[2].DataPointer;
 
+                    if (channels.Size >= 1)
+                    {
+                        ch0_gray = (byte*)channels[0].DataPointer;
+                    }
+
+                    if (channels.Size >= 2)
+                    {
+                        ch1_gray = (byte*)channels[1].DataPointer;
+                    }
+
+                    if (channels.Size >= 3)
+                    {
+                        ch2_gray = (byte*)channels[2].DataPointer;
+                    }
+
+                    if (channels.Size >= 4)
+                    {
+                        ch3_gray = (byte*)channels[3].DataPointer;
+                    }
+
+                    int value_r = 0;
+                    int value_g = 0;
+                    int value_b = 0;
+
                     for (int idx = 0; idx < channels[0].Cols * channels[0].Rows; idx++)
                     {
-                        int value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_b_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_b_ch2 * ch2_gray[idx] / 255.0);
-                        int value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_g_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_g_ch2 * ch2_gray[idx] / 255.0);
-                        int value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_r_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_r_ch2 * ch2_gray[idx] / 255.0);
+
+                        if (channels.Size == 1)
+                        {
+                            value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0);
+                            value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0);
+                            value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0);
+                        }
+
+                        if (channels.Size == 2)
+                        {
+                            value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_b_ch1 * ch1_gray[idx] / 255.0);
+                            value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_g_ch1 * ch1_gray[idx] / 255.0);
+                            value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_r_ch1 * ch1_gray[idx] / 255.0);
+                        }
+
+                        if (channels.Size == 3)
+                        {
+                            value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_b_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_b_ch2 * ch2_gray[idx] / 255.0);
+                            value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_g_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_g_ch2 * ch2_gray[idx] / 255.0);
+                            value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_r_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_r_ch2 * ch2_gray[idx] / 255.0);
+                        }
+
+                        if (channels.Size == 4)
+                        {
+                            value_b = (byte)(color_b_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_b_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_b_ch2 * ch2_gray[idx] / 255.0) + (byte)(color_b_ch3 * ch3_gray[idx] / 255.0);
+                            value_g = (byte)(color_g_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_g_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_g_ch2 * ch2_gray[idx] / 255.0) + (byte)(color_g_ch3 * ch3_gray[idx] / 255.0);
+                            value_r = (byte)(color_r_ch0 * ch0_gray[idx] / 255.0) + (byte)(color_r_ch1 * ch1_gray[idx] / 255.0) + (byte)(color_r_ch2 * ch2_gray[idx] / 255.0) + (byte)(color_r_ch3 * ch3_gray[idx] / 255.0);
+                        }
 
                         if (value_b <= 255) ch_b[idx] = (byte)value_b;
                         else ch_b[idx] = 255;
