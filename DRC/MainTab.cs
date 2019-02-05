@@ -2967,8 +2967,6 @@ namespace DRC
                     }
                 }
 
-                
-
                 if (color_format == "SMARCA2")
                 {
                         Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
