@@ -17,6 +17,31 @@ namespace DRC
         private List<string> list_cpd = new List<string>();
         private bool if_list = false;
 
+        private List<byte> rgb_ch0 = new List<byte>();
+        private List<byte> rgb_ch1 = new List<byte>();
+        private List<byte> rgb_ch2 = new List<byte>();
+        private List<byte> rgb_ch3 = new List<byte>();
+
+        public List<byte> get_rgb_ch0()
+        {
+            return rgb_ch0;
+        }
+
+        public List<byte> get_rgb_ch1()
+        {
+            return rgb_ch1;
+        }
+
+        public List<byte> get_rgb_ch2()
+        {
+            return rgb_ch2;
+        }
+
+        public List<byte> get_rgb_ch3()
+        {
+            return rgb_ch3;
+        }
+
         //// CancellationTokenSource will hold the CancellationToken struct
         //public readonly System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
 
@@ -49,8 +74,28 @@ namespace DRC
                 comboBox3.SelectedIndex = _form1.cpd_segm_method;
             }
 
+            rgb_ch0.Clear();
+            rgb_ch0.Add(0);
+            rgb_ch0.Add(0);
+            rgb_ch0.Add(255);
+
+            rgb_ch1.Clear();
+            rgb_ch1.Add(0);
+            rgb_ch1.Add(255);
+            rgb_ch1.Add(0);
+
+            rgb_ch2.Clear();
+            rgb_ch2.Add(255);
+            rgb_ch2.Add(0);
+            rgb_ch2.Add(0);
+
+            rgb_ch3.Clear();
+            rgb_ch3.Add(255);
+            rgb_ch3.Add(255);
+            rgb_ch3.Add(255);
             //// The task will be started on the ThreadPool off the Dispatcher thread
             //_task = Task.Factory.StartNew(() => EventLoop(_cts.Token), _cts.Token);
+
         }
 
         public ViewImages_Options_Tab(MainTab form, List<string> BATCH_ID)
@@ -80,6 +125,27 @@ namespace DRC
             }
 
             if_list = true;
+
+            rgb_ch0.Clear();
+            rgb_ch0.Add(0);
+            rgb_ch0.Add(0);
+            rgb_ch0.Add(255);
+
+            rgb_ch1.Clear();
+            rgb_ch1.Add(0);
+            rgb_ch1.Add(255);
+            rgb_ch1.Add(0);
+
+            rgb_ch2.Clear();
+            rgb_ch2.Add(255);
+            rgb_ch2.Add(0);
+            rgb_ch2.Add(0);
+
+            rgb_ch3.Clear();
+            rgb_ch3.Add(255);
+            rgb_ch3.Add(255);
+            rgb_ch3.Add(255);
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -145,6 +211,62 @@ namespace DRC
         private void ViewImages_Options_Tab_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.ShowDialog();
+
+            Color new_color = dlg.Color;
+
+            rgb_ch0.Clear();
+
+            rgb_ch0.Add(new_color.R);
+            rgb_ch0.Add(new_color.G);
+            rgb_ch0.Add(new_color.B);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.ShowDialog();
+
+            Color new_color = dlg.Color;
+
+            rgb_ch1.Clear();
+
+            rgb_ch1.Add(new_color.R);
+            rgb_ch1.Add(new_color.G);
+            rgb_ch1.Add(new_color.B);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.ShowDialog();
+
+            Color new_color = dlg.Color;
+
+            rgb_ch2.Clear();
+
+            rgb_ch2.Add(new_color.R);
+            rgb_ch2.Add(new_color.G);
+            rgb_ch2.Add(new_color.B);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.ShowDialog();
+            
+            Color new_color = dlg.Color;
+
+            rgb_ch3.Clear();
+
+            rgb_ch3.Add(new_color.R);
+            rgb_ch3.Add(new_color.G);
+            rgb_ch3.Add(new_color.B);
         }
 
         //private void EventLoop(System.Threading.CancellationToken token)

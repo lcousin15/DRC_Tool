@@ -132,9 +132,7 @@ E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\cvextern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\msvcp140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\vcruntime140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x86\OpenCvSharpExtern.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x86\opencv_ffmpeg341.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x64\OpenCvSharpExtern.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x64\opencv_ffmpeg341_64.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\Emgu.CV.UI.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\Emgu.CV.World.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\OpenCvSharp.Blob.dll
@@ -292,7 +290,6 @@ E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Curve_Fit_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.CPD_Time_Line.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Curves_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Curve_Fit_Options.resources
-E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\opencv_ffmpeg341_64.dll
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Descriptors_General_Options.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.Descriptors_Fix_Top_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.Descriptors_Fix_Top_Options.resources
@@ -388,3 +385,8 @@ C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.WellPl
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.GenerateResource.Cache
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.EntryMenu.resources
 D:\DRC_Tool\DRC\obj\x64\Release\DRC.EntryMenu.resources
+E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x86\opencv_ffmpeg400.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x64\opencv_ffmpeg400_64.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.xml
+E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\opencv_ffmpeg341_64.dll
