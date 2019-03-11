@@ -7221,11 +7221,11 @@ namespace DRC
             GlobalMin = MinValues - 0.05 * Math.Abs(MinValues);
 
             double epsf = 0;
-            double epsx = 1e-12; // 0.000000001;
-            double diffstep = 1e-12;
+            double epsx = 1e-6; // 0.000000001;
+            double diffstep = 1e-8;
 
             //double epsx = 1e-6;
-            int maxits = 1000000;
+            int maxits = 0;
             int info;
 
             if (bound_auto)
@@ -7237,7 +7237,7 @@ namespace DRC
                 max_bound_x = Math.Log10(MinConcentrationLin) - 1.0;
             }
 
-            if (fit_bounds.Count() > 0 && manual_bounds) // && !bound_auto)
+            if (fit_bounds.Count() > 0 && manual_bounds && !bound_auto)
             {
                 min_bound_y = fit_bounds["min_y"];
                 max_bound_y = fit_bounds["max_y"];
