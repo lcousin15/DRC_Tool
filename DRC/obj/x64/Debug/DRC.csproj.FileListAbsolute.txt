@@ -152,12 +152,9 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Curves_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Curve_Fit_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Descriptors_Fix_Top_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Descriptors_General_Options.resources
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x86\OpenCvSharpExtern.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x64\OpenCvSharpExtern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\concrt140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\cvextern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\msvcp140.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\opencv_ffmpeg341_64.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\vcruntime140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\Accord.dll.config
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\DRC.exe.config
@@ -174,10 +171,6 @@ E:\DRC_Tool_Git\DRC\bin\x64\Debug\Emgu.CV.UI.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\Emgu.CV.World.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\EPPlus.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\LumenWorks.Framework.IO.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Blob.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Extensions.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.UserInterface.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\Accord.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\Accord.MachineLearning.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\Accord.MachineLearning.GPL.xml
@@ -189,14 +182,6 @@ E:\DRC_Tool_Git\DRC\bin\x64\Debug\Emgu.CV.World.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\EPPlus.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\LumenWorks.Framework.IO.pdb
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\LumenWorks.Framework.IO.xml
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.pdb
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.xml
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Blob.pdb
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Blob.xml
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Extensions.pdb
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.Extensions.xml
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.UserInterface.pdb
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\OpenCvSharp.UserInterface.xml
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.csproj.ResolveComReference.cache
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.Correlations_Exp_Name.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.CPD_Time_Line.resources
@@ -235,7 +220,4 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Patient_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.WellPlate_Viewer.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csproj.CopyComplete
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.EntryMenu.resources
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x86\opencv_ffmpeg400.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x64\opencv_ffmpeg400_64.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\ZedGraph.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\ZedGraph.xml
+E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\opencv_ffmpeg343_64.dll
