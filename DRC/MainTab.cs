@@ -7237,7 +7237,7 @@ namespace DRC
                 max_bound_x = Math.Log10(MinConcentrationLin) - 1.0;
             }
 
-            if (fit_bounds.Count() > 0 && manual_bounds)
+            if (fit_bounds.Count() > 0 && manual_bounds) // && !bound_auto)
             {
                 min_bound_y = fit_bounds["min_y"];
                 max_bound_y = fit_bounds["max_y"];
@@ -7251,8 +7251,8 @@ namespace DRC
             {
                 double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
 
-                double first_slope = (max_bound_y - min_bound_y) / (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin));
-                if (drc_points_y_enable[0] - drc_points_y_enable[drc_points_y_enable.Count()-1] > 0)
+                double first_slope = (GlobalMax - GlobalMin) / (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin));
+                if ((GlobalMax - GlobalMin) > 0)
                 {
                     first_slope = -Math.Abs(first_slope);
                 }
@@ -7382,8 +7382,8 @@ namespace DRC
             {
                 double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
 
-                double first_slope = (max_bound_y - min_bound_y) / (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin));
-                if (drc_points_y_enable[0] - drc_points_y_enable[drc_points_y_enable.Count()-1] > 0)
+                double first_slope = (GlobalMax - GlobalMin) / (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin));
+                if ((GlobalMax - GlobalMin) > 0)
                 {
                     first_slope = -Math.Abs(first_slope);
                 }
