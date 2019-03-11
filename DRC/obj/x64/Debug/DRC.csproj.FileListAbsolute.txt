@@ -153,9 +153,7 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Curve_Fit_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Descriptors_Fix_Top_Options.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Descriptors_General_Options.resources
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x86\OpenCvSharpExtern.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x86\opencv_ffmpeg341.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x64\OpenCvSharpExtern.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x64\opencv_ffmpeg341_64.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\concrt140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\cvextern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Debug\x64\msvcp140.dll
@@ -237,3 +235,7 @@ D:\DRC_Tool\DRC\obj\x64\Debug\DRC.Patient_Tab.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.WellPlate_Viewer.resources
 D:\DRC_Tool\DRC\obj\x64\Debug\DRC.csproj.CopyComplete
 E:\DRC_Tool_Git\DRC\obj\x64\Debug\DRC.EntryMenu.resources
+E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x86\opencv_ffmpeg400.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Debug\dll\x64\opencv_ffmpeg400_64.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Debug\ZedGraph.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Debug\ZedGraph.xml

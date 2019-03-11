@@ -6545,7 +6545,7 @@ namespace DRC
 
                     foreach (int idx in indices)
                     {
-                        if (drc_points_x_enable[idx] < (x_concentrations_log[index_deselect] + 1e-4) && drc_points_x_enable[idx] > (x_concentrations_log[index_deselect] - 1e-4))
+                        if (drc_points_x_enable[idx] < (x_concentrations_log[index_deselect] + 1e-12) && drc_points_x_enable[idx] > (x_concentrations_log[index_deselect] - 1e-12))
                         {
                             remove_index = idx;
                             break;
@@ -7208,19 +7208,19 @@ namespace DRC
             double GlobalMax = double.MinValue;
             double MaxValues = MaxA(drc_points_y_enable.ToArray());
 
-            GlobalMax = MaxValues + 0.5 * Math.Abs(MaxValues);
+            GlobalMax = MaxValues + 0.05 * Math.Abs(MaxValues);
 
             double GlobalMin = double.MaxValue;
             double MinValues = MinA(drc_points_y_enable.ToArray());
 
-            GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
+            GlobalMin = MinValues - 0.05 * Math.Abs(MinValues);
 
             double epsf = 0;
-            double epsx = 0; // 0.000000001;
+            double epsx = 1e-12; // 0.000000001;
             double diffstep = 1e-12;
 
             //double epsx = 1e-6;
-            int maxits = 0;
+            int maxits = 1000000;
             int info;
 
             if (bound_auto)
@@ -7245,14 +7245,25 @@ namespace DRC
             if (is_top_fixed)
             {
                 double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
-                double[] c = new double[] { min_bound_y, BaseEC50, 1 };
+
+                double first_slope = (max_bound_y - min_bound_y) / (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin));
+                if (drc_points_y_enable[0] - drc_points_y_enable[drc_points_y_enable.Count()-1] > 0)
+                {
+                    first_slope = -Math.Abs(first_slope);
+                }
+                else
+                {
+                    first_slope = +Math.Abs(first_slope);
+                }
+
+                double[] c = new double[] { min_bound_y, BaseEC50, 0.0 };
 
                 double[] bndl = null;
                 double[] bndu = null;
 
                 // boundaries
-                bndu = new double[] { max_bound_y, min_bound_x, +1000.0 };
-                bndl = new double[] { min_bound_y, max_bound_x, -1000.0 };
+                bndu = new double[] { max_bound_y, min_bound_x, +10.0*Math.Abs(first_slope) };
+                bndl = new double[] { min_bound_y, max_bound_x, -10.0*Math.Abs(first_slope) };
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
@@ -7365,16 +7376,28 @@ namespace DRC
             else // top not fixed, fit with 4 params.
             {
                 double BaseEC50 = Math.Log10(MaxConcentrationLin) - Math.Abs(Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin)) / 2.0;
-                double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
-                double[] c2 = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
-                double[] c3 = new double[] { min_bound_y, max_bound_y, BaseEC50, 1 };
+
+                double first_slope = (max_bound_y - min_bound_y) / (Math.Log10(MaxConcentrationLin) - Math.Log10(MinConcentrationLin));
+                if (drc_points_y_enable[0] - drc_points_y_enable[drc_points_y_enable.Count()-1] > 0)
+                {
+                    first_slope = -Math.Abs(first_slope);
+                }
+                else
+                {
+                    first_slope = +Math.Abs(first_slope);
+                }
+
+                double[] c = new double[] { min_bound_y, max_bound_y, BaseEC50, 0 };
+                double[] c2 = new double[] { min_bound_y, max_bound_y, BaseEC50, 0 };
+                double[] c3 = new double[] { min_bound_y, max_bound_y, BaseEC50, 0 };
 
                 double[] bndl = null;
                 double[] bndu = null;
 
+
                 // boundaries
-                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +1000.0 };
-                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -1000.0 };
+                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +10*Math.Abs(first_slope) };
+                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -10*Math.Abs(first_slope) };
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
@@ -7402,6 +7425,7 @@ namespace DRC
                 fit_parameters = c;
                 RelativeError = rep.avgrelerror;
                 r2 = rep.r2;
+                info = info;
 
                 double[,] data = new double[drc_points_x_enable.Count(), 2];
 
@@ -7835,7 +7859,7 @@ namespace DRC
 
                             foreach (int idx in indices)
                             {
-                                if (drc_points_x_enable[idx] < (point_x + 1e-6) && drc_points_x_enable[idx] > (point_x - 1e-6))
+                                if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
                                 {
                                     index = idx;
                                     break;
@@ -7860,7 +7884,7 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12))
                                 {
                                     index_raw_data = idx;
                                     break;
@@ -8571,7 +8595,7 @@ namespace DRC
 
                             foreach (int idx in indices)
                             {
-                                if (drc_points_x_disable[idx] < (point_x + 1e-6) && drc_points_x_disable[idx] > (point_x - 1e-6))
+                                if (drc_points_x_disable[idx] < (point_x + 1e-12) && drc_points_x_disable[idx] > (point_x - 1e-12))
                                 {
                                     index = idx;
                                     break;
@@ -8601,7 +8625,7 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12))
                                 {
                                     index_raw_data = idx;
                                     break;
@@ -8637,7 +8661,7 @@ namespace DRC
 
                             foreach (int idx in indices)
                             {
-                                if (drc_points_x_enable[idx] < (point_x + 1e-6) && drc_points_x_enable[idx] > (point_x - 1e-6))
+                                if (drc_points_x_enable[idx] < (point_x + 1e-12) && drc_points_x_enable[idx] > (point_x - 1e-12))
                                 {
                                     index = idx;
                                     break;
@@ -8661,7 +8685,7 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-4) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-4))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12))
                                 {
                                     index_raw_data = idx;
                                     break;
@@ -9391,7 +9415,7 @@ namespace DRC
 
                         foreach (int idx in indices)
                         {
-                            if (drc_points_x_enable[idx] < (x_points + 1e-6) && drc_points_x_enable[idx] > (x_points - 1e-6))
+                            if (drc_points_x_enable[idx] < (x_points + 1e-12) && drc_points_x_enable[idx] > (x_points - 1e-12))
                             {
                                 index = idx;
                                 break;
@@ -9416,7 +9440,7 @@ namespace DRC
 
                         foreach (int idx in indices_raw)
                         {
-                            if (Math.Log10(x_raw_data[idx]) < (x_points + 1e-4) && Math.Log10(x_raw_data[idx]) > (x_points - 1e-4))
+                            if (Math.Log10(x_raw_data[idx]) < (x_points + 1e-12) && Math.Log10(x_raw_data[idx]) > (x_points - 1e-12))
                             {
                                 index_raw_data = idx;
                                 break;
@@ -9438,7 +9462,7 @@ namespace DRC
 
                         foreach (int idx in indices)
                         {
-                            if (drc_points_x_disable[idx] < (x_points + 1e-6) && drc_points_x_disable[idx] > (x_points - 1e-6))
+                            if (drc_points_x_disable[idx] < (x_points + 1e-12) && drc_points_x_disable[idx] > (x_points - 1e-12))
                             {
                                 index = idx;
                                 break;
@@ -9463,7 +9487,7 @@ namespace DRC
 
                         foreach (int idx in indices_raw)
                         {
-                            if (Math.Log10(x_raw_data[idx]) < (x_points + 1e-4) && Math.Log10(x_raw_data[idx]) > (x_points - 1e-4))
+                            if (Math.Log10(x_raw_data[idx]) < (x_points + 1e-12) && Math.Log10(x_raw_data[idx]) > (x_points - 1e-12))
                             {
                                 index_raw_data = idx;
                                 break;
@@ -9977,12 +10001,12 @@ namespace DRC
             double GlobalMax = double.MinValue;
             double MaxValues = MaxA(drc_points_y[filename].ToArray());
 
-            GlobalMax = MaxValues + 0.5 * Math.Abs(MaxValues);
+            GlobalMax = MaxValues + 0.05 * Math.Abs(MaxValues);
 
             double GlobalMin = double.MaxValue;
             double MinValues = MinA(drc_points_y[filename].ToArray());
 
-            GlobalMin = MinValues - 0.5 * Math.Abs(MinValues);
+            GlobalMin = MinValues - 0.05 * Math.Abs(MinValues);
 
             //if ((double)_form1.numericUpDown3.Value != 0)
             //{
