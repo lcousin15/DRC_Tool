@@ -393,3 +393,4 @@ C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.WellPl
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.csproj.GenerateResource.Cache
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.exe
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.pdb
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\x64\Release\DRC.csprojResolveAssemblyReference.cache
