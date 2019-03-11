@@ -6086,7 +6086,12 @@ namespace DRC
         {
             draw_DRC();
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
+            descriptor_name = descriptor_name.Replace(@"\", @"_");
+
+            string compound_id1 = compound_id.Replace(@"/", @"_");
+            string compound_id2 = compound_id1.Replace(@"\", @"_");
+
+            string output_image = path + "/CPD_" + compound_id2 + "_" + descriptor_name + ".bmp";
 
             System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
             chart.SaveImage(output_image, ChartImageFormat.Bmp);
@@ -8828,7 +8833,12 @@ namespace DRC
         {
             draw_DRC(true, true);
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
+            descriptor_name = descriptor_name.Replace(@"\", @"_");
+
+            string compound_id1 = compound_id.Replace(@"/", @"_");
+            string compound_id2 = compound_id1.Replace(@"\", @"_");
+
+            string output_image = path + "/CPD_" + compound_id2 + "_" + descriptor_name + ".bmp";
 
             //System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
             chart.SaveImage(output_image, ChartImageFormat.Bmp);
@@ -10139,7 +10149,11 @@ namespace DRC
         {
             draw_DRC();
             string descriptor_name = descriptor.Replace(@"/", @"_");
-            string output_image = path + "/CPD_" + compound_id + "_" + descriptor_name + ".bmp";
+            descriptor_name = descriptor_name.Replace(@"\", @"_");
+            string compound_id1 = compound_id.Replace(@"/", @"_");
+            string compound_id2 = compound_id1.Replace(@"\", @"_");
+
+            string output_image = path + "/CPD_" + compound_id2 + "_" + descriptor_name + ".bmp";
 
             System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
             chart.SaveImage(output_image, ChartImageFormat.Bmp);
