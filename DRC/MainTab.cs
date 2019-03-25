@@ -690,6 +690,8 @@ namespace DRC
                 toolStripProgressBar1.Visible = false;
                 f5.Show();
                 MessageBox.Show("Images generated.");
+
+                f5.saveToExcelToolStripMenuItem_Click(sender, e);
             }
 
         }
