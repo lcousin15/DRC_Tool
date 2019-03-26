@@ -274,13 +274,19 @@ namespace DRC
         {
             return time_line_selected_descriptors.Count();
         }
-
+        
         public Dictionary<string, List<Chart_DRC>> get_descriptors_chart()
         {
             return descriptors_chart;
         }
-
-        private double try_parse_string_in_double(string txt, int index, ref bool test)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="txt"></param>
+        /// <param name="index"></param>
+        /// <param name="test"></param>
+        /// <returns></returns>
+        private double try_parse_string_in_double(string txt, int index, string descriptor, ref bool test)
         {
             double double_value = 0;
 
@@ -291,7 +297,7 @@ namespace DRC
             }
             else
             {
-                string message = "Error in Row Index = " + index.ToString() + "\n Closing the program";
+                string message = "Error in Descriptor : "+ descriptor +" / Row Index = " + (index+2).ToString() + "\n Closing the program";
                 const string caption = "Form Closing";
                 var result = MessageBox.Show(message, caption,
                                              MessageBoxButtons.OK,
@@ -861,7 +867,7 @@ namespace DRC
                                 int row_index = row.Index;
                                 bool test = false;
 
-                                double cell_val = try_parse_string_in_double(row.Cells[item.ToString()].Value.ToString(), row_index, ref test);
+                                double cell_val = try_parse_string_in_double(row.Cells[item.ToString()].Value.ToString(), row_index, descriptor_name, ref test);
 
                                 if (test) return;
                                 data_descriptor[descriptor_name].Add(cell_val);
@@ -873,7 +879,7 @@ namespace DRC
                                 bool test = false;
                                 int row_index = row.Index;
 
-                                double cell_val = try_parse_string_in_double(row.Cells[item.ToString()].Value.ToString(), row_index, ref test);
+                                double cell_val = try_parse_string_in_double(row.Cells[item.ToString()].Value.ToString(), row_index, descriptor_name, ref test);
 
                                 if (test) return;
 
@@ -950,7 +956,7 @@ namespace DRC
 
                         int current_index = row.Index;
                         bool test_return = false;
-                        double val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), current_index, ref test_return);
+                        double val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), current_index, "Concentration", ref test_return);
 
                         if (test_return) return;
 
@@ -1976,7 +1982,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, descriptor_name, ref test);
 
                                     if (test) return;
 
@@ -1988,7 +1994,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, descriptor_name, ref test);
 
                                     if (test) return;
 
@@ -2000,7 +2006,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, descriptor_name, ref test);
 
                                     if (test) return;
 
@@ -2012,7 +2018,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, descriptor_name, ref test);
 
                                     if (test) return;
 
@@ -2024,7 +2030,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
 
                                     if (test) return;
 
@@ -2037,7 +2043,7 @@ namespace DRC
 
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
 
                                     if (test) return;
 
@@ -2075,7 +2081,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, descriptor_name, ref test);
 
                                     if (test) return;
 
@@ -2087,7 +2093,7 @@ namespace DRC
                                     bool test = false;
 
                                     int row_index = row.Index;
-                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, descriptor_name, ref test);
 
                                     if (test) return;
 
@@ -2099,7 +2105,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
 
                                     if (test) return;
 
@@ -2112,7 +2118,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
 
                                     if (test) return;
 
@@ -2124,7 +2130,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
 
                                     if (test) return;
 
@@ -2137,7 +2143,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
 
                                     if (test) return;
 
@@ -3587,7 +3593,7 @@ namespace DRC
                         }
                         bool test = false;
 
-                        double current_concentration = try_parse_string_in_double(row["Concentration"].ToString(), my_table.Rows.IndexOf(row), ref test);
+                        double current_concentration = try_parse_string_in_double(row["Concentration"].ToString(), my_table.Rows.IndexOf(row), "Concentration", ref test);
 
                         if (test) return;
 
@@ -5260,7 +5266,7 @@ namespace DRC
                                         int row_index = row.Index;
                                         bool test = false;
 
-                                        double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+                                        double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, descriptor_name, ref test);
 
                                         if (test) return;
 
@@ -5273,7 +5279,7 @@ namespace DRC
                                         int row_index = row.Index;
                                         bool test = false;
 
-                                        double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+                                        double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, descriptor_name, ref test);
 
                                         if (test) return;
 
@@ -5287,7 +5293,7 @@ namespace DRC
 
                                     int row_index = row.Index;
                                     bool test = false;
-                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, descriptor_name, ref test);
 
                                     if (test) return;
 
@@ -5376,7 +5382,7 @@ namespace DRC
                         int row_index = row.Index;
                         bool test = false;
 
-                        double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                        double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
 
                         if (test) return;
 
@@ -5493,7 +5499,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
 
                                     if (test) return;
 
