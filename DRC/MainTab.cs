@@ -280,6 +280,46 @@ namespace DRC
             return descriptors_chart;
         }
 
+        private double try_parse_string_in_double(string txt, int index, ref bool test)
+        {
+            double double_value = 0;
+
+            if (Double.TryParse(txt, out double_value))
+            {
+                test = false;
+                return double_value;
+            }
+            else
+            {
+                string message = "Error in Row Index = " + index.ToString() + "\n Closing the program";
+                const string caption = "Form Closing";
+                var result = MessageBox.Show(message, caption,
+                                             MessageBoxButtons.OK,
+                                             MessageBoxIcon.Question);
+
+                double_value = 1e-12;
+
+                this.Reset();
+
+                f2.Close();
+                f6.Close();
+                f10.Close();
+                f11.Close();
+                TimeLine.Close();
+                f5.Close();
+                form_patient.Close();
+                Load_PS.Close();
+                well_plate.Close();
+                f12.Close();
+
+                this. Close();
+
+                test = true;
+
+                return double_value;
+            }
+        }
+
         private void read_Data()
         {
 
@@ -818,12 +858,26 @@ namespace DRC
                             string descriptor_name = item.ToString();
                             if (data_descriptor.ContainsKey(descriptor_name))
                             {
-                                data_descriptor[descriptor_name].Add(double.Parse(row.Cells[item.ToString()].Value.ToString()));
+                                int row_index = row.Index;
+                                bool test = false;
+
+                                double cell_val = try_parse_string_in_double(row.Cells[item.ToString()].Value.ToString(), row_index, ref test);
+
+                                if (test) return;
+                                data_descriptor[descriptor_name].Add(cell_val);
                             }
                             else
                             {
                                 data_descriptor[descriptor_name] = new List<double>();
-                                data_descriptor[descriptor_name].Add(double.Parse(row.Cells[item.ToString()].Value.ToString()));
+
+                                bool test = false;
+                                int row_index = row.Index;
+
+                                double cell_val = try_parse_string_in_double(row.Cells[item.ToString()].Value.ToString(), row_index, ref test);
+
+                                if (test) return;
+
+                                data_descriptor[descriptor_name].Add(cell_val);
                             }
 
                         }
@@ -894,8 +948,14 @@ namespace DRC
                             data_modified_status[descriptor_name] = row.Cells["Data_Modified_" + descriptor_name].Value.ToString();
                         }
 
-                        concentrations.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
-                        concentrations_log.Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
+                        int current_index = row.Index;
+                        bool test_return = false;
+                        double val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), current_index, ref test_return);
+
+                        if (test_return) return;
+
+                        concentrations.Add(val);
+                        concentrations_log.Add(Math.Log10(val));
                     }
                 }
 
@@ -1913,32 +1973,75 @@ namespace DRC
                                 string descriptor_name = item.ToString();
                                 if (data_descriptor_1.ContainsKey(descriptor_name))
                                 {
-                                    data_descriptor_1[descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    data_descriptor_1[descriptor_name].Add(cell_val);
                                 }
                                 else
                                 {
                                     data_descriptor_1[descriptor_name] = new List<double>();
-                                    data_descriptor_1[descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    data_descriptor_1[descriptor_name].Add(cell_val);
                                 }
 
                                 if (concentrations_1.ContainsKey(descriptor_name))
                                 {
-                                    concentrations_1[descriptor_name].Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    concentrations_1[descriptor_name].Add(cell_val);
                                 }
                                 else
                                 {
                                     concentrations_1[descriptor_name] = new List<double>();
-                                    concentrations_1[descriptor_name].Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    concentrations_1[descriptor_name].Add(cell_val);
                                 }
 
                                 if (concentrations_log_1.ContainsKey(descriptor_name))
                                 {
-                                    concentrations_log_1[descriptor_name].Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    concentrations_log_1[descriptor_name].Add(Math.Log10(cell_val));
                                 }
                                 else
                                 {
                                     concentrations_log_1[descriptor_name] = new List<double>();
-                                    concentrations_log_1[descriptor_name].Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
+                                    int row_index = row.Index;
+
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    concentrations_log_1[descriptor_name].Add(Math.Log10(cell_val));
                                 }
                             }
                         }
@@ -1969,32 +2072,76 @@ namespace DRC
                                 string descriptor_name = item.ToString();
                                 if (data_descriptor_2.ContainsKey(descriptor_name))
                                 {
-                                    data_descriptor_2[descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    data_descriptor_2[descriptor_name].Add(cell_val);
                                 }
                                 else
                                 {
                                     data_descriptor_2[descriptor_name] = new List<double>();
-                                    data_descriptor_2[descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+                                    bool test = false;
+
+                                    int row_index = row.Index;
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    data_descriptor_2[descriptor_name].Add(cell_val);
                                 }
 
                                 if (concentrations_2.ContainsKey(descriptor_name))
                                 {
-                                    concentrations_2[descriptor_name].Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    concentrations_2[descriptor_name].Add(cell_val);
                                 }
                                 else
                                 {
                                     concentrations_2[descriptor_name] = new List<double>();
-                                    concentrations_2[descriptor_name].Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
+
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    concentrations_2[descriptor_name].Add(cell_val);
                                 }
 
                                 if (concentrations_log_2.ContainsKey(descriptor_name))
                                 {
-                                    concentrations_log_2[descriptor_name].Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    concentrations_log_2[descriptor_name].Add(Math.Log10(cell_val));
                                 }
                                 else
                                 {
                                     concentrations_log_2[descriptor_name] = new List<double>();
-                                    concentrations_log_2[descriptor_name].Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
+
+                                    int row_index = row.Index;
+                                    bool test = false;
+
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    concentrations_log_2[descriptor_name].Add(Math.Log10(cell_val));
                                 }
                             }
                         }
@@ -3438,8 +3585,11 @@ namespace DRC
                                 descriptor_data[descriptor] = descriptor_values;
                             }
                         }
+                        bool test = false;
 
-                        double current_concentration = Double.Parse(row["Concentration"].ToString());
+                        double current_concentration = try_parse_string_in_double(row["Concentration"].ToString(), my_table.Rows.IndexOf(row), ref test);
+
+                        if (test) return;
 
                         if (descriptor_concentrations.ContainsKey(descriptor))
                         {
@@ -5107,19 +5257,41 @@ namespace DRC
                                 {
                                     if (DMSO_by_plate[plate].ContainsKey(descriptor_name))
                                     {
-                                        DMSO_by_plate[plate][descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+                                        int row_index = row.Index;
+                                        bool test = false;
+
+                                        double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+
+                                        if (test) return;
+
+                                        DMSO_by_plate[plate][descriptor_name].Add(cell_val);
                                     }
                                     else
                                     {
                                         DMSO_by_plate[plate][descriptor_name] = new List<double>();
-                                        DMSO_by_plate[plate][descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+
+                                        int row_index = row.Index;
+                                        bool test = false;
+
+                                        double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+
+                                        if (test) return;
+
+                                        DMSO_by_plate[plate][descriptor_name].Add(cell_val);
                                     }
                                 }
                                 else
                                 {
                                     Dictionary<string, List<double>> temp_dict = new Dictionary<string, List<double>>();
                                     temp_dict[descriptor_name] = new List<double>();
-                                    temp_dict[descriptor_name].Add(double.Parse(row.Cells[descriptor_name].Value.ToString()));
+
+                                    int row_index = row.Index;
+                                    bool test = false;
+                                    double cell_val = try_parse_string_in_double(row.Cells[descriptor_name].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    temp_dict[descriptor_name].Add(cell_val);
                                     DMSO_by_plate[plate] = temp_dict;
                                 }
 
@@ -5200,8 +5372,16 @@ namespace DRC
                     foreach (DataGridViewRow row in raw_data)
                     {
                         list_wells.Add(row.Cells["Well"].Value.ToString());
-                        ps_concentrations_bis.Add(double.Parse(row.Cells["Concentration"].Value.ToString()));
-                        ps_concentrations_log.Add(Math.Log10(double.Parse(row.Cells["Concentration"].Value.ToString())));
+
+                        int row_index = row.Index;
+                        bool test = false;
+
+                        double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                        if (test) return;
+
+                        ps_concentrations_bis.Add(cell_val);
+                        ps_concentrations_log.Add(Math.Log10(cell_val));
                         deselected.Add("FALSE");
                     }
 
@@ -5310,8 +5490,14 @@ namespace DRC
                             {
                                 foreach (string item in checkedListBox1.CheckedItems)
                                 {
+                                    int row_index = row.Index;
+                                    bool test = false;
 
-                                    double current_value = double.Parse(row.Cells[item].Value.ToString());
+                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, ref test);
+
+                                    if (test) return;
+
+                                    double current_value = cell_val;
                                     current_value /= DMSO_mean_plate_descriptor[plate][item];
                                     row.Cells[item].Value = current_value;
                                 }
@@ -5649,6 +5835,25 @@ namespace DRC
             }
 
             TimeLine.Visible = true;
+
+        }
+
+        public void inactive_cpd(string batch_id)
+        {
+            foreach (KeyValuePair<string, List<Chart_DRC>> elem in descriptors_chart)
+            {
+                string BATCH_ID = elem.Key;
+                List<Chart_DRC> cpd_charts = elem.Value;
+
+                foreach (Chart_DRC current_chart in cpd_charts)
+                {
+                    if (current_chart.get_compound_id() == batch_id)
+                    {
+                        current_chart.set_inactive();
+                    }
+                }
+            }
+
 
         }
 
@@ -9295,6 +9500,125 @@ namespace DRC
 
                     }
                 }
+
+            }
+
+        }
+
+        public void set_inactive()
+        {
+            if (inactive == false)
+            {
+                int k = 0;
+                foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                {
+                    string compound = row2.Cells[0].Value.ToString();
+                    if (compound_id == compound) break;
+                    k++;
+                }
+                int row_index = k;
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = "Inactive";
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = "Inactive";
+
+                data_modified = true;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.Orange;
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.Orange;
+
+                annotation_ec50.Text = "EC_50 = Inactive";
+
+                inactive = true;
+
+                //inactive_init = true;
+                //not_fitted_init = false;
+
+                not_fitted = false;
+
+                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.Orange;
+                ((RectangleAnnotation)chart.Annotations["menu_not_fitted"]).ForeColor = Color.LightGray;
+
+            }
+            else
+            {
+                ((RectangleAnnotation)chart.Annotations["menu_inactive"]).ForeColor = Color.LightGray;
+
+                int k = 0;
+                foreach (DataGridViewRow row2 in _form1.f2.dataGridView2.Rows)
+                {
+                    string compound = row2.Cells[0].Value.ToString();
+                    if (compound_id == compound) break;
+                    k++;
+                }
+                int row_index = k;
+
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Value = double.Parse(Math.Pow(10, fit_parameters[2]).ToString("E2"));
+                if (fit_parameters[0] < fit_parameters[1])
+                {
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                }
+                else
+                {
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Value = double.Parse(fit_parameters[1].ToString("E2"));
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Value = double.Parse(fit_parameters[0].ToString("E2"));
+                }
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Value = double.Parse(fit_parameters[3].ToString("E2"));
+                _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Value = double.Parse(r2.ToString("E2"));
+
+                not_fitted = false;
+                inactive = false;
+
+                if (drc_points_x_disable.Count() > 0)
+                {
+                    data_modified = true;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                    _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                }
+                else
+                {
+                    if (is_top_fixed || manual_bounds)
+                    {
+                        data_modified = true;
+
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.LightSeaGreen;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.LightSeaGreen;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.LightSeaGreen;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.LightSeaGreen;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.LightSeaGreen;
+                    }
+
+                    else
+                    {
+                        data_modified = false;
+
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 1].Style.BackColor = Color.White;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 2].Style.BackColor = Color.White;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 3].Style.BackColor = Color.White;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 4].Style.BackColor = Color.White;
+                        _form1.f2.dataGridView2.Rows[row_index].Cells[5 * descriptor_index + 5].Style.BackColor = Color.White;
+                    }
+                }
+
+                string sign = "";
+
+                if (is_ec50_exact == true) sign = "=";
+                else sign = ">";
+
+                //annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2] - err_ec_50).ToString("E2") + " | " +
+                //                        Math.Pow(10, fit_parameters[2]).ToString("E2") + " | " +
+                //                        Math.Pow(10, fit_parameters[2] + err_ec_50).ToString("E2") + " | R2 = "
+                //                        + r2.ToString("N2");
+
+                annotation_ec50.Text = "EC_50 " + sign + " " + Math.Pow(10, fit_parameters[2]).ToString("E2") + " | R2 = " + r2.ToString("N2");
 
             }
 

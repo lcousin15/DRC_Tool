@@ -118,6 +118,23 @@ namespace DRC
                
                
             }
+            if(e.KeyCode == Keys.I)
+            {
+
+                string BATCH_ID = "";
+
+                foreach (DataGridViewCell item in dataGridView2.SelectedCells)
+                {
+                    BATCH_ID = item.Value.ToString();
+                }
+
+                //var result = MessageBox.Show("Inctive CPD " + BATCH_ID, "Inactive CPD",
+                //                             MessageBoxButtons.OK,
+                //                             MessageBoxIcon.Question);
+
+                _form1.inactive_cpd(BATCH_ID);
+
+            }
         }
     }
 }
