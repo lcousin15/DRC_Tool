@@ -279,13 +279,7 @@ namespace DRC
         {
             return descriptors_chart;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="txt"></param>
-        /// <param name="index"></param>
-        /// <param name="test"></param>
-        /// <returns></returns>
+
         private double try_parse_string_in_double(string txt, int index, string descriptor, ref bool test)
         {
             double double_value = 0;
@@ -5499,7 +5493,7 @@ namespace DRC
                                     int row_index = row.Index;
                                     bool test = false;
 
-                                    double cell_val = try_parse_string_in_double(row.Cells["Concentration"].Value.ToString(), row_index, "Concentration", ref test);
+                                    double cell_val = try_parse_string_in_double(row.Cells[item].Value.ToString(), row_index, item, ref test);
 
                                     if (test) return;
 
@@ -5633,7 +5627,8 @@ namespace DRC
                     foreach (KeyValuePair<string, double> val in auc_values_by_cpd)
                     {
                         string cpd = val.Key;
-                        if (cpd != "carfilzomib" && cpd != "Bortezomib") auc_values.Add(val.Value);
+                        //if (cpd != "carfilzomib" && cpd != "Bortezomib") auc_values.Add(val.Value);
+                        auc_values.Add(val.Value);
                     }
 
                     double mu = auc_values.Average();
