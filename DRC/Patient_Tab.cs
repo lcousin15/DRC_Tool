@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Collections;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
-using Excel = Microsoft.Office.Interop.Excel;
 using System.Net;
 
 namespace DRC
