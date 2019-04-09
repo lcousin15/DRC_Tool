@@ -6373,6 +6373,7 @@ namespace DRC
         List<double> y_raw_data;
         List<double> x_raw_data;
         List<string> plate_per_point;
+        List<string> well_per_point;
 
         List<bool> is_raw_data_removed;
 
@@ -6590,12 +6591,14 @@ namespace DRC
             y_raw_data = new List<double>();
             x_raw_data = new List<double>();
             plate_per_point = new List<string>();
+            well_per_point = new List<string>();
 
             foreach (DataGridViewRow item in raw_data)
             {
                 y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
                 x_raw_data.Add(double.Parse(item.Cells["Concentration"].Value.ToString()));
                 plate_per_point.Add(item.Cells["Plate"].Value.ToString());
+                well_per_point.Add(item.Cells["Well"].Value.ToString());
             }
         }
 
@@ -8793,7 +8796,7 @@ namespace DRC
                         var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
 
                         // check if the cursor is really close to the point (10 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 10 && Math.Abs(pos.Y - pointYPixel) < 10)
+                        if (Math.Abs(pos.X - pointXPixel) < 4 && Math.Abs(pos.Y - pointYPixel) < 4)
                         {
                             double point_x = prop.XValue;
                             double point_y = prop.YValues[0];
@@ -8816,8 +8819,9 @@ namespace DRC
                             }
 
                             string plate_name = plate_per_point[index];
+                            string current_well = well_per_point[index];
 
-                            tooltip.Show("Plate = " + plate_name, this.chart, pos.X, pos.Y - 15);
+                            tooltip.Show("Plate : " + plate_name + " | Well : " + current_well, this.chart, pos.X, pos.Y - 15);
 
                         }
                     }
