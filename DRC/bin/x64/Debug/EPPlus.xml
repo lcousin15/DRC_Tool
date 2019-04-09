@@ -4633,6 +4633,13 @@
             Number of validations
             </summary>
         </member>
+        <member name="P:OfficeOpenXml.DataValidation.ExcelDataValidationCollection.InternalValidationEnabled">
+            <summary>
+            Epplus validates that all data validations are consistend and valid
+            when they are added and when a workbook is saved. Since this takes some
+            resources, it can be disabled for improve performance. 
+            </summary>
+        </member>
         <member name="P:OfficeOpenXml.DataValidation.ExcelDataValidationCollection.Item(System.Int32)">
             <summary>
             Index operator, returns by 0-based index
@@ -7815,7 +7822,7 @@
             <param name="col">Current column</param>
             <returns>The absolut address/Formula</returns>
         </member>
-        <member name="M:OfficeOpenXml.ExcelCellBase.Translate(System.String,OfficeOpenXml.ExcelCellBase.dlgTransl,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:OfficeOpenXml.ExcelCellBase.Translate(System.String,OfficeOpenXml.ExcelCellBase.dlgTransl,System.Int32,System.Int32)">
             <summary>
             Translates betweein R1C1 or absolut addresses
             </summary>
@@ -7823,11 +7830,9 @@
             <param name="addressTranslator">The translating function</param>
             <param name="row"></param>
             <param name="col"></param>
-            <param name="rowIncr"></param>
-            <param name="colIncr"></param>
             <returns></returns>
         </member>
-        <member name="M:OfficeOpenXml.ExcelCellBase.ToR1C1(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:OfficeOpenXml.ExcelCellBase.ToR1C1(System.String,System.Int32,System.Int32)">
             <summary>
             Translate to R1C1
             </summary>
@@ -7838,7 +7843,7 @@
             <param name="colIncr"></param>
             <returns></returns>
         </member>
-        <member name="M:OfficeOpenXml.ExcelCellBase.ToAbs(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:OfficeOpenXml.ExcelCellBase.ToAbs(System.String,System.Int32,System.Int32)">
             <summary>
             Translates to absolute address
             </summary>
@@ -9815,7 +9820,7 @@
         <member name="M:OfficeOpenXml.ExcelRangeBase.AutoFitColumns">
             <summary>
             Set the column width from the content of the range. The minimum width is the value of the ExcelWorksheet.defaultColumnWidth property.
-            Note: Cells containing formulas are ignored since EPPlus don't have a calculation engine.
+            Note: Cells containing formulas must be calculated before autofit is called.
             Wrapped and merged cells are also ignored.
             </summary>
         </member>
@@ -11377,8 +11382,17 @@
             <summary>
             Adds a chartsheet to the workbook.
             </summary>
-            <param name="Name"></param>
-            <param name="chartType"></param>
+            <param name="Name">The name of the worksheet</param>
+            <param name="chartType">The type of chart</param>
+            <returns></returns>
+        </member>
+        <member name="M:OfficeOpenXml.ExcelWorksheets.AddChart(System.String,OfficeOpenXml.Drawing.Chart.eChartType,OfficeOpenXml.Table.PivotTable.ExcelPivotTable)">
+            <summary>
+            Adds a chartsheet to the workbook.
+            </summary>
+            <param name="Name">The name of the worksheet</param>
+            <param name="chartType">The type of chart</param>
+            <param name="pivotTableSource">The pivottable source</param>
             <returns></returns>
         </member>
         <member name="M:OfficeOpenXml.ExcelWorksheets.ValidateName(System.String)">
@@ -11609,6 +11623,42 @@
             <param name="f">The cell function object</param>
             <param name="options">Calcultaiton options</param>
         </member>
+        <member name="T:OfficeOpenXml.FormulaParsing.ExcelAddressCache">
+            <summary>
+            Caches string by generated id's.
+            </summary>
+        </member>
+        <member name="M:OfficeOpenXml.FormulaParsing.ExcelAddressCache.GetNewId">
+            <summary>
+            Returns an id to use for caching (when the <see cref="M:OfficeOpenXml.FormulaParsing.ExcelAddressCache.Add(System.Int32,System.String)"/> method is called)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OfficeOpenXml.FormulaParsing.ExcelAddressCache.Add(System.Int32,System.String)">
+            <summary>
+            Adds an address to the cache
+            </summary>
+            <param name="id"></param>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OfficeOpenXml.FormulaParsing.ExcelAddressCache.Count">
+            <summary>
+            Number of items in the cache
+            </summary>
+        </member>
+        <member name="M:OfficeOpenXml.FormulaParsing.ExcelAddressCache.Get(System.Int32)">
+            <summary>
+            Returns an address by its cache id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OfficeOpenXml.FormulaParsing.ExcelAddressCache.Clear">
+            <summary>
+            Clears the cache
+            </summary>
+        </member>
         <member name="T:OfficeOpenXml.FormulaParsing.ExcelDataProvider">
             <summary>
             This class should be implemented to be able to deliver excel data
@@ -11783,7 +11833,7 @@
             </summary>
             <param name="context"></param>
         </member>
-        <member name="P:OfficeOpenXml.FormulaParsing.Excel.Functions.ExcelFunction.SkipArgumentEvaluation">
+        <member name="M:OfficeOpenXml.FormulaParsing.Excel.Functions.ExcelFunction.GetFirstValue(System.Collections.Generic.IEnumerable{OfficeOpenXml.FormulaParsing.Excel.Functions.FunctionArgument})">
             <summary>
             Used for some Lookupfunctions to indicate that function arguments should
             not be compiled before the function is called.

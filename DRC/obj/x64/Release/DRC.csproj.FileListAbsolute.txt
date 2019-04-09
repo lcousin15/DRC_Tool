@@ -154,15 +154,9 @@ D:\DRC_Tool\DRC\bin\x64\Release\x64\cvextern.dll
 D:\DRC_Tool\DRC\bin\x64\Release\x64\msvcp140.dll
 D:\DRC_Tool\DRC\bin\x64\Release\x64\vcruntime140.dll
 D:\DRC_Tool\DRC\bin\x64\Release\dll\x86\OpenCvSharpExtern.dll
-D:\DRC_Tool\DRC\bin\x64\Release\dll\x86\opencv_ffmpeg341.dll
 D:\DRC_Tool\DRC\bin\x64\Release\dll\x64\OpenCvSharpExtern.dll
-D:\DRC_Tool\DRC\bin\x64\Release\dll\x64\opencv_ffmpeg341_64.dll
 D:\DRC_Tool\DRC\bin\x64\Release\Emgu.CV.UI.dll
 D:\DRC_Tool\DRC\bin\x64\Release\Emgu.CV.World.dll
-D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.Blob.dll
-D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.dll
-D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.Extensions.dll
-D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.UserInterface.dll
 D:\DRC_Tool\DRC\bin\x64\Release\Emgu.CV.UI.xml
 D:\DRC_Tool\DRC\bin\x64\Release\Emgu.CV.World.xml
 D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.pdb
@@ -390,3 +384,9 @@ E:\DRC_Tool_Git\DRC\bin\x64\Release\dll\x64\opencv_ffmpeg400_64.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.xml
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\opencv_ffmpeg341_64.dll
+D:\DRC_Tool\DRC\bin\x64\Release\dll\x86\opencv_ffmpeg400.dll
+D:\DRC_Tool\DRC\bin\x64\Release\dll\x64\opencv_ffmpeg400_64.dll
+D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.Blob.dll
+D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.dll
+D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.Extensions.dll
+D:\DRC_Tool\DRC\bin\x64\Release\OpenCvSharp.UserInterface.dll
