@@ -115,8 +115,21 @@ namespace DRC
                     _form1.load_cpd_images(BATCH_ID, true);
                 }
                 //string BATCH_ID = dataGridView2.Rows[dataGridView2.CurrentCell.OwningRow.Index].Cells[0].Value.ToString();
-               
-               
+            }
+            if(e.KeyCode == Keys.I)
+            {
+
+                string BATCH_ID = "";
+
+                foreach (DataGridViewCell item in dataGridView2.SelectedCells)
+                {
+                    if (item.ColumnIndex != 0) return;
+         
+                    BATCH_ID = item.Value.ToString();
+                }
+
+                _form1.inactive_cpd(BATCH_ID);
+
             }
         }
     }

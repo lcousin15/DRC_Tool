@@ -111,3 +111,7 @@ C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC\bin\Debug\DRC.exe.config
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC\obj\Debug\DRC.csproj.ResolveComReference.cache
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC\obj\Debug\DRC.exe
 C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC\obj\Debug\DRC.pdb
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\bin\Debug\DRC.exe.config
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\Debug\DRC.csproj.ResolveComReference.cache
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\Debug\DRC.exe
+C:\Users\Zeina\Documents\GitHub\DRC_Tool\DRC_Tool\DRC\obj\Debug\DRC.pdb

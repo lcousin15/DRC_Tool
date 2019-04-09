@@ -32117,6 +32117,42 @@
             Fillstyle.
             </summary>
         </member>
+        <member name="T:EPPlus.FormulaParsing.ExcelAddressCache">
+            <summary>
+            Caches string by generated id's.
+            </summary>
+        </member>
+        <member name="M:EPPlus.FormulaParsing.ExcelAddressCache.GetNewId">
+            <summary>
+            Returns an id to use for caching (when the <see cref="M:EPPlus.FormulaParsing.ExcelAddressCache.Add(System.Int32,System.String)"/> method is called)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EPPlus.FormulaParsing.ExcelAddressCache.Add(System.Int32,System.String)">
+            <summary>
+            Adds an address to the cache
+            </summary>
+            <param name="id"></param>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="P:EPPlus.FormulaParsing.ExcelAddressCache.Count">
+            <summary>
+            Number of items in the cache
+            </summary>
+        </member>
+        <member name="M:EPPlus.FormulaParsing.ExcelAddressCache.Get(System.Int32)">
+            <summary>
+            Returns an address by its cache id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EPPlus.FormulaParsing.ExcelAddressCache.Clear">
+            <summary>
+            Clears the cache
+            </summary>
+        </member>
         <member name="T:Ionic.Zip.ZipInputStream">
              <summary>
                Provides a stream metaphor for reading zip files.

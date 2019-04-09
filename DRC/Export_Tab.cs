@@ -278,7 +278,7 @@ namespace DRC
             //excelImage.From.RowOff = Pixel2MTU(2);
         }
 
-        private void saveToExcelToolStripMenuItem_Click(object sender, EventArgs e)
+        public void saveToExcelToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             SaveFileDialog sfd = new SaveFileDialog();

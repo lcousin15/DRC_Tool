@@ -314,15 +314,88 @@
             <returns>Returns point's distance from (0, 0) point.</returns>
             
         </member>
-        <member name="T:Accord.FormatDecoderAttribute">
+        <member name="T:Accord.FormatHandlerAttribute">
             <summary>
               Specifies that a class can be used to decode a particular file type.
             </summary>
             
         </member>
-        <member name="P:Accord.FormatDecoderAttribute.Extension">
+        <member name="P:Accord.FormatHandlerAttribute.Extension">
             <summary>
               Gets or sets the file extension that this format decoder applies to (i.e. "wav").
+            </summary>
+            
+        </member>
+        <member name="M:Accord.FormatHandlerAttribute.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.FormatHandlerAttribute"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.FormatHandlerAttribute.GetNormalizedExtension(System.String)">
+            <summary>
+              Extracts and normalizes a file extension in the same format that is used when 
+              specifying which formats are supported by each decoder (e.g. "file.wav" would
+              become "WAV", "image.png" would become "PNG", etc).
+            </summary>
+            
+        </member>
+        <member name="M:Accord.FormatHandlerAttribute.GetHandler``2(System.String,System.Collections.Generic.Dictionary{System.String,System.Type},System.Collections.Generic.Dictionary{System.String,``0})">
+            <summary>
+              Finds a file handler that can process the given normalized file extension.
+            </summary>
+            
+            <typeparam name="TInterface">The type of the the handler to be found (e.g. IImageDecoder or IAudioDecoder).</typeparam>
+            <typeparam name="TAttribute">The type of the attribute to be found (e.g. <see cref="T:Accord.FormatDecoderAttribute"/> or <see cref="T:Accord.FormatEncoderAttribute"/>).</typeparam>
+            <param name="fileExtension">The normalized file extension (<see cref="M:Accord.FormatHandlerAttribute.GetNormalizedExtension(System.String)"/>.</param>
+            <param name="handlerTypes">The handler types.</param>
+            <param name="cache">The cache of already instantiated handler types.</param>
+            
+            <returns>A file decoder or encoder implementing the <typeparamref name="TInterface"/> interface, or null if none have been found.</returns>
+            
+        </member>
+        <member name="M:Accord.FormatHandlerAttribute.PopulateDictionaryWithHandlersFromAllAssemblies``2(System.Collections.Generic.Dictionary{System.String,System.Type})">
+            <summary>
+              Populates the dictionary with available decoders of a particular category by 
+              inspecting types from all referenced assemblies. Note: calling this method
+              will force all referenced assemblies to be loaded into the current AppDomain.
+            </summary>
+            
+            <typeparam name="TInterface">The base type for the decoders. This should be an interface such as IImageDecoder or IAudioDecoder.</typeparam>
+            <typeparam name="TAttribute">The type of the attribute to be found (e.g. <see cref="T:Accord.FormatDecoderAttribute"/> or <see cref="T:Accord.FormatEncoderAttribute"/>).</typeparam>
+            
+            <param name="dictionary">The dictionary where the found decoders will be stored.</param>
+            
+        </member>
+        <member name="T:Accord.FormatEncoderAttribute">
+            <summary>
+              Specifies that a class can be used to encode a particular file type.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.FormatEncoderAttribute.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.FormatEncoderAttribute"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.FormatEncoderAttribute.GetEncoder``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Type},System.Collections.Generic.Dictionary{System.String,``0})">
+            <summary>
+              Finds a encoder that can process the given normalized file extension.
+            </summary>
+            
+            <typeparam name="TEncoder">The type of the the decoder to be found (e.g. IImageEncoder or IAudioEncoder).</typeparam>
+            
+            <param name="fileExtension">The normalized file extension (<see cref="M:Accord.FormatHandlerAttribute.GetNormalizedExtension(System.String)"/>)</param>
+            <param name="encoderTypes">The encoder types.</param>
+            <param name="cache">The cache of already instantiated encoder types.</param>
+            
+            <returns>An encoder implementing the <typeparamref name="TEncoder"/> interface, or null if none have been found.</returns>
+            
+        </member>
+        <member name="T:Accord.FormatDecoderAttribute">
+            <summary>
+              Specifies that a class can be used to decode a particular file type.
             </summary>
             
         </member>
@@ -332,17 +405,17 @@
             </summary>
             
         </member>
-        <member name="M:Accord.FormatDecoderAttribute.PopulateDictionaryWithDecodersFromAllAssemblies``1(System.Collections.Generic.Dictionary{System.String,System.Type},System.String)">
+        <member name="M:Accord.FormatDecoderAttribute.GetDecoders``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Type},System.Collections.Generic.Dictionary{System.String,``0})">
             <summary>
-              Populates the dictionary with available decoders of a particular category by 
-              inspecting types from all referenced assemblies. Note: calling this method
-              will force all referenced assemblies to be loaded into the current AppDomain.
+              Finds a decoder that can process the given normalized file extension.
             </summary>
             
-            <typeparam name="T">The base type for the decoders. This should be an interface such as IImageDecoder or IAudioDecoder.</typeparam>
+            <typeparam name="TDecoder">The type of the the decoder to be found (e.g. IImageDecoder or IAudioDecoder).</typeparam>
+            <param name="fileExtension">The normalized file extension (<see cref="M:Accord.FormatHandlerAttribute.GetNormalizedExtension(System.String)"/>.</param>
+            <param name="decoderTypes">The decoder types.</param>
+            <param name="cache">The cache of already instantiated decoder types.</param>
             
-            <param name="dictionary">The dictionary where the found decoders will be stored.</param>
-            <param name="extension">The extension we are interested in.</param>
+            <returns>A decoder implementing the <typeparamref name="TDecoder"/> interface, or null if none have been found.</returns>
             
         </member>
         <member name="T:Accord.SourceTypeAttribute">
@@ -8025,6 +8098,14 @@
             <returns>The result of the conversion.</returns>
             
         </member>
+        <member name="M:Accord.ExtensionMethods.GetInnerMostType(System.Type)">
+            <summary>
+            Gets the type of the element in a jagged or multi-dimensional matrix.
+            </summary>
+            
+            <param name="type">The array type whose element type should be computed.</param>
+            
+        </member>
         <member name="M:Accord.ExtensionMethods.HasDefaultConstructor(System.Type)">
             <summary>
               Determines whether the given type has a public default (parameterless) constructor.
@@ -8129,6 +8210,29 @@
             <param name="fileName">The disk location where the file should be stored.</param>
             <param name="maxAttempts">The maximum number of attempts.</param>
             <param name="overwrite">Do not overwrite <paramref name="fileName"/> if it already exists.</param>
+            
+        </member>
+        <member name="M:Accord.ExtensionMethods.ToByteArray``1(``0)">
+            <summary>
+             Serializes (converts) a structure to a byte array.
+            </summary>
+            
+            <param name="value">The structure to be serialized.</param>
+            <returns>The byte array containing the serialized structure.</returns>
+            
+        </member>
+        <member name="M:Accord.ExtensionMethods.ToStruct``1(System.Byte[],System.Int32)">
+            <summary>
+              Deserializes (converts) a byte array to a given structure type.
+            </summary>
+            
+            <remarks>
+             This is a potentiality unsafe operation.
+            </remarks>
+            
+            <param name="rawData">The byte array containing the serialized object.</param>
+            <param name="position">The starting position in the rawData array where the object is located.</param>
+            <returns>The object stored in the byte array.</returns>
             
         </member>
         <member name="T:Accord.ConvergenceException">

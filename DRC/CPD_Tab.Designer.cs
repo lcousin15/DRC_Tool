@@ -44,6 +44,7 @@
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView2.Location = new System.Drawing.Point(36, 21);
             this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.ReadOnly = true;
             this.dataGridView2.Size = new System.Drawing.Size(1017, 734);
             this.dataGridView2.TabIndex = 0;
             this.dataGridView2.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellContentClick);
@@ -66,14 +67,14 @@
             this.toolStripProgressBar1.Name = "toolStripProgressBar1";
             this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
             // 
-            // Form2
+            // CPD_Tab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1065, 788);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.dataGridView2);
-            this.Name = "Form2";
+            this.Name = "CPD_Tab";
             this.Text = "DRC Values Tab";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_closing_event);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
