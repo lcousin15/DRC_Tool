@@ -5674,7 +5674,6 @@ namespace DRC
                     Dictionary<string, double> descriptor_au_error = z_score_auc_error[item.Key];
                     Chart_Patient chart = new Chart_Patient(descriptor_auc, descriptor_au_error, raw_data_dict[item.Key], cpd_target, item.Key.ToString(), Color.Black, form_patient, auc_dict.Count, graph_type);
                     chart_auc_z_score.Add(item.Key.ToString(), chart);
-
                 }
             }
 
@@ -6373,6 +6372,7 @@ namespace DRC
         List<DataGridViewRow> raw_data;
         List<double> y_raw_data;
         List<double> x_raw_data;
+        List<string> plate_per_point;
 
         List<bool> is_raw_data_removed;
 
@@ -6589,11 +6589,13 @@ namespace DRC
 
             y_raw_data = new List<double>();
             x_raw_data = new List<double>();
+            plate_per_point = new List<string>();
 
             foreach (DataGridViewRow item in raw_data)
             {
                 y_raw_data.Add(double.Parse(item.Cells[descriptor].Value.ToString()));
                 x_raw_data.Add(double.Parse(item.Cells["Concentration"].Value.ToString()));
+                plate_per_point.Add(item.Cells["Plate"].Value.ToString());
             }
         }
 
@@ -8753,6 +8755,10 @@ namespace DRC
             selectedPoints = new List<DataPoint>();
         }
 
+
+        Point? prevPosition = null;
+        ToolTip tooltip = new ToolTip();
+
         private void chart1_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
@@ -8761,6 +8767,64 @@ namespace DRC
                 using (Graphics g = chart.CreateGraphics())
                     g.DrawRectangle(Pens.Red, GetRectangle(mdown, e.Location));
             }
+
+
+            var pos = e.Location;
+            if (prevPosition.HasValue && pos == prevPosition.Value)
+                return;
+
+            tooltip.RemoveAll();
+            prevPosition = pos;
+
+            var results = chart.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
+
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var index_lbls = (prop != null) ? chart.Series[0].Points.IndexOf(prop) : -1;
+
+                        //int pointXPixel = 0;
+                        //if (index_lbls > -1) pointXPixel = (int)chart.ChartAreas[0].AxisX.ValueToPixelPosition(index_lbls + 1);
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (10 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 10 && Math.Abs(pos.Y - pointYPixel) < 10)
+                        {
+                            double point_x = prop.XValue;
+                            double point_y = prop.YValues[0];
+
+                            int index = 0;
+                            //bool test = false;
+
+                            List<int> indices = new List<int>();
+                            for (int i = 0; i < y_raw_data.Count(); i++)
+                                if (y_raw_data[i] < point_y + 1e-6 && y_raw_data[i] > point_y - 1e-6)
+                                    indices.Add(i);
+
+                            foreach (int idx in indices)
+                            {
+                                if (x_raw_data[idx] < (point_x + 1e-12) && x_raw_data[idx] > (point_x - 1e-12))
+                                {
+                                    index = idx;
+                                    break;
+                                }
+                            }
+
+                            string plate_name = plate_per_point[index];
+
+                            tooltip.Show("Plate = " + plate_name, this.chart, pos.X, pos.Y - 15);
+
+                        }
+                    }
+                }
+            }
+
+
         }
 
         private void chart1_MouseUp(object sender, MouseEventArgs e)
