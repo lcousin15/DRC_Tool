@@ -335,6 +335,22 @@ namespace DRC
             fixed_top_descriptor = new List<string>();
             data_modified_descriptor = new List<string>();
 
+            if ( !f3.dataGridView1.Columns.Contains("BATCH_ID")  || !f3.dataGridView1.Columns.Contains("CPD_ID") && f3.dataGridView1.Columns.Contains("tags"))
+            {
+                //f3.dataGridView1.Columns.Add("BATCH_ID", "BATCH_ID");
+                DataGridViewColumn new_col = ((DataGridViewColumn)f3.dataGridView1.Columns["tags"].Clone());
+                new_col.Name = "BATCH_ID";
+                new_col.HeaderText = "BATCH_ID";
+                f3.dataGridView1.Columns.Add(new_col);
+
+                DataGridViewColumn new_col2 = ((DataGridViewColumn)f3.dataGridView1.Columns["tags"].Clone());
+                new_col2.Name = "CPD_ID";
+                new_col2.HeaderText = "CPD_ID";
+                f3.dataGridView1.Columns.Add(new_col2);
+                //f3.dataGridView1.Columns["BATCH_ID"] = f3.dataGridView1.Columns["tags"];
+                
+            }
+
             if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("BATCH_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
                 || !f3.dataGridView1.Columns.Contains("Plate") || !f3.dataGridView1.Columns.Contains("Well"))
             {
@@ -746,8 +762,9 @@ namespace DRC
                 Reset();
 
                 this.Text = openFileDialog1.FileName;
+                FileStream fs = new FileStream(openFileDialog1.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-                System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
+                System.IO.StreamReader sr = new System.IO.StreamReader(fs);
                 csv = new CachedCsvReader(sr, true);
 
                 is_with_plate = false;
