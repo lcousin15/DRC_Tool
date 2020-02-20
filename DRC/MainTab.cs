@@ -116,6 +116,8 @@ namespace DRC
             curve_color.Add(Color.DodgerBlue);
             curve_color.Add(Color.Tan);
             curve_color.Add(Color.DimGray);
+
+            dict_file_color = new Dictionary<string, Color>();
         }
 
         public CPD_Tab f2;
@@ -202,6 +204,8 @@ namespace DRC
 
         private Dictionary<string, DataTable> data_dict = new Dictionary<string, DataTable>(); // file --> DataTable
         private Dictionary<string, HashSet<string>> cpd_link = new Dictionary<string, HashSet<string>>(); // cpd id --> file
+        public Dictionary<string, Color> dict_file_color; //= new Dictionary<string, Color>();
+
         private List<string> time_line_selected_descriptors = new List<string>();
 
         private Dictionary<string, string> template_plate_1 = new Dictionary<string, string>();
@@ -3450,6 +3454,7 @@ namespace DRC
                     table.Load(current_csv);
 
                     data_dict.Add(file, table);
+                    dict_file_color.Add(file, curve_color[dict_file_color.Count]);
 
                     foreach (DataRow row in table.Rows)
                     {
@@ -3652,7 +3657,7 @@ namespace DRC
                     }
 
                     Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 250, ref concentrations,
-                        ref x_log, ref y, Color.Blue, this, current_file);
+                        ref x_log, ref y, dict_file_color[current_file], this, current_file);
                     current_chart.draw_DRC();
 
                     list_chart_descriptors.Add(descriptor, current_chart);
@@ -3682,7 +3687,7 @@ namespace DRC
                                 x_log.Add(Math.Log10(val));
                                 concentrations.Add(val);
                             }
-                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref concentrations, ref x_log, ref y, Color.Blue, this, current_file);
+                            Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 100, ref concentrations, ref x_log, ref y, dict_file_color[current_file], this, current_file);
                             current_chart.draw_DRC();
 
                             charts_time_line[BATCH_ID][descriptor] = current_chart;
@@ -3699,7 +3704,7 @@ namespace DRC
                                 x_log.Add(Math.Log10(val));
                                 concentrations.Add(val);
                             }
-                            elem.Value.add_serie_points(current_file, ref concentrations, ref x_log, ref y, Color.Blue);
+                            elem.Value.add_serie_points(current_file, ref concentrations, ref x_log, ref y, dict_file_color[current_file]);
                         }
 
                     }
@@ -5786,6 +5791,8 @@ namespace DRC
 
             foreach (string plate in main_plates)
             {
+                dict_file_color.Add(plate, curve_color[dict_file_color.Count]);
+
                 DataTable table = new DataTable();
 
                 table = main_table.Copy();
@@ -10092,7 +10099,7 @@ namespace DRC
                 variances.Add(current_variance);
             }
 
-           
+
             // Compute the derivative of the auc :
             for (int i = 0; i < list_x.Count; ++i)
             {
@@ -10123,7 +10130,7 @@ namespace DRC
             double ec_50 = fit_parameters[2];
             double slope = fit_parameters[3];
 
-            
+
 
             //Func<double, double> g = (x) => bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - x) * slope)));
 
@@ -10295,16 +10302,6 @@ namespace DRC
 
         public Chart_DRC_Time_Line(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color, MainTab form, string filename)
         {
-            curve_color.Add(Color.Blue);
-            curve_color.Add(Color.Red);
-            curve_color.Add(Color.Green);
-            curve_color.Add(Color.Black);
-            curve_color.Add(Color.SaddleBrown);
-            curve_color.Add(Color.OrangeRed);
-            curve_color.Add(Color.DarkBlue);
-            curve_color.Add(Color.DodgerBlue);
-            curve_color.Add(Color.Tan);
-            curve_color.Add(Color.DimGray);
 
             series_number = 1;
 
@@ -10509,6 +10506,7 @@ namespace DRC
                 filenames.RemoveAll(p => p == file);
             }
 
+
             draw_DRC();
         }
 
@@ -10625,7 +10623,7 @@ namespace DRC
             chart.Series["DRC_Fit"].Color = chart_colors[file_name];
 
             // Draw the other graph
-            int counter_color = 0;
+            //int counter_color = 0;
 
             foreach (KeyValuePair<string, List<double>> elem in drc_points_x)
             {
@@ -10639,19 +10637,19 @@ namespace DRC
                     chart.Series[elem.Key + "_curve"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
                     chart.Series[elem.Key + "_curve"].Points.DataBindXY(x_fit_points[elem.Key], y_fit[elem.Key]);
 
-                    if (counter_color + 1 >= curve_color.Count())
-                    {
-                        chart.Series[elem.Key].Color = curve_color[0];
-                        chart.Series[elem.Key + "_curve"].Color = curve_color[0];
+                    //if (counter_color + 1 >= curve_color.Count())
+                    //{
+                    chart.Series[elem.Key].Color = chart_colors[elem.Key];
+                    chart.Series[elem.Key + "_curve"].Color = chart_colors[elem.Key];
 
-                    }
-                    else
-                    {
-                        chart.Series[elem.Key].Color = curve_color[counter_color + 1];
-                        chart.Series[elem.Key + "_curve"].Color = curve_color[counter_color + 1];
-                    }
+                    //}
+                    //else
+                    //{
+                    //    chart.Series[elem.Key].Color = curve_color[counter_color + 1];
+                    //    chart.Series[elem.Key + "_curve"].Color = curve_color[counter_color + 1];
+                    //}
 
-                    counter_color++;
+                    //counter_color++;
                 }
             }
 
