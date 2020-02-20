@@ -295,7 +295,6 @@ D:\DRC_Tool\DRC\obj\x64\Release\DRC.csprojAssemblyReference.cache
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\concrt140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\cvextern.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\msvcp140.dll
-E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\opencv_ffmpeg343_64.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\vcruntime140.dll
 E:\DRC_Tool_Git\DRC\bin\x64\Release\Accord.dll.config
 E:\DRC_Tool_Git\DRC\bin\x64\Release\DRC.exe.config
@@ -351,3 +350,6 @@ E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.WellPlate_Viewer.resources
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.csproj.GenerateResource.Cache
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.exe
 E:\DRC_Tool_Git\DRC\obj\x64\Release\DRC.pdb
+E:\DRC_Tool_Git\DRC\bin\x64\Release\x64\opencv_ffmpeg320_64.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.dll
+E:\DRC_Tool_Git\DRC\bin\x64\Release\ZedGraph.xml
