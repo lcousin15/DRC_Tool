@@ -274,7 +274,7 @@ namespace DRC
         {
             return time_line_selected_descriptors.Count();
         }
-        
+
         public Dictionary<string, List<Chart_DRC>> get_descriptors_chart()
         {
             return descriptors_chart;
@@ -291,7 +291,7 @@ namespace DRC
             }
             else
             {
-                string message = "Error in Descriptor : "+ descriptor +" / Row Index = " + (index+2).ToString() + "\n Closing the program";
+                string message = "Error in Descriptor : " + descriptor + " / Row Index = " + (index + 2).ToString() + "\n Closing the program";
                 const string caption = "Form Closing";
                 var result = MessageBox.Show(message, caption,
                                              MessageBoxButtons.OK,
@@ -312,7 +312,7 @@ namespace DRC
                 well_plate.Close();
                 f12.Close();
 
-                this. Close();
+                this.Close();
 
                 test = true;
 
@@ -335,7 +335,7 @@ namespace DRC
             fixed_top_descriptor = new List<string>();
             data_modified_descriptor = new List<string>();
 
-            if ( !f3.dataGridView1.Columns.Contains("BATCH_ID")  || !f3.dataGridView1.Columns.Contains("CPD_ID") && f3.dataGridView1.Columns.Contains("tags"))
+            if (!f3.dataGridView1.Columns.Contains("BATCH_ID") || !f3.dataGridView1.Columns.Contains("CPD_ID") && f3.dataGridView1.Columns.Contains("tags"))
             {
                 //f3.dataGridView1.Columns.Add("BATCH_ID", "BATCH_ID");
                 DataGridViewColumn new_col = ((DataGridViewColumn)f3.dataGridView1.Columns["tags"].Clone());
@@ -348,7 +348,7 @@ namespace DRC
                 new_col2.HeaderText = "CPD_ID";
                 f3.dataGridView1.Columns.Add(new_col2);
                 //f3.dataGridView1.Columns["BATCH_ID"] = f3.dataGridView1.Columns["tags"];
-                
+
             }
 
             if (f3.dataGridView1.ColumnCount < 5 || !f3.dataGridView1.Columns.Contains("BATCH_ID") || !f3.dataGridView1.Columns.Contains("Concentration")
@@ -2966,7 +2966,7 @@ namespace DRC
                                     ushort px_value = data[idx];
                                     if (px_value < low_thr_ch1) data[idx] = 0;
                                     else if (px_value >= thr_ch1) data[idx] = thr_ch1;
-                                   
+
                                     data[idx] = (ushort)(65535 * (double)(data[idx]) / (double)thr_ch1);
                                 }
                             }
@@ -3010,7 +3010,7 @@ namespace DRC
                     {
 
 
-                        
+
                         //double minval, maxval;
                         //int[] minIdx = new int[1];
                         //int[] maxidx = new int[1];
@@ -3018,7 +3018,7 @@ namespace DRC
                         //Emgu.CV.Structure.MCvScalar std = new MCvScalar(0);
                         //Image<Gray, Byte> mask = temp.ToImage<Gray, Byte>().ThresholdBinary(new Gray(180),new Gray(1));
 
-                        CvInvoke.Normalize(temp,mat_8u,0,255,Emgu.CV.CvEnum.NormType.MinMax);
+                        CvInvoke.Normalize(temp, mat_8u, 0, 255, Emgu.CV.CvEnum.NormType.MinMax);
                         //CvInvoke.MinMaxIdx(temp, out minval, out maxval, minIdx, maxidx);
                         //Image<Gray, float> tempbis = temp.ToImage<Gray, float>() * (1.0 / (mean.V0+3*std.V0));
                         //tempbis.Mat.ConvertTo(mat_8u, Emgu.CV.CvEnum.DepthType.Cv8U, 255.0);
@@ -3135,13 +3135,13 @@ namespace DRC
 
                 if (color_format == "SMARCA2")
                 {
-                        Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
-                        channels_bgr.Push(channels[1].Clone());
-                        channels_bgr.Push(channels[0].Clone());
-                        channels_bgr.Push(channels[2].Clone());
+                    Emgu.CV.Util.VectorOfMat channels_bgr = new Emgu.CV.Util.VectorOfMat();
+                    channels_bgr.Push(channels[1].Clone());
+                    channels_bgr.Push(channels[0].Clone());
+                    channels_bgr.Push(channels[2].Clone());
 
-                        channels.Clear();
-                        channels = channels_bgr;
+                    channels.Clear();
+                    channels = channels_bgr;
                 }
 
                 //CvInvoke.CvtColor(channels[0], channels[0], Emgu.CV.CvEnum.ColorConversion.Bgr2Hsv);
@@ -3267,7 +3267,7 @@ namespace DRC
                         else ch_r[idx] = 255;
                     }
                 }
-                
+
                 Mat mat = new Mat();
                 CvInvoke.Merge(channels_mixed, mat);
 
@@ -3546,8 +3546,8 @@ namespace DRC
                            && the_descriptor != "Class" && the_descriptor != "CPD_ID" && !the_descriptor.StartsWith("Status") && !the_descriptor.StartsWith("Bound")
                            && !the_descriptor.StartsWith("Fixed_Top") && !the_descriptor.StartsWith("Data_Modified") && !the_descriptor.StartsWith("Deselected"))
                     {
-                    //    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "BATCH_ID" && the_descriptor != "Class" && the_descriptor != "Concentration")
-                    //{
+                        //    if (the_descriptor != "Plate" && the_descriptor != "Well" && the_descriptor != "BATCH_ID" && the_descriptor != "Class" && the_descriptor != "Concentration")
+                        //{
                         time_line_selected_descriptors.Add(the_descriptor);
                     }
                 }
@@ -3591,7 +3591,7 @@ namespace DRC
                         if (descriptor_data.ContainsKey(descriptor))
                         {
 
-                            if(select_point) descriptor_data[descriptor].Add(val);
+                            if (select_point) descriptor_data[descriptor].Add(val);
                         }
                         else
                         {
@@ -3625,7 +3625,7 @@ namespace DRC
 
                     }
 
-                    
+
                 }
             }
 
@@ -3651,7 +3651,7 @@ namespace DRC
                         concentrations.Add(val);
                     }
 
-                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 250, ref concentrations, 
+                    Chart_DRC_Time_Line current_chart = new Chart_DRC_Time_Line(BATCH_ID, descriptor, 250, ref concentrations,
                         ref x_log, ref y, Color.Blue, this, current_file);
                     current_chart.draw_DRC();
 
@@ -5794,7 +5794,7 @@ namespace DRC
 
                 foreach (DataRow row_main in main_table.Rows)
                 {
-                    if(row_main["Plate"].ToString()==plate.ToString())
+                    if (row_main["Plate"].ToString() == plate.ToString())
                     {
                         table.Rows.Add(row_main.ItemArray);
                     }
@@ -6650,7 +6650,7 @@ namespace DRC
 
         private T MinA<T>(T[] rest) where T : IComparable
         {
-           
+
             T min = rest[0];
             foreach (T f in rest) if (f.CompareTo(min) < 0)
                     min = f;
@@ -6659,7 +6659,7 @@ namespace DRC
 
         private T MaxA<T>(T[] rest) where T : IComparable
         {
-           
+
             T max = rest[0];
             foreach (T f in rest) if (f.CompareTo(max) > 0)
                     max = f;
@@ -7497,8 +7497,8 @@ namespace DRC
                 double[] bndu = null;
 
                 // boundaries
-                bndu = new double[] { max_bound_y, min_bound_x, +10.0*Math.Abs(first_slope) };
-                bndl = new double[] { min_bound_y, max_bound_x, -10.0*Math.Abs(first_slope) };
+                bndu = new double[] { max_bound_y, min_bound_x, +10.0 * Math.Abs(first_slope) };
+                bndl = new double[] { min_bound_y, max_bound_x, -10.0 * Math.Abs(first_slope) };
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
@@ -7631,8 +7631,8 @@ namespace DRC
 
 
                 // boundaries
-                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +10*Math.Abs(first_slope) };
-                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -10*Math.Abs(first_slope) };
+                bndu = new double[] { max_bound_y, max_bound_y, min_bound_x, +10 * Math.Abs(first_slope) };
+                bndl = new double[] { min_bound_y, min_bound_y, max_bound_x, -10 * Math.Abs(first_slope) };
 
                 alglib.lsfitstate state;
                 alglib.lsfitreport rep;
@@ -8587,7 +8587,7 @@ namespace DRC
 
             if (patient)
             {
-                if(if_report) chart.Series["Series1"].Points.Clear(); // /!\ POINTS AUC REMOVED /!\
+                if (if_report) chart.Series["Series1"].Points.Clear(); // /!\ POINTS AUC REMOVED /!\
                 draw_area_under_curve(drc_points_x_enable, drc_points_y_enable);
                 annotation_ec50.Text = "AUC = " + auc.ToString("N2") + " +/- " + error_auc.ToString("N2");
             }
@@ -10104,6 +10104,7 @@ namespace DRC
 
         private Dictionary<string, List<double>> drc_points_x = new Dictionary<string, List<double>>();
         private Dictionary<string, List<double>> drc_points_y = new Dictionary<string, List<double>>();
+
         private Dictionary<string, List<double>> drc_points_x_log = new Dictionary<string, List<double>>();
 
         private Dictionary<string, Color> chart_colors = new Dictionary<string, Color>();
@@ -10138,8 +10139,8 @@ namespace DRC
         private double min_y;
         private double max_y;
 
-        private int min_x =+20;
-        private int max_x =-20;
+        private int min_x = +20;
+        private int max_x = -20;
 
         private List<Color> curve_color = new List<Color>();
 
@@ -10194,6 +10195,46 @@ namespace DRC
             return max;
         }
 
+        //private void chart1_PostPaint(object sender, System.Windows.Forms.DataVisualization.Charting.ChartPaintEventArgs e)
+        //{
+
+        //    Chart my_chart = (Chart)sender;
+        //    ChartArea area = my_chart.ChartAreas[0];
+        //    if (area.Name == descriptor)
+        //    {
+        //        Axis ax = chart.ChartAreas[0].AxisX;
+        //        Axis ay = chart.ChartAreas[0].AxisY;
+
+        //        Graphics graph = e.ChartGraphics.Graphics;
+
+        //        PointF point1 = PointF.Empty;
+        //        PointF point2 = PointF.Empty;
+
+        //        point1.X = (float)ax.ValueToPixelPosition(Math.Pow(10, fit_parameters[2]));
+        //        point1.Y = (float)ay.ValueToPixelPosition(chart.ChartAreas[0].AxisY.Minimum);
+        //        point2.X = (float)ax.ValueToPixelPosition(Math.Pow(10, fit_parameters[2]));
+        //        point2.Y = (float)ay.ValueToPixelPosition(Sigmoid(fit_parameters, fit_parameters[2]));
+
+        //        float[] dashValues = { 2, 2, 2, 2 };
+        //        Pen blackPen = new Pen(Color.DimGray, 0.25f);
+        //        blackPen.DashPattern = dashValues;
+
+        //        graph.DrawLine(blackPen, point1, point2);
+
+        //        PointF point3 = PointF.Empty;
+        //        PointF point4 = PointF.Empty;
+
+        //        point3.X = (float)ax.ValueToPixelPosition(chart.ChartAreas[0].AxisX.Minimum);
+        //        point3.Y = (float)ay.ValueToPixelPosition(Sigmoid(fit_parameters, fit_parameters[2]));
+        //        point4.X = (float)ax.ValueToPixelPosition(Math.Pow(10, fit_parameters[2]));
+        //        point4.Y = (float)ay.ValueToPixelPosition(Sigmoid(fit_parameters, fit_parameters[2]));
+
+        //        graph.DrawLine(blackPen, point3, point4);
+
+        //    }
+
+        //}
+
         public Chart_DRC_Time_Line() { }
 
         public Chart_DRC_Time_Line(string cpd, string descript, int step, ref List<double> x, ref List<double> x_log, ref List<double> y, Color color, MainTab form, string filename)
@@ -10232,7 +10273,7 @@ namespace DRC
 
             double minx = MinA(x.ToArray());
             double maxx = MaxA(x.ToArray());
-        
+
             min_y = MinA(y.ToArray());
             max_y = MaxA(y.ToArray());
 
@@ -10262,6 +10303,12 @@ namespace DRC
             chartArea.AxisX.Title = "Concentration";
             chartArea.AxisY.Title = "Response";
 
+            chartArea.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+            chartArea.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+
+            chartArea.AxisX.MajorGrid.LineColor = Color.LightGray;
+            chartArea.AxisY.MajorGrid.LineColor = Color.LightGray;
+
             //if (max_y < 1.0) chartArea.AxisY.Maximum = 1.0;
 
             chartArea.Name = descriptor;
@@ -10285,6 +10332,8 @@ namespace DRC
             chart.Size = new System.Drawing.Size(550, 350);
 
             chart.Titles.Add("Title1");
+
+            //chart.PostPaint += new EventHandler<ChartPaintEventArgs>(this.chart1_PostPaint);
 
             if (drc_points_x_log[file_name].Count > 0)
             {
@@ -10479,8 +10528,8 @@ namespace DRC
 
             if (y_fit.ContainsKey(filename)) y_fit[filename].Clear();
             if (x_fit_points.ContainsKey(filename)) x_fit_points[filename].Clear();
-           
-             y_fit[filename] = new List<double>();
+
+            y_fit[filename] = new List<double>();
 
             for (int IdxConc = 0; IdxConc < x_fit_log[filename].Count; IdxConc++)
             {
