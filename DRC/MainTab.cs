@@ -644,7 +644,7 @@ namespace DRC
                 toolStripProgressBar1.Visible = true;
                 for (var idx = 0; idx < list_cpd.Count; idx++)
                 {
-                    toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count - 1);
+                    toolStripProgressBar1.Value = idx * 100 / (list_cpd.Count);
                     //toolStripStatusLabel1.Text = toolStripProgressBar1.Value.ToString();
                     //toolStripStatusLabel1.Visible=true;
                     string BATCH_ID = list_cpd[idx].ToString();
@@ -9982,7 +9982,48 @@ namespace DRC
 
         //    //y = bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - x) * slope)));
         //}
+        public static List<double> Arange(double start, int count)
+        {
+            return (List<double>)Enumerable.Range((int)start, count).Select(v => (double)v).ToList();
+        }
 
+        public static List<double> Power(List<double> exponents, double baseValue = 10.0d)
+        {
+            return (List<double>)exponents.Select(v => Math.Pow(baseValue, v)).ToList();
+        }
+
+        public static List<double> LinSpace(double start, double stop, int num, bool endpoint = true)
+        {
+            var result = new List<double>();
+            if (num <= 0)
+            {
+                return result;
+            }
+
+            if (endpoint)
+            {
+                if (num == 1)
+                {
+                    return new List<double>() { start };
+                }
+
+                var step = (stop - start) / ((double)num - 1.0d);
+                result = Arange(0, num).Select(v => (v * step) + start).ToList();
+            }
+            else
+            {
+                var step = (stop - start) / (double)num;
+                result = Arange(0, num).Select(v => (v * step) + start).ToList();
+            }
+
+            return result;
+        }
+
+        public static List<double> LogSpace(double start, double stop, int num, bool endpoint = true, double numericBase = 10.0d)
+        {
+            List<double> y = LinSpace(start, stop, num: num, endpoint: endpoint);
+            return Power(y, numericBase);
+        }
 
         public double compute_AUC()
         {
@@ -10051,6 +10092,7 @@ namespace DRC
                 variances.Add(current_variance);
             }
 
+           
             // Compute the derivative of the auc :
             for (int i = 0; i < list_x.Count; ++i)
             {
@@ -10076,13 +10118,27 @@ namespace DRC
             //for (int i = 0; i < derivatives.Count; ++i) Console.WriteLine(derivatives[i].ToString());
             //Console.WriteLine(error_auc.ToString());
 
+            double top = fit_parameters[1];
+            double bottom = fit_parameters[0];
+            double ec_50 = fit_parameters[2];
+            double slope = fit_parameters[3];
+
+            
+
+            //Func<double, double> g = (x) => bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - x) * slope)));
+
+
             double area_geom = 0.0;
+            List<double> totot = LinSpace(list_x[0], list_x[list_x.Count - 1], 50);
 
-            for (int i = 0; i < list_x.Count - 1; ++i)
+
+            for (int i = 0; i < totot.Count - 1; ++i)
             {
-                double delta_x = Math.Abs(list_x[i + 1] - list_x[i]);
+                double delta_x = Math.Abs(totot[i + 1] - totot[i]);
+                double y0 = bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - totot[i + 1]) * slope)));
+                double y1 = bottom + ((top - bottom) / (1 + Math.Pow(10, (ec_50 - totot[i]) * slope)));
 
-                double y_mean = (mean_y[i] + mean_y[i + 1]) / 2.0;
+                double y_mean = (y0 + y1) / 2.0;// (mean_y[i] + mean_y[i + 1]) / 2.0;
 
                 double trapezoid_area = y_mean * delta_x;
 
