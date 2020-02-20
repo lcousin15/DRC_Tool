@@ -14,3 +14,9 @@
 *.dll
 *.txt
 *.Cache
+.vs/
+packages/
+publish/
+DRC/bin/
+DRC/obj/
+DRC/Service References/
