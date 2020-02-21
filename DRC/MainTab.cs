@@ -10390,6 +10390,8 @@ namespace DRC
 
             chart.Legends.Add(new Legend("Legend"));
 
+            chart.Legends["Legend"].BackColor = Color.Transparent;
+
             chart.Legends["Legend"].Position.Auto = false;
             chart.Legends["Legend"].Position = new ElementPosition(18, 15, 25, 4);
 
