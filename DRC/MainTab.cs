@@ -10346,6 +10346,8 @@ namespace DRC
             chart = new Chart();
 
             ChartArea chartArea = new ChartArea();
+            chartArea.Name = "ChartArea";
+
             Series series1 = new Series();
             Series series2 = new Series();
 
@@ -10385,8 +10387,13 @@ namespace DRC
             chart.Size = new System.Drawing.Size(550, 350);
 
             chart.Titles.Add("Title1");
+
             chart.Legends.Add(new Legend("Legend"));
-            chart.Legends["Legend"].IsDockedInsideChartArea = true;
+
+            chart.Legends["Legend"].BackColor = Color.Transparent;
+
+            chart.Legends["Legend"].Position.Auto = false;
+            chart.Legends["Legend"].Position = new ElementPosition(18, 15, 25, 4);
 
             series2.Legend = "Legend";
             series2.LegendText = filename;
