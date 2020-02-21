@@ -29,14 +29,17 @@ namespace DRC
             _form1.get_compound_data(BATCH_ID);
         }
 
-        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        public void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             string file = checkedListBox1.Items[e.Index].ToString();
             bool checked_state = true;
 
+            //checkedListBox1.Update();
+
             if (!checkedListBox1.GetItemChecked(e.Index)) checked_state = false;
 
             Console.WriteLine(file);
+            Console.WriteLine(checked_state);
             _form1.draw_cpd_list(file, BATCH_ID, checked_state);
         }
     }
