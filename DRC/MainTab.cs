@@ -10385,6 +10385,13 @@ namespace DRC
             chart.Size = new System.Drawing.Size(550, 350);
 
             chart.Titles.Add("Title1");
+            chart.Legends.Add(new Legend("Legend"));
+            chart.Legends["Legend"].IsDockedInsideChartArea = true;
+
+            series2.Legend = "Legend";
+            series2.LegendText = filename;
+            series2.IsVisibleInLegend = true;
+            series1.IsVisibleInLegend = false;
 
             //chart.PostPaint += new EventHandler<ChartPaintEventArgs>(this.chart1_PostPaint);
 
@@ -10477,6 +10484,12 @@ namespace DRC
             series_new_curve.Name = file + "_curve";
 
             chart.Series.Add(series_new_curve);
+
+            series_new_curve.Legend = "Legend";
+            series_new_curve.LegendText = file;
+            series_new_curve.IsVisibleInLegend = true;
+            series_new_points.IsVisibleInLegend = false;
+
 
             fit_DRC(file);
 
