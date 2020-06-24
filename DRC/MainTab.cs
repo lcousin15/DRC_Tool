@@ -3512,6 +3512,7 @@ namespace DRC
         public void get_compound_data(string BATCH_ID)
         {
             tableLayoutPanel1.Controls.Clear();
+            charts_time_line.Clear();
 
             HashSet<string> file_list = cpd_link[BATCH_ID];
 
@@ -3566,10 +3567,25 @@ namespace DRC
             {
                 TimeLine.checkedListBox1.Items.Add(current_file);
             }
+
+            for(int idx=0; idx<TimeLine.checkedListBox1.Items.Count; idx++)
+            {
+
+                TimeLine.checkedListBox1.SetItemChecked(idx, true);
+                TimeLine.checkedListBox1.SetItemCheckState(idx, CheckState.Checked);
+
+                string file = checkedListBox1.GetItemText(TimeLine.checkedListBox1.Items[idx]);
+
+                //TimeLine.checkedListBox1.ItemCheck += (s, e) => BeginInvoke((MethodInvoker)(() => TimeLine.checkedListBox1_ItemCheck(s, e)));
+                draw_cpd_list(file, BATCH_ID, true);
+            }
+
         }
 
         public void draw_cpd_list(string current_file, string BATCH_ID, bool checked_state)
         {
+            if (checked_state == false) return;
+
             Dictionary<string, List<double>> descriptor_data = new Dictionary<string, List<double>>();
             Dictionary<string, List<double>> descriptor_concentrations = new Dictionary<string, List<double>>();
 
