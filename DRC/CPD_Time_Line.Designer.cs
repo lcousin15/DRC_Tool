@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.CPD_ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BATCH_ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.checkedListBox2 = new System.Windows.Forms.CheckedListBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -39,7 +39,8 @@
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.CPD_ID});
+            this.BATCH_ID});
+            this.dataGridView1.Cursor = System.Windows.Forms.Cursors.Default;
             this.dataGridView1.Location = new System.Drawing.Point(13, 13);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(163, 631);
@@ -48,9 +49,9 @@
             // 
             // BATCH_ID
             // 
-            this.CPD_ID.HeaderText = "BATCH_ID";
-            this.CPD_ID.Name = "BATCH_ID";
-            this.CPD_ID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.BATCH_ID.HeaderText = "BATCH_ID";
+            this.BATCH_ID.Name = "BATCH_ID";
+            this.BATCH_ID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // checkedListBox1
             // 
@@ -98,5 +99,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CPD_ID;
         public System.Windows.Forms.CheckedListBox checkedListBox1;
         public System.Windows.Forms.CheckedListBox checkedListBox2;
+        //private System.Windows.Forms.DataGridViewTextBoxColumn BATCH_ID;
     }
 }

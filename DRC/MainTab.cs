@@ -21,6 +21,7 @@ using System.Collections;
 using System.Data;
 using System.Drawing.Drawing2D;
 
+
 namespace DRC
 {
 
@@ -6205,7 +6206,7 @@ namespace DRC
 
             int NumDimension = 1;
             alglib.lsfitcreatef(Concentration, drc_points_y_1.ToArray(), c, diffstep, out state);
-            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetcond(state, epsf, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
             // alglib.lsfitsetscale(state, s);
 
@@ -6268,7 +6269,7 @@ namespace DRC
 
             int NumDimension = 1;
             alglib.lsfitcreatef(Concentration, drc_points_y_2.ToArray(), c, diffstep, out state);
-            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetcond(state, epsf, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
             // alglib.lsfitsetscale(state, s);
 
@@ -7536,7 +7537,7 @@ namespace DRC
                 }
 
                 alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
-                alglib.lsfitsetcond(state, epsx, maxits);
+                alglib.lsfitsetcond(state, epsf, epsx, maxits);
                 alglib.lsfitsetbc(state, bndl, bndu);
                 // alglib.lsfitsetscale(state, s);
 
@@ -7673,7 +7674,7 @@ namespace DRC
                 }
 
                 alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
-                alglib.lsfitsetcond(state, epsx, maxits);
+                alglib.lsfitsetcond(state, epsf, epsx, maxits);
                 alglib.lsfitsetbc(state, bndl, bndu);
                 // alglib.lsfitsetscale(state, s);
 
@@ -10605,7 +10606,7 @@ namespace DRC
 
             int NumDimension = 1;
             alglib.lsfitcreatef(Concentration, drc_points_y[filename].ToArray(), c, diffstep, out state);
-            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetcond(state, epsf, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
             // alglib.lsfitsetscale(state, s);
 
