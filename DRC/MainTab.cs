@@ -7759,7 +7759,7 @@ namespace DRC
                     //covariance_matrix[3,3] = 0.2;
 
                     int dof = drc_points_y_enable.Count - 4;
-
+                 
                     double t_test_val = chart.DataManipulator.Statistics.InverseTDistribution(.05, dof);
 
                     //double sum_square_residuals = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, fit_parameters);
