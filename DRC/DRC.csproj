@@ -413,16 +413,14 @@
       <HintPath>..\packages\Accord.Statistics.3.8.2-alpha\lib\net45\Accord.Statistics.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="alglibnet2">
-      <HintPath>..\packages\alglib-3.12.0\csharp\net-core\alglibnet2.dll</HintPath>
+    <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\alglibnet2.0.0.0\lib\alglibnet2.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.CV.UI, Version=3.2.0.2721, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
       <HintPath>..\packages\Emgu.CV.3.2.0.2721\lib\net35\Emgu.CV.UI.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Emgu.CV.World, Version=3.2.0.2721, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
       <HintPath>..\packages\Emgu.CV.3.2.0.2721\lib\net35\Emgu.CV.World.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="EPPlus, Version=5.0.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.5.0.1-beta\lib\net45\EPPlus.dll</HintPath>

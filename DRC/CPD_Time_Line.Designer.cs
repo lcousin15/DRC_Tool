@@ -40,11 +40,13 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.CPD_ID});
+            this.dataGridView1.Cursor = System.Windows.Forms.Cursors.Default;
             this.dataGridView1.Location = new System.Drawing.Point(13, 13);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(163, 631);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
+            this.dataGridView1.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
             // BATCH_ID
             // 
@@ -98,5 +100,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CPD_ID;
         public System.Windows.Forms.CheckedListBox checkedListBox1;
         public System.Windows.Forms.CheckedListBox checkedListBox2;
+        //private System.Windows.Forms.DataGridViewTextBoxColumn BATCH_ID;
     }
 }

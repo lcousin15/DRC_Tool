@@ -13,9 +13,7 @@ namespace DRC
     public partial class CPD_Time_Line : Form
     {
         MainTab _form1 = new MainTab();
-
         private string BATCH_ID = "";
-
         public CPD_Time_Line(MainTab f)
         {
             InitializeComponent();
