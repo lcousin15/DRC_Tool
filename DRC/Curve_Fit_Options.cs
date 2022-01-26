@@ -90,7 +90,7 @@ namespace DRC
 
         private void button1_Click(object sender, EventArgs e)
         {
-            top_fixed = double.Parse(text_box_fix_top.Text.ToString());
+            //top_fixed = double.Parse(text_box_fix_top.Text.ToString());
 
             chart.set_bound_status(true);
             chart.set_manual_bound(true);

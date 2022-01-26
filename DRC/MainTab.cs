@@ -749,7 +749,7 @@ namespace DRC
                 }
 
                 toolStripProgressBar1.Visible = false;
-                f5.Show();
+                //f5.Show();
                 MessageBox.Show("Images generated.");
 
                 f5.saveToExcelToolStripMenuItem_Click(sender, e);
@@ -8896,6 +8896,12 @@ namespace DRC
                     }
                 }
 
+                //List<int> already_read_indices_points_disable = new List<int>();
+                List<int> already_read_indices_raw_data_disable = new List<int>();
+
+                //List<int> already_read_indices_points_enable = new List<int>();
+                List<int> already_read_indices_raw_data_enable = new List<int>();
+
                 foreach (DataPoint dp in chart.Series["Series1"].Points)
                 {
                     int x = (int)ax.ValueToPixelPosition(dp.XValue);
@@ -8932,6 +8938,8 @@ namespace DRC
                             drc_points_x_disable.RemoveAt(index);
                             drc_points_y_disable.RemoveAt(index);
 
+                            // already_read_indices_points_disable.Add(index);
+
                             dp.Color = chart_color;
 
                             //point_last_change[data_point_idx] = true;
@@ -8947,13 +8955,14 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12) && !already_read_indices_raw_data_disable.Contains(idx))
                                 {
                                     index_raw_data = idx;
                                     break;
                                 }
                             }
 
+                            already_read_indices_raw_data_disable.Add(index_raw_data);
                             is_raw_data_removed[index_raw_data] = false;
 
                         }
@@ -9007,13 +9016,14 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12) && !already_read_indices_raw_data_enable.Contains(idx))
                                 {
                                     index_raw_data = idx;
                                     break;
                                 }
                             }
 
+                            already_read_indices_raw_data_enable.Add(index_raw_data);
                             is_raw_data_removed[index_raw_data] = true;
 
                             counter_point_changed--;

@@ -286,7 +286,7 @@ namespace DRC
             sfd.FileName = "DRC_Report.xlsx";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
                 ExcelPackage pck = new ExcelPackage();
 
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("DRC_Report");
