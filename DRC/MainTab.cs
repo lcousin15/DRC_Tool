@@ -6180,7 +6180,6 @@ namespace DRC
 
             double epsf = 0;
             double epsx = 1e-12;
-            double diffstep = 1e-15;
 
             int maxits = 0;
             int info;
@@ -6194,6 +6193,7 @@ namespace DRC
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
+            double diffstep = 1e-15;
 
             // Fitting without weights
             //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
@@ -8929,6 +8929,7 @@ namespace DRC
                                     break;
                                 }
                             }
+
 
                             // Add points enabled
                             drc_points_x_enable.Add(point_x);
