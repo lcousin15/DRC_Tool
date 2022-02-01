@@ -7475,8 +7475,8 @@ namespace DRC
             GlobalMin = MinValues - 0.05 * Math.Abs(MinValues);
 
             double epsf = 0;
-            double epsx = 1e-6; // 0.000000001;
-            double diffstep = 1e-8;
+            double epsx = 1e-12; // 0.000000001;
+            double diffstep = 1e-15;
 
             //double epsx = 1e-6;
             int maxits = 0;
@@ -10590,7 +10590,7 @@ namespace DRC
             double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
 
             double epsf = 0;
-            double epsx = 0;
+            double epsx = 1e-12;
 
             int maxits = 0;
             int info;
@@ -10604,7 +10604,7 @@ namespace DRC
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
-            double diffstep = 1e-12;
+            double diffstep = 1e-15;
 
             // Fitting without weights
             //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
