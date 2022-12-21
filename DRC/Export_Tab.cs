@@ -16,6 +16,7 @@ using OfficeOpenXml.Drawing;
 using OfficeOpenXml.Table;
 using System.Diagnostics;
 
+
 namespace DRC
 {
     public partial class Export_Tab : Form
@@ -286,6 +287,7 @@ namespace DRC
             sfd.FileName = "DRC_Report.xlsx";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
                 ExcelPackage pck = new ExcelPackage();
 

@@ -9154,8 +9154,8 @@ namespace DRC
             string compound_id1 = compound_id.Replace(@"/", @"_");
             string compound_id2 = compound_id1.Replace(@"\", @"_");
 
-            string output_image = path + "/CPD_" + compound_id2 + "_" + descriptor_name + ".bmp";
-
+            //string output_image = path + "/CPD_" + compound_id2 + "_" + descriptor_name + ".bmp";
+            string output_image= path + "/CPD_" + "temp" + "_" + descriptor_name + ".bmp";
             //System.Diagnostics.Debug.WriteLine("Write Image = " + output_image);
             chart.SaveImage(output_image, ChartImageFormat.Bmp);
 
