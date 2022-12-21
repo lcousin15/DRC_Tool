@@ -21,6 +21,7 @@ using System.Collections;
 using System.Data;
 using System.Drawing.Drawing2D;
 
+
 namespace DRC
 {
 
@@ -748,7 +749,7 @@ namespace DRC
                 }
 
                 toolStripProgressBar1.Visible = false;
-                f5.Show();
+                //f5.Show();
                 MessageBox.Show("Images generated.");
 
                 f5.saveToExcelToolStripMenuItem_Click(sender, e);
@@ -6178,7 +6179,7 @@ namespace DRC
             double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
 
             double epsf = 0;
-            double epsx = 0;
+            double epsx = 1e-12;
 
             int maxits = 0;
             int info;
@@ -6192,7 +6193,7 @@ namespace DRC
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
-            double diffstep = 1e-12;
+            double diffstep = 1e-15;
 
             // Fitting without weights
             //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
@@ -6205,7 +6206,7 @@ namespace DRC
 
             int NumDimension = 1;
             alglib.lsfitcreatef(Concentration, drc_points_y_1.ToArray(), c, diffstep, out state);
-            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetcond(state, epsf, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
             // alglib.lsfitsetscale(state, s);
 
@@ -6268,7 +6269,7 @@ namespace DRC
 
             int NumDimension = 1;
             alglib.lsfitcreatef(Concentration, drc_points_y_2.ToArray(), c, diffstep, out state);
-            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetcond(state, epsf, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
             // alglib.lsfitsetscale(state, s);
 
@@ -7474,8 +7475,8 @@ namespace DRC
             GlobalMin = MinValues - 0.05 * Math.Abs(MinValues);
 
             double epsf = 0;
-            double epsx = 1e-6; // 0.000000001;
-            double diffstep = 1e-8;
+            double epsx = 1e-12; // 0.000000001;
+            double diffstep = 1e-15;
 
             //double epsx = 1e-6;
             int maxits = 0;
@@ -7536,7 +7537,7 @@ namespace DRC
                 }
 
                 alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
-                alglib.lsfitsetcond(state, epsx, maxits);
+                alglib.lsfitsetcond(state, epsf, epsx, maxits);
                 alglib.lsfitsetbc(state, bndl, bndu);
                 // alglib.lsfitsetscale(state, s);
 
@@ -7673,7 +7674,7 @@ namespace DRC
                 }
 
                 alglib.lsfitcreatef(Concentration, drc_points_y_enable.ToArray(), c, diffstep, out state);
-                alglib.lsfitsetcond(state, epsx, maxits);
+                alglib.lsfitsetcond(state, epsf, epsx, maxits);
                 alglib.lsfitsetbc(state, bndl, bndu);
                 // alglib.lsfitsetscale(state, s);
 
@@ -7758,7 +7759,7 @@ namespace DRC
                     //covariance_matrix[3,3] = 0.2;
 
                     int dof = drc_points_y_enable.Count - 4;
-
+                 
                     double t_test_val = chart.DataManipulator.Statistics.InverseTDistribution(.05, dof);
 
                     //double sum_square_residuals = sum_sqaure_residuals(drc_points_x_enable, drc_points_y_enable, fit_parameters);
@@ -8895,6 +8896,12 @@ namespace DRC
                     }
                 }
 
+                //List<int> already_read_indices_points_disable = new List<int>();
+                List<int> already_read_indices_raw_data_disable = new List<int>();
+
+                //List<int> already_read_indices_points_enable = new List<int>();
+                List<int> already_read_indices_raw_data_enable = new List<int>();
+
                 foreach (DataPoint dp in chart.Series["Series1"].Points)
                 {
                     int x = (int)ax.ValueToPixelPosition(dp.XValue);
@@ -8923,6 +8930,7 @@ namespace DRC
                                 }
                             }
 
+
                             // Add points enabled
                             drc_points_x_enable.Add(point_x);
                             drc_points_y_enable.Add(point_y);
@@ -8930,6 +8938,8 @@ namespace DRC
                             // Remove Points enabled
                             drc_points_x_disable.RemoveAt(index);
                             drc_points_y_disable.RemoveAt(index);
+
+                            // already_read_indices_points_disable.Add(index);
 
                             dp.Color = chart_color;
 
@@ -8946,13 +8956,14 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12) && !already_read_indices_raw_data_disable.Contains(idx))
                                 {
                                     index_raw_data = idx;
                                     break;
                                 }
                             }
 
+                            already_read_indices_raw_data_disable.Add(index_raw_data);
                             is_raw_data_removed[index_raw_data] = false;
 
                         }
@@ -9006,13 +9017,14 @@ namespace DRC
 
                             foreach (int idx in indices_raw)
                             {
-                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12))
+                                if (Math.Log10(x_raw_data[idx]) < (point_x + 1e-12) && Math.Log10(x_raw_data[idx]) > (point_x - 1e-12) && !already_read_indices_raw_data_enable.Contains(idx))
                                 {
                                     index_raw_data = idx;
                                     break;
                                 }
                             }
 
+                            already_read_indices_raw_data_enable.Add(index_raw_data);
                             is_raw_data_removed[index_raw_data] = true;
 
                             counter_point_changed--;
@@ -10578,7 +10590,7 @@ namespace DRC
             double[] c = new double[] { GlobalMin, GlobalMax, BaseEC50, 1 };
 
             double epsf = 0;
-            double epsx = 0;
+            double epsx = 1e-12;
 
             int maxits = 0;
             int info;
@@ -10592,7 +10604,7 @@ namespace DRC
 
             alglib.lsfitstate state;
             alglib.lsfitreport rep;
-            double diffstep = 1e-12;
+            double diffstep = 1e-15;
 
             // Fitting without weights
             //alglib.lsfitcreatefg(Concentrations, Values.ToArray(), c, false, out state);
@@ -10605,7 +10617,7 @@ namespace DRC
 
             int NumDimension = 1;
             alglib.lsfitcreatef(Concentration, drc_points_y[filename].ToArray(), c, diffstep, out state);
-            alglib.lsfitsetcond(state, epsx, maxits);
+            alglib.lsfitsetcond(state, epsf, epsx, maxits);
             alglib.lsfitsetbc(state, bndl, bndu);
             // alglib.lsfitsetscale(state, s);
 

@@ -56,7 +56,7 @@ namespace DRC
             sfd.FileName = "Image_Hits_Report.xlsx";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
                 ExcelPackage pck = new ExcelPackage();
 
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Image_Hits_Report");
